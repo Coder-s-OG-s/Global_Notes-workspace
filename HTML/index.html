@@ -45,7 +45,7 @@
       <button class="btn ghost" id="signup">Sign Up</button>
       <button class="btn primary" id="export">Export</button>
       <button class="btn" id="import">Import</button>
-      <input type="file" id="importFile" accept="application/json" />
+      <input type="file" id="importFile" accept=".json,.txt,application/json,text/plain" />
     </div>
   </header>
 
@@ -130,12 +130,18 @@
       </header>
 
       <div class="editor-body">
-        <textarea
+        <div class="editor-toolbar" aria-label="Text formatting controls">
+          <button class="btn tiny" type="button" id="format-bold"><strong>B</strong></button>
+          <button class="btn tiny" type="button" id="format-underline"><span style="text-decoration: underline;">U</span></button>
+          <button class="btn tiny" type="button" id="format-bullet">• List</button>
+        </div>
+        <div
           class="content-input"
           id="content"
-          placeholder="Write your note here…"
+          contenteditable="true"
           spellcheck="true"
-        ></textarea>
+          aria-label="Note content editor"
+        ></div>
       </div>
     </section>
   </main>
