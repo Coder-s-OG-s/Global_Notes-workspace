@@ -283,14 +283,24 @@ function handleSaveNote() {
   const contentInput = $("#content");
   note.title = titleInput ? titleInput.value.trim() : "";
   note.content = contentInput ? contentInput.innerHTML : "";
-  note.tags = readTagsFromUI();
+
+  // Read tags from the UI; if none set, fall back to the active filter
+  let tagsFromUi = readTagsFromUI();
+  const activeFilter = getActiveFilter();
+  if ((!tagsFromUi || !tagsFromUi.length) && activeFilter && activeFilter !== "all") {
+    tagsFromUi = [activeFilter];
+  }
+  note.tags = tagsFromUi;
+
   note.updatedAt = new Date().toISOString();
   persistNotes();
   renderNotesList();
 }
 
 function handleNewNote() {
-  const newNote = createNote();
+  const activeFilter = getActiveFilter();
+  const initialTags = activeFilter && activeFilter !== "all" ? [activeFilter] : [];
+  const newNote = createNote({ tags: initialTags });
   notes.unshift(newNote);
   activeNoteId = newNote.id;
   persistNotes();
