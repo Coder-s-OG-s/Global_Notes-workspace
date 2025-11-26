@@ -32,6 +32,16 @@
         <button class="chip" data-filter="todo">To‑do</button>
       </div>
 
+      <div class="date-filter">
+        <label for="date-filter" class="date-filter-label">Date</label>
+        <input
+          type="date"
+          id="date-filter"
+          class="date-filter-input"
+          aria-label="Select note date"
+        />
+      </div>
+
       <button class="btn primary" id="new-note">New note</button>
     </div>
 
@@ -134,7 +144,10 @@
           <button class="btn tiny" type="button" id="format-bold"><strong>B</strong></button>
           <button class="btn tiny" type="button" id="format-underline"><span style="text-decoration: underline;">U</span></button>
           <button class="btn tiny" type="button" id="format-bullet">• List</button>
+          <button class="btn tiny" type="button" id="insert-image">Image</button>
+          <button class="btn tiny" type="button" id="insert-table">Table</button>
         </div>
+        <input type="file" id="image-upload-input" accept="image/*" />
         <div
           class="content-input"
           id="content"
