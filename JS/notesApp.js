@@ -21,6 +21,25 @@ function getTagColor(tag) {
   return TAG_COLORS[tag.toLowerCase()] || "#4f6b95";
 }
 
+function escapeHtml(str = "") {
+  return String(str).replace(/[&<>"']/g, (ch) => {
+    switch (ch) {
+      case "&":
+        return "&amp;";
+      case "<":
+        return "&lt;";
+      case ">":
+        return "&gt;";
+      case '"':
+        return "&quot;";
+      case "'":
+        return "&#39;";
+      default:
+        return ch;
+    }
+  });
+}
+
 function createNote(partial = {}) {
   const now = new Date().toISOString();
   return {
@@ -112,10 +131,16 @@ function getSortMode() {
   return select ? select.value : "updated_desc";
 }
 
+function getSelectedDate() {
+  const input = $("#date-filter");
+  return input && input.value ? input.value : "";
+}
+
 function applyFilterSearchAndSort(baseNotes) {
   const filter = getActiveFilter();
   const query = getSearchQuery();
   const sortMode = getSortMode();
+  const selectedDate = getSelectedDate();
 
   let result = [...baseNotes];
 
@@ -129,6 +154,15 @@ function applyFilterSearchAndSort(baseNotes) {
         .join(" ")
         .toLowerCase();
       return haystack.includes(query);
+    });
+  }
+
+  if (selectedDate) {
+    result = result.filter((note) => {
+      const source = note.createdAt || note.updatedAt;
+      if (!source || typeof source !== "string") return false;
+      const datePart = source.slice(0, 10);
+      return datePart === selectedDate;
     });
   }
 
@@ -159,7 +193,7 @@ function renderNotesList() {
     const emptyLi = document.createElement("li");
     emptyLi.className = "note-item";
     emptyLi.innerHTML =
-      '<div class="note-card"><p class="note-preview">No notes yet. Click “New note” to start.</p></div>';
+      '<div class="note-card"><p class="note-preview">No notes match your search or filters. Click “New note” to start or clear filters.</p></div>';
     listEl.appendChild(emptyLi);
     return;
   }
@@ -300,7 +334,10 @@ function handleSaveNote() {
 function handleNewNote() {
   const activeFilter = getActiveFilter();
   const initialTags = activeFilter && activeFilter !== "all" ? [activeFilter] : [];
-  const newNote = createNote({ tags: initialTags });
+  const selectedDate = getSelectedDate();
+  const nowIso = new Date().toISOString();
+  const createdIso = selectedDate ? `${selectedDate}T00:00:00.000Z` : nowIso;
+  const newNote = createNote({ tags: initialTags, createdAt: createdIso, updatedAt: createdIso });
   notes.unshift(newNote);
   activeNoteId = newNote.id;
   persistNotes();
@@ -357,6 +394,9 @@ function wireFiltersAndSearch() {
 
   const searchInput = $("#search");
   searchInput?.addEventListener("input", () => renderNotesList());
+
+  const dateInput = $("#date-filter");
+  dateInput?.addEventListener("change", () => renderNotesList());
 }
 
 function wireSort() {
@@ -384,6 +424,23 @@ function wireCrudButtons() {
   $("#duplicate-note")?.addEventListener("click", handleDuplicateNote);
 }
 
+function insertHtmlAtCursor(html) {
+  const contentEl = $("#content");
+  if (!contentEl) return;
+
+  contentEl.focus();
+  const selection = window.getSelection();
+  if (!selection || selection.rangeCount === 0) {
+    contentEl.insertAdjacentHTML("beforeend", html);
+    return;
+  }
+
+  const range = selection.getRangeAt(0);
+  range.deleteContents();
+  const fragment = range.createContextualFragment(html);
+  range.insertNode(fragment);
+}
+
 function wireFormattingToolbar() {
   const contentEl = $("#content");
   if (!contentEl) return;
@@ -400,6 +457,91 @@ function wireFormattingToolbar() {
   $("#format-bold")?.addEventListener("click", () => applyFormat("bold"));
   $("#format-underline")?.addEventListener("click", () => applyFormat("underline"));
   $("#format-bullet")?.addEventListener("click", () => applyFormat("insertUnorderedList"));
+}
+
+function wireUploadButtons() {
+  const contentEl = $("#content");
+  if (!contentEl) return;
+
+  const imageBtn = $("#insert-image");
+  const imageInput = $("#image-upload-input");
+  if (imageBtn && imageInput) {
+    imageBtn.addEventListener("click", () => {
+      imageInput.value = "";
+      imageInput.click();
+    });
+
+    imageInput.addEventListener("change", () => {
+      const file = imageInput.files && imageInput.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = () => {
+        const dataUrl = reader.result;
+        if (!dataUrl) return;
+        const safeName = escapeHtml(file.name || "image");
+        const html = `<figure class="note-image note-image-size-medium"><img src="${dataUrl}" alt="${safeName}" /><figcaption class="note-image-caption" contenteditable="true">Add caption…</figcaption></figure>`;
+        insertHtmlAtCursor(html);
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+
+  const tableBtn = $("#insert-table");
+  if (tableBtn) {
+    tableBtn.addEventListener("click", () => {
+      let rows = parseInt(prompt("Number of rows?", "3"), 10);
+      let cols = parseInt(prompt("Number of columns?", "3"), 10);
+      if (!Number.isFinite(rows) || rows <= 0) rows = 2;
+      if (!Number.isFinite(cols) || cols <= 0) cols = 2;
+
+      const tableRowsHtml = Array.from({ length: rows })
+        .map((_, rowIndex) => {
+          const cellTag = rowIndex === 0 ? "th" : "td";
+          const cellsHtml = Array.from({ length: cols })
+            .map(() => `<${cellTag}>&nbsp;</${cellTag}>`)
+            .join("");
+          return `<tr>${cellsHtml}</tr>`;
+        })
+        .join("");
+
+      const tableHtml = `<table class="note-table note-table-striped"><tbody>${tableRowsHtml}</tbody></table>`;
+      insertHtmlAtCursor(tableHtml);
+    });
+  }
+
+  function findClosestTableFromSelection() {
+    const selection = window.getSelection();
+    if (!selection || selection.rangeCount === 0) return null;
+    let node = selection.getRangeAt(0).commonAncestorContainer;
+    while (node && node !== document) {
+      if (node.nodeType === Node.ELEMENT_NODE && node.tagName === "TABLE" && node.classList.contains("note-table")) {
+        return node;
+      }
+      node = node.parentNode;
+    }
+    return null;
+  }
+
+  contentEl.addEventListener("click", (event) => {
+    const target = event.target;
+    if (!(target instanceof HTMLImageElement)) return;
+    const figure = target.closest("figure.note-image");
+    if (!figure) return;
+
+    if (figure.classList.contains("note-image-size-small")) {
+      figure.classList.remove("note-image-size-small");
+      figure.classList.add("note-image-size-medium");
+    } else if (figure.classList.contains("note-image-size-medium")) {
+      figure.classList.remove("note-image-size-medium");
+      figure.classList.add("note-image-size-large");
+    } else if (figure.classList.contains("note-image-size-large")) {
+      figure.classList.remove("note-image-size-large");
+      figure.classList.add("note-image-size-small");
+    } else {
+      figure.classList.add("note-image-size-medium");
+    }
+  });
 }
 
 function wireAuthButtons() {
@@ -602,6 +744,7 @@ async function initApp() {
   wireTagInput();
   wireCrudButtons();
   wireFormattingToolbar();
+  wireUploadButtons();
   wireAuthButtons();
   wireImportExport();
   updateUserDisplay();
