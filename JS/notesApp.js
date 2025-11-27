@@ -1,5 +1,6 @@
 import { getNotes, setNotes, getActiveUser, clearActiveUser } from "./storage.js";
 import { fetchSampleNotes } from "./apiClient.js";
+import { THEME_KEY } from "./constants.js";
 
 const TAG_COLORS = {
   work: "#6aa6ff",
@@ -15,10 +16,47 @@ let activeUser = null;
 
 const $ = (selector) => document.querySelector(selector);
 const $all = (selector) => Array.from(document.querySelectorAll(selector));
+const DEFAULT_THEME = "dark";
 
 function getTagColor(tag) {
   if (!tag) return "#0f1526";
   return TAG_COLORS[tag.toLowerCase()] || "#4f6b95";
+}
+
+function toLocalDateString(dateLike) {
+  if (!dateLike) return "";
+  const parsed = new Date(dateLike);
+  if (Number.isNaN(parsed.getTime())) return "";
+  return parsed.toLocaleDateString("en-CA");
+}
+
+function getStoredTheme() {
+  try {
+    return localStorage.getItem(THEME_KEY) || DEFAULT_THEME;
+  } catch {
+    return DEFAULT_THEME;
+  }
+}
+
+function applyTheme(theme) {
+  const normalized = theme === "light" ? "light" : "dark";
+  const bodyEl = document.body;
+  if (bodyEl) {
+    bodyEl.dataset.theme = normalized;
+  }
+  const toggleBtn = $("#theme-toggle");
+  if (toggleBtn) {
+    toggleBtn.textContent = normalized === "light" ? "Dark mode" : "Light mode";
+  }
+}
+
+function persistTheme(theme) {
+  try {
+    localStorage.setItem(THEME_KEY, theme);
+  } catch {
+    // ignore storage issues
+  }
+  applyTheme(theme);
 }
 
 function escapeHtml(str = "") {
@@ -160,9 +198,8 @@ function applyFilterSearchAndSort(baseNotes) {
   if (selectedDate) {
     result = result.filter((note) => {
       const source = note.createdAt || note.updatedAt;
-      if (!source || typeof source !== "string") return false;
-      const datePart = source.slice(0, 10);
-      return datePart === selectedDate;
+      const localDate = toLocalDateString(source);
+      return localDate === selectedDate;
     });
   }
 
@@ -213,21 +250,27 @@ function renderNotesList() {
         ? plainContent.trim().slice(0, 120) + (plainContent.trim().length > 120 ? "…" : "")
         : "Empty note";
 
+    const safeTitle = escapeHtml(note.title || "Untitled note");
+    const safeDatetime = escapeHtml(note.updatedAt || "");
+    const friendlyDate = escapeHtml(formatDate(note.updatedAt));
+    const safePreview = escapeHtml(previewText);
+
+    const tagsHtml = (note.tags || [])
+      .map(
+        (t) =>
+          `<span class="tag" style="--tag-color:${getTagColor(t)}">${escapeHtml(t)}</span>`
+      )
+      .join("");
+
     btn.innerHTML = `
       <div class="note-meta">
-        <h3 class="note-title">${note.title || "Untitled note"}</h3>
-        <time class="note-time" datetime="${note.updatedAt || ""}">
-          ${formatDate(note.updatedAt)}
+        <h3 class="note-title">${safeTitle}</h3>
+        <time class="note-time" datetime="${safeDatetime}">
+          ${friendlyDate}
         </time>
       </div>
-      <p class="note-preview">${previewText}</p>
-      <div class="tag-row">
-        ${(note.tags || [])
-          .map(
-            (t) => `<span class="tag" style="--tag-color:${getTagColor(t)}">${t}</span>`
-          )
-          .join("")}
-      </div>
+      <p class="note-preview">${safePreview}</p>
+      <div class="tag-row">${tagsHtml}</div>
     `;
 
     btn.addEventListener("click", () => {
@@ -397,6 +440,14 @@ function wireFiltersAndSearch() {
 
   const dateInput = $("#date-filter");
   dateInput?.addEventListener("change", () => renderNotesList());
+
+  const clearDateBtn = $("#clear-date");
+  clearDateBtn?.addEventListener("click", () => {
+    if (dateInput) {
+      dateInput.value = "";
+    }
+    renderNotesList();
+  });
 }
 
 function wireSort() {
@@ -726,7 +777,7 @@ function wireImportExport() {
   const importBtn = $("#import");
   if (importBtn && fileInput) {
     importBtn.addEventListener("click", () => {
-      // fileInput.value = "";
+      fileInput.value = "";
       fileInput.click();
     });
     fileInput.addEventListener("change", () => {
@@ -734,6 +785,21 @@ function wireImportExport() {
       if (file) importNotesFromFile(file);
     });
   }
+}
+
+function wireThemeToggle() {
+  const toggleBtn = $("#theme-toggle");
+  if (!toggleBtn) {
+    applyTheme(getStoredTheme());
+    return;
+  }
+
+  applyTheme(getStoredTheme());
+
+  toggleBtn.addEventListener("click", () => {
+    const nextTheme = document.body.dataset.theme === "light" ? "dark" : "light";
+    persistTheme(nextTheme);
+  });
 }
 
 async function initApp() {
@@ -747,6 +813,7 @@ async function initApp() {
   wireUploadButtons();
   wireAuthButtons();
   wireImportExport();
+  wireThemeToggle();
   updateUserDisplay();
   renderNotesList();
   renderActiveNote();
