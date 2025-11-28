@@ -531,6 +531,33 @@ function wireFormattingToolbar() {
       }
     });
   }
+
+  // Text color control
+  const textColorSelect = $("#text-color");
+  if (textColorSelect) {
+    textColorSelect.addEventListener("change", (e) => {
+      const color = e.target.value;
+      contentEl.focus();
+      if (color) {
+        try {
+          document.execCommand("foreColor", false, color);
+        } catch (err) {
+          console.error("Color command failed", err);
+        }
+      } else {
+        // Reset to default - remove color formatting from selection
+        try {
+          document.execCommand("removeFormat", false, null);
+        } catch (err) {
+          console.error("Remove format failed", err);
+        }
+      }
+      // Reset dropdown to default after applying
+      setTimeout(() => {
+        textColorSelect.value = "";
+      }, 100);
+    });
+  }
 }
 
 function wireUploadButtons() {
@@ -681,133 +708,8 @@ function exportNotes() {
   URL.revokeObjectURL(url);
 }
 
-function parseNotesFromTextFormat(text) {
-  if (!text || typeof text !== "string") return [];
-
-  const lines = text.split(/\r?\n/);
-  const result = [];
-  let current = null;
-  let collectingContent = false;
-  let contentLines = [];
-
-  for (const rawLine of lines) {
-    const line = rawLine.trimEnd();
-
-    if (line.startsWith("=== NOTE")) {
-      current = { title: "", content: "", tags: [], createdAt: "", updatedAt: "" };
-      collectingContent = false;
-      contentLines = [];
-      continue;
-    }
-
-    if (!current) {
-      continue;
-    }
-
-    if (line.startsWith("=== END NOTE")) {
-      current.content = contentLines.join("\n");
-      if (!current.title && !current.content && (!current.tags || !current.tags.length)) {
-        current = null;
-        collectingContent = false;
-        contentLines = [];
-        continue;
-      }
-      result.push(current);
-      current = null;
-      collectingContent = false;
-      contentLines = [];
-      continue;
-    }
-
-    if (collectingContent) {
-      contentLines.push(rawLine);
-      continue;
-    }
-
-    if (line.toLowerCase().startsWith("title:")) {
-      current.title = line.slice("title:".length).trim();
-    } else if (line.toLowerCase().startsWith("tags:")) {
-      const tagPart = line.slice("tags:".length).trim();
-      current.tags = tagPart
-        ? tagPart.split(",").map((t) => t.trim()).filter(Boolean)
-        : [];
-    } else if (line.toLowerCase().startsWith("created:")) {
-      current.createdAt = line.slice("created:".length).trim();
-    } else if (line.toLowerCase().startsWith("updated:")) {
-      current.updatedAt = line.slice("updated:".length).trim();
-    } else if (line === "Content:") {
-      collectingContent = true;
-      contentLines = [];
-    }
-  }
-
-  return result;
-}
-
-function importNotesFromFile(file) {
-  const reader = new FileReader();
-  reader.onload = () => {
-    const text = String(reader.result || "");
-
-    // First try JSON (backward compatible with existing exports)
-    try {
-      const parsed = JSON.parse(text);
-      if (Array.isArray(parsed)) {
-        notes = parsed.map((n) =>
-          createNote({
-            ...n,
-            id: n.id || undefined,
-          })
-        );
-        activeNoteId = notes[0] ? notes[0].id : null;
-        persistNotes();
-        renderNotesList();
-        renderActiveNote();
-        return;
-      }
-    } catch {
-      // Not JSON, fall through to text parsing
-    }
-
-    // Try custom plain-text format
-    const parsedTextNotes = parseNotesFromTextFormat(text);
-    if (!parsedTextNotes.length) {
-      alert("Import failed: file is not valid JSON or supported text format.");
-      return;
-    }
-
-    notes = parsedTextNotes.map((n) =>
-      createNote({
-        title: n.title,
-        content: n.content,
-        tags: n.tags,
-        createdAt: n.createdAt,
-        updatedAt: n.updatedAt,
-      })
-    );
-    activeNoteId = notes[0] ? notes[0].id : null;
-    persistNotes();
-    renderNotesList();
-    renderActiveNote();
-  };
-  reader.readAsText(file);
-}
-
 function wireImportExport() {
   $("#export")?.addEventListener("click", exportNotes);
-
-  const fileInput = $("#importFile");
-  const importBtn = $("#import");
-  if (importBtn && fileInput) {
-    importBtn.addEventListener("click", () => {
-      fileInput.value = "";
-      fileInput.click();
-    });
-    fileInput.addEventListener("change", () => {
-      const file = fileInput.files && fileInput.files[0];
-      if (file) importNotesFromFile(file);
-    });
-  }
 }
 
 function wireThemeToggle() {

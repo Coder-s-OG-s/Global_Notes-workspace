@@ -58,8 +58,6 @@
       <button class="btn ghost" id="login">Login</button>
       <button class="btn ghost" id="signup">Sign Up</button>
       <button class="btn primary" id="export">Export</button>
-      <button class="btn" id="import">Import</button>
-      <input type="file" id="importFile" accept=".json,.txt,application/json,text/plain" />
     </div>
   </header>
 
@@ -151,6 +149,16 @@
             <option value="15" selected>Normal</option>
             <option value="16">Large</option>
             <option value="18">Mega</option>
+          </select>
+          <label for="text-color" class="text-size-label">Color:</label>
+          <select id="text-color" class="select tiny" aria-label="Text color">
+            <option value="" selected>Default</option>
+            <option value="#ff6b6b">Red</option>
+            <option value="#4ecdc4">Teal</option>
+            <option value="#45b7d1">Blue</option>
+            <option value="#96ceb4">Green</option>
+            <option value="#ffeaa7">Yellow</option>
+            <option value="#dda0dd">Purple</option>
           </select>
           <button class="btn tiny" type="button" id="format-bold"><strong>B</strong></button>
           <button class="btn tiny" type="button" id="format-underline"><span style="text-decoration: underline;">U</span></button>
