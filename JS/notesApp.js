@@ -1,7 +1,17 @@
+// ========================================
+// IMPORTS - Load external modules
+// ========================================
+// Import storage functions to manage note persistence and user sessions
 import { getNotes, setNotes, getActiveUser, clearActiveUser } from "./storage.js";
+// Import function to fetch sample/demo notes from an API
 import { fetchSampleNotes } from "./apiClient.js";
+// Import constant that defines the localStorage key for theme settings
 import { THEME_KEY } from "./constants.js";
 
+// ========================================
+// TAG COLORS CONFIGURATION
+// ========================================
+// Maps tag names to hex color codes for visual styling of tags in the UI
 const TAG_COLORS = {
   work: "#6aa6ff",
   personal: "#ff85a1",
@@ -10,19 +20,47 @@ const TAG_COLORS = {
   remote: "#b084ff",
 };
 
+// ========================================
+// GLOBAL STATE VARIABLES
+// ========================================
+// Array storing all user notes
 let notes = [];
+// ID of the currently selected/displayed note
 let activeNoteId = null;
+// Username of the logged-in user (null if not logged in)
 let activeUser = null;
 
+// ========================================
+// UTILITY SELECTORS
+// ========================================
+// Shorthand for querySelector to select single DOM elements
 const $ = (selector) => document.querySelector(selector);
+// Shorthand for querySelectorAll, returns array of matching elements
 const $all = (selector) => Array.from(document.querySelectorAll(selector));
+// Sets "dark" as the default theme if user hasn't saved a preference
 const DEFAULT_THEME = "dark";
 
+// ========================================
+// TAG & COLOR UTILITIES
+// ========================================
+/**
+ * Returns the hex color for a given tag
+ * - Returns dark blue (#0f1526) if tag is empty
+ * - Looks up color in TAG_COLORS object (case-insensitive)
+ * - Falls back to medium blue (#4f6b95) if tag not found
+ */
 function getTagColor(tag) {
   if (!tag) return "#0f1526";
   return TAG_COLORS[tag.toLowerCase()] || "#4f6b95";
 }
 
+// ========================================
+// DATE UTILITIES
+// ========================================
+/**
+ * Converts ISO date string to local date in "YYYY-MM-DD" format (en-CA locale)
+ * Returns empty string if date is invalid or not provided
+ */
 function toLocalDateString(dateLike) {
   if (!dateLike) return "";
   const parsed = new Date(dateLike);
@@ -30,6 +68,13 @@ function toLocalDateString(dateLike) {
   return parsed.toLocaleDateString("en-CA");
 }
 
+// ========================================
+// THEME UTILITIES
+// ========================================
+/**
+ * Retrieves saved theme preference from localStorage
+ * Returns "dark" or "light"; defaults to "dark" if not saved or localStorage unavailable
+ */
 function getStoredTheme() {
   try {
     return localStorage.getItem(THEME_KEY) || DEFAULT_THEME;
@@ -38,6 +83,12 @@ function getStoredTheme() {
   }
 }
 
+/**
+ * Applies theme to the UI by:
+ * 1. Normalizing theme to "light" or "dark"
+ * 2. Setting data-theme attribute on body element for CSS styling
+ * 3. Updating theme toggle button text to show opposite mode
+ */
 function applyTheme(theme) {
   const normalized = theme === "light" ? "light" : "dark";
   const bodyEl = document.body;
@@ -50,6 +101,10 @@ function applyTheme(theme) {
   }
 }
 
+/**
+ * Persists theme preference to localStorage and applies it to UI
+ * Silently fails if localStorage is unavailable
+ */
 function persistTheme(theme) {
   try {
     localStorage.setItem(THEME_KEY, theme);
@@ -59,6 +114,11 @@ function persistTheme(theme) {
   applyTheme(theme);
 }
 
+/**
+ * Prevents XSS attacks by escaping HTML special characters to entities
+ * Converts: & < > " '
+ * Used before inserting user-generated content into the DOM
+ */
 function escapeHtml(str = "") {
   return String(str).replace(/[&<>"']/g, (ch) => {
     switch (ch) {
@@ -78,6 +138,16 @@ function escapeHtml(str = "") {
   });
 }
 
+// ========================================
+// NOTE CREATION & PERSISTENCE
+// ========================================
+/**
+ * Creates a new note object with default values
+ * - Generates unique ID using crypto.randomUUID or fallback timestamp
+ * - Merges provided partial properties with defaults
+ * @param {Object} partial - Partial note object with optional title, content, tags, createdAt, updatedAt
+ * @returns {Object} Complete note object with all required properties
+ */
 function createNote(partial = {}) {
   const now = new Date().toISOString();
   return {
@@ -90,10 +160,21 @@ function createNote(partial = {}) {
   };
 }
 
+/**
+ * Saves current notes array to storage for the active user
+ * Uses setNotes from storage.js to persist data
+ */
 function persistNotes() {
   setNotes(activeUser, notes);
 }
 
+/**
+ * Ensures user always has at least one note
+ * - Fetches sample notes from API if none exist
+ * - Creates welcome note as fallback if API fails
+ * - Sets first note as active note
+ * - Persists notes to storage
+ */
 async function ensureAtLeastOneNote() {
   if (!notes.length) {
     const remote = await fetchSampleNotes();
@@ -121,11 +202,23 @@ async function ensureAtLeastOneNote() {
   }
 }
 
+/**
+ * Retrieves notes from storage for current user
+ * Ensures at least one note exists by calling ensureAtLeastOneNote()
+ */
 async function loadNotesForCurrentUser() {
   notes = getNotes(activeUser);
   await ensureAtLeastOneNote();
 }
 
+// ========================================
+// USER DISPLAY & FORMATTING
+// ========================================
+/**
+ * Updates header to show/hide user info based on login status
+ * - Shows username if logged in, hides login/signup buttons
+ * - Shows login/signup buttons if not logged in
+ */
 function updateUserDisplay() {
   const pill = $("#user-pill");
   const nameEl = $("#user-name");
@@ -147,6 +240,10 @@ function updateUserDisplay() {
   }
 }
 
+/**
+ * Converts ISO date to readable format (e.g., "Jan 15, 2025")
+ * Returns empty string if date is invalid
+ */
 function formatDate(iso) {
   if (!iso) return "";
   const d = new Date(iso);
@@ -154,26 +251,55 @@ function formatDate(iso) {
   return d.toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" });
 }
 
+// ========================================
+// FILTER, SEARCH & SORT UTILITIES
+// ========================================
+/**
+ * Returns the currently selected filter tag (work, personal, ideas, etc.)
+ * Defaults to "all" if no filter active
+ */
 function getActiveFilter() {
   const activeChip = document.querySelector(".filters .chip.active");
   return activeChip ? activeChip.dataset.filter || "all" : "all";
 }
 
+/**
+ * Retrieves and normalizes search input text
+ * Returns empty string if search box doesn't exist
+ */
 function getSearchQuery() {
   const input = $("#search");
   return input ? input.value.trim().toLowerCase() : "";
 }
 
+/**
+ * Returns selected sort option (defaults to "updated_desc")
+ * Possible values: "updated_desc", "updated_asc", "title_asc", "title_desc"
+ */
 function getSortMode() {
   const select = $("#sort");
   return select ? select.value : "updated_desc";
 }
 
+/**
+ * Returns the selected date filter value
+ * Format: YYYY-MM-DD
+ */
 function getSelectedDate() {
   const input = $("#date-filter");
   return input && input.value ? input.value : "";
 }
 
+/**
+ * Applies all active filters, search, and sorting to notes
+ * Process:
+ * 1. Filter: Includes only notes with the selected tag (if not "all")
+ * 2. Search: Matches query against title, content, and tags
+ * 3. Date: Filters by creation/update date (if selected)
+ * 4. Sort: Arranges by update date or title (ascending/descending)
+ * @param {Array} baseNotes - Array of notes to filter and sort
+ * @returns {Array} Filtered and sorted array of notes
+ */
 function applyFilterSearchAndSort(baseNotes) {
   const filter = getActiveFilter();
   const query = getSearchQuery();
@@ -220,6 +346,16 @@ function applyFilterSearchAndSort(baseNotes) {
   return result;
 }
 
+/**
+ * Renders the notes list in the sidebar
+ * Process:
+ * 1. Clears existing list
+ * 2. Applies filters, search, and sorting via applyFilterSearchAndSort()
+ * 3. Shows empty message if no notes match filters/search
+ * 4. For each note, creates a card with title, date, preview, and tags
+ * 5. Highlights active note with "active" class
+ * 6. Adds click handler to select note
+ */
 function renderNotesList() {
   const listEl = $("#notes-list");
   if (!listEl) return;
@@ -282,6 +418,15 @@ function renderNotesList() {
   });
 }
 
+/**
+ * Populates the main editor with the active note's data
+ * Process:
+ * 1. Finds note by activeNoteId
+ * 2. Fills title input with note title
+ * 3. Fills content editor with note content
+ * 4. Renders tag chips for each tag with remove handlers
+ * 5. Highlights active note in sidebar list
+ */
 function renderActiveNote() {
   const note = notes.find((n) => n.id === activeNoteId);
   const titleInput = $("#title");
@@ -316,18 +461,33 @@ function renderActiveNote() {
   });
 }
 
+/**
+ * Sets a note as active and re-renders both list and editor UI
+ * @param {string} noteId - ID of note to activate
+ */
 function setActiveNote(noteId) {
   activeNoteId = noteId;
   renderNotesList();
   renderActiveNote();
 }
 
+/**
+ * Extracts all tag values from the tag container DOM elements
+ * @returns {Array} Array of tag strings currently in the tags container
+ */
 function readTagsFromUI() {
   const tagsContainer = $("#tags");
   if (!tagsContainer) return [];
   return Array.from(tagsContainer.querySelectorAll(".chip.small")).map((el) => el.textContent.trim());
 }
 
+/**
+ * Adds a tag to the active note if not already present
+ * - Updates note's updatedAt timestamp
+ * - Persists changes to storage
+ * - Re-renders UI to reflect changes
+ * @param {string} tag - Tag text to add
+ */
 function addTagToActiveNote(tag) {
   const trimmed = tag.trim();
   if (!trimmed) return;
@@ -343,6 +503,13 @@ function addTagToActiveNote(tag) {
   }
 }
 
+/**
+ * Removes a tag from the active note
+ * - Updates note's updatedAt timestamp
+ * - Persists changes to storage
+ * - Re-renders UI to reflect changes
+ * @param {string} tag - Tag text to remove
+ */
 function removeTagFromActiveNote(tag) {
   const note = notes.find((n) => n.id === activeNoteId);
   if (!note || !note.tags) return;
@@ -353,6 +520,14 @@ function removeTagFromActiveNote(tag) {
   renderNotesList();
 }
 
+/**
+ * Saves the active note with updated title, content, and tags from the editor UI
+ * - Reads values from editor inputs
+ * - Falls back to active filter as default tag if none specified
+ * - Updates updatedAt timestamp
+ * - Persists changes to storage
+ * - Re-renders list to show updated dates
+ */
 function handleSaveNote() {
   const note = notes.find((n) => n.id === activeNoteId);
   if (!note) return;
@@ -374,6 +549,13 @@ function handleSaveNote() {
   renderNotesList();
 }
 
+/**
+ * Creates a new note with the current filter as initial tag
+ * - Uses selected date filter as creation date if one is active
+ * - Adds note to top of list (unshift)
+ * - Sets new note as active
+ * - Persists and renders UI
+ */
 function handleNewNote() {
   const activeFilter = getActiveFilter();
   const initialTags = activeFilter && activeFilter !== "all" ? [activeFilter] : [];
@@ -388,6 +570,12 @@ function handleNewNote() {
   renderActiveNote();
 }
 
+/**
+ * Deletes the active note or clears its content if it's the last note
+ * - If last note remains: clear title, content, tags but keep the note
+ * - Otherwise: remove note and set first remaining note as active
+ * - Persists changes and re-renders UI
+ */
 function handleDeleteNote() {
   if (!activeNoteId) return;
   if (notes.length === 1) {
@@ -408,6 +596,13 @@ function handleDeleteNote() {
   renderActiveNote();
 }
 
+/**
+ * Creates a duplicate of the active note with "(Copy)" suffix
+ * - Copies title, content, and tags
+ * - Adds duplicate to top of notes list
+ * - Sets duplicate as active note
+ * - Persists and renders UI
+ */
 function handleDuplicateNote() {
   const note = notes.find((n) => n.id === activeNoteId);
   if (!note) return;
@@ -423,6 +618,16 @@ function handleDuplicateNote() {
   renderActiveNote();
 }
 
+// ========================================
+// EVENT HANDLERS & WIRING
+// ========================================
+/**
+ * Wires up filter chips and search functionality
+ * - Makes filter chips mutually exclusive (only one active at a time)
+ * - Updates aria-pressed for accessibility
+ * - Re-renders list on search input, date change
+ * - Clear date button resets date filter
+ */
 function wireFiltersAndSearch() {
   $all(".filters .chip").forEach((chip) => {
     chip.addEventListener("click", () => {
@@ -450,11 +655,20 @@ function wireFiltersAndSearch() {
   });
 }
 
+/**
+ * Wires up sort dropdown
+ * Re-renders list whenever sort option changes
+ */
 function wireSort() {
   const select = $("#sort");
   select?.addEventListener("change", () => renderNotesList());
 }
 
+/**
+ * Wires up tag input field
+ * - Listens for Enter or comma key in tag input
+ * - Adds tag when pressed and clears input
+ */
 function wireTagInput() {
   const addTagInput = $("#add-tag");
   if (!addTagInput) return;
@@ -468,6 +682,13 @@ function wireTagInput() {
   });
 }
 
+/**
+ * Wires up CRUD operation buttons
+ * - New: Creates new note
+ * - Save: Saves active note
+ * - Delete: Deletes active note
+ * - Duplicate: Creates copy of active note
+ */
 function wireCrudButtons() {
   $("#new-note")?.addEventListener("click", handleNewNote);
   $("#save-note")?.addEventListener("click", handleSaveNote);
@@ -475,6 +696,11 @@ function wireCrudButtons() {
   $("#duplicate-note")?.addEventListener("click", handleDuplicateNote);
 }
 
+/**
+ * Inserts HTML at current cursor position in content editor
+ * - Uses DOM selection API to find cursor position
+ * - Fallback: appends to end if no selection
+ */
 function insertHtmlAtCursor(html) {
   const contentEl = $("#content");
   if (!contentEl) return;
@@ -492,6 +718,12 @@ function insertHtmlAtCursor(html) {
   range.insertNode(fragment);
 }
 
+/**
+ * Wires up text formatting toolbar
+ * - Bold, underline, bullet list buttons use execCommand
+ * - Text size control with localStorage persistence
+ * - Text color control with dropdown reset
+ */
 function wireFormattingToolbar() {
   const contentEl = $("#content");
   if (!contentEl) return;
@@ -560,6 +792,12 @@ function wireFormattingToolbar() {
   }
 }
 
+/**
+ * Wires up image upload and table insertion features
+ * - Image button: Triggers file picker and converts to base64 data URL
+ * - Image click: Cycles through small→medium→large sizes
+ * - Table button: Prompts for dimensions and inserts styled table
+ */
 function wireUploadButtons() {
   const contentEl = $("#content");
   if (!contentEl) return;
@@ -645,6 +883,11 @@ function wireUploadButtons() {
   });
 }
 
+/**
+ * Wires up authentication buttons
+ * - Login/Signup: Navigate to signup page
+ * - Logout: Save notes, clear user session, reset UI, navigate to signup
+ */
 function wireAuthButtons() {
   $("#login")?.addEventListener("click", () => {
     window.location.href = "./signup.html";
@@ -664,6 +907,10 @@ function wireAuthButtons() {
   });
 }
 
+/**
+ * Formats all notes as plain text with metadata
+ * Returns formatted string with title, tags, dates, and content for each note
+ */
 function formatNotesAsText() {
   if (!Array.isArray(notes) || notes.length === 0) {
     return "(No notes to export)";
@@ -695,6 +942,12 @@ function formatNotesAsText() {
     .join("\n");
 }
 
+/**
+ * Exports all notes as a plain text file
+ * - Formats notes using formatNotesAsText()
+ * - Creates blob and triggers download as "notes-backup.txt"
+ * - Cleans up resources (blob URL)
+ */
 function exportNotes() {
   const text = formatNotesAsText();
   const blob = new Blob([text], { type: "text/plain;charset=utf-8" });
@@ -708,10 +961,19 @@ function exportNotes() {
   URL.revokeObjectURL(url);
 }
 
+/**
+ * Wires up import/export button
+ * Attaches export handler to export button
+ */
 function wireImportExport() {
   $("#export")?.addEventListener("click", exportNotes);
 }
 
+/**
+ * Wires up theme toggle button
+ * - Loads and applies stored theme on init
+ * - Toggle button switches between light/dark and persists selection
+ */
 function wireThemeToggle() {
   const toggleBtn = $("#theme-toggle");
   if (!toggleBtn) {
@@ -727,6 +989,15 @@ function wireThemeToggle() {
   });
 }
 
+// ========================================
+// APP INITIALIZATION
+// ========================================
+/**
+ * Initializes entire application
+ * - Loads user and notes from storage
+ * - Wires up all event handlers
+ * - Renders initial UI
+ */
 async function initApp() {
   activeUser = getActiveUser();
   await loadNotesForCurrentUser();
@@ -744,6 +1015,11 @@ async function initApp() {
   renderActiveNote();
 }
 
+/**
+ * Waits for DOM to be ready before initializing the application
+ * - If DOM is still loading: waits for DOMContentLoaded event
+ * - Otherwise: calls initApp immediately
+ */
 if (document.readyState === "loading") {
   document.addEventListener("DOMContentLoaded", () => {
     initApp();
