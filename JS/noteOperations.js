@@ -54,13 +54,18 @@ export function handleSaveNote(notes, activeNoteId, activeUser, getActiveFilter,
   callbacks.renderNotesList();
 }
 
-export function handleNewNote(notes, activeUser, getActiveFilter, getSelectedDate, callbacks) {
+export function handleNewNote(notes, activeUser, getActiveFilter, getSelectedDate, callbacks, activeFolderId) {
   const activeFilter = getActiveFilter();
   const initialTags = activeFilter && activeFilter !== "all" ? [activeFilter] : [];
   const selectedDate = getSelectedDate();
   const nowIso = new Date().toISOString();
   const createdIso = selectedDate ? `${selectedDate}T00:00:00.000Z` : nowIso;
-  const newNote = createNote({ tags: initialTags, createdAt: createdIso, updatedAt: createdIso });
+  const newNote = createNote({ 
+    tags: initialTags, 
+    createdAt: createdIso, 
+    updatedAt: createdIso,
+    folderId: activeFolderId // Assign to current folder
+  });
   notes.unshift(newNote);
   persistNotes(activeUser, notes);
   callbacks.setActiveNote(newNote.id);
