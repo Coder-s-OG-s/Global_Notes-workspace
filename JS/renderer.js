@@ -10,9 +10,6 @@ export function renderNotesList(notes, activeNoteId, setActiveNote, activeFolder
   if (!listEl) return;
   listEl.innerHTML = "";
 
-  // Filter notes by folder
-  // - When a specific folder is selected, show only notes in that folder
-  // - When "All Notes" is selected (activeFolderId === null), show only notes not in any folder
   let notesToDisplay = notes;
   if (activeFolderId === null) {
     notesToDisplay = notes.filter((note) => !note.folderId);
