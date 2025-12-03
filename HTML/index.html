@@ -77,34 +77,52 @@
         </div>
       </div>
 
-      <ul class="notes-list" id="notes-list">
-        <li class="note-item active" data-tags="work, todo">
-          <button class="note-card">
-            <div class="note-meta">
-              <h3 class="note-title">Project roadmap</h3>
-              <time class="note-time" datetime="2025-11-19">Nov 19, 2025</time>
-            </div>
-            <p class="note-preview">Milestones, risks, and timelines for Q4 delivery…</p>
-            <div class="tag-row">
-              <span class="tag">work</span>
-              <span class="tag">todo</span>
-            </div>
-          </button>
-        </li>
+      <!-- Folders Section -->
+      <div class="folders-section">
+        <div class="folders-header">
+          <h3>📁 Folders</h3>
+          <button id="create-folder" class="btn-icon" title="Create new folder">+</button>
+        </div>
+        <ul id="folders-list" class="folders-list">
+          <!-- Folders will be rendered here -->
+        </ul>
+      </div>
 
-        <li class="note-item" data-tags="ideas">
-          <button class="note-card">
-            <div class="note-meta">
-              <h3 class="note-title">App name brainstorm</h3>
-              <time class="note-time" datetime="2025-11-15">Nov 15, 2025</time>
-            </div>
-            <p class="note-preview">Short, memorable names; consider Gujarati words…</p>
-            <div class="tag-row">
-              <span class="tag">ideas</span>
-            </div>
-          </button>
-        </li>
-      </ul>
+      <!-- Notes Section -->
+      <div class="notes-section">
+        <div class="notes-header">
+          <h3>📝 Notes</h3>
+        </div>
+
+        <ul class="notes-list" id="notes-list">
+          <li class="note-item active" data-tags="work, todo">
+            <button class="note-card">
+              <div class="note-meta">
+                <h3 class="note-title">Project roadmap</h3>
+                <time class="note-time" datetime="2025-11-19">Nov 19, 2025</time>
+              </div>
+              <p class="note-preview">Milestones, risks, and timelines for Q4 delivery…</p>
+              <div class="tag-row">
+                <span class="tag">work</span>
+                <span class="tag">todo</span>
+              </div>
+            </button>
+          </li>
+
+          <li class="note-item" data-tags="ideas">
+            <button class="note-card">
+              <div class="note-meta">
+                <h3 class="note-title">App name brainstorm</h3>
+                <time class="note-time" datetime="2025-11-15">Nov 15, 2025</time>
+              </div>
+              <p class="note-preview">Short, memorable names; consider Gujarati words…</p>
+              <div class="tag-row">
+                <span class="tag">ideas</span>
+              </div>
+            </button>
+          </li>
+        </ul>
+      </div>
     </aside>
 
     <!-- Editor: note details -->
@@ -161,6 +179,7 @@
             <option value="#dda0dd">Purple</option>
           </select>
           <button class="btn tiny" type="button" id="format-bold"><strong>B</strong></button>
+          <button class="btn tiny" type="button" id="format-italic"><em>I</em></button>
           <button class="btn tiny" type="button" id="format-underline"><span style="text-decoration: underline;">U</span></button>
           <button class="btn tiny" type="button" id="format-bullet">• List</button>
           <button class="btn tiny" type="button" id="insert-image">Image</button>
