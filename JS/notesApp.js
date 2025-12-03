@@ -11,6 +11,7 @@ import { wireImportExport } from "./exportImport.js";
 import { wireThemeToggle } from "./themeManager.js";
 import { getActiveFilter, getSelectedDate } from "./filterSearchSort.js";
 
+
 // Global state
 const state = {
   notes: [],
@@ -35,7 +36,7 @@ const callbacks = {
     callbacks.renderNotesList();
   },
   renderNotesList: () => renderNotesList(state.notes, state.activeNoteId, setActiveNote, state.activeFolderId),
-  renderActiveNote: () => renderActiveNote(state.notes.find((n) => n.id === state.activeNoteId), () => {}),
+  renderActiveNote: () => renderActiveNote(state.notes.find((n) => n.id === state.activeNoteId), () => { }),
   renderFolders: () => renderFolders(state.folders, state.activeFolderId, callbacks.setActiveFolder),
   updateUserDisplay: () => updateUserDisplay(state.activeUser),
   persistNotes: () => persistNotes(state.activeUser, state.notes),
