@@ -1,11 +1,11 @@
 /* Dark Mode (Default) */
 [data-theme="dark"] #content {
-  color: #ffffff !important;
-  background-color: #1a1a2e !important;
+  color: #40334e !important;
+  background-color: #abacff !important;
 }
 
 [data-theme="dark"] #content::placeholder {
-  color: #888888 !important;
+  color: #2d3eff !important;
 }
 
 [data-theme="dark"] #content * {
@@ -14,23 +14,150 @@
 
 /* Light Mode */
 [data-theme="light"] #content {
-  color: #000000 !important;
+  color: #7c7c7c !important;
   background-color: #ffffff !important;
 }
 
 [data-theme="light"] #content::placeholder {
-  color: #cccccc !important;
+  color: #0b0909 !important;
 }
 
 [data-theme="light"] #content * {
-  color: #000000 !important;
+  color: #0c0b0b !important;
 }
 
 /* Ensure text in other elements also adapts */
 [data-theme="dark"] {
-  color: #e0e0e0;
+  color: #0a0909;
 }
 
 [data-theme="light"] {
-  color: #2c2c2c;
+  color: #060404;
+}
+
+/* ========================================
+   FOLDERS SECTION
+   ======================================== */
+
+.folders-section {
+  padding: 15px 10px;
+  border-bottom: 1px solid #ddd;
+}
+
+[data-theme="dark"] .folders-section {
+  border-bottom-color: #444;
+}
+
+.folders-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.folders-header h3 {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: #666;
+}
+
+[data-theme="dark"] .folders-header h3 {
+  color: #aaa;
+}
+
+.btn-icon {
+  background: none;
+  border: none;
+  font-size: 18px;
+  cursor: pointer;
+  padding: 0;
+  color: #666;
+  transition: color 0.2s;
+}
+
+[data-theme="dark"] .btn-icon {
+  color: #aaa;
+}
+
+.btn-icon:hover {
+  color: #0066ff;
+}
+
+.folders-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.folder-item {
+  margin: 5px 0;
+}
+
+.folder-btn {
+  width: 100%;
+  padding: 8px 10px;
+  background: #000000;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  cursor: pointer;
+  text-align: left;
+  font-size: 13px;
+  transition: all 0.2s;
+}
+
+[data-theme="dark"] .folder-btn {
+  background: #ededff;
+  border-color: #444;
+  color: #000000;
+}
+
+.folder-btn:hover {
+  background: #e0e0e0;
+  border-color: #0066ff;
+}
+
+[data-theme="dark"] .folder-btn:hover {
+  background: #ebebff;
+  border-color: #0066ff;
+}
+
+.folder-item.active .folder-btn {
+  background: #0066ff;
+  color: rgb(6, 5, 5);
+  border-color: #0066ff;
+}
+
+.notes-section {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.notes-header {
+  padding: 15px 10px;
+  border-bottom: 1px solid #ddd;
+}
+
+[data-theme="dark"] .notes-header {
+  border-bottom-color: #444;
+}
+
+.notes-header h3 {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: #050505;
+}
+
+[data-theme="dark"] .notes-header h3 {
+  color: #0a0a0a;
+}
+
+/* Content editor background - Always white */
+#content {
+  background-color: #ffffff !important;
+  color: #080808 !important;
 }
