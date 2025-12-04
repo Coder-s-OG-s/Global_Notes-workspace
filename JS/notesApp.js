@@ -82,7 +82,9 @@ async function initApp() {
 }
 
 if (document.readyState === "loading") {
-  document.addEventListener("DOMContentLoaded", initApp);
+  document.addEventListener("DOMContentLoaded", () => {
+    initApp();
+  });
 } else {
   initApp();
 }

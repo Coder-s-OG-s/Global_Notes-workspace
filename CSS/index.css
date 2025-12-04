@@ -461,164 +461,19 @@ body { margin: 0; }
 .add-tag-input::placeholder { color: var(--text-dim); }
 .buttons { display: flex; gap: 8px; }
 
-.editor-body { padding: 12px; display: flex; flex-direction: column; gap: 12px; }
-.editor-toolbar {
-  display: inline-flex;
-  gap: 6px;
-  align-items: center;
-  flex-wrap: wrap;
-}
-.editor-toolbar .btn.tiny {
-  padding: 4px 8px;
-  font-size: 12px;
-}
-.text-size-label {
-  font-size: 12px;
-  color: var(--text-dim);
-  margin-right: 2px;
-}
-.editor-toolbar .select.tiny {
-  padding: 4px 6px;
-  font-size: 12px;
-  min-width: 80px;
-}
+.editor-body { padding: 12px; }
 .content-input {
   width: 100%;
-  min-height: 32dvh;
+  min-height: 42dvh;
+  resize: vertical;
   padding: 14px;
   border-radius: 12px;
   border: 1px solid var(--border);
   background: var(--surface-2);
   color: var(--text);
   font-size: 15px;
-  overflow-y: auto;
 }
-
-/* ===== AI Chat ===== */
-.ai-chat {
-  margin-top: 8px;
-  border-radius: 12px;
-  border: 1px solid var(--border);
-  background: color-mix(in oklab, var(--surface-2) 90%, #050816 10%);
-  padding: 10px;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.ai-chat-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 8px;
-}
-
-.ai-chat-title {
-  margin: 0;
-  font-size: 13px;
-  color: var(--text-dim);
-}
-
-.ai-chat-include {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  font-size: 12px;
-  color: var(--text-dim);
-}
-
-.ai-chat-messages {
-  max-height: 180px;
-  overflow-y: auto;
-  padding: 6px 4px;
-  border-radius: 8px;
-  background: color-mix(in oklab, var(--surface-2) 85%, #050816 15%);
-  border: 1px solid color-mix(in oklab, var(--border) 80%, var(--primary) 20%);
-  font-size: 13px;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.ai-msg {
-  padding: 6px 8px;
-  border-radius: 8px;
-}
-
-.ai-msg-user {
-  align-self: flex-end;
-  background: color-mix(in oklab, var(--primary) 35%, var(--surface-2));
-  color: #07101f;
-}
-
-.ai-msg-assistant {
-  align-self: flex-start;
-  background: color-mix(in oklab, var(--surface-2) 90%, #050816 10%);
-  color: var(--text);
-}
-
-.ai-chat-input-row {
-  display: flex;
-  gap: 8px;
-  align-items: flex-end;
-}
-
-.ai-chat-input {
-  flex: 1 1 auto;
-  resize: vertical;
-  min-height: 40px;
-  max-height: 120px;
-  border-radius: 8px;
-  border: 1px solid var(--border);
-  background: var(--surface-2);
-  color: var(--text);
-  padding: 6px 8px;
-  font-family: inherit;
-  font-size: 13px;
-}
-
-.ai-chat-input::placeholder {
-  color: var(--text-dim);
-}
-
-.ai-chat-actions {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.note-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin: 8px 0;
-  font-size: 14px;
-}
-
-.note-table th,
-.note-table td {
-  border: 1px solid var(--border);
-  padding: 6px 8px;
-  text-align: left;
-}
-
-.note-table th {
-  background: var(--surface);
-  font-weight: 600;
-}
-
-.note-table-compact th,
-.note-table-compact td {
-  padding: 4px 6px;
-  font-size: 12px;
-}
-
-.note-table-wide {
-  width: 100%;
-}
-
-.note-table-striped tbody tr:nth-child(even) {
-  background: var(--surface-2);
-}
+.content-input::placeholder { color: var(--text-dim); }
 
 /* ===== Footer ===== */
 .app-footer {
@@ -716,46 +571,4 @@ body { margin: 0; }
 #image-upload-input,
 #table-upload-input {
   display: none;
-}
-
-.note-image {
-  margin: 12px 0;
-  padding: 8px;
-  text-align: center;
-  border: 1px dashed var(--border);
-  border-radius: 12px;
-  background: color-mix(in oklab, var(--surface-2) 85%, transparent);
-}
-
-.note-image img {
-  width: auto;
-  max-width: 100%;
-  height: auto;
-  border-radius: 10px;
-  box-shadow: var(--shadow);
-  object-fit: contain;
-}
-
-.note-image-size-small img {
-  max-width: 40%;
-}
-
-.note-image-size-medium img {
-  max-width: 70%;
-}
-
-.note-image-size-large img {
-  max-width: 100%;
-}
-
-.note-image-caption {
-  margin-top: 6px;
-  font-size: 13px;
-  color: var(--text-dim);
-  outline: none;
-}
-.note-image-caption:focus {
-  outline: 2px solid var(--focus);
-  border-radius: 6px;
-  padding: 2px 4px;
 }
