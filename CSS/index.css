@@ -6,9 +6,9 @@
 :root {
   --bg: #0b0f1a;
   --surface: #121828;
-  --surface-2: #1a2135;
-  --text: #e8edf7;
-  --text-dim: #b7c0d6;
+  --surface-2: #dadada;
+  --text: #4a39e3; /* brighter default text in dark mode */
+  --text-dim: #6c7ba2;
   --primary: #6aa6ff;
   --primary-strong: #2f7dff;
   --border: #243252;
@@ -214,6 +214,115 @@ body { margin: 0; }
   box-shadow: var(--shadow);
 }
 
+/* ===== Folders ===== */
+.folders-section {
+  border-bottom: 1px dashed var(--border);
+  padding: 8px 8px 4px;
+}
+
+.folders-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 4px 6px;
+}
+
+.folders-header h3 {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-dim);
+}
+
+.folders-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.folder-item {
+  margin: 0;
+}
+
+.folder-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px;
+  padding: 2px 4px;
+  border-radius: 8px;
+}
+
+.folder-item.active .folder-row {
+  background: color-mix(in oklab, var(--primary) 14%, var(--surface-2));
+}
+
+.folder-btn {
+  flex: 1 1 auto;
+  text-align: left;
+  padding: 6px 10px;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--text-dim);
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.folder-btn-root::before,
+.folder-btn-folder::before {
+  content: "";
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border-radius: 4px;
+  margin-right: 6px;
+  background: color-mix(in oklab, var(--surface-2) 70%, var(--primary) 30%);
+}
+
+.folder-btn-root {
+  font-weight: 500;
+}
+
+.folder-btn-folder::before {
+  background: color-mix(in oklab, var(--surface-2) 70%, var(--primary) 20%);
+}
+
+.folder-item.active .folder-btn {
+  color: var(--text);
+}
+
+.folder-btn:hover {
+  color: var(--text);
+}
+
+.folder-actions {
+  display: inline-flex;
+  gap: 2px;
+}
+
+.folder-action-btn {
+  width: 22px;
+  height: 22px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  color: var(--text-dim);
+  cursor: pointer;
+  font-size: 11px;
+}
+
+.folder-action-btn:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
 .sidebar-header {
   display: flex;
   align-items: center;
@@ -352,38 +461,19 @@ body { margin: 0; }
 .add-tag-input::placeholder { color: var(--text-dim); }
 .buttons { display: flex; gap: 8px; }
 
-.editor-body { padding: 12px; display: flex; flex-direction: column; gap: 8px; }
-.editor-toolbar {
-  display: inline-flex;
-  gap: 6px;
-  align-items: center;
-  flex-wrap: wrap;
-}
-.editor-toolbar .btn.tiny {
-  padding: 4px 8px;
-  font-size: 12px;
-}
-.text-size-label {
-  font-size: 12px;
-  color: var(--text-dim);
-  margin-right: 2px;
-}
-.editor-toolbar .select.tiny {
-  padding: 4px 6px;
-  font-size: 12px;
-  min-width: 80px;
-}
+.editor-body { padding: 12px; }
 .content-input {
   width: 100%;
   min-height: 42dvh;
+  resize: vertical;
   padding: 14px;
   border-radius: 12px;
   border: 1px solid var(--border);
   background: var(--surface-2);
   color: var(--text);
   font-size: 15px;
-  overflow-y: auto;
 }
+.content-input::placeholder { color: var(--text-dim); }
 
 .note-table {
   width: 100%;
@@ -514,46 +604,4 @@ body { margin: 0; }
 #image-upload-input,
 #table-upload-input {
   display: none;
-}
-
-.note-image {
-  margin: 12px 0;
-  padding: 8px;
-  text-align: center;
-  border: 1px dashed var(--border);
-  border-radius: 12px;
-  background: color-mix(in oklab, var(--surface-2) 85%, transparent);
-}
-
-.note-image img {
-  width: auto;
-  max-width: 100%;
-  height: auto;
-  border-radius: 10px;
-  box-shadow: var(--shadow);
-  object-fit: contain;
-}
-
-.note-image-size-small img {
-  max-width: 40%;
-}
-
-.note-image-size-medium img {
-  max-width: 70%;
-}
-
-.note-image-size-large img {
-  max-width: 100%;
-}
-
-.note-image-caption {
-  margin-top: 6px;
-  font-size: 13px;
-  color: var(--text-dim);
-  outline: none;
-}
-.note-image-caption:focus {
-  outline: 2px solid var(--focus);
-  border-radius: 6px;
-  padding: 2px 4px;
 }

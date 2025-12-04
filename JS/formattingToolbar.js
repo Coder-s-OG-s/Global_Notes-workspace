@@ -31,6 +31,7 @@ export function wireFormattingToolbar() {
   }
 
   $("#format-bold")?.addEventListener("click", () => applyFormat("bold"));
+  $("#format-italic")?.addEventListener("click", () => applyFormat("italic"));
   $("#format-underline")?.addEventListener("click", () => applyFormat("underline"));
   $("#format-bullet")?.addEventListener("click", () => applyFormat("insertUnorderedList"));
 

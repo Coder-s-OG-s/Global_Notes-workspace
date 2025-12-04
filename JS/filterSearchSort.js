@@ -46,8 +46,10 @@ export function applyFilterSearchAndSort(baseNotes) {
   if (selectedDate) {
     result = result.filter((note) => {
       const source = note.createdAt || note.updatedAt;
-      const localDate = toLocalDateString(source);
-      return localDate === selectedDate;
+      if (!source) return false;
+      const iso = typeof source === "string" ? source : String(source);
+      const datePart = iso.split("T")[0];
+      return datePart === selectedDate;
     });
   }
 

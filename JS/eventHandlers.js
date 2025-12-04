@@ -6,6 +6,12 @@ import {
   handleDuplicateNote,
   addTagToActiveNote 
 } from "./noteOperations.js";
+import { 
+  createNewFolder,
+  deleteFolder,
+  renameFolder,
+  getFolders 
+} from "./folderManager.js";
 
 const $ = (selector) => document.querySelector(selector);
 const $all = (selector) => Array.from(document.querySelectorAll(selector));
@@ -61,7 +67,7 @@ export function wireTagInput(state, callbacks) {
 
 export function wireCrudButtons(state, getActiveFilter, callbacks) {
   $("#new-note")?.addEventListener("click", () => {
-    handleNewNote(state.notes, state.activeUser, getActiveFilter, getSelectedDate, callbacks);
+    handleNewNote(state.notes, state.activeUser, getActiveFilter, getSelectedDate, callbacks, state.activeFolderId);
   });
 
   $("#save-note")?.addEventListener("click", () => {
@@ -75,4 +81,72 @@ export function wireCrudButtons(state, getActiveFilter, callbacks) {
   $("#duplicate-note")?.addEventListener("click", () => {
     handleDuplicateNote(state.notes, state.activeNoteId, state.activeUser, callbacks);
   });
+}
+
+export function wireFolderButtons(state, callbacks) {
+  const createFolderBtn = $("#create-folder");
+  const foldersListEl = $("#folders-list");
+  
+  if (createFolderBtn) {
+    createFolderBtn.addEventListener("click", () => {
+      const folderName = prompt("Enter folder name:");
+      if (folderName && folderName.trim()) {
+        const newFolder = createNewFolder(state.activeUser, folderName.trim());
+        state.folders.push(newFolder);
+        callbacks.renderFolders();
+      }
+    });
+  }
+
+  if (foldersListEl) {
+    foldersListEl.addEventListener("click", (event) => {
+      const target = event.target;
+      if (!(target instanceof HTMLElement)) return;
+
+      if (!target.classList.contains("folder-delete-btn") && !target.classList.contains("folder-rename-btn")) {
+        return;
+      }
+
+      const folderItem = target.closest(".folder-item");
+      if (!folderItem) return;
+      const folderId = folderItem.dataset.id;
+      if (!folderId) return;
+
+      if (target.classList.contains("folder-delete-btn")) {
+        event.stopPropagation();
+        const confirmed = confirm("Delete this folder? Notes inside will move back to All Notes.");
+        if (!confirmed) return;
+
+        deleteFolder(state.activeUser, folderId, state.notes);
+        state.folders = state.folders.filter((f) => f.id !== folderId);
+
+        if (state.activeFolderId === folderId) {
+          callbacks.setActiveFolder(null);
+        } else {
+          callbacks.renderFolders();
+          callbacks.renderNotesList();
+        }
+      } else if (target.classList.contains("folder-rename-btn")) {
+        event.stopPropagation();
+        const currentFolder = state.folders.find((f) => f.id === folderId);
+        const currentName = currentFolder ? currentFolder.name : "";
+        const newName = prompt("Rename folder:", currentName);
+        if (!newName || !newName.trim()) return;
+
+        renameFolder(state.activeUser, folderId, newName.trim());
+        if (currentFolder) {
+          currentFolder.name = newName.trim();
+        }
+        callbacks.renderFolders();
+      }
+    });
+  }
+}
+
+export function moveNoteToFolder(noteId, folderId, notes) {
+  const note = notes.find((n) => n.id === noteId);
+  if (note) {
+    note.folderId = folderId;
+    note.updatedAt = new Date().toISOString();
+  }
 }

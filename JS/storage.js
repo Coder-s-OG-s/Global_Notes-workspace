@@ -188,8 +188,6 @@ export function migrateGuestNotesIfEmpty(username) {
       return;
     }
   } catch {
-    // If parsing fails, proceed with migration anyway
-    // Corrupted data should be overwritten with guest notes
   }
   
   // Copy guest notes data to new user's storage key
