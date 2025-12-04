@@ -303,7 +303,7 @@ body {
 /* ===== Layout ===== */
 .layout {
   display: grid;
-  grid-template-columns: 340px 1fr;
+  grid-template-columns: 260px 1fr;
   gap: var(--spacing-lg);
   padding: var(--spacing-lg) var(--spacing-xl) var(--spacing-xl);
   max-width: 1800px;
