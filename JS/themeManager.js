@@ -1,19 +1,21 @@
 import { THEME_KEY } from "./constants.js";
 
-const DEFAULT_THEME = "dark";
+const DEFAULT_THEME = "amoled-dark";
+const VALID_THEMES = ["amoled-dark", "sepia", "solarized", "minimal-white"];
 
-// Retrieves the user's preferred theme from localStorage or returns the default dark theme
+// Retrieves the user's preferred theme from localStorage or returns the default AMOLED dark theme
 export function getStoredTheme() {
   try {
-    return localStorage.getItem(THEME_KEY) || DEFAULT_THEME;
+    const stored = localStorage.getItem(THEME_KEY);
+    return VALID_THEMES.includes(stored) ? stored : DEFAULT_THEME;
   } catch {
     return DEFAULT_THEME;
   }
 }
 
-// Applies the specified theme to the UI by updating the data-theme attribute and toggle button
+// Applies the specified theme to the UI by updating the data-theme attribute
 export function applyTheme(theme) {
-  const normalized = theme === "light" ? "light" : "dark";
+  const normalized = VALID_THEMES.includes(theme) ? theme : DEFAULT_THEME;
   const bodyEl = document.body;
   if (bodyEl) {
     bodyEl.dataset.theme = normalized;
@@ -26,9 +28,10 @@ export function applyTheme(theme) {
     contentEl.style.backgroundColor = "";
   }
 
-  const toggleBtn = document.querySelector("#theme-toggle");
-  if (toggleBtn) {
-    toggleBtn.textContent = normalized === "light" ? "Dark mode" : "Light mode";
+  // Update theme selector dropdown to match current theme
+  const selector = document.querySelector("#theme-selector");
+  if (selector) {
+    selector.value = normalized;
   }
 }
 
@@ -42,18 +45,19 @@ export function persistTheme(theme) {
   applyTheme(theme);
 }
 
-// Sets up the theme toggle button and initializes the theme based on user preference
+// Sets up the theme selector dropdown and initializes the theme based on user preference
 export function wireThemeToggle() {
-  const toggleBtn = document.querySelector("#theme-toggle");
-  if (!toggleBtn) {
+  const selector = document.querySelector("#theme-selector");
+  if (!selector) {
     applyTheme(getStoredTheme());
     return;
   }
 
+  // Initialize with stored theme
   applyTheme(getStoredTheme());
 
-  toggleBtn.addEventListener("click", () => {
-    const nextTheme = document.body.dataset.theme === "light" ? "dark" : "light";
-    persistTheme(nextTheme);
+  // Listen for theme changes
+  selector.addEventListener("change", () => {
+    persistTheme(selector.value);
   });
 }

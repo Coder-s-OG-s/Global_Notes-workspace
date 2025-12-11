@@ -40,6 +40,12 @@ export function renderNotesList(notes, activeNoteId, setActiveNote, activeFolder
     const btn = document.createElement("button");
     btn.className = "note-card";
 
+    // Apply theme to note card
+    if (note.theme) {
+      btn.setAttribute("data-theme", note.theme);
+    }
+
+
     const plainContent = (note.content || "").replace(/<[^>]*>/g, "");
     const previewText =
       plainContent && plainContent.trim().length > 0

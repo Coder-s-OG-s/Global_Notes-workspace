@@ -1,14 +1,23 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Login or Create Account</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../CSS/signup.css">
 </head>
+
 <body>
+  <div class="container">
     <div class="login-form">
-      <h2>Welcome to Global Notes Workspace</h2>
+      <div class="form-header">
+        <h2>Global Notes Workspace</h2>
+        <p class="subtitle">Your ideas, organized beautifully</p>
+      </div>
 
       <div class="form-switch" role="tablist">
         <button class="switch-btn active" data-view="login" role="tab" aria-selected="true">
@@ -22,30 +31,85 @@
       <p id="auth-message" class="auth-message" role="status" aria-live="polite"></p>
 
       <form id="login-form" class="auth-form" data-view="login">
-        <label for="username">Username</label>
-        <input id="username" type="text" placeholder="Enter your username" required>
-        <label for="password">Password</label>
-        <input id="password" type="password" placeholder="Enter your password" required>
+        <div class="input-group">
+          <label for="username">Username</label>
+          <input id="username" type="text" placeholder="Enter your username" required>
+        </div>
+        <div class="input-group">
+          <label for="password">Password</label>
+          <input id="password" type="password" placeholder="Enter your password" required>
+        </div>
         <button class="login-btn" type="submit">Login</button>
       </form>
 
       <form id="signup-form" class="auth-form hidden" data-view="signup">
-        <label for="new-username">Choose a username</label>
-        <input id="new-username" type="text" placeholder="e.g. johndoe" minlength="3" required>
-        <label for="email">Email (optional)</label>
-        <input id="email" type="email" placeholder="you@example.com">
-        <label for="new-password">Password</label>
-        <input id="new-password" type="password" placeholder="Create a password" minlength="6" required>
-        <label for="confirm-password">Confirm password</label>
-        <input id="confirm-password" type="password" placeholder="Re-enter password" minlength="6" required>
+        <div class="input-group">
+          <label for="new-username">Choose a username</label>
+          <input id="new-username" type="text" placeholder="e.g. johndoe" minlength="3" required>
+        </div>
+        <div class="input-group">
+          <label for="email">Email (optional)</label>
+          <input id="email" type="email" placeholder="you@example.com">
+        </div>
+        <div class="input-group">
+          <label for="new-password">Password</label>
+          <input id="new-password" type="password" placeholder="Create a password" minlength="6" required>
+        </div>
+        <div class="input-group">
+          <label for="confirm-password">Confirm password</label>
+          <input id="confirm-password" type="password" placeholder="Re-enter password" minlength="6" required>
+        </div>
         <button class="login-btn" type="submit">Create account</button>
       </form>
 
       <div class="form-footer">
-        <a class="forgot-link" href="../index.html">Skip to notes</a>
+        <a class="forgot-link" href="../index.html">Skip to notes →</a>
       </div>
     </div>
+  </div>
 
   <script type="module" src="../JS/authPage.js"></script>
+
+  <!-- Fallback inline script for tab switching if modules don't load -->
+  <script>
+    // Ensure tab switching works even if modules fail to load
+    window.addEventListener('DOMContentLoaded', () => {
+      const switchButtons = document.querySelectorAll('.switch-btn');
+      const loginForm = document.getElementById('login-form');
+      const signupForm = document.getElementById('signup-form');
+
+      // Only initialize if the module hasn't already done so
+      if (switchButtons.length > 0 && !window._authPageInitialized) {
+        switchButtons.forEach(btn => {
+          btn.addEventListener('click', () => {
+            const view = btn.dataset.view;
+
+            // Toggle forms
+            if (view === 'login') {
+              loginForm?.classList.remove('hidden');
+              signupForm?.classList.add('hidden');
+            } else if (view === 'signup') {
+              loginForm?.classList.add('hidden');
+              signupForm?.classList.remove('hidden');
+            }
+
+            // Toggle active states
+            switchButtons.forEach(b => {
+              const isActive = b.dataset.view === view;
+              b.classList.toggle('active', isActive);
+              b.setAttribute('aria-selected', String(isActive));
+            });
+
+            // Clear message
+            const messageEl = document.getElementById('auth-message');
+            if (messageEl) messageEl.textContent = '';
+          });
+        });
+
+        console.log('Fallback tab switching initialized');
+      }
+    });
+  </script>
 </body>
+
 </html>

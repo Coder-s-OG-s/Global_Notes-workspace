@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Persistent Notes Workspace</title>
+  <title>Global Notes Workspace</title>
   <link rel="stylesheet" href="CSS/index.css" />
 </head>
+
 <body>
   <header class="app-header">
     <div style="display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap;">
@@ -15,20 +17,26 @@
       </div>
 
       <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-left: auto;">
-        <button class="btn ghost" id="theme-toggle" type="button">Light mode</button>
+        <button class="btn tiny ghost" id="edit-undo" type="button" aria-label="Undo"><span
+            aria-hidden="true">↺</span></button>
+        <button class="btn tiny ghost" id="edit-redo" type="button" aria-label="Redo"><span
+            aria-hidden="true">↻</span></button>
+        <button class="btn tiny ghost" id="print-note" type="button" aria-label="Print note"><span
+            aria-hidden="true">🖨</span></button>
+        <select id="theme-selector" class="select tiny" aria-label="UI Theme">
+          <option value="amoled-dark">AMOLED Dark</option>
+          <option value="sepia">Sepia</option>
+          <option value="solarized">Solarized</option>
+          <option value="minimal-white">Minimal White</option>
+        </select>
         <button class="btn primary" id="new-note">New note</button>
       </div>
     </div>
 
     <div class="actions">
       <div class="search">
-        <input
-          type="search"
-          id="search"
-          class="search-input"
-          placeholder="Search notes by title, text, or tags…"
-          aria-label="Search notes"
-        />
+        <input type="search" id="search" class="search-input" placeholder="Search notes by title, text, or tags…"
+          aria-label="Search notes" />
       </div>
 
       <div class="filters">
@@ -41,12 +49,7 @@
 
       <div class="date-filter">
         <label for="date-filter" class="date-filter-label">Date</label>
-        <input
-          type="date"
-          id="date-filter"
-          class="date-filter-input"
-          aria-label="Select note date"
-        />
+        <input type="date" id="date-filter" class="date-filter-input" aria-label="Select note date" />
         <button class="btn tiny ghost" type="button" id="clear-date" aria-label="Clear date filter">
           Clear
         </button>
@@ -131,13 +134,7 @@
     <!-- Editor: note details -->
     <section class="editor">
       <header class="editor-bar">
-        <input
-          type="text"
-          class="title-input"
-          id="title"
-          placeholder="Untitled note"
-          aria-label="Note title"
-        />
+        <input type="text" class="title-input" id="title" placeholder="Untitled note" aria-label="Note title" />
 
         <div class="editor-actions">
           <div class="tags-input">
@@ -145,19 +142,14 @@
               <button class="chip small" aria-pressed="true">work</button>
               <button class="chip small" aria-pressed="false">todo</button>
             </div>
-            <input
-              type="text"
-              class="add-tag-input"
-              id="add-tag"
-              placeholder="Add tag…"
-              aria-label="Add tag"
-            />
+            <input type="text" class="add-tag-input" id="add-tag" placeholder="Add tag…" aria-label="Add tag" />
           </div>
 
           <div class="buttons">
             <button class="btn" id="duplicate-note">Duplicate</button>
             <button class="btn danger" id="delete-note">Delete</button>
-            <button class="btn primary" id="save-note">Save</button>
+            <button class="btn primary" id="save-note" aria-label="Save note"><span
+                aria-hidden="true">💾</span></button>
           </div>
         </div>
       </header>
@@ -166,36 +158,70 @@
         <div class="editor-toolbar" aria-label="Text formatting controls">
           <label for="text-size" class="text-size-label">Size:</label>
           <select id="text-size" class="select tiny" aria-label="Text size">
-            <option value="14">Small</option>
-            <option value="15" selected>Normal</option>
-            <option value="16">Large</option>
-            <option value="18">Mega</option>
+            <option value="12">12 px</option>
+            <option value="13">13 px</option>
+            <option value="14">14 px</option>
+            <option value="15" selected>15 px</option>
+            <option value="16">16 px</option>
+            <option value="17">17 px</option>
+            <option value="18">18 px</option>
+            <option value="19">19 px</option>
+            <option value="20">20 px</option>
+            <option value="21">21 px</option>
+            <option value="22">22 px</option>
+            <option value="23">23 px</option>
+            <option value="24">24 px</option>
           </select>
           <label for="text-color" class="text-size-label">Color:</label>
           <select id="text-color" class="select tiny" aria-label="Text color">
             <option value="" selected>Default</option>
+            <!-- light / accent colors -->
             <option value="#ff6b6b">Red</option>
             <option value="#4ecdc4">Teal</option>
             <option value="#45b7d1">Blue</option>
             <option value="#96ceb4">Green</option>
             <option value="#ffeaa7">Yellow</option>
             <option value="#dda0dd">Purple</option>
+            <!-- darker colors -->
+            <option value="#000000">Black</option>
+            <option value="#2d3436">Dark gray</option>
+            <option value="#2c3e50">Navy</option>
+            <option value="#1e272e">Charcoal</option>
+            <option value="#8e44ad">Dark purple</option>
+            <option value="#c0392b">Dark red</option>
+            <option value="#145a32">Dark green</option>
+          </select>
+          <label for="note-theme" class="text-size-label">Card:</label>
+          <select id="note-theme" class="select tiny" aria-label="Note card theme">
+            <option value="classic-blue">Classic Blue</option>
+            <option value="elegant-purple">Elegant Purple</option>
+            <option value="forest-green">Forest Green</option>
+            <option value="sunset-orange">Sunset Orange</option>
+            <option value="ocean-teal">Ocean Teal</option>
+            <option value="rose-gold">Rose Gold</option>
+            <option value="slate-gray">Slate Gray</option>
+            <option value="crimson-red">Crimson Red</option>
           </select>
           <button class="btn tiny" type="button" id="format-bold"><strong>B</strong></button>
           <button class="btn tiny" type="button" id="format-italic"><em>I</em></button>
-          <button class="btn tiny" type="button" id="format-underline"><span style="text-decoration: underline;">U</span></button>
+          <button class="btn tiny" type="button" id="format-underline"><span
+              style="text-decoration: underline;">U</span></button>
           <button class="btn tiny" type="button" id="format-bullet">• List</button>
-          <button class="btn tiny" type="button" id="insert-image">Image</button>
-          <button class="btn tiny" type="button" id="insert-table">Table</button>
+          <button class="btn tiny" type="button" id="edit-cut" aria-label="Cut"><span
+              aria-hidden="true">✂️</span></button>
+          <button class="btn tiny" type="button" id="edit-copy" aria-label="Copy"><span
+              aria-hidden="true">📄</span></button>
+          <button class="btn tiny" type="button" id="edit-paste" aria-label="Paste"><span
+              aria-hidden="true">📋</span></button>
+          <button class="btn tiny" type="button" id="insert-image" aria-label="Insert image"><span
+              aria-hidden="true">🖼</span></button>
+          <button class="btn tiny" type="button" id="insert-table" aria-label="Insert table"><span
+              aria-hidden="true">▦</span></button>
         </div>
         <input type="file" id="image-upload-input" accept="image/*" />
-        <div
-          class="content-input"
-          id="content"
-          contenteditable="true"
-          spellcheck="true"
-          aria-label="Note content editor"
-        ></div></div>
+        <div class="content-input" id="content" contenteditable="true" spellcheck="true"
+          aria-label="Note content editor"></div>
+      </div>
       </div>
     </section>
   </main>
@@ -208,4 +234,5 @@
 
   <script type="module" src="JS/notesApp.js"></script>
 </body>
+
 </html>

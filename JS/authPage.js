@@ -2,6 +2,9 @@ import { getAccounts, setAccounts, migrateGuestNotesIfEmpty } from "./storage.js
 import { initLoginForm } from "./loginPage.js";
 
 function initAuthPage() {
+  // Set flag to indicate module has loaded
+  window._authPageInitialized = true;
+
   const loginForm = document.getElementById("login-form");
   const signupForm = document.getElementById("signup-form");
   const switchButtons = document.querySelectorAll(".switch-btn");

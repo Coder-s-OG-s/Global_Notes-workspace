@@ -59,33 +59,67 @@ export function wireUploadButtons() {
   contentEl.addEventListener("click", (event) => {
     const target = event.target;
 
-    // Handle image clicks - cycle through sizes or delete
+    // Handle image clicks - size chooser with custom option
     if (target instanceof HTMLImageElement) {
       const figure = target.closest("figure.note-image");
       if (!figure) return;
 
-      // Right-click to delete image
-      if (event.button === 2 || event.ctrlKey || event.metaKey) {
-        event.preventDefault();
-        if (confirm("Delete this image?")) {
-          figure.remove();
-        }
+      // Derive current display size description
+      let currentSize = "custom";
+      if (figure.classList.contains("note-image-size-small")) currentSize = "small";
+      else if (figure.classList.contains("note-image-size-medium")) currentSize = "medium";
+      else if (figure.classList.contains("note-image-size-large")) currentSize = "large";
+
+      const input = prompt(
+        "Set image size (examples: small, medium, large, 40%, 300px)",
+        currentSize
+      );
+      if (!input) return;
+
+      const raw = input.trim();
+      const valueLower = raw.toLowerCase();
+
+      // First handle named presets via CSS classes
+      if (["small", "medium", "large"].includes(valueLower)) {
+        figure.classList.remove(
+          "note-image-size-small",
+          "note-image-size-medium",
+          "note-image-size-large"
+        );
+        target.style.width = "";
+        target.style.maxWidth = "";
+        figure.classList.add(`note-image-size-${valueLower}`);
         return;
       }
 
-      // Left-click to cycle through sizes
-      if (figure.classList.contains("note-image-size-small")) {
-        figure.classList.remove("note-image-size-small");
-        figure.classList.add("note-image-size-medium");
-      } else if (figure.classList.contains("note-image-size-medium")) {
-        figure.classList.remove("note-image-size-medium");
-        figure.classList.add("note-image-size-large");
-      } else if (figure.classList.contains("note-image-size-large")) {
-        figure.classList.remove("note-image-size-large");
-        figure.classList.add("note-image-size-small");
-      } else {
-        figure.classList.add("note-image-size-medium");
+      // Otherwise treat as custom numeric size
+      let numeric = raw;
+      let unit = "%";
+      if (raw.endsWith("px")) {
+        numeric = raw.slice(0, -2);
+        unit = "px";
+      } else if (raw.endsWith("%")) {
+        numeric = raw.slice(0, -1);
+        unit = "%";
       }
+
+      const num = Number.parseFloat(numeric);
+      if (!Number.isFinite(num) || num <= 0) {
+        alert("Please enter a positive number (e.g. 40%, 300px).");
+        return;
+      }
+
+      // Reasonable bounds
+      const clamped = unit === "%" ? Math.max(5, Math.min(num, 100)) : Math.max(20, Math.min(num, 2000));
+
+      // Remove preset classes and apply inline style
+      figure.classList.remove(
+        "note-image-size-small",
+        "note-image-size-medium",
+        "note-image-size-large"
+      );
+      target.style.maxWidth = "none";
+      target.style.width = `${clamped}${unit}`;
     }//check this
 
     // Handle table clicks - right-click to delete

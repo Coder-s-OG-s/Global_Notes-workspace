@@ -1,16 +1,16 @@
 import { getSelectedDate } from "./filterSearchSort.js";
-import { 
-  handleNewNote, 
-  handleSaveNote, 
-  handleDeleteNote, 
+import {
+  handleNewNote,
+  handleSaveNote,
+  handleDeleteNote,
   handleDuplicateNote,
-  addTagToActiveNote 
+  addTagToActiveNote
 } from "./noteOperations.js";
-import { 
+import {
   createNewFolder,
   deleteFolder,
   renameFolder,
-  getFolders 
+  getFolders
 } from "./folderManager.js";
 
 const $ = (selector) => document.querySelector(selector);
@@ -91,7 +91,7 @@ export function wireCrudButtons(state, getActiveFilter, callbacks) {
 export function wireFolderButtons(state, callbacks) {
   const createFolderBtn = $("#create-folder");
   const foldersListEl = $("#folders-list");
-  
+
   if (createFolderBtn) {
     createFolderBtn.addEventListener("click", () => {
       const folderName = prompt("Enter folder name:");
@@ -155,4 +155,30 @@ export function moveNoteToFolder(noteId, folderId, notes) {
     note.folderId = folderId;
     note.updatedAt = new Date().toISOString();
   }
+}
+
+// Handles theme selector dropdown for changing note card appearance
+export function wireThemeSelector(state, callbacks) {
+  const themeSelect = $("#note-theme");
+  if (!themeSelect) return;
+
+  themeSelect.addEventListener("change", () => {
+    const selectedTheme = themeSelect.value;
+    const note = state.notes.find((n) => n.id === state.activeNoteId);
+
+    if (note) {
+      note.theme = selectedTheme;
+      note.updatedAt = new Date().toISOString();
+      callbacks.persistNotes();
+      callbacks.renderNotesList();
+    }
+  });
+}
+
+// Updates the theme selector to match the current note's theme
+export function syncThemeSelector(activeNote) {
+  const themeSelect = $("#note-theme");
+  if (!themeSelect || !activeNote) return;
+
+  themeSelect.value = activeNote.theme || "classic-blue";
 }
