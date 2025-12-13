@@ -1,4 +1,4 @@
-import { getAccounts, setAccounts, migrateGuestNotesIfEmpty } from "./storage.js";
+import { getAccounts, setAccounts, mergeGuestNotes } from "./storage.js";
 import { initLoginForm } from "./loginPage.js";
 
 function initAuthPage() {
@@ -68,7 +68,7 @@ function initAuthPage() {
 
     accounts.push({ username, password, email });
     setAccounts(accounts);
-    migrateGuestNotesIfEmpty(username);
+    mergeGuestNotes(username);
     setMessage("Account created! You can log in now.", "success");
     signupForm.reset();
     toggleView("login");

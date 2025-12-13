@@ -1160,13 +1160,17 @@ body[data-theme="corporate-gray"] .note-card[data-theme="minimal-white"] {
   flex-wrap: nowrap;
   overflow-x: auto;
   flex: 1;
-  /* Hide scrollbar but keep functionality */
-  scrollbar-width: none;
+  /* Hide scrollbar but keep functionality -> REMOVED to show scroller */
+  /* scrollbar-width: none; */
+  padding-bottom: 8px;
+  /* Add gap between buttons and scrollbar */
 }
 
+/* 
 .toolbar-controls::-webkit-scrollbar {
   display: none;
-}
+} 
+*/
 
 /* Collapsed state */
 .editor-toolbar.collapsed {
@@ -1452,4 +1456,125 @@ body[data-theme="corporate-gray"] .note-card[data-theme="minimal-white"] {
   .title-input {
     font-size: 16px;
   }
+}
+/* ===== Profile & Modal ===== */
+.header-avatar {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  object-fit: cover;
+  background-color: var(--primary);
+  display: none; /* Hidden by default until loaded */
+}
+
+.header-avatar.visible {
+  display: block;
+}
+
+.user-pill {
+  cursor: pointer;
+}
+
+.user-pill:hover {
+  background: var(--surface-3);
+  border-color: var(--border-light);
+}
+
+/* Modal Styling */
+.modal {
+  border: none;
+  border-radius: var(--radius-lg);
+  padding: 0;
+  background: var(--surface);
+  color: var(--text);
+  box-shadow: var(--shadow-lg);
+  max-width: 500px;
+  width: 90%;
+}
+
+.modal::backdrop {
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+}
+
+.modal-content {
+  padding: var(--spacing-lg);
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-lg);
+}
+
+.modal-header h2 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.profile-header {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-lg);
+  margin-bottom: var(--spacing-xl);
+}
+
+.avatar-wrapper {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-xs);
+}
+
+.profile-avatar-large {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 4px solid var(--surface-2);
+  background: var(--primary-light);
+}
+
+.profile-info h3 {
+  margin: 0 0 var(--spacing-xs);
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.member-since {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--spacing-md);
+  background: var(--surface-2);
+  padding: var(--spacing-lg);
+  border-radius: var(--radius);
+}
+
+.stat-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.stat-value {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--primary);
+  line-height: 1.2;
+}
+
+.stat-label {
+  font-size: 12px;
+  color: var(--text-muted);
+  font-weight: 500;
+  margin-top: 4px;
 }

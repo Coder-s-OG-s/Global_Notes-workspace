@@ -17,20 +17,16 @@
         <h1>Global Notes Workspace</h1>
       </div>
 
-      <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-left: auto;">
-        <button class="btn tiny ghost" id="edit-undo" type="button" aria-label="Undo"><span
-            aria-hidden="true">↺</span></button>
-        <button class="btn tiny ghost" id="edit-redo" type="button" aria-label="Redo"><span
-            aria-hidden="true">↻</span></button>
-        <button class="btn tiny ghost" id="print-note" type="button" aria-label="Print note"><span
-            aria-hidden="true">🖨</span></button>
-        <select id="theme-selector" class="select tiny" aria-label="UI Theme">
-          <option value="amoled-dark">AMOLED Dark</option>
-          <option value="professional-light">Professional Light</option>
-          <option value="corporate-gray">Corporate Gray</option>
-          <option value="minimal-white">Minimal White</option>
-        </select>
-        <button class="btn primary" id="new-note">New note</button>
+      <div class="auth-controls">
+        <div class="user-pill hidden" id="user-pill" aria-live="polite" role="button" tabindex="0"
+          aria-label="View Profile">
+          <img id="header-avatar" class="header-avatar" src="" alt="" aria-hidden="true" />
+          <span class="user-name" id="user-name"></span>
+          <button class="btn tiny" id="logout">Log out</button>
+        </div>
+        <button class="btn ghost" id="login">Login</button>
+        <button class="btn ghost" id="signup">Sign Up</button>
+        <button class="btn primary" id="export">Export</button>
       </div>
     </div>
 
@@ -73,14 +69,20 @@
         </div>
       </div>
 
-      <div class="auth-controls">
-        <div class="user-pill hidden" id="user-pill" aria-live="polite">
-          <span class="user-name" id="user-name"></span>
-          <button class="btn tiny" id="logout">Log out</button>
-        </div>
-        <button class="btn ghost" id="login">Login</button>
-        <button class="btn ghost" id="signup">Sign Up</button>
-        <button class="btn primary" id="export">Export</button>
+      <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-left: auto;">
+        <button class="btn tiny ghost" id="edit-undo" type="button" aria-label="Undo"><span
+            aria-hidden="true">↺</span></button>
+        <button class="btn tiny ghost" id="edit-redo" type="button" aria-label="Redo"><span
+            aria-hidden="true">↻</span></button>
+        <button class="btn tiny ghost" id="print-note" type="button" aria-label="Print note"><span
+            aria-hidden="true">🖨</span></button>
+        <select id="theme-selector" class="select tiny" aria-label="UI Theme">
+          <option value="amoled-dark">AMOLED Dark</option>
+          <option value="professional-light">Professional Light</option>
+          <option value="corporate-gray">Corporate Gray</option>
+          <option value="minimal-white">Minimal White</option>
+        </select>
+        <button class="btn primary" id="new-note">New note</button>
       </div>
     </div>
   </header>
@@ -266,6 +268,44 @@
       Notes are saved locally in your browser for persistence. Clear site data to reset.
     </p>
   </footer>
+
+  <!-- Profile Modal -->
+  <dialog id="profile-modal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>User Profile</h2>
+        <button class="btn-icon close-modal" aria-label="Close modal">×</button>
+      </div>
+      <div class="profile-body">
+        <div class="profile-header">
+          <div class="avatar-wrapper">
+            <img id="profile-avatar-large" src="" alt="Profile Picture" class="profile-avatar-large">
+            <button class="btn tiny secondary edit-avatar-btn" id="change-avatar-btn">Change</button>
+            <input type="file" id="avatar-upload" accept="image/*" hidden>
+          </div>
+          <div class="profile-info">
+            <h3 id="profile-username"></h3>
+            <span class="member-since" id="member-since">Joined: December 2025</span>
+          </div>
+        </div>
+
+        <div class="stats-grid">
+          <div class="stat-card">
+            <span class="stat-value" id="stat-total-notes">0</span>
+            <span class="stat-label">Total Notes</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-value" id="stat-words">0</span>
+            <span class="stat-label">Words Written</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-value" id="stat-last-active">Never</span>
+            <span class="stat-label">Last Active</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </dialog>
 
   <script type="module" src="JS/notesApp.js"></script>
 </body>

@@ -12,6 +12,7 @@ import { wireThemeToggle } from "./themeManager.js";
 import { getActiveFilter, getSelectedDate } from "./filterSearchSort.js";
 import { wireSidebarToggle, wireToolbarToggle } from "./layoutManager.js";
 import { initSmartCalendar } from "./smartCalendar.js";
+import { wireProfileManager, updateHeaderAvatar } from "./profileManager.js";
 
 
 // Global state
@@ -55,7 +56,10 @@ const callbacks = {
   // Renders the folders list in the sidebar
   renderFolders: () => renderFolders(state.folders, state.activeFolderId, callbacks.setActiveFolder),
   // Updates the UI to show the current user's information
-  updateUserDisplay: () => updateUserDisplay(state.activeUser),
+  updateUserDisplay: () => {
+    updateUserDisplay(state.activeUser);
+    updateHeaderAvatar(state.activeUser);
+  },
   // Saves all notes to storage
   persistNotes: () => {
     persistNotes(state.activeUser, state.notes);
@@ -94,12 +98,13 @@ async function initApp() {
   wireFormattingToolbar();
   wireUploadButtons();
   wireAuthButtons(state, callbacks);
-  wireImportExport(state.notes);
+  wireImportExport(state);
   wireThemeToggle();
   wireThemeSelector(state, callbacks);
   wireEditorPatternSelector(state, callbacks);
   wireSidebarToggle();
   wireToolbarToggle();
+  wireProfileManager(state, callbacks);
 
   // Initialize Smart Calendar
   state.calendarWidget = initSmartCalendar(state, callbacks);

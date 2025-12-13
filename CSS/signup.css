@@ -10,12 +10,13 @@ body {
   min-height: 100vh;
   display: flex;
   justify-content: center;
-  align-items: center;
+  /* align-items: center; Removed to prevent top-clipping on overflow */
   background: linear-gradient(135deg, #0f172a 0%, #1e293b 25%, #334155 50%, #1e293b 75%, #0f172a 100%);
   background-size: 200% 200%;
   animation: subtleShift 20s ease infinite;
   color: #fff;
-  overflow: hidden;
+  overflow-y: auto;
+  /* Allow vertical scrolling */
   position: relative;
 }
 
@@ -51,6 +52,8 @@ body::before {
   width: 100%;
   max-width: 450px;
   padding: 1.5rem;
+  margin: auto;
+  /* Center in flex container safely */
 }
 
 /* ===== LOGIN FORM CARD ===== */

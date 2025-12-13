@@ -1,10 +1,10 @@
-import { getAccounts, setActiveUser, migrateGuestNotesIfEmpty } from "./storage.js";
+import { getAccounts, setActiveUser, mergeGuestNotes } from "./storage.js";
 
 // Initializes the login form with validation and user authentication logic
 export function initLoginForm({
   formId = "login-form",
-  setMessage = () => {},
-  toggleView = () => {},
+  setMessage = () => { },
+  toggleView = () => { },
 } = {}) {
   const form = document.getElementById(formId);
   if (!form) return;
@@ -28,7 +28,7 @@ export function initLoginForm({
       return;
     }
 
-    migrateGuestNotesIfEmpty(account.username);
+    mergeGuestNotes(account.username);
     setActiveUser(account.username);
     setMessage("Success! Redirecting…", "success");
     setTimeout(() => {

@@ -158,41 +158,69 @@ export function setAccounts(accounts) {
 }
 
 /**
- * Migrates notes from guest account to newly created user account
- * - Checks if guest has any notes that haven't been migrated
- * - Only migrates if user account is currently empty (defensive)
- * - Prevents losing guest notes when user creates an account
- * - Called during signup after account creation
- * @param {string} username - Username of newly created account
+ * Merges notes from guest account to the user account
+ * - Appends guest notes to existing user notes
+ * - Clears guest notes after successful merge
+ * - Called during login/signup
+ * @param {string} username - Username of the account to merge notes into
  */
-export function migrateGuestNotesIfEmpty(username) {
-  // Only proceed if a valid username is provided
+export function mergeGuestNotes(username) {
   if (!username) return;
-  
-  // Generate storage keys for both guest and new user accounts
-  const guestKey = storageKeyForUser(null);      // Key for guest notes
-  const userKey = storageKeyForUser(username);    // Key for new user's notes
-  
-  // Retrieve raw guest notes data from localStorage
+
+  const guestKey = storageKeyForUser(null);
+  const userKey = storageKeyForUser(username);
+
   const guestData = localStorage.getItem(guestKey);
-  // If no guest data exists, migration is not needed
   if (!guestData) return;
-  
+
   try {
-    // Attempt to retrieve existing notes for the new user account
-    // If key doesn't exist, || "[]" provides default empty array for parsing
-    const existing = JSON.parse(localStorage.getItem(userKey) || "[]");
-    // Check if user already has notes (array is valid and has length > 0)
-    // If user has existing notes, preserve them and don't overwrite
-    if (Array.isArray(existing) && existing.length) {
-      return;
-    }
-  } catch {
+    const guestNotes = JSON.parse(guestData);
+    if (!Array.isArray(guestNotes) || guestNotes.length === 0) return;
+
+    // Get existing user notes
+    const existingData = localStorage.getItem(userKey);
+    const userNotes = existingData ? JSON.parse(existingData) : [];
+
+    // Merge notes (you might want to deduplicate by ID here, but reliable unique IDs make simple concat safe enough)
+    const combinedNotes = [...userNotes, ...guestNotes];
+
+    // Save merged notes
+    localStorage.setItem(userKey, JSON.stringify(combinedNotes));
+
+    // Clear guest notes to prevent re-merging later
+    localStorage.removeItem(guestKey);
+
+    console.log(`Merged ${guestNotes.length} guest notes into user ${username}`);
+  } catch (err) {
+    console.error("Failed to merge guest notes", err);
   }
-  
-  // Copy guest notes data to new user's storage key
-  // Guest notes are now associated with the new user account
-  localStorage.setItem(userKey, guestData);
+}
+
+/**
+ * Updates a specific field for a user account
+ * @param {string} username 
+ * @param {Object} updates - Object containing fields to update (e.g. { avatar: "..." })
+ */
+export function updateAccountDetails(username, updates) {
+  const accounts = getAccounts();
+  const index = accounts.findIndex(a => a.username.toLowerCase() === username.toLowerCase());
+
+  if (index !== -1) {
+    accounts[index] = { ...accounts[index], ...updates };
+    setAccounts(accounts);
+    return true;
+  }
+  return false;
+}
+
+/**
+ * Gets the account object for a username
+ * @param {string} username
+ * @returns {Object|null}
+ */
+export function getAccountDetails(username) {
+  const accounts = getAccounts();
+  return accounts.find(a => a.username.toLowerCase() === username.toLowerCase()) || null;
 }
 
 
