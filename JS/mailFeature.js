@@ -1,4 +1,6 @@
 
+import { generateTextWithGemini } from './geminiAPI.js';
+
 // Flag to prevent multiple event listeners
 let isWired = false;
 
@@ -47,7 +49,7 @@ function isValidEmail(email) {
 
 function wireMailFeatureHandlers(sendBtn, senderInput, recipientInput, promptInput) {
     // Generate and Open Mail
-    sendBtn.addEventListener("click", (e) => {
+    sendBtn.addEventListener("click", async (e) => {
         e.preventDefault();
         console.log('Mail button clicked!');
         const sender = senderInput.value.trim();
@@ -85,27 +87,45 @@ function wireMailFeatureHandlers(sendBtn, senderInput, recipientInput, promptInp
             return;
         }
 
-        // Generate proper email from prompt
+        // Generate proper email from prompt using Gemini
         let subject, body;
         try {
-            const result = generateEmailFromPrompt(prompt, sender);
-            subject = result.subject;
-            body = result.body;
+            const fullPrompt = `Generate a professional email based on the following details. The output should be only the email, with "Subject: " on the first line, then a blank line, and then the email body.
+
+From: ${sender}
+To: ${recipient}
+Prompt: ${prompt}`;
+
+            const generatedEmail = await generateTextWithGemini(fullPrompt);
+
+            // Parse the output
+            const lines = generatedEmail.split('\n');
+            if (lines.length > 1 && lines[0].toLowerCase().startsWith('subject:')) {
+                subject = lines[0].substring('subject:'.length).trim();
+                body = lines.slice(2).join('\n');
+            } else {
+                // Fallback if the format is not as expected
+                console.warn("Gemini response for email was not in the expected format. Using fallback.");
+                subject = "Email regarding your prompt";
+                body = generatedEmail;
+            }
+
         } catch (error) {
-            console.error('Error generating email:', error);
+            console.error('Error generating email with Gemini:', error);
             alert('Error generating email. Please try again.');
             return;
         }
 
+
         // Truncate body if needed for URL length limits
-        let finalBody = body;
+        let finalBody = body || '';
         const maxBodyLength = 2000; // Conservative limit
-        if (body.length > maxBodyLength) {
-            finalBody = body.substring(0, maxBodyLength) + '\n\n[Email body truncated due to length limits]';
+        if (finalBody.length > maxBodyLength) {
+            finalBody = finalBody.substring(0, maxBodyLength) + '\n\n[Email body truncated due to length limits]';
         }
 
         // Construct Gmail URL
-        const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(recipient)}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(finalBody)}`;
+        const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(recipient)}&su=${encodeURIComponent(subject || 'No Subject')}&body=${encodeURIComponent(finalBody)}`;
 
         console.log('Generated Gmail URL:', gmailUrl.substring(0, 150) + '...');
 
@@ -124,169 +144,4 @@ function wireMailFeatureHandlers(sendBtn, senderInput, recipientInput, promptInp
             alert('Unable to open Gmail. Please check your browser\'s pop-up blocker settings.');
         }
     });
-}
-
-/**
- * Converts a user prompt into a properly formatted email
- * @param {string} prompt - User's description of what they want to write
- * @param {string} sender - Sender's email/name
- * @returns {Object} Object containing subject and body
- */
-function generateEmailFromPrompt(prompt, sender) {
-    // Validate inputs
-    if (!prompt || !sender) {
-        throw new Error('Prompt and sender are required');
-    }
-
-    // Extract sender name from email if possible
-    let senderName = sender;
-    if (sender.includes('@')) {
-        const emailPart = sender.split('@')[0];
-        // Remove numbers and special chars, replace dots/underscores with spaces
-        senderName = emailPart
-            .replace(/[._-]/g, ' ')
-            .replace(/\d+/g, '')
-            .trim();
-        
-        // Capitalize first letter of each word
-        if (senderName.length > 0) {
-            senderName = senderName
-                .split(' ')
-                .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-                .join(' ')
-                .trim();
-        }
-        
-        // Fallback if name extraction results in empty string
-        if (!senderName || senderName.length === 0) {
-            senderName = emailPart;
-        }
-    }
-
-    // Generate subject line from prompt
-    const subject = generateSubjectFromPrompt(prompt);
-
-    // Generate professional email body
-    const body = generateEmailBody(prompt, senderName);
-
-    return { subject, body };
-}
-
-/**
- * Generates an appropriate subject line from the prompt
- */
-function generateSubjectFromPrompt(prompt) {
-    // Try to extract key information for subject
-    const lowerPrompt = prompt.toLowerCase();
-    
-    // Check for common email types
-    if (lowerPrompt.includes('meeting') || lowerPrompt.includes('schedule')) {
-        return extractSubject(prompt, 'Meeting Request');
-    } else if (lowerPrompt.includes('follow up') || lowerPrompt.includes('follow-up')) {
-        return extractSubject(prompt, 'Follow-up');
-    } else if (lowerPrompt.includes('thank') || lowerPrompt.includes('thanks')) {
-        return extractSubject(prompt, 'Thank You');
-    } else if (lowerPrompt.includes('inquiry') || lowerPrompt.includes('question')) {
-        return extractSubject(prompt, 'Inquiry');
-    } else if (lowerPrompt.includes('proposal') || lowerPrompt.includes('suggest')) {
-        return extractSubject(prompt, 'Proposal');
-    } else if (lowerPrompt.includes('apolog') || lowerPrompt.includes('sorry')) {
-        return extractSubject(prompt, 'Apology');
-    } else {
-        // Extract first meaningful sentence or phrase
-        return extractSubject(prompt, 'Message');
-    }
-}
-
-/**
- * Extracts a concise subject from prompt, with fallback
- */
-function extractSubject(prompt, fallback) {
-    if (!prompt || prompt.trim().length === 0) {
-        return fallback;
-    }
-
-    // Try to get first sentence or first 50 characters
-    const sentences = prompt.split(/[.!?]/);
-    const firstSentence = sentences[0] ? sentences[0].trim() : '';
-    
-    if (firstSentence.length > 0 && firstSentence.length <= 60) {
-        return firstSentence.charAt(0).toUpperCase() + firstSentence.slice(1);
-    } else if (prompt.length <= 60) {
-        const trimmed = prompt.trim();
-        return trimmed.length > 0 
-            ? trimmed.charAt(0).toUpperCase() + trimmed.slice(1)
-            : fallback;
-    } else {
-        const truncated = prompt.substring(0, 50).trim();
-        return truncated.length > 0 
-            ? fallback + ': ' + truncated + '...'
-            : fallback;
-    }
-}
-
-/**
- * Generates a professional email body from the prompt
- */
-function generateEmailBody(prompt, senderName) {
-    if (!prompt || prompt.trim().length === 0) {
-        throw new Error('Prompt cannot be empty');
-    }
-
-    if (!senderName || senderName.trim().length === 0) {
-        senderName = 'User';
-    }
-
-    // Analyze prompt to determine tone and structure
-    const lowerPrompt = prompt.toLowerCase().trim();
-    let greeting = 'Hello';
-    let closing = 'Best regards';
-    
-    // Check if user already included a greeting
-    const greetingPattern = /^(dear|hi|hello|hey|greetings|good\s+(morning|afternoon|evening))\s+[^,\n]+/i;
-    const hasGreeting = greetingPattern.test(prompt);
-    
-    // Adjust greeting based on context
-    if (hasGreeting) {
-        // Extract the greeting from prompt
-        const greetingMatch = prompt.match(greetingPattern);
-        if (greetingMatch) {
-            greeting = greetingMatch[0].trim();
-        }
-    } else if (lowerPrompt.includes('formal') || lowerPrompt.includes('professional')) {
-        greeting = 'Dear Sir/Madam';
-        closing = 'Sincerely';
-    }
-
-    // Remove greeting from content if it exists to avoid duplication
-    let emailContent = prompt.trim();
-    if (hasGreeting) {
-        // Remove the greeting line from content
-        emailContent = prompt.replace(greetingPattern, '').trim();
-        // Remove leading comma, colon, or whitespace
-        emailContent = emailContent.replace(/^[,:\s]+/, '').trim();
-    }
-    
-    // If content is empty after removing greeting, use original prompt
-    if (!emailContent || emailContent.length === 0) {
-        emailContent = prompt.trim();
-    }
-    
-    // If prompt is very short or seems like a note, expand it
-    if (emailContent.length < 50 && !emailContent.includes('.')) {
-        emailContent = `I hope this message finds you well. ${emailContent}`;
-    }
-
-    // Structure the email body
-    const body = `${greeting},
-
-${emailContent}
-
-${closing},
-${senderName}
-
----
-[Generated via Global Notes Workspace]`;
-
-    return body;
 }

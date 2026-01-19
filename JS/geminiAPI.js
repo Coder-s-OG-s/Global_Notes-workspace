@@ -3,8 +3,8 @@
 // Do not expose it in client-side code in a production environment.
 // Consider using a backend proxy or a serverless function to handle API calls securely.
 
-const API_KEY = 'AIzaSyC_n3ue9E_NN2maOhWFmK--iqGB-VY6sHc'; // <-- IMPORTANT: Replace with your API key
-const API_URL = `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash-latest:generateContent?key=${API_KEY}`;
+const API_KEY = 'AIzaSyCqXDZVyFZh0u2ZYCL4MrvPlsL8YNqNw70'; // <-- IMPORTANT: Replace with your API key
+const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemma-3-4b-it:generateContent?key=${API_KEY}`;
 
 /**
  * Calls the Gemini API to generate content.
