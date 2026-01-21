@@ -16,6 +16,7 @@ import { initSmartCalendar } from "./smartCalendar.js";
 import { wireProfileManager, updateHeaderAvatar } from "./profileManager.js";
 import { wireSlashCommands } from "./slashCommands.js";
 import { wireMailFeature } from "./mailFeature.js";
+import { wireShareFeature, checkSharedUrl } from "./shareFeature.js";
 
 
 // Global state
@@ -112,6 +113,7 @@ async function initApp() {
   wireProfileManager(state, callbacks);
   wireSlashCommands();
   wireMailFeature();
+  wireShareFeature(state, callbacks);
 
   // Initialize Smart Calendar
   state.calendarWidget = initSmartCalendar(state, callbacks);
@@ -121,6 +123,9 @@ async function initApp() {
   callbacks.renderFolders();
   callbacks.renderNotesList();
   callbacks.renderActiveNote();
+
+  // Check for shared URL params LAST
+  checkSharedUrl();
 }
 
 if (document.readyState === "loading") {

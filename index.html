@@ -220,6 +220,7 @@
           </div>
 
           <div class="buttons">
+            <button class="btn secondary" id="share-note" aria-label="Share note">Share</button>
             <button class="btn" id="duplicate-note">Duplicate</button>
             <button class="btn danger" id="delete-note">Delete</button>
             <button class="btn primary" id="save-note" aria-label="Save note"><span
@@ -439,6 +440,32 @@
     </div>
   </dialog>
 
+  <!-- Share Modal -->
+  <dialog id="share-modal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Share Note</h2>
+        <button class="btn-icon close-modal">×</button>
+      </div>
+      <div class="share-body"
+        style="display: flex; flex-direction: column; align-items: center; gap: 20px; padding: 20px;">
+        <div id="qrcode-container" style="background: white; padding: 10px; border-radius: 8px;"></div>
+        <p style="text-align: center; color: var(--text-muted); font-size: 0.9em;">Scan this QR code or copy the link
+          below to share this note.</p>
+        <div class="share-link-wrapper" style="width: 100%; display: flex; gap: 8px;">
+          <input type="text" id="share-link-input" readonly
+            style="flex: 1; padding: 8px; border: 1px solid var(--border-color); border-radius: 8px; background: var(--bg-secondary); color: var(--text-primary);">
+          <button class="btn primary" id="copy-share-link">Copy Link</button>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn secondary close-modal">Close</button>
+      </div>
+    </div>
+  </dialog>
+
+  <script type="text/javascript" src="JS/vendor/lz-string.min.js"></script>
+  <script type="text/javascript" src="JS/vendor/qrcode.min.js"></script>
   <script type="module" src="JS/notesApp.js?v=1.1"></script>
   <script>
     if ('serviceWorker' in navigator) {

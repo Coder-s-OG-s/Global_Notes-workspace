@@ -2073,3 +2073,70 @@ body[data-theme="corporate-gray"] .note-card[data-theme="minimal-white"] {
   background: var(--surface-2);
   color: var(--primary);
 }
+/* ===== Share Modal ===== */
+.share-body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-lg);
+  padding: var(--spacing-md);
+}
+
+#qrcode-container {
+  background: white;
+  padding: 16px;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+  display: flex; /* Ensure centering if needed */
+  justify-content: center;
+  align-items: center;
+}
+
+#qrcode-container img {
+  display: block; /* Remove bottom space */
+}
+
+.share-body p {
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 14px;
+  margin: 0;
+  max-width: 300px;
+}
+
+.share-link-wrapper {
+  width: 100%;
+  display: flex;
+  gap: var(--spacing-sm);
+}
+
+#share-link-input {
+  flex: 1;
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface-2);
+  color: var(--text);
+  font-family: var(--font-sans);
+  font-size: 13px;
+  outline: none;
+  transition: all 200ms ease;
+}
+
+#share-link-input:focus {
+  border-color: var(--primary);
+  background: var(--surface);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--primary) 10%, transparent);
+}
+
+.btn.secondary {
+  background: var(--surface-2);
+  color: var(--primary);
+  border-color: color-mix(in srgb, var(--primary) 30%, var(--border));
+}
+
+.btn.secondary:hover {
+  background: color-mix(in srgb, var(--primary) 10%, var(--surface-2));
+  border-color: var(--primary);
+  color: var(--primary-strong);
+}
