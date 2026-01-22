@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Code Test</title>
+    <script type="text/javascript" src="JS/vendor/qrcode.min.js"></script>
+</head>
+<body>
+    <h1>QR Code Test</h1>
+    <div id="qrcode-container"></div>
+    <script>
+        console.log('Checking QRCode library...');
+        if (window.QRCode) {
+            console.log('QRCode library found.');
+            try {
+                new QRCode(document.getElementById("qrcode-container"), {
+                    text: "https://example.com",
+                    width: 128,
+                    height: 128,
+                    colorDark : "#000000",
+                    colorLight : "#ffffff",
+                    correctLevel : QRCode.CorrectLevel.H
+                });
+                console.log('QR Code generated.');
+            } catch (e) {
+                console.error('Error generating QR Code:', e);
+            }
+        } else {
+            console.error('QRCode library NOT found.');
+        }
+    </script>
+</body>
+</html>

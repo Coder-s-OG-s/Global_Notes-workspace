@@ -582,6 +582,33 @@
         <div id="qrcode-container" style="background: white; padding: 10px; border-radius: 8px;"></div>
         <p style="text-align: center; color: var(--text-muted); font-size: 0.9em;">Scan this QR code or copy the link
           below to share this note.</p>
+        <div class="share-config" style="width: 100%; margin-bottom: 10px;">
+          <label for="share-host-ip"
+            style="display: block; font-size: 0.85em; color: var(--text-dim); margin-bottom: 4px;">Server IP (for mobile
+            scan):</label>
+          <input type="text" id="share-host-ip"
+            style="width: 100%; padding: 6px; border: 1px solid var(--border); border-radius: 6px; background: var(--surface); color: var(--text);"
+            placeholder="e.g. 192.168.x.x">
+
+          <div style="margin-top: 8px; display: flex; align-items: center; gap: 8px;">
+            <input type="checkbox" id="share-compact-mode">
+            <label for="share-compact-mode" style="font-size: 0.85em; color: var(--text); cursor: pointer;">
+              Use Compact Link (Removes user/branding info)
+            </label>
+          </div>
+
+          <details style="margin-top: 8px; font-size: 0.8em; color: var(--text-muted);">
+            <summary style="cursor: pointer; font-weight: 500;">⚠️ Troubleshooting & Tips (Read if stuck)</summary>
+            <ul style="margin: 8px 0 0 16px; padding: 0;">
+              <li><strong>QR Code missing?</strong> Your note might be too long. Use the <b>Copy Link</b> button
+                instead—it always works!</li>
+              <li><strong>"Corrupted" error?</strong> The mobile device might not have loaded the library yet. Refresh
+                the page on your phone.</li>
+              <li><strong>Mobile won't connect?</strong> Ensure your phone and computer are on the same Wi-Fi.</li>
+              <li><strong>Still failing?</strong> Verify the "Server IP" matches your computer's IP address.</li>
+            </ul>
+          </details>
+        </div>
         <div class="share-link-wrapper" style="width: 100%; display: flex; gap: 8px;">
           <input type="text" id="share-link-input" readonly
             style="flex: 1; padding: 8px; border: 1px solid var(--border-color); border-radius: 8px; background: var(--bg-secondary); color: var(--text-primary);">

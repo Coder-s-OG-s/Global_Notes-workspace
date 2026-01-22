@@ -21,8 +21,9 @@ function calculateStats(notes) {
     let lastActive = "Never";
     if (notes.length > 0) {
         // Get valid timestamps only
+        // Get valid timestamps only
         const timestamps = notes
-            .map(n => new Date(n.updated || n.created).getTime())
+            .map(n => new Date(n.updatedAt || n.updated || n.createdAt || n.created).getTime())
             .filter(t => !isNaN(t));
 
         if (timestamps.length > 0) {

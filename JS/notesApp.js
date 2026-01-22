@@ -84,6 +84,12 @@ const callbacks = {
 
 // Initializes the application by setting up state, loading data, and wiring up event handlers
 async function initApp() {
+  // PRIORITY 1: Check if this is a shared URL and exit if so
+  // This prevents the main app from loading and conflicting with the shared view
+  if (checkSharedUrl()) {
+    return;
+  }
+
   // Load user session
   state.activeUser = getActiveUser();
 
@@ -127,9 +133,11 @@ async function initApp() {
   callbacks.renderFolders();
   callbacks.renderNotesList();
   callbacks.renderActiveNote();
+}
 
-  // Check for shared URL params LAST
-  checkSharedUrl();
+// Redirect 0.0.0.0 to localhost to avoid "Not Secure" warning on desktop
+if (window.location.hostname === '0.0.0.0') {
+  window.location.hostname = 'localhost';
 }
 
 if (document.readyState === "loading") {
