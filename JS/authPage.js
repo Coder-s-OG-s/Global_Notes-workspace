@@ -62,6 +62,8 @@ function initAuthPage() {
   if (googleBtn) googleBtn.addEventListener("click", () => handleSocialLogin("google"));
   if (githubBtn) githubBtn.addEventListener("click", () => handleSocialLogin("github"));
 
+
+
   // Initialize the login form with necessary callbacks
   initLoginForm({
     formId: "login-form",

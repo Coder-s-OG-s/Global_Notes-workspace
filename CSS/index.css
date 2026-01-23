@@ -214,17 +214,11 @@ body {
   margin-left: auto;
 }
 
-.logo {
+.logo-img {
   width: 32px;
   height: 32px;
-  display: grid;
-  place-items: center;
-  background: linear-gradient(135deg, var(--primary-light), var(--primary-strong));
-  color: #ffffff;
   border-radius: var(--radius-sm);
-  font-weight: 700;
-  font-size: 16px;
-  box-shadow: var(--shadow);
+  object-fit: contain;
 }
 
 .brand h1 {
