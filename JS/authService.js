@@ -55,10 +55,13 @@ export async function getSession() {
  * @param {string} provider - 'google' or 'github'
  */
 export async function signInWithProvider(provider) {
+    const redirectUrl = window.location.origin;
+    console.log("Initiating OAuth with redirect to:", redirectUrl);
+
     const { data, error } = await supabase.auth.signInWithOAuth({
         provider: provider,
         options: {
-            redirectTo: window.location.origin
+            redirectTo: redirectUrl
         }
     });
 
