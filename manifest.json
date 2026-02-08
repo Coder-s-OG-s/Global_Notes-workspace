@@ -1,6 +1,11 @@
 {
   "name": "Global Notes v2",
   "short_name": "GlobalNotes",
+  "description": "A powerful, offline-capable workspace for organizing your thoughts and notes.",
+  "categories": [
+    "productivity",
+    "utilities"
+  ],
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#0f172a",

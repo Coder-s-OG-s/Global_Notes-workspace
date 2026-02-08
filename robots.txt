@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://globalnotes-workspace.vercel.app/sitemap.xml
