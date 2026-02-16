@@ -352,6 +352,11 @@ body {
   flex: 0 0 auto;
 }
 
+.mobile-toggle {
+  display: none !important;
+  /* Hidden by default on desktop */
+}
+
 .brand {
   display: flex;
   align-items: center;
@@ -790,89 +795,7 @@ input:checked+.toggle-slider:before {
 /* Dynamic resizing handled by JS or CSS calc, but sticking to flex-grow is safest */
 
 /* Responsive Design */
-@media (max-width: 768px) {
-  .navbar-primary {
-    padding: 0 var(--spacing-sm);
-    gap: var(--spacing-sm);
-  }
-
-  .brand h1 {
-    display: none;
-    /* Hide text on mobile */
-  }
-
-  .navbar-center {
-    justify-content: flex-end;
-    /* Push search to right or overlay? */
-    max-width: none;
-  }
-
-  .search-container {
-    width: auto;
-  }
-
-  /* Expand search on focus logic would be nice, but simple for now: */
-  .search-input {
-    width: 36px;
-    padding: 0;
-    text-align: center;
-    background: transparent;
-    border-color: transparent;
-    cursor: pointer;
-  }
-
-  .search-input:focus {
-    width: 180px;
-    /* Expand */
-    padding-left: 12px;
-    text-align: left;
-    background: var(--surface);
-    border-color: var(--primary);
-    position: absolute;
-    right: 0;
-    top: 0;
-    z-index: 10;
-  }
-
-  .search-icon {
-    left: 10px;
-    z-index: 9;
-  }
-
-
-  /* Actually better to just show icon and hide input until clicked for mobile, but simplified approach: */
-
-  .search-input::placeholder {
-    color: transparent;
-  }
-
-  .search-input:focus::placeholder {
-    color: var(--text-muted);
-  }
-
-  .date-filter {
-    display: none;
-    /* Hide date picker on mobile for space */
-  }
-
-  .btn-text {
-    display: none;
-  }
-
-  .btn-icon-wrapper {
-    margin: 0;
-  }
-
-  #new-note {
-    width: 36px;
-    padding: 0;
-  }
-
-  /* Filters horizontal scroll */
-  .navbar-secondary {
-    padding: 0 var(--spacing-sm);
-  }
-}
+/* Responsive Design - MOVED TO END OF FILE */
 
 
 .date-filter {
@@ -1717,6 +1640,10 @@ body[data-theme="corporate-gray"] .editor[data-theme="minimal-white"] {
   width: 100%;
 }
 
+.mobile-close {
+  display: none !important;
+}
+
 .user-workspace-name {
   font-weight: 600;
   font-size: 13px;
@@ -2214,28 +2141,7 @@ body[data-theme="corporate-gray"] .editor[data-theme="minimal-white"] {
 /* Main Content Expansion */
 
 /* Mobile Sidebar Logic */
-@media (max-width: 768px) {
-  .layout {
-    position: relative;
-  }
-
-  .app-sidebar {
-    position: absolute;
-    left: 0;
-    top: 112px;
-    height: calc(100vh - 112px);
-    width: 280px;
-    transform: translateX(-100%);
-    transition: transform 0.3s ease;
-    box-shadow: 4px 0 10px rgba(0, 0, 0, 0.2);
-    z-index: 50;
-  }
-
-  /* In mobile, "sidebar-visible" class toggles visibility */
-  .layout.sidebar-visible .app-sidebar {
-    transform: translateX(0);
-  }
-}
+/* Mobile Sidebar Logic - MOVED TO END OF FILE */
 
 /* ===== Editor ===== */
 .editor {
@@ -2888,49 +2794,7 @@ textarea:hover::-webkit-scrollbar-thumb {
   background-color: color-mix(in srgb, var(--text-muted) 60%, transparent) !important;
 }
 
-/* ===== Responsive ===== */
-@media (max-width: 980px) {
-  .layout {
-    grid-template-columns: 1fr;
-  }
-
-  .app-header {
-    padding: var(--spacing-md);
-  }
-
-  .actions {
-    flex-wrap: wrap;
-  }
-
-  .filters {
-    display: none;
-  }
-
-  .sidebar {
-    max-height: 400px;
-  }
-}
-
-@media (max-width: 640px) {
-  .brand h1 {
-    font-size: 16px;
-  }
-
-  .logo {
-    width: 28px;
-    height: 28px;
-    font-size: 14px;
-  }
-
-  .editor-bar,
-  .editor-body {
-    padding: var(--spacing-md);
-  }
-
-  .title-input {
-    font-size: 16px;
-  }
-}
+/* Responsive Design - MOVED TO END OF FILE */
 
 /* ===== Profile & Modal ===== */
 .header-avatar {
@@ -3428,3 +3292,246 @@ textarea:hover::-webkit-scrollbar-thumb {
 
 /* Sidebar Split - AI Tools Separation */
 /* Consolidated Tools definitions moved toRedesign section */
+
+
+/* ========================================= */
+/* CONSOLIDATED RESPONSIVE BREAKPOINTS       */
+/* ========================================= */
+
+/* --- High-Resolution & Wide Screens --- */
+@media (min-width: 1600px) {
+  .layout {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: var(--spacing-xl) 0;
+  }
+
+  .editor-content {
+    font-size: 16px;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  .title-input {
+    font-size: 24px;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  .editor-bar {
+    padding-left: calc(50% - 450px);
+    padding-right: calc(50% - 450px);
+  }
+}
+
+/* --- Tablets & Laptops (max-width: 1024px) --- */
+@media (max-width: 1024px) {
+  .layout {
+    grid-template-columns: 220px 1fr;
+    padding: var(--spacing-md);
+    gap: 12px;
+  }
+
+  .app-sidebar {
+    min-width: 200px;
+  }
+
+  .brand h1 {
+    font-size: 16px;
+  }
+}
+
+/* --- Mobile & Small Tablets (max-width: 768px) --- */
+@media (max-width: 768px) {
+  .layout {
+    display: block !important;
+    position: relative;
+    padding: var(--spacing-sm) !important;
+    width: 100% !important;
+    max-width: 100vw !important;
+    overflow-x: hidden !important;
+  }
+
+  body {
+    overflow-x: hidden !important;
+    width: 100vw !important;
+  }
+
+  .navbar-primary {
+    padding: 0 var(--spacing-md);
+  }
+
+  .brand h1,
+  .brand span {
+    display: none !important;
+  }
+
+  .mobile-toggle {
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    margin-right: 8px;
+  }
+
+  .mobile-close {
+    display: flex !important;
+    color: var(--text-muted);
+  }
+
+  .date-filter {
+    display: none !important;
+  }
+
+  .navbar-center {
+    justify-content: flex-end;
+    max-width: none;
+    flex: 1;
+  }
+
+  .search-container {
+    flex: 0 0 auto;
+  }
+
+  .btn-text {
+    display: none !important;
+  }
+
+  .app-sidebar {
+    position: fixed !important;
+    left: -280px !important;
+    /* Fixed width for drawer */
+    top: 0 !important;
+    height: 100vh !important;
+    width: 280px !important;
+    z-index: 3000 !important;
+    transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    box-shadow: 4px 0 16px rgba(0, 0, 0, 0.3);
+    background: var(--surface) !important;
+  }
+
+  .layout.sidebar-visible .app-sidebar {
+    left: 0 !important;
+  }
+
+  .sidebar-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 2999 !important;
+    backdrop-filter: blur(4px);
+  }
+
+  .layout.sidebar-visible .sidebar-overlay {
+    display: block !important;
+  }
+
+  .editor {
+    width: 100% !important;
+    margin: 0 !important;
+    border-radius: var(--radius-md) !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  .editor-bar {
+    padding: 12px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  .title-input {
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  .editor-toolbar {
+    overflow-x: auto;
+    white-space: nowrap;
+    -webkit-overflow-scrolling: touch;
+    padding: 8px;
+    max-width: 100%;
+  }
+
+  .toolbar-controls {
+    display: flex;
+    flex-wrap: nowrap;
+  }
+
+  .modal {
+    width: 95% !important;
+  }
+}
+
+/* --- Small Mobile Devices (max-width: 480px) --- */
+@media (max-width: 480px) {
+  .navbar-primary {
+    height: 56px;
+    padding: 0 var(--spacing-sm);
+  }
+
+  .brand {
+    gap: 4px;
+  }
+
+  .search-container {
+    max-width: 40px;
+    transition: max-width 0.3s ease;
+  }
+
+  .search-container:focus-within {
+    max-width: 220px;
+    position: absolute;
+    right: 8px;
+    z-index: 110;
+  }
+
+  .search-input {
+    padding-left: 32px;
+  }
+
+  #new-note {
+    width: 36px;
+    padding: 0;
+  }
+
+  .editor-bar {
+    padding: 10px !important;
+    gap: 8px !important;
+  }
+
+  .title-input {
+    font-size: 15px !important;
+    padding: 8px !important;
+  }
+
+  .editor-actions {
+    gap: 4px !important;
+    flex-wrap: wrap !important;
+    width: 100% !important;
+  }
+
+  .tags-input {
+    min-width: 0 !important;
+    flex: 1 1 100% !important;
+    /* Force tag input to new line if needed */
+    order: 10;
+  }
+
+  .buttons {
+    width: 100%;
+    justify-content: flex-end;
+    gap: 8px;
+    margin: 0;
+  }
+
+  .btn {
+    padding: 0 6px;
+    font-size: 11px;
+    height: 26px;
+  }
+}

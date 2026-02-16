@@ -1,16 +1,31 @@
 export function wireSidebarToggle() {
-    const mobileToggleBtn = document.querySelector("#sidebar-toggle"); // Keep old ID for mobile header
+    const mobileToggleBtn = document.querySelector("#sidebar-toggle");
+    const mobileCloseBtn = document.querySelector("#sidebar-close");
+    const sidebarOverlay = document.querySelector("#sidebar-overlay");
     const layout = document.querySelector(".layout");
 
     if (!layout) return;
 
-    // Mobile Toggle Button (Navbar) - Handles Drawer visibility
+    // Mobile Toggle Button (Navbar) - Opens Drawer
     if (mobileToggleBtn) {
         mobileToggleBtn.addEventListener("click", () => {
             if (window.innerWidth <= 768) {
-                // Mobile: Toggle Drawer
-                layout.classList.toggle("sidebar-visible");
+                layout.classList.add("sidebar-visible");
             }
+        });
+    }
+
+    // Mobile Close Button (Sidebar) - Closes Drawer
+    if (mobileCloseBtn) {
+        mobileCloseBtn.addEventListener("click", () => {
+            layout.classList.remove("sidebar-visible");
+        });
+    }
+
+    // Close sidebar on overlay click
+    if (sidebarOverlay) {
+        sidebarOverlay.addEventListener("click", () => {
+            layout.classList.remove("sidebar-visible");
         });
     }
 }

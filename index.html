@@ -47,13 +47,20 @@
 </head>
 
 <body>
+  <div class="sidebar-overlay" id="sidebar-overlay"></div>
   <header class="app-header">
     <!-- Primary Navbar: 3 Zones -->
     <div class="navbar-primary">
       <!-- Zone 1: Left (Menu + Brand) -->
       <!-- Zone 1: Left (Menu + Brand) -->
       <div class="navbar-left">
-        <!-- Hamburger removed as per user request -->
+        <button class="btn ghost icon-only mobile-toggle" id="sidebar-toggle" aria-label="Toggle Menu">
+          <svg class="icon" viewBox="0 0 24 24">
+            <line x1="3" y1="12" x2="21" y2="12"></line>
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <line x1="3" y1="18" x2="21" y2="18"></line>
+          </svg>
+        </button>
         <div class="brand">
           <div class="logo-wrapper">
             <img src="assets/images/logo.png" alt="Logo" class="logo-img" />
@@ -230,6 +237,12 @@
       <div class="sidebar-header">
         <div class="sidebar-top-row">
           <span class="user-workspace-name">My Workspace</span>
+          <button class="btn ghost icon-only mobile-close" id="sidebar-close" aria-label="Close Menu">
+            <svg class="icon" viewBox="0 0 24 24">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
         </div>
       </div>
 

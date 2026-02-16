@@ -162,33 +162,4 @@
   color: #080808 !important;
 }
 
-/* ========================================
-   Mobile-Friendly Styles
-   ======================================== */
-
-@media (max-width: 768px) {
-  .folders-section {
-    border-right: none;
-    border-bottom: 1px solid #ddd;
-    height: auto;
-    max-height: 40vh;
-    overflow-y: auto;
-  }
-
-  .notes-section {
-    border-left: none;
-  }
-
-  .folders-header h3 {
-    font-size: 16px;
-  }
-
-  .folder-btn {
-    padding: 12px 15px;
-    font-size: 14px;
-  }
-
-  .notes-header h3 {
-    font-size: 16px;
-  }
-}
+/* Mobile styles removed - handled in index.css */
