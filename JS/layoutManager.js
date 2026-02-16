@@ -1,44 +1,17 @@
 export function wireSidebarToggle() {
-    const collapseBtn = document.querySelector("#sidebar-collapse-btn"); // New ID
     const mobileToggleBtn = document.querySelector("#sidebar-toggle"); // Keep old ID for mobile header
     const layout = document.querySelector(".layout");
 
     if (!layout) return;
 
-    // function to toggle
-    const toggleSidebar = () => {
-        layout.classList.toggle("sidebar-hidden");
-        const isHidden = layout.classList.contains("sidebar-hidden");
-        localStorage.setItem("notesWorkspace.sidebarHidden", isHidden);
-    };
-
-    // Desktop Collapse Button
-    if (collapseBtn) {
-        collapseBtn.addEventListener("click", toggleSidebar);
-    }
-
-    // Mobile Toggle Button (Navbar) - Handles both Mobile Open and Desktop Collapse
+    // Mobile Toggle Button (Navbar) - Handles Drawer visibility
     if (mobileToggleBtn) {
         mobileToggleBtn.addEventListener("click", () => {
             if (window.innerWidth <= 768) {
                 // Mobile: Toggle Drawer
                 layout.classList.toggle("sidebar-visible");
-            } else {
-                // Desktop: Toggle Collapse
-                layout.classList.toggle("sidebar-hidden");
-                const isHidden = layout.classList.contains("sidebar-hidden");
-                localStorage.setItem("notesWorkspace.sidebarHidden", isHidden);
             }
         });
-    }
-
-    // Check for saved preference (Desktop only usually)
-    // If we are on desktop, apply hidden state.
-    if (window.innerWidth > 768) {
-        const isHidden = localStorage.getItem("notesWorkspace.sidebarHidden") === "true";
-        if (isHidden) {
-            layout.classList.add("sidebar-hidden");
-        }
     }
 }
 
@@ -120,7 +93,7 @@ export function wireSidebarResize() {
         let newWidth = e.clientX - layoutRect.left - parseFloat(getComputedStyle(layout).paddingLeft);
 
         // Enforce min and max widths
-        const minWidth = 200;
+        const minWidth = 240;
         const maxWidth = 600; // Or a percentage of window width
 
         if (newWidth < minWidth) newWidth = minWidth;

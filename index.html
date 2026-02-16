@@ -164,10 +164,10 @@
             <div class="dropdown-section">
               <div class="toggle-row">
                 <label for="auto-save-toggle" class="dropdown-label">Auto Save</label>
-                <div class="toggle-switch">
+                <label class="toggle-switch" for="auto-save-toggle">
                   <input type="checkbox" id="auto-save-toggle">
                   <span class="toggle-slider"></span>
-                </div>
+                </label>
               </div>
             </div>
           </div>
@@ -230,22 +230,17 @@
       <div class="sidebar-header">
         <div class="sidebar-top-row">
           <span class="user-workspace-name">My Workspace</span>
-          <button class="btn-icon tiny ghost" id="sidebar-collapse-btn" title="Collapse Sidebar">
-            <svg class="icon" viewBox="0 0 24 24" style="width: 16px; height: 16px;">
-              <polyline points="15 18 9 12 15 6"></polyline>
-            </svg>
-          </button>
         </div>
       </div>
 
       <!-- 2. Library Section (Navigation Hub) -->
-      <div class="sidebar-section">
+      <div class="sidebar-section library-section">
         <div class="section-header">
           <span class="section-title">Library</span>
         </div>
         <ul class="library-list">
           <li class="library-item active" id="nav-all-notes">
-            <button class="library-btn">
+            <button class="library-btn" title="All Notes">
               <svg class="library-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                 stroke-linecap="round" stroke-linejoin="round">
                 <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
@@ -258,7 +253,7 @@
             </button>
           </li>
           <li class="library-item" id="nav-recent">
-            <button class="library-btn">
+            <button class="library-btn" title="Recent Notes">
               <svg class="library-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                 stroke-linecap="round" stroke-linejoin="round">
                 <circle cx="12" cy="12" r="10"></circle>
@@ -268,7 +263,7 @@
             </button>
           </li>
           <li class="library-item" id="nav-favorites">
-            <button class="library-btn">
+            <button class="library-btn" title="Favorites">
               <svg class="library-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                 stroke-linecap="round" stroke-linejoin="round">
                 <polygon
@@ -276,26 +271,24 @@
                 </polygon>
               </svg>
               <span>Favorites</span>
-              <!-- <span class="badge">0</span> -->
             </button>
           </li>
-          <li class="library-item" id="nav-trash">
-            <button class="library-btn">
+          <li class="library-item" id="nav-archived">
+            <button class="library-btn" title="Archived">
               <svg class="library-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                 stroke-linecap="round" stroke-linejoin="round">
-                <polyline points="3 6 5 6 21 6"></polyline>
-                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-                <line x1="10" y1="11" x2="10" y2="17"></line>
-                <line x1="14" y1="11" x2="14" y2="17"></line>
+                <path d="M21 8v13H3V8"></path>
+                <path d="M1 3h22v5H1z"></path>
+                <path d="M10 12h4"></path>
               </svg>
-              <span>Trash</span>
+              <span>Archived</span>
             </button>
           </li>
         </ul>
       </div>
 
       <!-- 3. Folders Section -->
-      <div class="sidebar-section flex-grow">
+      <div class="sidebar-section folders-section">
         <div class="section-header">
           <span class="section-title">Folders</span>
           <button class="btn-icon tiny ghost" id="create-folder" title="New Folder">
@@ -311,7 +304,7 @@
       </div>
 
       <!-- 3. Notes List -->
-      <div class="sidebar-section flex-grow">
+      <div class="sidebar-section notes-section">
         <div class="section-header">
           <span class="section-title">NOTES</span>
         </div>
@@ -355,7 +348,7 @@
       </div>
 
       <!-- Resizer Handle -->
-      <div class="resizer" id="sidebar-resizer"></div>
+      <div class="sidebar-resizer" id="sidebar-resizer"></div>
     </aside>
 
     <!-- Editor: note details -->
@@ -396,6 +389,14 @@
           </div>
 
           <div class="buttons">
+            <button class="btn btn-icon" id="toggle-favorite" aria-label="Toggle favorite" title="Toggle favorite">
+              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <polygon
+                  points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2">
+                </polygon>
+              </svg>
+            </button>
             <button class="btn secondary" id="share-note" aria-label="Share note">Share</button>
             <button class="btn" id="duplicate-note">Duplicate</button>
             <button class="btn danger" id="delete-note">Delete</button>

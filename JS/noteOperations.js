@@ -67,6 +67,31 @@ export function handleSaveNote(notes, activeNoteId, activeUser, getActiveFilter,
   callbacks.renderNotesList();
 }
 
+// Toggles the archived status of a note
+export function handleArchiveNote(notes, noteId, activeUser, callbacks) {
+  const note = notes.find((n) => n.id === noteId);
+  if (!note) return;
+  note.isArchived = true;
+  note.updatedAt = new Date().toISOString();
+  persistNotes(activeUser, notes);
+  callbacks.renderNotesList();
+  if (callbacks.activeNoteId === noteId) {
+    callbacks.renderActiveNote();
+  }
+}
+
+export function handleUnarchiveNote(notes, noteId, activeUser, callbacks) {
+  const note = notes.find((n) => n.id === noteId);
+  if (!note) return;
+  note.isArchived = false;
+  note.updatedAt = new Date().toISOString();
+  persistNotes(activeUser, notes);
+  callbacks.renderNotesList();
+  if (callbacks.activeNoteId === noteId) {
+    callbacks.renderActiveNote();
+  }
+}
+
 // Creates a new note with optional initial tags and folder assignment
 export function handleNewNote(notes, activeUser, getActiveFilter, getSelectedDate, callbacks, activeFolderId) {
   const activeFilter = getActiveFilter();
@@ -121,4 +146,15 @@ export function handleDuplicateNote(notes, activeNoteId, activeUser, callbacks) 
   notes.unshift(copy);
   persistNotes(activeUser, notes);
   callbacks.setActiveNote(copy.id);
+}
+
+// Toggles the favorite status of the active note
+export function handleToggleFavorite(notes, activeNoteId, activeUser, callbacks) {
+  const note = notes.find((n) => n.id === activeNoteId);
+  if (!note) return;
+  note.isFavorite = !note.isFavorite; // Toggle
+  note.updatedAt = new Date().toISOString();
+  persistNotes(activeUser, notes);
+  callbacks.renderActiveNote();
+  callbacks.renderNotesList();
 }

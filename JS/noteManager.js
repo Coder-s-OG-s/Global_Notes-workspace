@@ -11,6 +11,8 @@ export function createNote(partial = {}) {
     folderId: partial.folderId || null, // Add folder association
     theme: partial.theme || "classic-blue", // Default theme
     editorPattern: partial.editorPattern || "plain", // Default editor pattern
+    isFavorite: partial.isFavorite || false, // Default favorite status
+    isArchived: partial.isArchived || false, // Default archived status
     createdAt: partial.createdAt || now,
     updatedAt: partial.updatedAt || now,
   };

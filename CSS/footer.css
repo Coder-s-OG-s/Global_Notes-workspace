@@ -1,19 +1,30 @@
-/* Global Footer Styles */
 .global-footer {
     width: 100%;
-    padding: 8px 0;
-    margin-top: auto;
-    background-color: transparent;
+    max-width: 1800px;
+    margin: 64px auto 32px;
+    padding: 24px var(--spacing-xl);
+    /* Dynamically offset footer for new layout (16px gap + 12px padding) */
+    padding-left: calc(var(--sidebar-width, 240px) + 16px + 12px);
+    background: transparent;
+    border-top: 1px solid var(--border);
     text-align: center;
-    color: var(--text-muted, #888);
-    font-family: 'Inter', sans-serif;
-    font-size: 0.9rem;
-    border-top: 1px solid var(--border-color, rgba(0, 0, 0, 0.1));
+    color: var(--text-dim);
+    font-family: var(--font-sans);
+    font-size: 13px;
+    transition: padding-left 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+/* When sidebar is hidden (Mini Sidebar), adjust offset */
+.layout.sidebar-hidden+.global-footer {
+    padding-left: calc(60px + 48px + var(--spacing-xl));
 }
 
 .global-footer p {
-    margin: 4px 0;
-    line-height: 1.5;
+    margin: 0;
+    line-height: 1.6;
+    max-width: 600px;
+    margin: 0 auto;
+    opacity: 0.8;
 }
 
 /* Ensure body takes full height so footer can be pushed down if using flex column */
@@ -29,5 +40,16 @@ body {
     body.layout-sidebar .global-footer {
         padding-left: 280px;
         /* Offset for sidebar */
+    }
+}
+
+/* responsive adjustments */
+@media (max-width: 768px) {
+    .global-footer {
+        margin-top: 24px;
+        padding: 16px var(--spacing-md);
+        font-size: 12px;
+        border-radius: 0;
+        /* Full width on mobile */
     }
 }

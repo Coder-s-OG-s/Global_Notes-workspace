@@ -29,6 +29,7 @@ const state = {
   activeUser: null,
   folders: [],
   activeFolderId: null, // null means "All Notes"
+  activeLibraryFilter: 'all', // 'all', 'recent', 'favorites', 'trash'
   calendarWidget: null
 };
 
@@ -38,38 +39,54 @@ function setActiveNote(noteId) {
   const note = state.notes.find((n) => n.id === noteId);
   callbacks.renderNotesList();
   callbacks.renderActiveNote();
-  // Sync theme selector with active note's theme
   syncThemeSelector(note);
-  // Sync editor pattern selector with active note's pattern
   syncEditorPatternSelector(note);
 }
 
 const callbacks = {
-  // Callback to set the active note and update UI
   setActiveNote,
-  // Sets the active folder and refreshes the folders and notes list
-  setActiveFolder: (folderId) => {
+
+  setActiveLibraryFilter: (filterType) => {
+    state.activeLibraryFilter = filterType;
+    state.activeFolderId = null; // Clear folder if library item selected
+    callbacks.renderNotesList();
+  },
+
+  setActiveFolder: (folderId, targetLibraryId = null) => {
     state.activeFolderId = folderId;
+    if (folderId) state.activeLibraryFilter = 'all'; // Reset library filter if folder selected
+
     callbacks.renderFolders();
     callbacks.renderNotesList();
-    // If a folder is selected, clear Library selection
+
     if (folderId) {
       import("./renderer.js").then(module => {
         module.updateSidebarSelection(folderId, null);
       });
     } else {
-      // If clared (All Notes), highlight All Notes by default?
-      // Or leave it to the specific Library click handler?
-      // Let's default to All Notes if null is passed explicitly (e.g. from folder delete)
+      const libId = targetLibraryId || 'nav-all-notes';
       import("./renderer.js").then(module => {
-        module.updateSidebarSelection(null, 'nav-all-notes');
+        module.updateSidebarSelection(null, libId);
       });
     }
   },
-  // Renders the list of notes in the sidebar
+
   renderNotesList: () => {
-    renderNotesList(state.notes, state.activeNoteId, setActiveNote, state.activeFolderId);
-    state.calendarWidget?.render(); // Update calendar indicators
+    let filteredNotes = state.notes;
+
+    // Apply Library Filters
+    if (state.activeLibraryFilter === 'favorites') {
+      filteredNotes = state.notes.filter(n => n.isFavorite && !n.isArchived);
+    } else if (state.activeLibraryFilter === 'archived') {
+      filteredNotes = state.notes.filter(n => n.isArchived);
+    } else {
+      // Default: 'all' or other
+      filteredNotes = state.notes.filter(n => !n.isArchived);
+    }
+    // 'recent' is just a sort, handled by the sort dropdown or default logic
+
+    renderNotesList(filteredNotes, state.activeNoteId, setActiveNote, state.activeFolderId);
+    state.calendarWidget?.render();
   },
   // Renders the currently active note in the main editor
   renderActiveNote: () => renderActiveNote(state.notes.find((n) => n.id === state.activeNoteId), () => { }),
@@ -158,8 +175,6 @@ async function initApp() {
   wireMailFeature();
   wireShareFeature(state, callbacks);
   wireShapeManager();
-  wireTagManager(state, callbacks);
-  wireAutoSave(state, callbacks);
   wireTagManager(state, callbacks);
   wireAutoSave(state, callbacks);
   wireDropdowns();
