@@ -47,17 +47,47 @@ export function persistTheme(theme) {
 
 // Sets up the theme selector dropdown and initializes the theme based on user preference
 export function wireThemeToggle() {
+  // 1. Initial Apply
+  const currentTheme = getStoredTheme();
+  applyTheme(currentTheme);
+
+  // 2. Handle Hidden Select
   const selector = document.querySelector("#theme-selector");
-  if (!selector) {
-    applyTheme(getStoredTheme());
-    return;
+  if (selector) {
+    selector.value = currentTheme;
+    selector.addEventListener("change", () => {
+      const newVal = selector.value;
+      persistTheme(newVal);
+      updateButtonState(newVal);
+    });
   }
 
-  // Initialize with stored theme
-  applyTheme(getStoredTheme());
-
-  // Listen for theme changes
-  selector.addEventListener("change", () => {
-    persistTheme(selector.value);
+  // 3. Handle Custom Buttons
+  const themeButtons = document.querySelectorAll(".theme-option");
+  themeButtons.forEach((btn) => {
+    btn.addEventListener("click", (e) => {
+      e.stopPropagation(); // prevent closing dropdown if we want, or let it close?
+      // Usually users might want to see the change immediately.
+      // But let's keep dropdown open to allow switching back if they don't like it.
+      const val = btn.dataset.value;
+      if (val) {
+        persistTheme(val);
+        if (selector) selector.value = val;
+        updateButtonState(val);
+      }
+    });
   });
+
+  // Initial button state
+  updateButtonState(currentTheme);
+
+  function updateButtonState(activeTheme) {
+    themeButtons.forEach(btn => {
+      if (btn.dataset.value === activeTheme) {
+        btn.classList.add("active");
+      } else {
+        btn.classList.remove("active");
+      }
+    });
+  }
 }

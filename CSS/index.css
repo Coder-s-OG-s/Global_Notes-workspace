@@ -5,6 +5,11 @@
   box-sizing: border-box;
 }
 
+/* Utility Classes */
+.hidden {
+  display: none !important;
+}
+
 /* Theme: AMOLED Dark (Default) */
 :root,
 html[data-theme="amoled-dark"] {
@@ -213,138 +218,532 @@ body {
   margin: 0;
 }
 
-/* ===== App header ===== */
+/* Base Reset & Theme */
+/* (Keep existing theme variables from lines 1-182) */
+
+/* Updated App Header Styles */
 .app-header {
   position: sticky;
   top: 0;
-  z-index: 20;
+  z-index: 100;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-sm);
-  /* Reduced gap */
-  padding: 12px var(--spacing-xl);
-  background: var(--surface);
-  /* Solid background or very slight transparency */
-  border-bottom: 1px solid var(--border);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  box-shadow: var(--shadow-sm);
-  /* Subtler shadow */
 }
 
-.header-row {
+/* Primary Navbar (Top Row) */
+.navbar-primary {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 24px;
-  flex-wrap: nowrap;
-  /* Prevent wrapping for improved layout stability */
+  height: 64px;
+  padding: 0 var(--spacing-lg);
+  gap: var(--spacing-md);
 }
 
-/* Header Sections */
+/* Zone 1: Left */
+.navbar-left {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  flex: 0 0 auto;
+}
+
 .brand {
-  flex: 0 0 auto;
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-md);
-}
-
-.auth-controls {
-  flex: 0 0 auto;
   display: flex;
   align-items: center;
   gap: var(--spacing-sm);
-}
-
-.search {
-  flex: 1 1 auto;
-  max-width: 500px;
-  /* Constrain max width */
-  min-width: 240px;
-  margin: 0 auto;
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-sm);
-  background: var(--surface-2);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding-right: 4px;
-  transition: all 200ms ease;
-}
-
-.search:focus-within {
-  border-color: var(--primary);
-  background: var(--surface);
-  box-shadow: 0 0 0 2px color-mix(in srgb, var(--primary) 20%, transparent);
-  /* Tighter focus ring */
-}
-
-.header-toolbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--spacing-md);
-  flex-wrap: nowrap;
-  width: 100%;
-}
-
-.header-tools {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  flex-shrink: 0;
-  margin-left: auto;
-}
-
-.logo-img {
-  width: 28px;
-  /* Slightly smaller logo */
-  height: 28px;
-  border-radius: var(--radius-sm);
-  object-fit: contain;
 }
 
 .brand h1 {
   font-size: 16px;
-  /* More refined font size */
   font-weight: 600;
-  margin: 0;
-  letter-spacing: -0.01em;
   color: var(--text);
+  margin: 0;
+  white-space: nowrap;
+}
+
+.logo-img {
+  width: 24px;
+  height: 24px;
+  border-radius: var(--radius-sm);
+}
+
+/* Zone 2: Center */
+.navbar-center {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  flex: 1 1 auto;
+  justify-content: center;
+  max-width: 600px;
+}
+
+.search-container {
+  display: flex;
+  align-items: center;
+  position: relative;
+  width: 100%;
+  max-width: 320px;
+}
+
+.search-icon {
+  position: absolute;
+  left: 10px;
+  width: 16px;
+  height: 16px;
+  color: var(--text-muted);
+  pointer-events: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  fill: none;
 }
 
 .search-input {
   width: 100%;
   height: 36px;
-  /* Standard input height */
-  padding: 0 var(--spacing-md) 0 36px;
+  padding: 0 12px 0 36px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
   border-radius: var(--radius);
+  color: var(--text);
+  font-size: 14px;
+  transition: all 0.2s ease;
+}
+
+.search-input:focus {
+  background: var(--surface);
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--primary) 20%, transparent);
+  outline: none;
+}
+
+/* Date Pickers */
+.date-filter.smart-calendar-container {
+  position: relative;
+}
+
+.date-input-wrapper {
+  display: flex;
+  align-items: center;
+}
+
+.calendar-icon-btn {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 0;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.cal-icon-header {
+  background: var(--danger);
+  color: white;
+  font-size: 8px;
+  font-weight: 700;
+  width: 100%;
+  text-align: center;
+  padding: 2px 0;
+}
+
+.cal-icon-body {
+  font-size: 14px;
+  font-weight: 600;
+  width: 100%;
+  text-align: center;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text);
+}
+
+/* Hide native date input but keep accessible if needed, or style it to match design */
+.date-filter-input {
+  display: none;
+  /* We use the custom calendar toggler */
+}
+
+
+/* Zone 3: Right */
+.navbar-right {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  flex: 0 0 auto;
+}
+
+/* Buttons */
+.icon-only {
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius);
+  color: var(--text-dim);
+}
+
+.icon-only:hover {
+  background: var(--surface-2);
+  color: var(--text);
+}
+
+.btn-icon-wrapper {
+  display: flex;
+  align-items: center;
+  margin-right: 6px;
+}
+
+/* Dropdowns */
+.dropdown-wrapper {
+  position: relative;
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 8px;
+  width: 240px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  padding: 8px 0;
+  z-index: 1000;
+  transform-origin: top right;
+  animation: dropdown-fade 0.1s ease-out;
+}
+
+.dropdown-menu.hidden {
+  display: none;
+}
+
+@keyframes dropdown-fade {
+  from {
+    opacity: 0;
+    transform: scale(0.98) translateY(-4px);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.dropdown-header {
+  padding: 8px 16px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.dropdown-header.user-info {
+  text-transform: none;
+  letter-spacing: normal;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.user-name-display {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.user-role {
+  font-size: 12px;
+  color: var(--text-dim);
+}
+
+.dropdown-section {
+  padding: 0 16px 8px;
+}
+
+.dropdown-divider {
+  height: 1px;
+  background: var(--border);
+  margin: 4px 0;
+}
+
+.dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 8px 16px;
   border: none;
   background: transparent;
   color: var(--text);
   font-size: 14px;
-  transition: all 200ms ease;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2371717a' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='8'%3E%3C/circle%3E%3Cline x1='21' y1='21' x2='16.65' y2='16.65'%3E%3C/line%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: 10px center;
+  text-align: left;
+  cursor: pointer;
 }
 
-.search-input:focus {
-  outline: none;
-  background: transparent;
-  box-shadow: none;
+.dropdown-item:hover {
+  background: var(--surface-2);
 }
 
-.search-input::placeholder {
-  color: var(--text-muted);
+.dropdown-item.danger-text {
+  color: var(--danger);
+}
+
+.dropdown-item.danger-text:hover {
+  background: color-mix(in srgb, var(--danger) 10%, transparent);
+}
+
+/* Theme Grid in Dropdown */
+.theme-options-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.theme-option {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 8px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface-2);
+  color: var(--text-dim);
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.theme-option:hover {
+  background: var(--surface-3);
+  color: var(--text);
+}
+
+.theme-option.active {
+  border-color: var(--primary);
+  background: color-mix(in srgb, var(--primary) 10%, transparent);
+  color: var(--primary);
+}
+
+.theme-check {
+  font-size: 10px;
+  opacity: 0;
+  width: 10px;
+}
+
+.theme-option.active .theme-check {
+  opacity: 1;
+}
+
+/* Toggle Switch */
+.toggle-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 0;
+}
+
+.toggle-switch {
+  position: relative;
+  width: 36px;
+  height: 20px;
+}
+
+.toggle-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.toggle-slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: var(--surface-3);
+  transition: .4s;
+  border-radius: 20px;
+}
+
+.toggle-slider:before {
+  position: absolute;
+  content: "";
+  height: 16px;
+  width: 16px;
+  left: 2px;
+  bottom: 2px;
+  background-color: white;
+  transition: .4s;
+  border-radius: 50%;
+}
+
+input:checked+.toggle-slider {
+  background-color: var(--primary);
+}
+
+input:checked+.toggle-slider:before {
+  transform: translateX(16px);
+}
+
+/* Profile Avatar Trigger */
+.profile-dropdown-wrapper {
+  position: relative;
+}
+
+.profile-avatar-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  border-radius: 50%;
+}
+
+.header-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--surface-2);
+  transition: border-color 0.2s;
+}
+
+.header-avatar:hover {
+  border-color: var(--primary);
+}
+
+
+/* Secondary Navbar (Filters) */
+.navbar-secondary {
+  height: 48px;
+  padding: 0 var(--spacing-lg);
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid transparent;
+  /* Optional divider */
+}
+
+.filters-container {
+  width: 100%;
+  overflow-x: auto;
+  scrollbar-width: none;
+  /* Hide scrollbar Firefox */
+  -ms-overflow-style: none;
+}
+
+.filters-container::-webkit-scrollbar {
+  display: none;
 }
 
 .filters {
   display: flex;
   gap: var(--spacing-sm);
-  align-items: center;
-  flex-wrap: wrap;
 }
+
+/* Adjust Layout Height to account for header */
+/* .sidebar-column needs to account for approx 112px header (64+48) if visible */
+/* Dynamic resizing handled by JS or CSS calc, but sticking to flex-grow is safest */
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .navbar-primary {
+    padding: 0 var(--spacing-sm);
+    gap: var(--spacing-sm);
+  }
+
+  .brand h1 {
+    display: none;
+    /* Hide text on mobile */
+  }
+
+  .navbar-center {
+    justify-content: flex-end;
+    /* Push search to right or overlay? */
+    max-width: none;
+  }
+
+  .search-container {
+    width: auto;
+  }
+
+  /* Expand search on focus logic would be nice, but simple for now: */
+  .search-input {
+    width: 36px;
+    padding: 0;
+    text-align: center;
+    background: transparent;
+    border-color: transparent;
+    cursor: pointer;
+  }
+
+  .search-input:focus {
+    width: 180px;
+    /* Expand */
+    padding-left: 12px;
+    text-align: left;
+    background: var(--surface);
+    border-color: var(--primary);
+    position: absolute;
+    right: 0;
+    top: 0;
+    z-index: 10;
+  }
+
+  .search-icon {
+    left: 10px;
+    z-index: 9;
+  }
+
+  .search-input:not(:focus)+.search-icon {
+    /* If we used sibling selector */
+  }
+
+  /* Actually better to just show icon and hide input until clicked for mobile, but simplified approach: */
+
+  .search-input::placeholder {
+    color: transparent;
+  }
+
+  .search-input:focus::placeholder {
+    color: var(--text-muted);
+  }
+
+  .date-filter {
+    display: none;
+    /* Hide date picker on mobile for space */
+  }
+
+  .btn-text {
+    display: none;
+  }
+
+  .btn-icon-wrapper {
+    margin: 0;
+  }
+
+  #new-note {
+    width: 36px;
+    padding: 0;
+  }
+
+  /* Filters horizontal scroll */
+  .navbar-secondary {
+    padding: 0 var(--spacing-sm);
+  }
+}
+
 
 .date-filter {
   display: flex;

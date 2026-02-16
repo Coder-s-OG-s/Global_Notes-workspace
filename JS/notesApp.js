@@ -2,7 +2,7 @@ import { getActiveUser, setActiveUser, mergeGuestNotes } from "./storage.js";
 import { loadNotesForCurrentUser, ensureAtLeastOneNote, persistNotes } from "./noteManager.js";
 import { getFolders, saveFolders } from "./folderManager.js";
 import { renderNotesList, renderActiveNote, updateUserDisplay, renderFolders } from "./renderer.js";
-import { wireFiltersAndSearch, wireSort, wireTagInput, wireCrudButtons, wireFolderButtons, wireThemeSelector, syncThemeSelector, wireEditorPatternSelector, syncEditorPatternSelector } from "./eventHandlers.js";
+import { wireFiltersAndSearch, wireSort, wireTagInput, wireCrudButtons, wireFolderButtons, wireThemeSelector, syncThemeSelector, wireEditorPatternSelector, syncEditorPatternSelector, wireDropdowns } from "./eventHandlers.js";
 import { wireFormattingToolbar } from "./formattingToolbar.js";
 import { wireUploadButtons } from "./mediaManager.js";
 import { wireAuthButtons } from "./authButtons.js";
@@ -146,6 +146,7 @@ async function initApp() {
   wireShapeManager();
   wireTagManager(state, callbacks);
   wireAutoSave(state, callbacks);
+  wireDropdowns();
 
   // Initialize Smart Calendar
   state.calendarWidget = initSmartCalendar(state, callbacks);

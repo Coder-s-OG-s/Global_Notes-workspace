@@ -48,30 +48,33 @@
 
 <body>
   <header class="app-header">
-    <div class="header-row">
-      <div class="brand">
-        <button class="btn-icon" id="sidebar-toggle" aria-label="Toggle sidebar" style="margin-right: 8px;">
-          <!-- Menu Icon -->
+    <!-- Primary Navbar: 3 Zones -->
+    <div class="navbar-primary">
+      <!-- Zone 1: Left (Menu + Brand) -->
+      <div class="navbar-left">
+        <button class="btn-icon" id="sidebar-toggle" aria-label="Toggle sidebar">
           <svg class="icon" viewBox="0 0 24 24">
             <line x1="3" y1="12" x2="21" y2="12"></line>
             <line x1="3" y1="6" x2="21" y2="6"></line>
             <line x1="3" y1="18" x2="21" y2="18"></line>
           </svg>
         </button>
-        <img src="assets/images/logo.png" alt="Global Notes" class="logo-img">
-        <h1>Global Notes Workspace</h1>
+        <div class="brand">
+          <img src="assets/images/logo.png" alt="Global Notes" class="logo-img">
+          <h1>Global Notes Workspace</h1>
+        </div>
       </div>
 
-      <div class="search">
-        <svg class="icon" style="margin-left: 10px; width: 16px; height: 16px; color: var(--text-muted);"
-          viewBox="0 0 24 24">
-          <circle cx="11" cy="11" r="8"></circle>
-          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-        </svg>
-        <input type="search" id="search" class="search-input" placeholder="Search notes…" aria-label="Search notes"
-          style="padding-left: 8px; background-image: none;" />
+      <!-- Zone 2: Center (Search + Date) -->
+      <div class="navbar-center">
+        <div class="search-container">
+          <svg class="search-icon" viewBox="0 0 24 24">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+          <input type="search" id="search" class="search-input" placeholder="Search notes…" aria-label="Search notes" />
+        </div>
 
-        <!-- Moved Calendar -->
         <div class="date-filter smart-calendar-container" id="search-date-filter">
           <div class="date-input-wrapper">
             <input type="date" id="date-filter" class="date-filter-input" aria-label="Select note date" />
@@ -83,7 +86,6 @@
           <!-- Custom Calendar Popup -->
           <div class="smart-calendar-popup hidden" id="smart-calendar">
             <div class="real-time-date-display" id="real-time-date-display"></div>
-
             <div class="calendar-header">
               <button class="cal-nav-btn" id="cal-prev">←</button>
               <span class="cal-current-month" id="cal-month-year">December 2025</span>
@@ -100,44 +102,126 @@
         </div>
       </div>
 
-      <div class="auth-controls">
-        <div class="user-pill hidden" id="user-pill" aria-live="polite" role="button" tabindex="0"
-          aria-label="View Profile">
-          <img id="header-avatar" class="header-avatar" src="" alt="" aria-hidden="true" />
-          <span class="user-name" id="user-name"></span>
-          <button class="btn tiny" id="logout">Log out</button>
+      <!-- Zone 3: Right (Actions + Profile) -->
+      <div class="navbar-right">
+        <button class="btn primary" id="new-note">
+          <span class="btn-icon-wrapper">
+            <svg class="icon" viewBox="0 0 24 24" style="width: 16px; height: 16px;">
+              <line x1="12" y1="5" x2="12" y2="19"></line>
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+          </span>
+          <span class="btn-text">New Note</span>
+        </button>
+
+        <button class="btn ghost icon-only" id="export" title="Export Notes">
+          <svg class="icon" viewBox="0 0 24 24">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="7 10 12 15 17 10"></polyline>
+            <line x1="12" y1="15" x2="12" y2="3"></line>
+          </svg>
+        </button>
+
+        <!-- Preferences Dropdown Trigger -->
+        <div class="dropdown-wrapper" id="preferences-dropdown-wrapper">
+          <button class="btn ghost icon-only" id="preferences-toggle" title="Preferences">
+            <svg class="icon" viewBox="0 0 24 24">
+              <circle cx="12" cy="12" r="3"></circle>
+              <path
+                d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z">
+              </path>
+            </svg>
+          </button>
+          <!-- Dropdown Content -->
+          <div class="dropdown-menu hidden" id="preferences-menu">
+            <div class="dropdown-header">Preferences</div>
+            <div class="dropdown-section">
+              <label class="dropdown-label">Theme</label>
+              <div class="theme-options-grid">
+                <button class="theme-option active" data-value="amoled-dark" title="AMOLED Dark">
+                  <span class="theme-check">✓</span>
+                  <span class="theme-name">Dark</span>
+                </button>
+                <button class="theme-option" data-value="nature-green" title="Nature Green">
+                  <span class="theme-check">✓</span>
+                  <span class="theme-name">Nature</span>
+                </button>
+                <button class="theme-option" data-value="corporate-gray" title="Corporate Gray">
+                  <span class="theme-check">✓</span>
+                  <span class="theme-name">Gray</span>
+                </button>
+                <button class="theme-option" data-value="minimal-white" title="Minimal White">
+                  <span class="theme-check">✓</span>
+                  <span class="theme-name">White</span>
+                </button>
+              </div>
+              <!-- Hidden select for JS compatibility -->
+              <select id="theme-selector" class="hidden" aria-label="UI Theme">
+                <option value="amoled-dark">AMOLED Dark</option>
+                <option value="nature-green">Nature Green</option>
+                <option value="corporate-gray">Corporate Gray</option>
+                <option value="minimal-white">Minimal White</option>
+              </select>
+            </div>
+            <div class="dropdown-divider"></div>
+            <div class="dropdown-section">
+              <div class="toggle-row">
+                <label for="auto-save-toggle" class="dropdown-label">Auto Save</label>
+                <div class="toggle-switch">
+                  <input type="checkbox" id="auto-save-toggle">
+                  <span class="toggle-slider"></span>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
-        <button class="btn ghost" id="login">Sign In</button>
-        <button class="btn primary" id="export">Export</button>
+
+        <!-- Profile / Auth -->
+        <div class="auth-wrapper">
+          <button class="btn secondary" id="login">Sign In</button>
+
+          <div class="profile-dropdown-wrapper hidden" id="user-pill">
+            <button class="profile-avatar-btn" id="profile-toggle">
+              <img id="header-avatar" class="header-avatar" src="" alt="Profile" />
+            </button>
+            <div class="dropdown-menu hidden" id="profile-menu">
+              <div class="dropdown-header user-info">
+                <span class="user-name-display" id="user-name"></span>
+                <span class="user-role">Free Plan</span>
+              </div>
+              <div class="dropdown-divider"></div>
+              <button class="dropdown-item" id="open-profile-modal">
+                <svg class="icon" viewBox="0 0 24 24">
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                  <circle cx="12" cy="7" r="4"></circle>
+                </svg>
+                Profile Settings
+              </button>
+              <div class="dropdown-divider"></div>
+              <button class="dropdown-item danger-text" id="logout">
+                <svg class="icon" viewBox="0 0 24 24">
+                  <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                  <polyline points="16 17 21 12 16 7"></polyline>
+                  <line x1="21" y1="12" x2="9" y2="12"></line>
+                </svg>
+                Log Out
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 
-    <div class="header-toolbar">
-      <div class="filters">
-        <button class="chip active" data-filter="all" aria-pressed="true">All</button>
-        <button class="chip" data-filter="work">Work</button>
-        <button class="chip" data-filter="personal">Personal</button>
-        <button class="chip" data-filter="ideas">Ideas</button>
-        <button class="chip" data-filter="todo">To‑do</button>
-      </div>
-
-      <!-- Ad Placeholder Removed -->
-
-      <div class="header-tools">
-
-
-        <select id="theme-selector" class="select tiny" aria-label="UI Theme">
-          <option value="amoled-dark">AMOLED Dark</option>
-          <option value="nature-green">Nature Green</option>
-          <option value="corporate-gray">Corporate Gray</option>
-          <option value="minimal-white">Minimal White</option>
-        </select>
-        <div class="auto-save-wrapper" style="display: flex; align-items: center; margin-right: 10px;">
-          <input type="checkbox" id="auto-save-toggle" class="checkbox" style="margin-right: 5px;">
-          <label for="auto-save-toggle" style="font-size: 14px; color: var(--text-color); cursor: pointer;">Auto
-            Save</label>
+    <!-- Secondary Navbar: Filters -->
+    <div class="navbar-secondary">
+      <div class="filters-container">
+        <div class="filters">
+          <button class="chip active" data-filter="all" aria-pressed="true">All</button>
+          <button class="chip" data-filter="work">Work</button>
+          <button class="chip" data-filter="personal">Personal</button>
+          <button class="chip" data-filter="ideas">Ideas</button>
+          <button class="chip" data-filter="todo">To‑do</button>
         </div>
-        <button class="btn primary" id="new-note">New note</button>
       </div>
     </div>
   </header>

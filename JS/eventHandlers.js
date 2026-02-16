@@ -171,6 +171,34 @@ export function wireThemeSelector(state, callbacks) {
   });
 }
 
+// Manages dropdown toggles (Preferences, Profile)
+export function wireDropdowns() {
+  const toggleDropdown = (wrapperId, menuId) => {
+    const wrapper = document.getElementById(wrapperId);
+    const menu = document.getElementById(menuId);
+    const btn = wrapper?.querySelector("button");
+
+    if (!wrapper || !menu || !btn) return;
+
+    btn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      // Close others
+      document.querySelectorAll(".dropdown-menu").forEach(el => {
+        if (el !== menu) el.classList.add("hidden");
+      });
+      menu.classList.toggle("hidden");
+    });
+  };
+
+  toggleDropdown("preferences-dropdown-wrapper", "preferences-menu");
+  toggleDropdown("user-pill", "profile-menu");
+
+  // Click outside to close
+  document.addEventListener("click", () => {
+    document.querySelectorAll(".dropdown-menu").forEach(el => el.classList.add("hidden"));
+  });
+}
+
 // Updates the theme selector to match the current note's theme
 export function syncThemeSelector(activeNote) {
   const themeSelect = $("#note-theme");
