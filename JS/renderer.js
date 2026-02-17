@@ -69,19 +69,20 @@ export function renderNotesList(notes, activeNoteId, setActiveNote, activeFolder
       : `<button class="note-action-btn archive-btn" title="Archive"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 8v13H3V8"/><path d="M1 3h22v5H1z"/><path d="M10 12h4"/></svg></button>`;
 
     btn.innerHTML = `
-      <div class="note-row">
-        <div class="note-main">
-          <h3 class="note-title">
-            ${safeTitle}
-            ${note.isFavorite ? '<svg viewBox="0 0 24 24" fill="currentColor" stroke="none" class="fav-icon-small"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>' : ''}
-          </h3>
-          <p class="note-preview-compact">${safePreview}</p>
-        </div>
-        <time class="note-time-label" datetime="${safeDatetime}">${friendlyDate}</time>
-        <div class="note-actions-hover">
-          ${archiveActionHtml}
-        </div>
+    <div class="note-row">
+      <div class="note-main">
+        <h3 class="note-title">
+          ${safeTitle}
+          ${note.isFavorite ? '<svg viewBox="0 0 24 24" fill="currentColor" stroke="none" class="fav-icon-small"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>' : ''}
+        </h3>
+        <p class="note-preview-compact">${safePreview}</p>
+        ${tagsHtml ? `<span class="note-tags">${tagsHtml}</span>` : ''}
       </div>
+      <time class="note-time-label" datetime="${safeDatetime}">${friendlyDate}</time>
+      <div class="note-actions-hover">
+        ${archiveActionHtml}
+      </div>
+    </div>
     `;
 
     btn.addEventListener("click", () => {
@@ -188,7 +189,7 @@ export function updateUserDisplay(activeUser) {
 
   if (activeUser) {
     pill.classList.remove("hidden");
-    nameEl.textContent = `@${activeUser}`;
+    nameEl.textContent = `@${activeUser} `;
     loginBtn?.classList.add("hidden");
   } else {
     pill.classList.add("hidden");
@@ -204,8 +205,8 @@ export function updateUserDisplay(activeUser) {
  * @param {Function} setActiveFolder - Callback to set active folder
  */
 // Renders the folders list in the sidebar with the currently active folder highlighted
-const FOLDER_ICON = `<svg class="folder-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>`;
-const ALL_NOTES_ICON = `<svg class="folder-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>`;
+const FOLDER_ICON = `< svg class="folder-icon" viewBox = "0 0 24 24" fill = "none" stroke = "currentColor" stroke - width="2" stroke - linecap="round" stroke - linejoin="round" > <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg > `;
+const ALL_NOTES_ICON = `< svg class="folder-icon" viewBox = "0 0 24 24" fill = "none" stroke = "currentColor" stroke - width="2" stroke - linecap="round" stroke - linejoin="round" ><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg > `;
 
 export function renderFolders(folders, activeFolderId, setActiveFolder) {
   const foldersEl = $("#folders-list");
@@ -228,7 +229,7 @@ export function renderFolders(folders, activeFolderId, setActiveFolder) {
     // Name & Icon
     const btn = document.createElement("div");
     btn.className = "folder-btn";
-    btn.innerHTML = `<span class="folder-icon-wrapper">${iconHtml}</span> <span class="folder-name-text">${escapeHtml(name)}</span>`;
+    btn.innerHTML = `< span class="folder-icon-wrapper" > ${iconHtml}</span > <span class="folder-name-text">${escapeHtml(name)}</span>`;
 
     // Actions
     const actions = document.createElement("div");
@@ -238,13 +239,13 @@ export function renderFolders(folders, activeFolderId, setActiveFolder) {
       // Rename
       const renameBtn = document.createElement("button");
       renameBtn.className = "folder-action-btn folder-rename-btn";
-      renameBtn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>`;
+      renameBtn.innerHTML = `< svg width = "14" height = "14" viewBox = "0 0 24 24" fill = "none" stroke = "currentColor" stroke - width="2" ><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg > `;
       renameBtn.title = "Rename";
 
       // Delete
       const deleteBtn = document.createElement("button");
       deleteBtn.className = "folder-action-btn folder-delete-btn";
-      deleteBtn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>`;
+      deleteBtn.innerHTML = `< svg width = "14" height = "14" viewBox = "0 0 24 24" fill = "none" stroke = "currentColor" stroke - width="2" ><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg > `;
       deleteBtn.title = "Delete";
 
       actions.appendChild(renameBtn);

@@ -1257,6 +1257,20 @@ html[data-theme="amoled-dark"] .btn.danger {
   text-overflow: ellipsis;
 }
 
+.note-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 6px;
+}
+
+.note-tags .tag {
+  font-size: 10px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  white-space: nowrap;
+}
+
 .note-time-label {
   font-size: 11px;
   color: var(--text-muted);
