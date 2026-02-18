@@ -20,6 +20,7 @@ import { wireShapeManager } from "./shapeManager.js";
 import { wireTagManager } from "./tagManager.js";
 import { wireAutoSave } from "./autoSave.js";
 import { getSession } from "./authService.js";
+import { wireEditorQuickTools } from "./editorQuickTools.js";
 
 
 // Global state
@@ -179,6 +180,7 @@ async function initApp() {
   wireAutoSave(state, callbacks);
   wireDropdowns();
   wireLibraryNav(state, callbacks); // Wire new Sidebar Library
+  wireEditorQuickTools(); // Wire editor bar AI & Mail quick-tool popovers
 
   // Initialize Smart Calendar
   state.calendarWidget = initSmartCalendar(state, callbacks);
