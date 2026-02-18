@@ -1,136 +1,88 @@
-# OJT-2025-Persistent-Notes-Workspace-with-Search-Tags
-Because they lack a central location to store, arrange, and conveniently retrieve notes, people frequently misplace or forget crucial information. By developing a persistent, searchable workspace that enables users to tag, edit, and store notes indefinitely, this project addresses that issue. 
+# 🌐 Global Notes Workspace
+
+A high-performance, persistent, and searchable workspace for organizing thoughts, projects, and daily notes. Designed for productivity with a clean interface, offline-first capabilities, and seamless organization.
 
 ## ✨ Features
 
-- **User Authentication**
-  - Login / Sign-up flow
-  - Basic authorization checks before accessing the workspace
+- **User Authentication**: Secure Login/Sign-up flow with Supabase (Cloud) or Guest mode (Local).
+- **Offline-First Persistence**: Notes are stored in browser LocalStorage and synced to the cloud when online.
+- **Advanced Search & Filter**: Real-time search across all notes with tag-based filtering.
+- **Organization**: Group notes into folders and labels for a streamlined workflow.
+- **Rich Editor**: Formatting toolbar (bold, italic, etc.), media attachments, and sketch support.
+- **Import / Export**: Portability with JSON-based import and export.
+- **Theming**: Premium AMOLED Dark, Nature Green, and minimal themes.
 
-- **Persistent Notes**
-  - Notes stored in browser LocalStorage in JSON format
-  - Automatic loading of saved notes on page refresh
+---
 
-- **Search & Filter**
-  - Search notes by text
-  - Filter and sort using tags and other criteria
+## 🚀 Getting Started
 
-- **Folders & Organization**
-  - Group notes into folders using the folder manager
+Follow these steps to set up the project on your local machine.
 
-- **Formatting & Media**
-  - Basic text formatting toolbar (bold, italic, etc.)
-  - Support for attaching or handling media (via `mediaManager.js`)
+### 1. Prerequisites
+- **Node.js** (v14 or higher recommended)
+- **npm** (comes with Node.js)
 
-- **Import / Export**
-  - Export notes as JSON
-  - Import notes from JSON files
+### 2. Installation
+Clone the repository and install the necessary dependencies:
+```bash
+git clone https://github.com/Ayush-Patel-56/Global-Notes-Workspace.git
+cd Global-Notes-Workspace
+npm install
+```
 
-- **Theming**
-  - Theme manager (e.g., light / dark mode support)
+### 3. Configuration
+The project requires a `JS/config.js` file to handle environment variables. You can generate a default (Local Mode) configuration by running:
+```bash
+node generate-config.js
+```
+*Note: This will create a config file that allows the app to run in **Offline Mode**. To enable cloud sync and OAuth, you must provide Supabase credentials in a `.env` file before running the script.*
+
+### 4. Running the Project
+Start the local development server:
+```bash
+npm start
+```
+The application will be available at [http://localhost:3000](http://localhost:3000).
 
 ---
 
 ## 🛠 Tech Stack
 
-- **Frontend:** HTML, CSS, JavaScript
-- **Storage:** `localStorage` (JSON-based persistence)
+- **Core**: HTML5, Vanilla CSS3, JavaScript (ES6+ Modules)
+- **Frameworks**: Capacitor (Mobile support), Supabase (Auth & Database)
+- **Utilities**: LZ-String (Compression), QR CODE (Sharing)
 
 ---
 
 ## 📁 Project Structure
 
-├── CSS
-│   ├── index.css         
-│   ├── signup.css       
-│   └── styles.css        
-├── HTML
-│   └── signup.html       
-├── JS
-│   ├── authButtons.js        
-│   ├── authPage.js           
-│   ├── constants.js         
-│   ├── eventHandlers.js      
-│   ├── exportImport.js       
-│   ├── filterSearchSort.js  
-│   ├── folderManager.js      
-│   ├── formattingToolbar.js  
-│   ├── loginPage.js          
-│   ├── mediaManager.js      
-│   ├── noteManager.js        
-│   ├── noteOperations.js     
-│   ├── notesApp.js       
-│   ├── renderer.js         
-│   ├── storage.js            
-│   ├── themeManager.js       
-│   └── utilities.js          
-├── index.html            
-└── LICENSE                # Project license
+```text
+├── CSS/                # Layout and theme styles
+├── HTML/               # Secondary pages (Auth, etc.)
+├── JS/                 # Modular application logic
+│   ├── notesApp.js     # Entry point
+│   ├── renderer.js     # UI Rendering logic
+│   └── ...             # Feature-specific modules
+├── assets/             # Images and branding
+├── index.html          # Main application housing
+├── server.js           # Lightweight local server
+└── sw.js               # Service worker for PWA support
+```
 
-----
+---
 
-Component-wise Feature Explanation
+## 🤝 Contributing
 
-Login / Signup Page
-Allows users to sign in to access their notes workspace. Handles basic validation and authorization before entering the app.
+Contributions are welcome! Please feel free to submit a Pull Request.
 
-Notes Workspace
-Main dashboard where users can create, view, edit, delete, and manage notes.
+1. Fork the Project
+2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the Branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
 
-Note Editor
-Provides typing area and formatting toolbar for writing rich notes with styling options.
+---
 
-Search & Filter System
-Allows users to quickly search notes by text, tags, or sorting options.
+## 📜 License
 
-Folders Manager
-Enables grouping notes into folders for organized categorization.
-
-Tags Feature
-Users can assign tags to notes for better filtering and quick organization.
-
-Import / Export Notes
-Export notes as a JSON file and import them back when needed, enabling backups.
-
-Media Manager
-Allows users to attach files or images inside notes if required.
-
-Theme Manager
-Switches between different UI themes (e.g., light/dark mode).
-
-LocalStorage-based Persistence
-Ensures notes are saved permanently even after page refresh or closing browser.
-
-Renderer Component
-Updates UI dynamically whenever a note or folder changes.
-
-Storage Component
-Converts notes to JSON and stores/retrieves from LocalStorage.
-
-Event Handlers System
-Connects UI events like button clicks, key inputs, note selection, etc., to functional logic.
-
-Utilities
-Provides reusable helper functions used throughout the app.
-
-----
-
-How Each Section of the UI Works
-
-Side Navigation Panel
-Shows folders and quick operations for accessing stored notes.
-
-Notes List Panel
-Displays titles of all saved notes for quick selection.
-
-Editor Panel
-Opens the selected note for reading or editing.
-
-Toolbar
-Provides formatting options (Bold, Italic, Underline, etc.).
-
-Search Bar
-Filters notes in real-time as the user types.
-
-Add Note / Delete / Save Buttons
-Manages CRUD operations on notes with single-click convenience.
+Distributed under the ISC License. See `LICENSE` for more information.
