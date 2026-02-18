@@ -142,10 +142,12 @@ export function renderActiveNote(note, removeTagFromActiveNote) {
   if (favBtn && favIcon) {
     if (note.isFavorite) {
       favIcon.setAttribute("fill", "currentColor");
+      favIcon.style.fill = "currentColor"; // Force fill via style
       favBtn.classList.add("active");
-      favBtn.style.color = "var(--primary)"; // Optional: Gold/Primary color
+      favBtn.style.color = "var(--accent)"; // Gold color for star
     } else {
       favIcon.setAttribute("fill", "none");
+      favIcon.style.fill = ""; // Clear forced fill
       favBtn.classList.remove("active");
       favBtn.style.color = ""; // Reset
     }
