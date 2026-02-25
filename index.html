@@ -591,7 +591,12 @@
             <input type="file" id="media-upload-input" accept="image/*,video/*" hidden />
             <input type="file" id="file-upload-input" hidden />
           </div>
-          <button class="btn-icon tiny" id="toolbar-toggle" aria-label="Toggle toolbar">▲</button>
+          <button class="btn-icon" id="toolbar-toggle" aria-label="Toggle toolbar">
+            <svg class="icon toggle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+              stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+          </button>
         </div>
         <div id="content" class="editor-content content-input" contenteditable="true" aria-label="Note content">
           <!-- Text will go here -->
