@@ -608,6 +608,108 @@ body {
   }
 }
 
+/* Premium Custom Selects */
+.custom-select-wrapper {
+  position: relative;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.custom-select-trigger {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 28px;
+  padding: 0 12px;
+  background: linear-gradient(to bottom, var(--surface-2), var(--surface-3));
+  border: 1px solid color-mix(in srgb, var(--border) 40%, transparent);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all var(--transition-short);
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 500;
+  user-select: none;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.custom-select-trigger:hover {
+  background: var(--surface-3);
+  border-color: var(--border-light);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+  transform: translateY(-1px);
+}
+
+.custom-select-trigger .chevron {
+  width: 12px;
+  height: 12px;
+  opacity: 0.6;
+  transition: transform 0.2s ease;
+}
+
+.custom-select-trigger.active {
+  background: var(--bg);
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px var(--primary-glow);
+}
+
+.custom-select-trigger.active .chevron {
+  transform: rotate(180deg);
+}
+
+.custom-select-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  min-width: 140px;
+  background: color-mix(in srgb, var(--surface) 95%, transparent);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-xl);
+  padding: 6px;
+  z-index: 1000;
+  display: none;
+  flex-direction: column;
+  gap: 2px;
+  animation: dropdown-fade 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.custom-select-menu.show {
+  display: flex;
+}
+
+.custom-select-option {
+  padding: 6px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 13px;
+  color: var(--text-dim);
+  transition: all 0.1s ease;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.custom-select-option:hover {
+  background: var(--surface-3);
+  color: var(--text);
+}
+
+.custom-select-option.selected {
+  background: var(--primary-glow);
+  color: var(--primary);
+  font-weight: 600;
+}
+
+.custom-select-option.selected::after {
+  content: "✓";
+  font-size: 11px;
+  margin-left: 8px;
+}
+
 .dropdown-header {
   padding: 8px 16px;
   font-size: 12px;
@@ -2365,12 +2467,16 @@ body[data-theme="corporate-gray"] .editor[data-theme="minimal-white"] {
 .editor-toolbar {
   display: flex;
   align-items: center;
+  justify-content: center;
+  /* Center the middle content */
   gap: 12px;
-  padding: 8px 12px;
-  background: color-mix(in srgb, var(--surface) 80%, transparent);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid color-mix(in srgb, var(--border) 40%, transparent);
+  padding: 8px 16px;
+  padding-right: 52px;
+  /* Reserved space for the fixed toggle button */
+  background: color-mix(in srgb, var(--surface) 98%, transparent);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid color-mix(in srgb, var(--border) 60%, transparent);
   border-radius: var(--radius-lg);
   margin-bottom: 20px;
   box-shadow: var(--shadow);
@@ -2379,15 +2485,15 @@ body[data-theme="corporate-gray"] .editor[data-theme="minimal-white"] {
   z-index: 10;
 }
 
+
 .toolbar-metadata {
   display: none;
-  /* Hidden when expanded */
+  /* Default hidden in expanded mode */
   align-items: center;
-  padding-left: 8px;
-  animation: slideIn 0.3s ease;
   flex: 1;
   min-width: 0;
 }
+
 
 @keyframes slideIn {
   from {
@@ -2430,13 +2536,9 @@ body[data-theme="corporate-gray"] .editor[data-theme="minimal-white"] {
   gap: 12px;
   overflow-x: auto;
   min-width: 0;
-  padding: 2px 0;
+  padding: 4px 0;
   scrollbar-width: none;
   transition: all var(--transition-fast);
-  justify-content: center;
-  /* Center controls */
-  flex: 2;
-  /* Take middle space */
 }
 
 .toolbar-controls::-webkit-scrollbar {
@@ -2493,32 +2595,25 @@ body[data-theme="corporate-gray"] .editor[data-theme="minimal-white"] {
 /* Collapsed state */
 .editor-toolbar.collapsed {
   padding: 6px 16px;
-  width: 100%;
-  /* Expand to fill space */
-  background: var(--surface);
-  border-radius: var(--radius-lg);
-  margin-bottom: 20px;
+  padding-right: 52px;
 }
 
 .editor-toolbar.collapsed .toolbar-metadata {
   display: flex;
-  flex: 1;
+  justify-content: center;
 }
 
 .editor-toolbar.collapsed .toolbar-controls {
   display: none;
 }
 
-/* Ensure toggle button stays on right */
-#toolbar-toggle {
-  margin-left: auto;
-  flex-shrink: 0;
-}
-
+/* Toggle icon animation */
 .editor-toolbar .toggle-icon {
   transition: transform var(--transition-short);
-  width: 18px;
-  height: 18px;
+  width: 16px;
+  height: 16px;
+  stroke-width: 3;
+  /* Slightly bolder for premium look */
   color: var(--text-muted);
 }
 
@@ -2527,22 +2622,33 @@ body[data-theme="corporate-gray"] .editor[data-theme="minimal-white"] {
   color: var(--primary);
 }
 
+/* Premium Toggle Button - Fastened to right corner */
 #toolbar-toggle {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 32px;
-  height: 32px;
+  width: 30px;
+  height: 30px;
   border-radius: 50%;
-  transition: all var(--transition-fast);
-  background: transparent;
-  flex-shrink: 0;
+  transition: all var(--transition-short);
+  background: var(--surface-2);
+  border: 1px solid color-mix(in srgb, var(--border) 30%, transparent);
+  cursor: pointer;
+  color: var(--text-muted);
+  z-index: 2;
 }
 
 #toolbar-toggle:hover {
   background: var(--surface-3);
-  color: var(--text);
+  color: var(--primary);
+  transform: translateY(-50%) scale(1.1);
+  /* Ensure Y-transform is maintained */
 }
+
 
 .text-size-label {
   font-size: 11px;
