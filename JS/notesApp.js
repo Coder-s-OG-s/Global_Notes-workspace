@@ -21,6 +21,7 @@ import { wireTagManager } from "./tagManager.js";
 import { wireAutoSave } from "./autoSave.js";
 import { getSession } from "./authService.js";
 import { wireEditorQuickTools } from "./editorQuickTools.js";
+import { upgradeToolbarSelects } from "./customSelect.js";
 
 
 // Global state
@@ -181,6 +182,7 @@ async function initApp() {
   wireDropdowns();
   wireLibraryNav(state, callbacks); // Wire new Sidebar Library
   wireEditorQuickTools(); // Wire editor bar AI & Mail quick-tool popovers
+  upgradeToolbarSelects(); // Transform native selects to premium ones
 
   // Initialize Smart Calendar
   state.calendarWidget = initSmartCalendar(state, callbacks);
