@@ -240,11 +240,11 @@ html {
 }
 
 body {
-  height: 100%;
+  height: 100vh;
   margin: 0;
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
+  overflow: hidden;
   overflow-x: hidden;
   /* Global safety */
 }
@@ -1289,6 +1289,8 @@ input:checked+.toggle-slider:before {
   max-width: 1800px;
   margin: 0 auto;
   transition: grid-template-columns 0s;
+  flex: 1;
+  min-height: 0;
 }
 
 /* Hidden sidebar state (Mini Sidebar) */
@@ -1304,7 +1306,7 @@ input:checked+.toggle-slider:before {
 .sidebar-column {
   display: flex;
   flex-direction: column;
-  height: calc(100vh - 110px);
+  height: 100%;
   min-height: 0;
   position: relative;
 }
@@ -1767,11 +1769,10 @@ body[data-theme="corporate-gray"] .editor[data-theme="minimal-white"] {
   box-shadow: none;
   display: flex;
   flex-direction: column;
-  height: calc(100vh - 110px);
-  position: sticky;
-  top: 112px;
+  height: 100%;
+  position: relative;
   transition: width 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-  overflow: visible;
+  overflow: hidden;
   z-index: 10;
   margin-right: var(--spacing-sm);
   border-radius: var(--radius-lg);
@@ -1781,7 +1782,7 @@ body[data-theme="corporate-gray"] .editor[data-theme="minimal-white"] {
 .sidebar-resizer {
   position: absolute;
   top: 0;
-  right: -4px;
+  right: 0;
   width: 8px;
   height: 100%;
   cursor: col-resize;
