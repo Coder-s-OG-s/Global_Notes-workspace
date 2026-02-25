@@ -185,6 +185,17 @@ async function initApp() {
   // Initialize Smart Calendar
   state.calendarWidget = initSmartCalendar(state, callbacks);
 
+  // Live Metadata Update
+  const contentInput = document.getElementById("content");
+  if (contentInput) {
+    contentInput.addEventListener("input", () => {
+      const activeNote = state.notes.find(n => n.id === state.activeNoteId);
+      if (activeNote) {
+        import("./renderer.js").then(m => m.updateToolbarMetadata(activeNote, contentInput.innerHTML));
+      }
+    });
+  }
+
   // Initial UI render
   callbacks.updateUserDisplay();
   callbacks.renderFolders();

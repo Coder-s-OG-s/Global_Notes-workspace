@@ -2379,6 +2379,46 @@ body[data-theme="corporate-gray"] .editor[data-theme="minimal-white"] {
   z-index: 10;
 }
 
+.toolbar-metadata {
+  display: none;
+  /* Hidden when expanded */
+  align-items: center;
+  padding-left: 8px;
+  animation: slideIn 0.3s ease;
+  flex: 1;
+  min-width: 0;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.metadata-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text-muted);
+  font-size: 12px;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.metadata-divider {
+  opacity: 0.5;
+  color: var(--border-light);
+}
+
+
 .editor-toolbar:hover {
   border-color: color-mix(in srgb, var(--border) 60%, transparent);
   box-shadow: var(--shadow-lg);
@@ -2387,13 +2427,16 @@ body[data-theme="corporate-gray"] .editor[data-theme="minimal-white"] {
 .toolbar-controls {
   display: flex;
   align-items: center;
-  gap: 16px;
-  flex: 1;
+  gap: 12px;
   overflow-x: auto;
   min-width: 0;
   padding: 2px 0;
   scrollbar-width: none;
-  transition: opacity var(--transition-fast), transform var(--transition-fast);
+  transition: all var(--transition-fast);
+  justify-content: center;
+  /* Center controls */
+  flex: 2;
+  /* Take middle space */
 }
 
 .toolbar-controls::-webkit-scrollbar {
@@ -2449,23 +2492,27 @@ body[data-theme="corporate-gray"] .editor[data-theme="minimal-white"] {
 
 /* Collapsed state */
 .editor-toolbar.collapsed {
-  padding: 6px 12px;
-  width: fit-content;
-  margin-left: auto;
+  padding: 6px 16px;
+  width: 100%;
+  /* Expand to fill space */
   background: var(--surface);
-  border-radius: 40px;
-  /* Pill shape when collapsed */
-  margin-bottom: 12px;
+  border-radius: var(--radius-lg);
+  margin-bottom: 20px;
+}
+
+.editor-toolbar.collapsed .toolbar-metadata {
+  display: flex;
+  flex: 1;
 }
 
 .editor-toolbar.collapsed .toolbar-controls {
-  opacity: 0;
-  transform: scale(0.95);
-  pointer-events: none;
-  width: 0;
-  margin: 0;
-  padding: 0;
-  overflow: hidden;
+  display: none;
+}
+
+/* Ensure toggle button stays on right */
+#toolbar-toggle {
+  margin-left: auto;
+  flex-shrink: 0;
 }
 
 .editor-toolbar .toggle-icon {

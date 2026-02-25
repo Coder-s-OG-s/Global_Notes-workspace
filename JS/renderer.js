@@ -153,6 +153,9 @@ export function renderActiveNote(note, removeTagFromActiveNote) {
     }
   }
 
+  // Update Toolbar Metadata
+  updateToolbarMetadata(note);
+
   // Apply editor theme
   if (editorSection) {
     if (note.theme) {
@@ -303,7 +306,30 @@ export function updateSidebarSelection(activeFolderId, activeLibraryId) {
     }
   });
 
-  // Actually, standardizing:
   // If activeLibraryId is passed, we highlight that.
   // We assume renderFolders is called separately with the correct ID.
+}
+
+/**
+ * Updates the toolbar metadata (word count, char count, last saved).
+ * @param {Object} note - The current note object.
+ * @param {string} [overrideContent] - Optional DOM content if we want real-time updates without saving yet.
+ */
+export function updateToolbarMetadata(note, overrideContent) {
+  if (!note) return;
+
+  const metadataTime = $("#metadata-time");
+  const metadataCount = $("#metadata-count");
+
+  if (metadataTime) {
+    metadataTime.textContent = `Last edited: ${formatDate(note.updatedAt)}`;
+  }
+
+  if (metadataCount) {
+    const content = overrideContent !== undefined ? overrideContent : (note.content || "");
+    const text = content.replace(/<[^>]*>/g, " ").trim();
+    const wordCount = text ? text.split(/\s+/).length : 0;
+    const charCount = content.replace(/<[^>]*>/g, "").length;
+    metadataCount.textContent = `${wordCount} words / ${charCount} chars`;
+  }
 }
