@@ -13,9 +13,9 @@
 }
 
 /* Dynamically offset footer ONLY for main page layout with sidebar */
-.layout~.global-footer {
+/* .layout~.global-footer {
     padding-left: calc(var(--sidebar-width, 240px) + 16px + 12px);
-}
+} */
 
 /* When sidebar is hidden (Mini Sidebar), adjust offset */
 .layout.sidebar-hidden+.global-footer {
