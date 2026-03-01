@@ -2359,7 +2359,8 @@ body[data-theme="corporate-gray"] .editor[data-theme="minimal-white"] {
   box-shadow: var(--shadow-sm);
   display: flex;
   flex-direction: column;
-  min-height: 500px;
+  flex: 1;
+  min-height: 0;
   min-width: 0;
   overflow: hidden;
   border-radius: var(--radius-lg);
@@ -2455,7 +2456,8 @@ body[data-theme="corporate-gray"] .editor[data-theme="minimal-white"] {
 
 .editor-body {
   padding: var(--spacing-lg);
-  flex: 1 1 auto;
+  flex: 1;
+  min-height: 0;
   display: flex;
   flex-direction: column;
   gap: var(--spacing-md);
@@ -3279,7 +3281,7 @@ textarea:hover::-webkit-scrollbar-thumb {
 }
 
 .editor-content {
-  flex: 1;
+  flex: 1 1 0%;
   outline: none;
   font-family: 'Inter', sans-serif;
   line-height: 1.7;
