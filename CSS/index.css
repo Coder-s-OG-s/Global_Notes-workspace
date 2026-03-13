@@ -101,6 +101,8 @@ html[data-theme="amoled-dark"] {
   --transition-smooth: 0.3s cubic-bezier(0.25, 1, 0.5, 1);
 
   --sidebar-width: 260px;
+  color-scheme: dark;
+  /* Helps consistent rendering of system components */
 }
 
 /* Theme: Professional Light (Premium) */
@@ -737,10 +739,7 @@ body {
   color: var(--text);
 }
 
-.user-role {
-  font-size: 12px;
-  color: var(--text-dim);
-}
+
 
 .dropdown-section {
   padding: 0 16px 8px;
@@ -1368,6 +1367,17 @@ input:checked+.toggle-slider:before {
 .note-main {
   flex: 1;
   min-width: 0;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  background-color: var(--bg);
+  color: var(--text);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
 }
 
 .note-title {
@@ -3129,10 +3139,10 @@ body[data-theme="corporate-gray"] .editor[data-theme="minimal-white"] {
 }
 
 /* ===== Scrollbar styling ===== */
-/* ===== Scrollbar styling ===== */
 ::-webkit-scrollbar {
-  width: 5px;
-  height: 5px;
+  width: 8px;
+  /* Slightly wider for better accessibility on Windows */
+  height: 8px;
 }
 
 ::-webkit-scrollbar-corner {
@@ -3147,24 +3157,32 @@ body[data-theme="corporate-gray"] .editor[data-theme="minimal-white"] {
   background-color: transparent;
   /* Hidden by default */
   border-radius: 99px;
+  border: 2px solid transparent;
+  /* Acts as padding */
   background-clip: content-box;
-  transition: background-color 0.2ms;
+  transition: background-color 0.2s ease;
 }
 
-/* Show thumb on hover of scrollable areas */
+/* On Windows/Linux, always show a sliver of scrollbar if possible or show on hover */
 body:hover::-webkit-scrollbar-thumb,
 .sidebar-column:hover::-webkit-scrollbar-thumb,
 .notes-list:hover::-webkit-scrollbar-thumb,
 .editor-content:hover::-webkit-scrollbar-thumb,
 .folder-list:hover::-webkit-scrollbar-thumb,
 .slash-menu:hover::-webkit-scrollbar-thumb,
+.dropdown-menu:hover::-webkit-scrollbar-thumb,
 textarea:hover::-webkit-scrollbar-thumb {
-  background-color: color-mix(in srgb, var(--text-muted) 30%, transparent);
+  background-color: color-mix(in srgb, var(--text-muted) 35%, transparent);
 }
 
-/* Darker on direct hover of the scrollbar itself */
 ::-webkit-scrollbar-thumb:hover {
   background-color: color-mix(in srgb, var(--text-muted) 60%, transparent) !important;
+}
+
+/* Firefox Support */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--text-muted) 35%, transparent) transparent;
 }
 
 /* Responsive Design - MOVED TO END OF FILE */
@@ -3673,9 +3691,11 @@ textarea:hover::-webkit-scrollbar-thumb {
 /* --- High-Resolution & Wide Screens --- */
 @media (min-width: 1600px) {
   .layout {
-    max-width: 1400px;
+    max-width: 1560px;
+    /* Slightly wider for bigger screens */
     margin: 0 auto;
-    padding: var(--spacing-xl) 0;
+    padding: var(--spacing-xl) var(--spacing-lg);
+    /* Added side padding */
   }
 
   .editor-content {
@@ -3711,6 +3731,10 @@ textarea:hover::-webkit-scrollbar-thumb {
   .brand h1 {
     font-size: 16px;
   }
+
+  .sidebar-resizer {
+    display: none !important;
+  }
 }
 
 /* --- Mobile & Small Tablets (max-width: 768px) --- */
@@ -3742,7 +3766,17 @@ textarea:hover::-webkit-scrollbar-thumb {
     display: flex !important;
     visibility: visible !important;
     opacity: 1 !important;
-    margin-right: 8px;
+    margin-right: 12px;
+    color: #ffffff !important;
+    /* Force high contrast white */
+  }
+
+  .mobile-toggle .icon {
+    width: 26px !important;
+    /* Larger icon */
+    height: 26px !important;
+    stroke-width: 2.5 !important;
+    /* Bolder lines */
   }
 
   .mobile-close {
@@ -3754,14 +3788,16 @@ textarea:hover::-webkit-scrollbar-thumb {
     display: none !important;
   }
 
-  .navbar-center {
-    justify-content: flex-end;
-    max-width: none;
-    flex: 1;
-  }
-
   .search-container {
     flex: 0 0 auto;
+    margin: 0 4px;
+    /* Give it some breathing room */
+  }
+
+  /* Hide less critical icons on small mobile to prevent overlap */
+  #export,
+  #preferences-dropdown-wrapper {
+    display: none !important;
   }
 
   .btn-text {
@@ -3783,6 +3819,11 @@ textarea:hover::-webkit-scrollbar-thumb {
 
   .layout.sidebar-visible .app-sidebar {
     left: 0 !important;
+  }
+
+  .sidebar-resizer {
+    display: none !important;
+    /* Hide resizer on touch devices */
   }
 
   .sidebar-overlay {
@@ -3825,13 +3866,43 @@ textarea:hover::-webkit-scrollbar-thumb {
     overflow-x: auto;
     white-space: nowrap;
     -webkit-overflow-scrolling: touch;
-    padding: 8px;
+    padding: 8px 0;
     max-width: 100%;
+    scrollbar-width: none;
+    /* Hide scrollbar but keep scrollable */
   }
 
-  .toolbar-controls {
-    display: flex;
-    flex-wrap: nowrap;
+  .editor-toolbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .editor-actions {
+    display: flex !important;
+    overflow-x: auto !important;
+    white-space: nowrap !important;
+    flex-wrap: nowrap !important;
+    -webkit-overflow-scrolling: touch !important;
+    gap: 8px !important;
+    padding: 4px 0 !important;
+    scrollbar-width: none !important;
+    width: 100% !important;
+    mask-image: linear-gradient(to right, black 90%, transparent 100%);
+  }
+
+  .editor-actions::-webkit-scrollbar {
+    display: none !important;
+  }
+
+  .tags-input {
+    flex: 0 0 auto !important;
+    min-width: 0 !important;
+  }
+
+  .buttons {
+    display: flex !important;
+    flex: 0 0 auto !important;
+    width: auto !important;
+    gap: 8px !important;
   }
 
   .modal {
@@ -3856,7 +3927,8 @@ textarea:hover::-webkit-scrollbar-thumb {
   }
 
   .search-container:focus-within {
-    max-width: 220px;
+    max-width: 180px;
+    /* Safer width to avoid overlapping other buttons */
     position: absolute;
     right: 8px;
     z-index: 110;
@@ -3882,29 +3954,64 @@ textarea:hover::-webkit-scrollbar-thumb {
   }
 
   .editor-actions {
-    gap: 4px !important;
-    flex-wrap: wrap !important;
+    display: flex !important;
+    overflow-x: auto !important;
+    white-space: nowrap !important;
+    flex-wrap: nowrap !important;
+    -webkit-overflow-scrolling: touch !important;
+    gap: 8px !important;
+    padding: 4px 0 !important;
+    scrollbar-width: none !important;
     width: 100% !important;
   }
 
   .tags-input {
+    flex: 0 0 auto !important;
     min-width: 0 !important;
-    flex: 1 1 100% !important;
-    /* Force tag input to new line if needed */
-    order: 10;
+    order: unset !important;
   }
 
   .buttons {
-    width: 100%;
-    justify-content: flex-end;
-    gap: 8px;
-    margin: 0;
+    display: flex !important;
+    width: auto !important;
+    justify-content: flex-start !important;
+    gap: 8px !important;
+    margin-top: 0 !important;
   }
 
   .btn {
-    padding: 0 6px;
-    font-size: 11px;
-    height: 26px;
+    padding: 0 14px !important;
+    font-size: 13px !important;
+    height: 36px !important;
+    /* Large touch target */
+    flex-shrink: 0 !important;
+  }
+
+  /* Ensure the main layout doesn't overflow */
+  .layout {
+    overflow-x: hidden !important;
+    display: flex !important;
+    flex-direction: column !important;
+    min-height: calc(100vh - 120px) !important;
+  }
+
+  .editor {
+    flex: 1 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    overflow: hidden !important;
+  }
+
+  .editor-body {
+    flex: 1 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    overflow: hidden !important;
+  }
+
+  .editor-content {
+    flex: 1 !important;
+    min-height: 40vh !important;
   }
 }
 

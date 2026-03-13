@@ -1,29 +1,29 @@
-/* Dark Mode (Default) */
+/* Dark Mode (Default) - Legacy, let index.css handle themes */
 [data-theme="dark"] #content {
-  color: #40334e !important;
-  background-color: #abacff !important;
+  color: var(--text);
+  background-color: var(--surface);
 }
 
 [data-theme="dark"] #content::placeholder {
-  color: #2d3eff !important;
+  color: var(--text-muted);
 }
 
 [data-theme="dark"] #content * {
-  color: #ffffff !important;
+  color: inherit;
 }
 
-/* Light Mode */
+/* Light Mode - Legacy */
 [data-theme="light"] #content {
-  color: #7c7c7c !important;
-  background-color: #ffffff !important;
+  color: var(--text);
+  background-color: var(--bg);
 }
 
 [data-theme="light"] #content::placeholder {
-  color: #0b0909 !important;
+  color: var(--text-muted);
 }
 
 [data-theme="light"] #content * {
-  color: #0c0b0b !important;
+  color: inherit;
 }
 
 /* Ensure text in other elements also adapts */
@@ -156,10 +156,10 @@
   color: #0a0a0a;
 }
 
-/* Content editor background - Always white */
+/* Content editor background - Default inherited from theme */
 #content {
-  background-color: #ffffff !important;
-  color: #080808 !important;
+  background-color: transparent;
+  color: inherit;
 }
 
 /* Mobile styles removed - handled in index.css */

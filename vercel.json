@@ -44,6 +44,10 @@
         {
             "source": "/signup",
             "destination": "/HTML/signup.html"
+        },
+        {
+            "source": "/code-workspace",
+            "destination": "/HTML/code-workspace.html"
         }
     ]
 }

@@ -1,5 +1,5 @@
 /**
- * utility to transform native selects into premium custom dropdowns
+ * utility to transform native selects into polished custom dropdowns
  */
 
 export function upgradeToolbarSelects() {

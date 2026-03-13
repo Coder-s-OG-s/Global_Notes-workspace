@@ -190,7 +190,7 @@ async function initApp() {
   wireDropdowns();
   wireLibraryNav(state, callbacks); // Wire new Sidebar Library
   wireEditorQuickTools(); // Wire editor bar AI & Mail quick-tool popovers
-  upgradeToolbarSelects(); // Transform native selects to premium ones
+  upgradeToolbarSelects(); // Transform native selects into polished dropdowns
 
   // Initialize Smart Calendar
   state.calendarWidget = initSmartCalendar(state, callbacks);

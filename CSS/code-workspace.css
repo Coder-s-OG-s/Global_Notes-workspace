@@ -1,0 +1,651 @@
+/* ===== Code Workspace Styles (Antigravity) ===== */
+
+:root {
+    --sidebar-width: 280px;
+    --header-height: 64px;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: var(--font-sans, 'Inter', sans-serif);
+    background-color: var(--bg, #191919);
+    color: var(--text, #f3f3f3);
+    height: 100vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Header */
+.code-header {
+    height: var(--header-height);
+    background: rgba(25, 25, 25, 0.85);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--border, #333);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 var(--spacing-lg, 24px);
+    flex-shrink: 0;
+    z-index: 100;
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    /* Slightly tighter gap */
+}
+
+.back-btn {
+    margin-right: 4px;
+}
+
+.header-brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    text-decoration: none;
+    color: inherit;
+}
+
+.brand-h1 {
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin: 0;
+}
+
+.page-title-badge {
+    background: var(--active-bg, rgba(99, 102, 241, 0.12));
+    color: var(--primary, #6366f1);
+    padding: 4px 10px;
+    border-radius: 99px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+}
+
+.header-center {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    gap: var(--spacing-md);
+}
+
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Workspace Layout */
+.code-layout {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+}
+
+/* Sidebar */
+.code-sidebar {
+    width: var(--sidebar-width);
+    background: var(--surface-2, #191919);
+    border-right: 1px solid var(--border, #333);
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+}
+
+.sidebar-top {
+    padding: 20px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.search-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.search-input {
+    width: 100%;
+    height: 38px;
+    background: var(--surface, #202020);
+    border: 1px solid var(--border, #333);
+    border-radius: var(--radius, 8px);
+    color: var(--text, #f3f3f3);
+    padding: 0 12px 0 36px;
+    font-size: 14px;
+    outline: none;
+}
+
+.search-input:focus {
+    border-color: var(--primary, #6366f1);
+    box-shadow: 0 0 0 2px var(--primary-glow, rgba(99, 102, 241, 0.2));
+}
+
+.search-icon-fixed {
+    position: absolute;
+    left: 10px;
+    width: 16px;
+    height: 16px;
+    color: var(--text-muted, #71717a);
+    pointer-events: none;
+}
+
+.snippets-list {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0 8px 20px;
+    list-style: none;
+    margin: 0;
+}
+
+/* Snippet Card */
+.snippet-card {
+    padding: 12px;
+    border-radius: var(--radius, 8px);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+    margin-bottom: 4px;
+    border: 1px solid transparent;
+}
+
+.snippet-card:hover {
+    background: var(--surface-3, #2c2c2c);
+}
+
+.snippet-card.active {
+    background: var(--active-bg, rgba(99, 102, 241, 0.12));
+    border-color: rgba(99, 102, 241, 0.2);
+}
+
+.snippet-card.active .snippet-title {
+    color: var(--primary, #6366f1);
+}
+
+.snippet-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 6px;
+}
+
+.lang-badge {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    padding: 2px 6px;
+    border-radius: 4px;
+    background: #333;
+    color: #fff;
+}
+
+.snippet-title {
+    font-size: 14px;
+    font-weight: 600;
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.snippet-preview {
+    font-size: 12px;
+    color: var(--text-dim, #a1a1aa);
+    margin: 4px 0 0;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    line-height: 1.4;
+}
+
+.delete-snippet-btn {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--danger, #ef4444);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    opacity: 0;
+    transform: scale(0.9);
+    transition: all 0.15s ease;
+}
+
+.snippet-card:hover .delete-snippet-btn {
+    opacity: 1;
+    transform: scale(1);
+}
+
+/* Editor Main Area */
+.code-editor-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    background: #1e1e1e;
+    /* VS Code style dark */
+    position: relative;
+    min-height: 0;
+    /* Important for flex */
+}
+
+#editor-target {
+    flex: 1;
+    height: 100%;
+}
+
+/* CodeMirror Custom Overrides */
+.CodeMirror {
+    height: 100% !important;
+    font-family: 'JetBrains Mono', 'Fira Code', monospace;
+    font-size: 14px;
+    background: transparent !important;
+}
+
+.CodeMirror-gutters {
+    background: #1e1e1e !important;
+    border-right: 1px solid #333 !important;
+}
+
+/* Select Styling */
+.lang-select {
+    height: 36px;
+    min-width: 140px;
+    background: var(--surface-2, #191919);
+    border: 1px solid var(--border, #333);
+    border-radius: var(--radius, 8px);
+    color: var(--text, #f3f3f3);
+    padding: 0 10px;
+    font-size: 13px;
+    cursor: pointer;
+    outline: none;
+}
+
+/* Notification UI */
+.notification-toast {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    background: var(--primary, #6366f1);
+    color: white;
+    padding: 12px 20px;
+    border-radius: 8px;
+    font-weight: 600;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+    z-index: 1000;
+    transform: translateY(100px);
+    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.notification-toast.show {
+    transform: translateY(0);
+}
+
+/* Specific language colors */
+.badge-js {
+    background: #f7df1e;
+    color: #000;
+}
+
+.badge-python {
+    background: #3776ab;
+    color: #fff;
+}
+
+.badge-java {
+    background: #007396;
+    color: #fff;
+}
+
+.badge-cpp {
+    background: #00599c;
+    color: #fff;
+}
+
+.badge-html {
+    background: #e34f26;
+    color: #fff;
+}
+
+.badge-css {
+    background: #1572b6;
+    color: #fff;
+}
+
+.badge-sql {
+    background: #336791;
+    color: #fff;
+}
+
+.badge-ts {
+    background: #3178c6;
+    color: #fff;
+}
+
+/* AI Result Panel */
+.ai-result-container {
+    display: flex;
+    flex-direction: column;
+    background: #0d0f1a;
+    border-top: 1px solid #1e2030;
+    height: 0;
+    transition: height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow: hidden;
+    z-index: 50;
+}
+
+.ai-result-container.show {
+    height: 280px;
+}
+
+.ai-panel-header {
+    background: #0a0c12;
+    padding: 8px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #1e2030;
+}
+
+.ai-panel-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #c8cad8;
+}
+
+.ai-panel-content {
+    flex: 1;
+    padding: 20px;
+    overflow-y: auto;
+    font-size: 14px;
+    line-height: 1.6;
+    color: #c8cad8;
+}
+
+.ai-panel-content pre {
+    background: #1a1d2e;
+    border: 1px solid #2a2d3e;
+    border-radius: 8px;
+    padding: 12px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    overflow-x: auto;
+    margin: 12px 0;
+}
+
+.ai-panel-content code {
+    color: #818cf8;
+}
+
+.panel-close-btn {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    font-size: 20px;
+    cursor: pointer;
+    padding: 0;
+    line-height: 1;
+}
+
+.panel-close-btn:hover {
+    color: #fff;
+}
+
+/* Floating AI Chat */
+.ai-chat-trigger {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: #4f46e5;
+    color: white;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 20px rgba(99, 102, 241, 0.4);
+    transition: all 0.2s ease;
+    z-index: 1000;
+}
+
+.ai-chat-trigger:hover {
+    transform: scale(1.08);
+    background: #4338ca;
+}
+
+.ai-chat-window {
+    position: fixed;
+    bottom: 84px;
+    right: 24px;
+    width: 340px;
+    height: 480px;
+    background: #0f1117;
+    border: 1px solid #2a2d3e;
+    border-radius: 16px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+    display: flex;
+    flex-direction: column;
+    z-index: 1000;
+    visibility: hidden;
+    opacity: 0;
+    transform: translateY(20px) scale(0.95);
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.ai-chat-window.open {
+    visibility: visible;
+    opacity: 1;
+    transform: translateY(0) scale(1);
+}
+
+.chat-header {
+    padding: 12px 16px;
+    background: #1a1d2e;
+    border-bottom: 1px solid #2a2d3e;
+    border-radius: 16px 16px 0 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.chat-messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.message {
+    padding: 8px 12px;
+    font-size: 13px;
+    line-height: 1.4;
+}
+
+.message.user {
+    align-self: flex-end;
+    background: #4f46e5;
+    color: white;
+    border-radius: 12px 12px 2px 12px;
+    max-width: 80%;
+}
+
+.message.assistant {
+    align-self: flex-start;
+    background: #1a1d2e;
+    color: #c8cad8;
+    border-radius: 12px 12px 12px 2px;
+    max-width: 85%;
+}
+
+.chat-input-area {
+    padding: 12px;
+    border-top: 1px solid #2a2d3e;
+    display: flex;
+    gap: 8px;
+}
+
+.chat-input {
+    flex: 1;
+    background: #1a1d2e;
+    border: 1px solid #2a2d3e;
+    border-radius: 8px;
+    padding: 8px 12px;
+    color: #e2e4ef;
+    font-size: 13px;
+    outline: none;
+}
+
+.chat-input:focus {
+    border-color: #6366f1;
+}
+
+/* Spinner */
+.ai-spinner {
+    width: 20px;
+    height: 20px;
+    border: 2px solid rgba(99, 102, 241, 0.13);
+    border-top-color: #6366f1;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.suggested-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 10px;
+}
+
+.prompt-chip {
+    background: #1a1d2e;
+    border: 1px solid #2a2d3e;
+    color: #818cf8;
+    padding: 4px 8px;
+    border-radius: 99px;
+    font-size: 11px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.prompt-chip:hover {
+    background: #2a2d3e;
+    border-color: #4f46e5;
+}
+
+/* Loading display in panel */
+.panel-loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    gap: 12px;
+    color: var(--text-dim);
+}
+
+.error-msg {
+    color: var(--danger);
+    background: rgba(239, 68, 68, 0.1);
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid rgba(239, 68, 68, 0.2);
+}
+
+/* API Key Warning */
+.api-warning-banner {
+    background: linear-gradient(90deg, #7c2d12, #9a3412);
+    color: #fdba74;
+    padding: 10px 16px;
+    text-align: center;
+    font-size: 13px;
+    font-weight: 600;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    letter-spacing: 0.01em;
+}
+
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    /* Increased gap */
+}
+
+/* AI Buttons Styling */
+.ai-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 0 12px;
+    height: 36px;
+    transition: all 0.2s ease;
+    position: relative;
+}
+
+.ai-btn svg {
+    width: 16px;
+    height: 16px;
+    color: var(--text-dim);
+}
+
+.ai-btn:hover:not(:disabled) {
+    background: rgba(99, 102, 241, 0.1) !important;
+    color: #818cf8 !important;
+}
+
+.ai-btn:hover:not(:disabled) svg {
+    color: #818cf8;
+}
+
+.ai-btn.is-locked {
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+.lock-badge {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    background: #7c2d12;
+    color: #fdba74;
+    font-size: 10px;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--border);
+}

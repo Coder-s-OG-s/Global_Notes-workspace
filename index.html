@@ -3,8 +3,8 @@
 
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Global Notes Workspace V2</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Antigravity - Smart Workspace</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -20,7 +20,7 @@
     content="Global Notes Workspace - A powerful, offline-capable workspace for organizing your thoughts, notes, and ideas. Designed for productivity with a clean, distraction-free interface.">
   <meta name="keywords"
     content="notes, workspace, productivity, offline notes, organization, ideas, writing, personal knowledge management">
-  <meta name="author" content="Global Notes Workspace">
+  <meta name="author" content="Antigravity">
   <meta name="theme-color" content="#0f172a">
 
   <!-- Open Graph / Facebook -->
@@ -65,7 +65,7 @@
           <div class="logo-wrapper">
             <img src="assets/images/logo.png" alt="Logo" class="logo-img" />
           </div>
-          <h1>Global Notes Workspace</h1>
+          <h1>Antigravity</h1>
         </div>
       </div>
 
@@ -125,6 +125,13 @@
             <line x1="12" y1="15" x2="12" y2="3"></line>
           </svg>
         </button>
+
+        <a href="HTML/code-workspace.html" class="btn ghost icon-only" id="nav-code" title="Code Workspace">
+          <svg class="icon" viewBox="0 0 24 24">
+            <polyline points="16 18 22 12 16 6"></polyline>
+            <polyline points="8 6 2 12 8 18"></polyline>
+          </svg>
+        </a>
 
         <!-- Preferences Dropdown Trigger -->
         <div class="dropdown-wrapper" id="preferences-dropdown-wrapper">
@@ -191,7 +198,6 @@
             <div class="dropdown-menu hidden" id="profile-menu">
               <div class="dropdown-header user-info">
                 <span class="user-name-display" id="user-name"></span>
-                <span class="user-role">Free Plan</span>
               </div>
               <div class="dropdown-divider"></div>
               <button class="dropdown-item" id="open-profile-modal">

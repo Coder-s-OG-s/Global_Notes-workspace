@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <title>Code Workspace - Antigravity</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+
+    <!-- CodeMirror CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/codemirror.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/theme/dracula.min.css">
+
+    <link rel="stylesheet" href="../CSS/index.css">
+    <link rel="stylesheet" href="../CSS/code-workspace.css">
+</head>
+
+<body class="code-workspace-page">
+
+    <div id="api-warning" class="api-warning-banner hidden">
+        ⚠ AI features disabled. Add your OpenAI API key in AI_CONFIG at the top of code-workspace.js to enable them.
+    </div>
+
+    <header class="code-header">
+        <div class="header-left">
+            <a href="../index.html" class="btn ghost icon-only back-btn" title="Back to Home">
+                <svg class="icon" viewBox="0 0 24 24">
+                    <polyline points="15 18 9 12 15 6"></polyline>
+                </svg>
+            </a>
+            <a href="../index.html" class="header-brand">
+                <img src="../assets/images/logo.png" alt="Antigravity" width="24" height="24">
+                <h1 class="brand-h1">Antigravity</h1>
+            </a>
+            <span class="page-title-badge">Code Workspace</span>
+        </div>
+
+        <div class="header-center">
+            <select id="language-selector" class="lang-select">
+                <option value="javascript">JavaScript</option>
+                <option value="python">Python</option>
+                <option value="java">Java</option>
+                <option value="cpp">C++</option>
+                <option value="htmlmixed">HTML</option>
+                <option value="css">CSS</option>
+                <option value="sql">SQL</option>
+                <option value="typescript">TypeScript</option>
+            </select>
+        </div>
+
+        <div class="header-right">
+            <button class="btn ghost ai-btn" id="ai-explain-btn" title="Explain Code">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round">
+                    <path d="M9.663 17h4.674"></path>
+                    <path d="M10 20h4"></path>
+                    <path d="M12 2v1"></path>
+                    <path d="M12 15v2"></path>
+                    <path d="M15.22 3.78l-.707.707"></path>
+                    <path d="M8.78 14.22l-.707.707"></path>
+                    <path d="M21.363 8.663h-1"></path>
+                    <path d="M3.637 15.337h1"></path>
+                    <path d="M19.363 15.337h1"></path>
+                    <path d="M4.637 8.663h1"></path>
+                    <path d="M15.22 14.22l.707.707"></path>
+                    <path d="M8.78 3.78l.707.707"></path>
+                    <circle cx="12" cy="11" r="4"></circle>
+                </svg>
+                Explain
+            </button>
+            <button class="btn ghost ai-btn" id="ai-docs-btn" title="Generate Docs">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                    <polyline points="14 2 14 8 20 8"></polyline>
+                    <line x1="16" y1="13" x2="8" y2="13"></line>
+                    <line x1="16" y1="17" x2="8" y2="17"></line>
+                    <polyline points="10 9 9 9 8 9"></polyline>
+                </svg>
+                Docs
+            </button>
+            <button class="btn ghost ai-btn" id="ai-improve-btn" title="Improve Code">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round">
+                    <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+                </svg>
+                Improve
+            </button>
+            <button class="btn primary" id="copy-code-btn">Copy</button>
+            <button class="btn primary" id="save-snippet-btn">Save</button>
+        </div>
+    </header>
+
+    <main class="code-layout">
+        <aside class="code-sidebar">
+            <div class="sidebar-top">
+                <button class="btn primary full-width" id="new-snippet-btn">
+                    + New Snippet
+                </button>
+                <div class="search-wrapper">
+                    <svg class="search-icon-fixed" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                    <input type="text" id="snippet-search" class="search-input" placeholder="Search snippets...">
+                </div>
+            </div>
+
+            <ul class="snippets-list" id="snippets-list">
+                <!-- Snippets will be injected here -->
+            </ul>
+        </aside>
+
+        <section class="code-editor-container">
+            <div id="editor-target"></div>
+
+            <!-- AI Result Panel -->
+            <div id="ai-result-panel" class="ai-result-container">
+                <div class="ai-panel-header">
+                    <div class="ai-panel-title" id="ai-panel-title">AI Assistant</div>
+                    <button class="panel-close-btn" id="close-panel-btn">×</button>
+                </div>
+                <div class="ai-panel-content" id="ai-panel-content">
+                    <!-- AI Response goes here -->
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <div id="toast" class="notification-toast">Snippet Saved!</div>
+
+    <!-- Floating AI Chat will be injected by JS -->
+
+    <!-- CodeMirror Core JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/codemirror.min.js"></script>
+
+    <!-- Languages Support -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/javascript/javascript.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/python/python.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/clike/clike.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/xml/xml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/htmlmixed/htmlmixed.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/css/css.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/sql/sql.min.js"></script>
+
+    <!-- App logic -->
+    <script type="module" src="../JS/codeWorkspace.js"></script>
+</body>
+
+</html>

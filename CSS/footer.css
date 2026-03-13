@@ -12,9 +12,11 @@
     transition: padding-left 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
-/* Dynamically offset footer ONLY for main page layout with sidebar */
-.layout~.global-footer {
-    padding-left: calc(var(--sidebar-width, 240px) + 16px + 12px);
+/* Dynamically offset footer ONLY for main page layout with sidebar on desktop */
+@media (min-width: 768px) {
+    .layout~.global-footer {
+        padding-left: calc(var(--sidebar-width, 240px) + 16px + 12px);
+    }
 }
 
 /* When sidebar is hidden (Mini Sidebar), adjust offset */
