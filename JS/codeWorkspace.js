@@ -76,7 +76,9 @@ class CodeWorkspace {
             tabSize: 2,
             indentWithTabs: false,
             autoCloseBrackets: true,
+            autoCloseTags: true,
             matchBrackets: true,
+
             viewportMargin: Infinity
         });
 
