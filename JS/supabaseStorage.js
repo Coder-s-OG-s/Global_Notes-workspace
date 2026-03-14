@@ -49,15 +49,19 @@ export async function saveNote(note) {
 }
 
 /**
- * Deletes a note by ID.
+ * Deletes a note by ID (scoped to current user for safety).
  */
 export async function deleteNote(noteId) {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
     const { error } = await supabase
         .from('notes')
         .delete()
-        .eq('id', noteId);
+        .eq('id', noteId)
+        .eq('user_id', user.id);
 
-    if (error) console.error("Error deleting note:", error);
+    if (error) throw error;
 }
 
 /**
@@ -89,6 +93,22 @@ export async function saveFolder(folder) {
         .upsert(folderToSave);
 
     if (error) console.error("Error saving folder:", error);
+}
+
+/**
+ * Deletes a folder by ID (scoped to current user for safety).
+ */
+export async function deleteFolder(folderId) {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    const { error } = await supabase
+        .from('folders')
+        .delete()
+        .eq('id', folderId)
+        .eq('user_id', user.id);
+
+    if (error) throw error;
 }
 
 /**

@@ -1,8 +1,11 @@
 import { NOTES_STORAGE_PREFIX, ACTIVE_USER_KEY, ACCOUNT_KEY } from "./constants.js";
 import * as db from "./supabaseStorage.js";
 import { supabase } from "./supabaseClient.js";
+import { showToast } from "./utilities.js";
 
-// ... (storageKeyForUser remains same, but I need to keep the file content valid)
+// Tracks whether Supabase notes table has is_favorite/is_archived columns.
+// null = not checked yet, true = has them, false = missing (needs migration)
+let _hasExtendedColumns = null;
 
 export function storageKeyForUser(user) {
   return `${NOTES_STORAGE_PREFIX}.${user || "guest"}`;
@@ -31,6 +34,8 @@ export async function getNotes(user) {
           folderId: n.folder_id,
           theme: n.theme,
           editorPattern: n.editor_pattern,
+          isFavorite: n.is_favorite || false,
+          isArchived: n.is_archived || false,
           createdAt: n.created_at,
           updatedAt: n.updated_at
         }));
@@ -97,35 +102,58 @@ export async function getNotes(user) {
  */
 export async function setNotes(user, notes) {
   try {
-    // 1. ALWAYS save to LocalStorage first (Offline-First / Cache)
-    // This ensures that even if Supabase fails or user is offline, data is safe locally.
-    localStorage.setItem(storageKeyForUser(user), JSON.stringify(notes));
+    // 1. Save to LocalStorage first (Offline-First / Cache)
+    try {
+      localStorage.setItem(storageKeyForUser(user), JSON.stringify(notes));
+    } catch (storageErr) {
+      if (storageErr.name === 'QuotaExceededError' || storageErr.code === 22) {
+        showToast("Storage full — some data may not be saved locally. Consider exporting your notes.", "error", 6000);
+      }
+    }
 
     const session = await supabase.auth.getSession();
     const currentUser = session?.data?.session?.user;
 
-    // 2. If authenticated, Sync to Supabase in the background
+    // 2. If authenticated, Sync to Supabase
     if (currentUser && user !== 'guest') {
-      // We upsert all notes in the array
-      // Ideally we only save CHANGED notes, but for this migration: save all.
-      const dbNotes = notes.map(n => ({
-        id: n.id,
-        user_id: currentUser.id,
-        title: n.title,
-        content: n.content,
-        tags: n.tags,
-        folder_id: n.folderId, // map to snake_case
-        theme: n.theme,
-        editor_pattern: n.editorPattern,
-        created_at: n.createdAt,
-        updated_at: n.updatedAt
-      }));
+      const dbNotes = notes.map(n => {
+        const row = {
+          id: n.id,
+          user_id: currentUser.id,
+          title: n.title,
+          content: n.content,
+          tags: n.tags,
+          folder_id: n.folderId,
+          theme: n.theme,
+          editor_pattern: n.editorPattern,
+          created_at: n.createdAt,
+          updated_at: n.updatedAt
+        };
+        if (_hasExtendedColumns !== false) {
+          row.is_favorite = n.isFavorite || false;
+          row.is_archived = n.isArchived || false;
+        }
+        return row;
+      });
 
-      await supabase.from('notes').upsert(dbNotes);
-      console.log("Synced notes to Supabase");
+      const { error } = await supabase.from('notes').upsert(dbNotes);
+
+      if (error && _hasExtendedColumns === null) {
+        const fallbackNotes = dbNotes.map(({ is_favorite, is_archived, ...rest }) => rest);
+        const { error: retryError } = await supabase.from('notes').upsert(fallbackNotes);
+        if (!retryError) {
+          _hasExtendedColumns = false;
+        } else {
+          showToast("Cloud sync failed — changes saved locally only", "warning");
+        }
+      } else if (error) {
+        showToast("Cloud sync failed — changes saved locally only", "warning");
+      } else if (!error && _hasExtendedColumns === null) {
+        _hasExtendedColumns = true;
+      }
     }
   } catch (err) {
-    console.error("Failed to save notes", err);
+    showToast("Failed to save notes — please try again", "error");
   }
 }
 

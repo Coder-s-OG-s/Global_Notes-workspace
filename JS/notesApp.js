@@ -1,13 +1,13 @@
 import { getActiveUser, setActiveUser, mergeGuestNotes } from "./storage.js";
 import { loadNotesForCurrentUser, ensureAtLeastOneNote, persistNotes } from "./noteManager.js";
-import { getFolders, saveFolders } from "./folderManager.js";
+import { getFolders, saveFolders, syncFoldersFromCloud } from "./folderManager.js";
 import { renderNotesList, renderActiveNote, updateUserDisplay, renderFolders, updateToolbarMetadata } from "./renderer.js";
 import { wireFiltersAndSearch, wireSort, wireTagInput, wireCrudButtons, wireFolderButtons, wireThemeSelector, syncThemeSelector, wireEditorPatternSelector, syncEditorPatternSelector, wireDropdowns, wireLibraryNav } from "./eventHandlers.js";
 import { wireFormattingToolbar } from "./formattingToolbar.js";
 import { wireUploadButtons } from "./mediaManager.js";
 import { wireAuthButtons } from "./authButtons.js";
 import { wireImportExport } from "./exportImport.js";
-import { wireAIAssistant } from './aiAssistant.js';
+// wireAIAssistant is superseded by wireEditorQuickTools for the AI popover
 import { wireThemeToggle } from "./themeManager.js";
 import { getActiveFilter, getSelectedDate } from "./filterSearchSort.js";
 import { wireSidebarToggle, wireToolbarToggle, wireSidebarResize, wireToolTabs } from "./layoutManager.js";
@@ -15,7 +15,7 @@ import { initSmartCalendar } from "./smartCalendar.js";
 import { wireProfileManager, updateHeaderAvatar } from "./profileManager.js";
 import { wireSlashCommands } from "./slashCommands.js";
 import { handleArchiveNote, handleUnarchiveNote, removeTagFromActiveNote } from "./noteOperations.js";
-import { wireMailFeature } from "./mailFeature.js";
+// mailFeature.js is superseded by editorQuickTools.js for the mail popover
 import { wireShareFeature, checkSharedUrl } from "./shareFeature.js";
 import { wireShapeManager } from "./shapeManager.js";
 import { wireTagManager } from "./tagManager.js";
@@ -115,7 +115,7 @@ const callbacks = {
   // Loads notes and folders for the current user, ensuring at least one note exists
   loadNotesForCurrentUser: async () => {
     state.notes = await loadNotesForCurrentUser(state.activeUser);
-    state.folders = getFolders(state.activeUser);
+    state.folders = await syncFoldersFromCloud(state.activeUser);
     await ensureAtLeastOneNote(state.notes, state.activeUser);
     if (!state.activeNoteId && state.notes.length) {
       state.activeNoteId = state.notes[0].id;
@@ -170,9 +170,6 @@ async function initApp() {
   wireUploadButtons();
   wireAuthButtons(state, callbacks);
   wireImportExport(state);
-  wireAIAssistant(state, callbacks);
-
-
 
   wireThemeSelector(state, callbacks);
   wireEditorPatternSelector(state, callbacks);
@@ -182,7 +179,7 @@ async function initApp() {
   wireToolTabs();
   wireProfileManager(state, callbacks);
   wireSlashCommands();
-  wireMailFeature();
+  // wireMailFeature(); // now handled by wireEditorQuickTools()
   wireShareFeature(state, callbacks);
   wireShapeManager();
   wireTagManager(state, callbacks);

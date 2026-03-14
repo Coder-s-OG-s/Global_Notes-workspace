@@ -1,3 +1,5 @@
+import { stripHtml, escapeHtml } from "./utilities.js";
+
 const $ = (selector) => document.querySelector(selector);
 
 // Converts an array of note objects into a formatted text string for export
@@ -12,7 +14,7 @@ export function formatNotesAsText(notes) {
       const tags = (note.tags || []).join(", ") || "none";
       const created = note.createdAt || "";
       const updated = note.updatedAt || "";
-      const content = note.content || "";
+      const content = stripHtml(note.content || "");
 
       const lines = [
         `=== NOTE ${index + 1} ===`,
@@ -96,10 +98,10 @@ export function exportNotes(notes, format = 'txt') {
 function printNotes(notes) {
   const printContent = notes.map(note => `
     <div style="margin-bottom: 2rem; page-break-inside: avoid;">
-      <h2 style="margin-bottom: 0.5rem;">${note.title || "Untitled"}</h2>
+      <h2 style="margin-bottom: 0.5rem;">${escapeHtml(note.title || "Untitled")}</h2>
       <div style="font-size: 0.8em; color: #666; margin-bottom: 1rem;">
-        ${note.createdAt ? `Created: ${note.createdAt} | ` : ""}
-        Tags: ${(note.tags || []).join(", ") || "None"}
+        ${note.createdAt ? `Created: ${escapeHtml(note.createdAt)} | ` : ""}
+        Tags: ${escapeHtml((note.tags || []).join(", ") || "None")}
       </div>
       <div style="line-height: 1.6;">
         ${note.content || "(No content)"}

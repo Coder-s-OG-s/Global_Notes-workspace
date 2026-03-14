@@ -31,11 +31,11 @@ export function renderNotesList(notes, activeNoteId, setActiveNote, activeFolder
     return;
   }
 
-  visibleNotes.forEach((note) => {
+  visibleNotes.forEach((note, index) => {
     const li = document.createElement("li");
     li.className = "note-item" + (note.id === activeNoteId ? " active" : "");
     li.dataset.id = note.id;
-    li.dataset.tags = (note.tags || []).join(", ");//check this
+    li.dataset.tags = (note.tags || []).join(", ");
 
     const btn = document.createElement("button");
     btn.className = "note-card";

@@ -1,8 +1,12 @@
+import { supabase } from "./supabaseClient.js";
+import { saveFolder as saveFolderToCloud, fetchFolders as fetchCloudFolders, deleteFolder as deleteFolderFromCloud } from "./supabaseStorage.js";
+import { showToast } from "./utilities.js";
+
 // Folder Storage Keys
 const FOLDERS_STORAGE_KEY = "notesWorkspace.folders";
 
 /**
- * Get all folders for current user
+ * Get all folders for current user (from localStorage)
  * @param {string} activeUser - Current user
  * @returns {Array} Array of folder objects
  */
@@ -19,7 +23,7 @@ export function getFolders(activeUser) {
 }
 
 /**
- * Save folders to localStorage
+ * Save folders to localStorage and sync to Supabase
  * @param {string} activeUser - Current user
  * @param {Array} folders - Array of folder objects
  */
@@ -27,8 +31,21 @@ export function saveFolders(activeUser, folders) {
   try {
     const key = `${FOLDERS_STORAGE_KEY}.${activeUser || "guest"}`;
     localStorage.setItem(key, JSON.stringify(folders));
+
+    // Sync each folder to Supabase
+    if (activeUser && activeUser !== 'guest') {
+      folders.forEach(folder => {
+        saveFolderToCloud({
+          id: folder.id,
+          name: folder.name,
+          created_at: folder.createdAt
+        }).catch(() => {
+          showToast("Folder sync failed — saved locally only", "warning");
+        });
+      });
+    }
   } catch (err) {
-    console.error("Failed to save folders", err);
+    showToast("Failed to save folders", "error");
   }
 }
 
@@ -61,7 +78,14 @@ export function deleteFolder(activeUser, folderId, notes) {
   // Remove folder
   const updatedFolders = folders.filter((f) => f.id !== folderId);
   saveFolders(activeUser, updatedFolders);
-  
+
+  // Delete from Supabase
+  if (activeUser && activeUser !== 'guest') {
+    deleteFolderFromCloud(folderId).catch(() => {
+      showToast("Folder deleted locally but cloud sync failed", "warning");
+    });
+  }
+
   // Move notes from this folder to root (folderId = null)
   notes.forEach((note) => {
     if (note.folderId === folderId) {
@@ -82,6 +106,48 @@ export function renameFolder(activeUser, folderId, newName) {
   if (folder) {
     folder.name = newName;
     saveFolders(activeUser, folders);
+  }
+}
+
+/**
+ * Fetches folders from Supabase and merges with local.
+ * Called once on app load to sync cloud folders into localStorage.
+ * @param {string} activeUser - Current user
+ * @returns {Array} Merged folders array
+ */
+export async function syncFoldersFromCloud(activeUser) {
+  if (!activeUser || activeUser === 'guest') return getFolders(activeUser);
+
+  try {
+    const session = await supabase.auth.getSession();
+    if (!session?.data?.session?.user) return getFolders(activeUser);
+
+    const cloudFolders = await fetchCloudFolders();
+    const localFolders = getFolders(activeUser);
+
+    // Merge: cloud takes precedence by ID, local-only folders preserved
+    const foldersMap = new Map();
+    cloudFolders.forEach(f => foldersMap.set(f.id, {
+      id: f.id,
+      name: f.name,
+      createdAt: f.created_at
+    }));
+    localFolders.forEach(f => {
+      if (!foldersMap.has(f.id)) {
+        foldersMap.set(f.id, f);
+      }
+    });
+
+    const merged = Array.from(foldersMap.values());
+
+    // Update localStorage with merged result
+    const key = `${FOLDERS_STORAGE_KEY}.${activeUser}`;
+    localStorage.setItem(key, JSON.stringify(merged));
+
+    return merged;
+  } catch (err) {
+    console.error("Failed to sync folders from cloud:", err);
+    return getFolders(activeUser);
   }
 }
 

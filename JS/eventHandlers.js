@@ -182,7 +182,7 @@ export function wireThemeSelector(state, callbacks) {
   });
 }
 
-// Manages dropdown toggles (Preferences, Profile)
+// Manages dropdown toggles (Preferences, Profile, Overflow)
 export function wireDropdowns() {
   const toggleDropdown = (wrapperId, menuId) => {
     const wrapper = document.getElementById(wrapperId);
@@ -197,6 +197,10 @@ export function wireDropdowns() {
       document.querySelectorAll(".dropdown-menu").forEach(el => {
         if (el !== menu) el.classList.add("hidden");
       });
+      document.querySelectorAll(".overflow-menu").forEach(el => el.classList.add("hidden"));
+      // Close editor tool popovers (AI/Mail)
+      document.querySelectorAll(".editor-tool-popover.open").forEach(p => p.classList.remove("open"));
+      document.querySelectorAll(".editor-tool-trigger.active, .ai-pill-btn.active, .mail-pill-btn.active").forEach(t => t.classList.remove("active"));
       menu.classList.toggle("hidden");
     });
   };
@@ -204,9 +208,29 @@ export function wireDropdowns() {
   toggleDropdown("preferences-dropdown-wrapper", "preferences-menu");
   toggleDropdown("user-pill", "profile-menu");
 
-  // Click outside to close
+  // Overflow menu (editor actions)
+  const overflowTrigger = document.querySelector(".overflow-trigger");
+  const overflowMenu = document.querySelector(".overflow-menu");
+  if (overflowTrigger && overflowMenu) {
+    overflowTrigger.addEventListener("click", (e) => {
+      e.stopPropagation();
+      document.querySelectorAll(".dropdown-menu").forEach(el => el.classList.add("hidden"));
+      // Close editor tool popovers (AI/Mail)
+      document.querySelectorAll(".editor-tool-popover.open").forEach(p => p.classList.remove("open"));
+      overflowMenu.classList.toggle("hidden");
+    });
+  }
+
+  // Click outside to close all
   document.addEventListener("click", () => {
     document.querySelectorAll(".dropdown-menu").forEach(el => el.classList.add("hidden"));
+    document.querySelectorAll(".overflow-menu").forEach(el => el.classList.add("hidden"));
+  });
+
+  // Prevent overflow menu clicks from closing itself
+  overflowMenu?.addEventListener("click", (e) => {
+    // Only stop propagation for non-action items (the menu container itself)
+    // Action items should close the menu after their handler fires
   });
 }
 

@@ -3,43 +3,30 @@
 
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>Antigravity - Smart Workspace</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Global Notes Workspace</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="CSS/index.css?v=3.3" />
+  <link rel="stylesheet" href="CSS/index.css?v=5.0" />
   <link rel="stylesheet" href="CSS/tagManager.css" />
+  <link rel="stylesheet" href="CSS/footer.css" />
   <link rel="manifest" href="/manifest.json">
 
-  <!-- Google Site Verification -->
   <meta name="google-site-verification" content="WbUo_0T0kC4YmSlPrwLvwl-ez09WyeheFaD1YThQZqY" />
+  <meta name="description" content="Global Notes Workspace - A powerful, offline-capable workspace for organizing your thoughts, notes, and ideas.">
+  <meta name="keywords" content="notes, workspace, productivity, offline notes, organization">
+  <meta name="author" content="Global Notes Workspace">
+  <meta name="theme-color" content="#191919">
 
-  <!-- SEO Meta Tags -->
-  <meta name="description"
-    content="Global Notes Workspace - A powerful, offline-capable workspace for organizing your thoughts, notes, and ideas. Designed for productivity with a clean, distraction-free interface.">
-  <meta name="keywords"
-    content="notes, workspace, productivity, offline notes, organization, ideas, writing, personal knowledge management">
-  <meta name="author" content="Antigravity">
-  <meta name="theme-color" content="#0f172a">
-
-  <!-- Open Graph / Facebook -->
   <meta property="og:type" content="website">
-  <meta property="og:url" content="https://jai-ramdev-timber-and-plywood.vercel.app/">
-  <meta property="og:title" content="Global Notes Workspace - Organize ideas. Work smarter.">
-  <meta property="og:description"
-    content="A simple, powerful workspace for your thoughts. Designed for productivity. Built with care.">
-  <meta property="og:image" content="https://jai-ramdev-timber-and-plywood.vercel.app/assets/images/logo.png">
-
-  <!-- Twitter -->
+  <meta property="og:url" content="https://global-notes-workspace.vercel.app/">
+  <meta property="og:title" content="Global Notes Workspace">
+  <meta property="og:description" content="A simple, powerful workspace for your thoughts. Designed for productivity.">
+  <meta property="og:image" content="https://global-notes-workspace.vercel.app/assets/images/logo.png">
   <meta property="twitter:card" content="summary_large_image">
-  <meta property="twitter:url" content="https://jai-ramdev-timber-and-plywood.vercel.app/">
-  <meta property="twitter:title" content="Global Notes Workspace - Organize ideas. Work smarter.">
-  <meta property="twitter:description"
-    content="A simple, powerful workspace for your thoughts. Designed for productivity. Built with care.">
-  <meta property="twitter:image" content="https://jai-ramdev-timber-and-plywood.vercel.app/assets/images/logo.png">
+
   <script>
-    // Force Redirect from 0.0.0.0 to localhost to ensure Secure Context
     if (window.location.hostname === '0.0.0.0') {
       window.location.hostname = 'localhost';
     }
@@ -47,83 +34,66 @@
 </head>
 
 <body>
+  <!-- Overlay for mobile sidebar -->
   <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+  <!-- ═══ HEADER ═══ -->
   <header class="app-header">
-    <!-- Primary Navbar: 3 Zones -->
-    <div class="navbar-primary">
-      <!-- Zone 1: Left (Menu + Brand) -->
-      <!-- Zone 1: Left (Menu + Brand) -->
+    <nav class="navbar">
+      <!-- Left: Toggle + Brand -->
       <div class="navbar-left">
         <button class="btn ghost icon-only mobile-toggle" id="sidebar-toggle" aria-label="Toggle Menu">
-          <svg class="icon" viewBox="0 0 24 24">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
             <line x1="3" y1="12" x2="21" y2="12"></line>
             <line x1="3" y1="6" x2="21" y2="6"></line>
             <line x1="3" y1="18" x2="21" y2="18"></line>
           </svg>
         </button>
         <div class="brand">
-          <div class="logo-wrapper">
-            <img src="assets/images/logo.png" alt="Logo" class="logo-img" />
-          </div>
-          <h1>Antigravity</h1>
+          <img src="assets/images/logo.png" alt="Logo" class="logo-img" />
+          <span class="brand-name">Global Notes</span>
         </div>
       </div>
 
-      <!-- Zone 2: Center (Search + Date) -->
+      <!-- Center: Search -->
       <div class="navbar-center">
         <div class="search-container">
-          <svg class="search-icon" viewBox="0 0 24 24">
+          <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
             <circle cx="11" cy="11" r="8"></circle>
             <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
           </svg>
-          <input type="search" id="search" class="search-input" placeholder="Search notes…" aria-label="Search notes" />
+          <input type="search" id="search" class="search-input" placeholder="Search notes..." aria-label="Search notes" />
         </div>
-
         <div class="date-filter smart-calendar-container" id="search-date-filter">
-          <div class="date-input-wrapper">
-            <input type="date" id="date-filter" class="date-filter-input" aria-label="Select note date" />
-            <button class="calendar-icon-btn" id="calendar-toggle" aria-label="Toggle calendar">
-              <div class="cal-icon-header" id="cal-icon-month">JAN</div>
-              <div class="cal-icon-body" id="cal-icon-day">01</div>
-            </button>
-          </div>
-          <!-- Custom Calendar Popup -->
+          <button class="calendar-icon-btn" id="calendar-toggle" aria-label="Toggle calendar">
+            <div class="cal-icon-header" id="cal-icon-month">JAN</div>
+            <div class="cal-icon-body" id="cal-icon-day">01</div>
+          </button>
+          <input type="date" id="date-filter" class="date-filter-input" aria-label="Filter by date" />
           <div class="smart-calendar-popup hidden" id="smart-calendar">
             <div class="real-time-date-display" id="real-time-date-display"></div>
             <div class="calendar-header">
-              <button class="cal-nav-btn" id="cal-prev">←</button>
-              <span class="cal-current-month" id="cal-month-year">December 2025</span>
-              <button class="cal-nav-btn" id="cal-next">→</button>
+              <button class="cal-nav-btn" id="cal-prev" aria-label="Previous month">&larr;</button>
+              <span class="cal-current-month" id="cal-month-year">March 2026</span>
+              <button class="cal-nav-btn" id="cal-next" aria-label="Next month">&rarr;</button>
             </div>
-            <div class="calendar-grid" id="calendar-grid">
-              <!-- Days will be injected here -->
-            </div>
+            <div class="calendar-grid" id="calendar-grid"></div>
             <div class="calendar-footer">
               <button class="btn tiny ghost" id="cal-today">Today</button>
-              <button class="btn tiny ghost" id="clear-date" style="margin-left: auto;">Clear</button>
+              <button class="btn tiny ghost" id="clear-date">Clear</button>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- Zone 3: Right (Actions + Profile) -->
+      <!-- Right: Actions + Profile -->
       <div class="navbar-right">
         <button class="btn primary" id="new-note">
-          <span class="btn-icon-wrapper">
-            <svg class="icon" viewBox="0 0 24 24" style="width: 16px; height: 16px;">
-              <line x1="12" y1="5" x2="12" y2="19"></line>
-              <line x1="5" y1="12" x2="19" y2="12"></line>
-            </svg>
-          </span>
-          <span class="btn-text">New Note</span>
-        </button>
-
-        <button class="btn ghost icon-only" id="export" title="Export Notes">
-          <svg class="icon" viewBox="0 0 24 24">
-            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-            <polyline points="7 10 12 15 17 10"></polyline>
-            <line x1="12" y1="15" x2="12" y2="3"></line>
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" style="width:14px;height:14px;">
+            <line x1="12" y1="5" x2="12" y2="19"></line>
+            <line x1="5" y1="12" x2="19" y2="12"></line>
           </svg>
+          <span class="btn-text">New Note</span>
         </button>
 
         <a href="HTML/code-workspace.html" class="btn ghost icon-only" id="nav-code" title="Code Workspace">
@@ -133,40 +103,36 @@
           </svg>
         </a>
 
-        <!-- Preferences Dropdown Trigger -->
+        <!-- Preferences -->
         <div class="dropdown-wrapper" id="preferences-dropdown-wrapper">
-          <button class="btn ghost icon-only" id="preferences-toggle" title="Preferences">
-            <svg class="icon" viewBox="0 0 24 24">
+          <button class="btn ghost icon-only" id="preferences-toggle" title="Settings" aria-label="Settings">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
               <circle cx="12" cy="12" r="3"></circle>
-              <path
-                d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z">
-              </path>
+              <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
             </svg>
           </button>
-          <!-- Dropdown Content -->
           <div class="dropdown-menu hidden" id="preferences-menu">
             <div class="dropdown-header">Preferences</div>
             <div class="dropdown-section">
               <label class="dropdown-label">Theme</label>
               <div class="theme-options-grid">
                 <button class="theme-option active" data-value="amoled-dark" title="AMOLED Dark">
-                  <span class="theme-check">✓</span>
+                  <span class="theme-check">&check;</span>
                   <span class="theme-name">Dark</span>
                 </button>
                 <button class="theme-option" data-value="nature-green" title="Nature Green">
-                  <span class="theme-check">✓</span>
+                  <span class="theme-check">&check;</span>
                   <span class="theme-name">Nature</span>
                 </button>
                 <button class="theme-option" data-value="corporate-gray" title="Corporate Gray">
-                  <span class="theme-check">✓</span>
+                  <span class="theme-check">&check;</span>
                   <span class="theme-name">Gray</span>
                 </button>
                 <button class="theme-option" data-value="minimal-white" title="Minimal White">
-                  <span class="theme-check">✓</span>
+                  <span class="theme-check">&check;</span>
                   <span class="theme-name">White</span>
                 </button>
               </div>
-              <!-- Hidden select for JS compatibility -->
               <select id="theme-selector" class="hidden" aria-label="UI Theme">
                 <option value="amoled-dark">AMOLED Dark</option>
                 <option value="nature-green">Nature Green</option>
@@ -190,18 +156,18 @@
         <!-- Profile / Auth -->
         <div class="auth-wrapper">
           <button class="btn secondary" id="login">Sign In</button>
-
           <div class="profile-dropdown-wrapper hidden" id="user-pill">
             <button class="profile-avatar-btn" id="profile-toggle">
-              <img id="header-avatar" class="header-avatar" src="" alt="Profile" />
+              <img id="header-avatar" class="header-avatar" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 24 24' fill='none' stroke='%236366f1' stroke-width='2'%3E%3Ccircle cx='12' cy='7' r='4'/%3E%3Cpath d='M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2'/%3E%3C/svg%3E" alt="Profile" />
             </button>
             <div class="dropdown-menu hidden" id="profile-menu">
               <div class="dropdown-header user-info">
                 <span class="user-name-display" id="user-name"></span>
+                <span class="user-role">Free Plan</span>
               </div>
               <div class="dropdown-divider"></div>
               <button class="dropdown-item" id="open-profile-modal">
-                <svg class="icon" viewBox="0 0 24 24">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
                   <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
                   <circle cx="12" cy="7" r="4"></circle>
                 </svg>
@@ -209,7 +175,7 @@
               </button>
               <div class="dropdown-divider"></div>
               <button class="dropdown-item danger-text" id="logout">
-                <svg class="icon" viewBox="0 0 24 24">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
                   <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
                   <polyline points="16 17 21 12 16 7"></polyline>
                   <line x1="21" y1="12" x2="9" y2="12"></line>
@@ -220,31 +186,18 @@
           </div>
         </div>
       </div>
-    </div>
-
-    <!-- Secondary Navbar: Filters -->
-    <div class="navbar-secondary">
-      <div class="filters-container">
-        <div class="filters">
-          <button class="chip active" data-filter="all" aria-pressed="true">All</button>
-          <button class="chip" data-filter="work">Work</button>
-          <button class="chip" data-filter="personal">Personal</button>
-          <button class="chip" data-filter="ideas">Ideas</button>
-          <button class="chip" data-filter="todo">To‑do</button>
-        </div>
-      </div>
-    </div>
+    </nav>
   </header>
 
+  <!-- ═══ MAIN LAYOUT ═══ -->
   <main class="layout">
-    <!-- Sidebar -->
+    <!-- ─── SIDEBAR ─── -->
     <aside class="app-sidebar" id="app-sidebar">
-      <!-- 1. Sidebar Header (Collapse Only) -->
       <div class="sidebar-header">
         <div class="sidebar-top-row">
           <span class="user-workspace-name">My Workspace</span>
-          <button class="btn ghost icon-only mobile-close" id="sidebar-close" aria-label="Close Menu">
-            <svg class="icon" viewBox="0 0 24 24">
+          <button class="btn ghost icon-only mobile-close" id="sidebar-close" aria-label="Close sidebar">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
               <line x1="18" y1="6" x2="6" y2="18"></line>
               <line x1="6" y1="6" x2="18" y2="18"></line>
             </svg>
@@ -252,7 +205,7 @@
         </div>
       </div>
 
-      <!-- 2. Library Section (Navigation Hub) -->
+      <!-- Library -->
       <div class="sidebar-section library-section">
         <div class="section-header">
           <span class="section-title">Library</span>
@@ -260,21 +213,18 @@
         <ul class="library-list">
           <li class="library-item active" id="nav-all-notes">
             <button class="library-btn" title="All Notes">
-              <svg class="library-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                stroke-linecap="round" stroke-linejoin="round">
+              <svg class="library-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
                 <polyline points="14 2 14 8 20 8"></polyline>
                 <line x1="16" y1="13" x2="8" y2="13"></line>
                 <line x1="16" y1="17" x2="8" y2="17"></line>
-                <polyline points="10 9 9 9 8 9"></polyline>
               </svg>
               <span>All Notes</span>
             </button>
           </li>
           <li class="library-item" id="nav-recent">
-            <button class="library-btn" title="Recent Notes">
-              <svg class="library-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                stroke-linecap="round" stroke-linejoin="round">
+            <button class="library-btn" title="Recent">
+              <svg class="library-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <circle cx="12" cy="12" r="10"></circle>
                 <polyline points="12 6 12 12 16 14"></polyline>
               </svg>
@@ -283,19 +233,15 @@
           </li>
           <li class="library-item" id="nav-favorites">
             <button class="library-btn" title="Favorites">
-              <svg class="library-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                stroke-linecap="round" stroke-linejoin="round">
-                <polygon
-                  points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2">
-                </polygon>
+              <svg class="library-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
               </svg>
               <span>Favorites</span>
             </button>
           </li>
           <li class="library-item" id="nav-archived">
             <button class="library-btn" title="Archived">
-              <svg class="library-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                stroke-linecap="round" stroke-linejoin="round">
+              <svg class="library-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M21 8v13H3V8"></path>
                 <path d="M1 3h22v5H1z"></path>
                 <path d="M10 12h4"></path>
@@ -306,275 +252,190 @@
         </ul>
       </div>
 
-      <!-- 3. Folders Section -->
+      <!-- Filter Chips (moved from header) -->
+      <div class="sidebar-section filters-section">
+        <div class="filters">
+          <button class="chip active" data-filter="all" aria-pressed="true">All</button>
+          <button class="chip" data-filter="work">Work</button>
+          <button class="chip" data-filter="personal">Personal</button>
+          <button class="chip" data-filter="ideas">Ideas</button>
+          <button class="chip" data-filter="todo">To-do</button>
+        </div>
+      </div>
+
+      <!-- Folders -->
       <div class="sidebar-section folders-section">
         <div class="section-header">
           <span class="section-title">Folders</span>
-          <button class="folder-pill-btn" id="create-folder" title="New Folder" aria-label="New Folder">
-            <span class="folder-pill-inner">
-              <!-- Folder + icon -->
-              <svg class="folder-pill-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
-                stroke-linecap="round" stroke-linejoin="round">
-                <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z" />
-                <line x1="12" y1="11" x2="12" y2="17" />
-                <line x1="9" y1="14" x2="15" y2="14" />
-              </svg>
-              <span class="folder-pill-label">New Folder</span>
-            </span>
+          <button class="folder-create-btn" id="create-folder" title="New Folder" aria-label="New Folder">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;">
+              <line x1="12" y1="5" x2="12" y2="19"></line>
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
           </button>
         </div>
-        <ul class="folders-list" id="folders-list">
-          <!-- Injected via JS -->
-        </ul>
+        <ul class="folders-list" id="folders-list"></ul>
       </div>
 
-      <!-- 3. Notes List -->
+      <!-- Notes List -->
       <div class="sidebar-section notes-section">
         <div class="section-header">
-          <span class="section-title">NOTES</span>
+          <span class="section-title">Notes</span>
+          <select id="sort" class="sort-select" aria-label="Sort notes">
+            <option value="updated-desc">Newest</option>
+            <option value="updated-asc">Oldest</option>
+            <option value="title-asc">A &rarr; Z</option>
+            <option value="title-desc">Z &rarr; A</option>
+          </select>
         </div>
-        <ul class="notes-list" id="notes-list">
-          <!-- Injected via JS -->
-        </ul>
+        <ul class="notes-list" id="notes-list"></ul>
       </div>
 
-
-      <!-- Resizer Handle -->
       <div class="sidebar-resizer" id="sidebar-resizer"></div>
     </aside>
 
-    <!-- Editor: note details -->
+    <!-- ─── EDITOR ─── -->
     <section class="editor">
-      <header class="editor-bar">
+      <!-- Editor Header -->
+      <div class="editor-header">
         <input type="text" class="title-input" id="title" placeholder="Untitled note" aria-label="Note title" />
-
-        <div class="editor-actions">
-          <div class="tags-input">
-            <div class="tags-chips" id="tags">
-              <!-- Tags will be injected here -->
-            </div>
-            <div class="tag-manager-container">
-              <button class="btn-icon circular" id="add-tag-btn" aria-label="Add tag" title="Add tag"
-                style="width: 28px; height: 28px; border-radius: 50%; border: 1px dashed var(--border);">
-                <svg class="icon" style="width: 14px; height: 14px;" viewBox="0 0 24 24">
-                  <line x1="12" y1="5" x2="12" y2="19"></line>
-                  <line x1="5" y1="12" x2="19" y2="12"></line>
-                </svg>
-              </button>
-
-              <!-- Tag Menu Popover -->
-              <div id="tag-menu" class="tag-menu-popover hidden">
-                <div class="tag-menu-header">
-                  <input type="text" id="tag-search" placeholder="Search tags..." aria-label="Search tags"
-                    autocomplete="off">
-                </div>
-                <div class="tag-menu-list" id="tag-menu-list">
-                  <!-- Tag options will be injected here -->
-                </div>
-                <div class="tag-menu-footer">
-                  <button class="btn tiny ghost full-width" id="create-new-tag-btn">
-                    + Create new label
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="buttons">
-            <!-- AI Quick Popover -->
-            <div class="editor-quick-tool" id="editor-ai-tool">
-              <button class="ai-pill-btn" id="editor-ai-trigger" title="AI Assistant" aria-label="AI Assistant">
-                <span class="ai-pill-inner">
-                  <!-- Sparkle / Gemini-style icon -->
-                  <svg class="ai-pill-icon" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                    <path
-                      d="M12 2.5C12 2.5 13.5 7.5 17 9C13.5 10.5 12 15.5 12 15.5C12 15.5 10.5 10.5 7 9C10.5 7.5 12 2.5 12 2.5Z" />
-                    <path
-                      d="M5.5 14C5.5 14 6.3 16.7 8.5 17.5C6.3 18.3 5.5 21 5.5 21C5.5 21 4.7 18.3 2.5 17.5C4.7 16.7 5.5 14 5.5 14Z"
-                      opacity="0.7" />
-                    <path
-                      d="M18.5 2C18.5 2 19.1 4 20.5 4.5C19.1 5 18.5 7 18.5 7C18.5 7 17.9 5 16.5 4.5C17.9 4 18.5 2 18.5 2Z"
-                      opacity="0.6" />
-                  </svg>
-                  <span class="ai-pill-label">AI</span>
-                </span>
-              </button>
-              <div class="editor-tool-popover" id="editor-ai-popover">
-                <div class="editor-tool-popover-header">
-                  <span>AI Assistant</span>
-                  <button class="editor-tool-popover-close" data-close="editor-ai-popover" aria-label="Close">✕</button>
-                </div>
-                <textarea id="editor-ai-prompt" class="editor-tool-input"
-                  placeholder="Ask AI to write, summarize, or explain..." rows="3"></textarea>
-                <button class="editor-tool-generate-btn" id="editor-ai-generate-btn">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
-                    stroke-linejoin="round" style="width:12px;height:12px;flex-shrink:0;">
-                    <path
-                      d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-                  </svg>
-                  Generate
-                </button>
-              </div>
-            </div>
-
-            <!-- Mail Quick Popover -->
-            <div class="editor-quick-tool" id="editor-mail-tool">
-              <button class="mail-pill-btn" id="editor-mail-trigger" title="Mail Writer" aria-label="Mail Writer">
-                <span class="mail-pill-inner">
-                  <!-- Envelope icon -->
-                  <svg class="mail-pill-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
-                    stroke-linecap="round" stroke-linejoin="round">
-                    <rect x="2" y="4" width="20" height="16" rx="3" />
-                    <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
-                  </svg>
-                  <span class="mail-pill-label">Mail</span>
-                </span>
-              </button>
-              <div class="editor-tool-popover" id="editor-mail-popover">
-                <div class="editor-tool-popover-header">
-                  <span>Mail Writer</span>
-                  <button class="editor-tool-popover-close" data-close="editor-mail-popover"
-                    aria-label="Close">✕</button>
-                </div>
-                <input type="email" id="editor-mail-sender" class="editor-tool-input editor-tool-input-sm"
-                  placeholder="Your Email" />
-                <input type="email" id="editor-mail-recipient" class="editor-tool-input editor-tool-input-sm"
-                  placeholder="Recipient Email" />
-                <textarea id="editor-mail-prompt" class="editor-tool-input" placeholder="What is this email about?"
-                  rows="3"></textarea>
-                <button class="editor-tool-generate-btn" id="editor-mail-generate-btn">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
-                    stroke-linejoin="round" style="width:12px;height:12px;flex-shrink:0;">
-                    <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z" />
-                  </svg>
-                  Draft in Gmail
-                </button>
-              </div>
-            </div>
-
-            <button class="btn btn-icon" id="toggle-favorite" aria-label="Toggle favorite" title="Toggle favorite">
-              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                stroke-linecap="round" stroke-linejoin="round">
-                <polygon
-                  points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2">
-                </polygon>
+        <div class="editor-header-actions">
+          <button class="btn ghost icon-only" id="toggle-favorite" aria-label="Toggle favorite" title="Favorite">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+            </svg>
+          </button>
+          <button class="btn ghost icon-only" id="save-note" aria-label="Save note" title="Save">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+              <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+              <polyline points="17 21 17 13 7 13 7 21"></polyline>
+              <polyline points="7 3 7 8 15 8"></polyline>
+            </svg>
+          </button>
+          <!-- Overflow Menu -->
+          <div class="overflow-wrapper">
+            <button class="btn ghost icon-only overflow-trigger" aria-label="More actions" title="More">
+              <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
+                <circle cx="12" cy="5" r="2"></circle>
+                <circle cx="12" cy="12" r="2"></circle>
+                <circle cx="12" cy="19" r="2"></circle>
               </svg>
             </button>
-            <button class="btn secondary" id="share-note" aria-label="Share note">Share</button>
-            <button class="btn" id="duplicate-note">Duplicate</button>
-            <button class="btn danger" id="delete-note">Delete</button>
-            <button class="btn primary" id="save-note" aria-label="Save note">
-              <svg class="icon" style="width: 16px; height: 16px; color: white;" viewBox="0 0 24 24">
-                <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
-                <polyline points="17 21 17 13 7 13 7 21"></polyline>
-                <polyline points="7 3 7 8 15 8"></polyline>
-              </svg>
-            </button>
+            <div class="overflow-menu hidden">
+              <!-- AI Quick Popover -->
+              <div class="editor-quick-tool" id="editor-ai-tool">
+                <button class="overflow-item" id="editor-ai-trigger">
+                  <svg class="overflow-item-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.5C12 2.5 13.5 7.5 17 9C13.5 10.5 12 15.5 12 15.5C12 15.5 10.5 10.5 7 9C10.5 7.5 12 2.5 12 2.5Z"/></svg>
+                  AI Assistant
+                </button>
+              </div>
+              <!-- Mail Quick Popover -->
+              <div class="editor-quick-tool" id="editor-mail-tool">
+                <button class="overflow-item" id="editor-mail-trigger">
+                  <svg class="overflow-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="3"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+                  Mail Writer
+                </button>
+              </div>
+              <div class="overflow-divider"></div>
+              <button class="overflow-item" id="share-note">
+                <svg class="overflow-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+                Share
+              </button>
+              <button class="overflow-item" id="duplicate-note">
+                <svg class="overflow-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                Duplicate
+              </button>
+              <button class="overflow-item" id="export">
+                <svg class="overflow-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                Export
+              </button>
+              <div class="overflow-divider"></div>
+              <button class="overflow-item danger" id="delete-note">
+                <svg class="overflow-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                Delete
+              </button>
+            </div>
           </div>
         </div>
-      </header>
+      </div>
 
-      <div class="editor-body">
-        <div class="editor-toolbar" aria-label="Text formatting controls">
-          <div class="toolbar-metadata">
-            <div class="metadata-info">
-              <span id="metadata-time" class="metadata-item"></span>
-              <span class="metadata-divider">/</span>
-              <span id="metadata-count" class="metadata-item">0 words</span>
+      <!-- Tags Row -->
+      <div class="editor-tags">
+        <div class="tags-chips" id="tags"></div>
+        <div class="tag-manager-container">
+          <button class="circular" id="add-tag-btn" aria-label="Add tag" title="Add tag">
+            <svg class="icon" style="width:14px;height:14px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+              <line x1="12" y1="5" x2="12" y2="19"></line>
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+          </button>
+          <div id="tag-menu" class="tag-menu-popover hidden">
+            <div class="tag-menu-header">
+              <input type="text" id="tag-search" placeholder="Search tags..." aria-label="Search tags" autocomplete="off">
+            </div>
+            <div class="tag-menu-list" id="tag-menu-list"></div>
+            <div class="tag-menu-footer">
+              <button class="btn tiny ghost full-width" id="create-new-tag-btn">+ Create new label</button>
             </div>
           </div>
-          <div class="toolbar-controls">
-            <div class="toolbar-group">
-              <button class="btn tiny ghost" id="edit-undo" type="button" aria-label="Undo" title="Undo">
-                <svg class="icon" style="width: 14px; height: 14px;" viewBox="0 0 24 24">
-                  <path d="M3 7v6h6"></path>
-                  <path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13"></path>
-                </svg>
-              </button>
-              <button class="btn tiny ghost" id="edit-redo" type="button" aria-label="Redo" title="Redo">
-                <svg class="icon" style="width: 14px; height: 14px;" viewBox="0 0 24 24">
-                  <path d="M21 7v6h-6"></path>
-                  <path d="M3 17a9 9 0 0 1 9-9 9 9 0 0 1 6 2.3l3 4.7"></path>
-                </svg>
-              </button>
-            </div>
-            <div class="toolbar-group">
-              <label for="text-size" class="text-size-label">Size:</label>
-              <select id="text-size" class="select tiny" aria-label="Text size">
-                <option value="12">12 px</option>
-                <option value="13">13 px</option>
-                <option value="14">14 px</option>
-                <option value="15" selected>15 px</option>
-                <option value="16">16 px</option>
-                <option value="17">17 px</option>
-                <option value="18">18 px</option>
-                <option value="19">19 px</option>
-                <option value="20">20 px</option>
-                <option value="21">21 px</option>
-                <option value="22">22 px</option>
-                <option value="23">23 px</option>
-                <option value="24">24 px</option>
-              </select>
-            </div>
+        </div>
+      </div>
 
-            <div class="toolbar-group">
-              <label for="text-color" class="text-size-label">Color:</label>
-              <select id="text-color" class="select tiny" aria-label="Text color">
-                <option value="" selected>Default</option>
-                <option value="#000000">Black</option>
-                <option value="#2d3436">Dark gray</option>
-                <option value="#ff6b6b">Red</option>
-                <option value="#45b7d1">Blue</option>
-                <option value="#96ceb4">Green</option>
-                <option value="#dda0dd">Purple</option>
-              </select>
-              <input type="color" id="custom-text-color" class="color-picker-tiny" title="Custom color" />
-            </div>
-
-            <div class="toolbar-group">
-              <label for="highlight-color" class="text-size-label">Highlight:</label>
-              <select id="highlight-color" class="select tiny" aria-label="Highlight color">
-                <option value="" selected>None</option>
-                <option value="#FFFF00">Neon Yellow</option>
-                <option value="#39FF14">Neon Green</option>
-                <option value="#00FFFF">Cyan</option>
-                <option value="#FF00FF">Magenta</option>
-                <option value="#FF5F1F">Neon Orange</option>
-                <option value="#FF69B4">Hot Pink</option>
-              </select>
-            </div>
-
-            <div class="toolbar-group">
-              <label for="note-theme" class="text-size-label">Card:</label>
-              <select id="note-theme" class="select tiny" aria-label="Note card theme">
-                <option value="classic-blue">Classic Blue</option>
-                <option value="elegant-purple">Elegant Purple</option>
-                <option value="forest-green">Forest Green</option>
-                <option value="sunset-orange">Sunset Orange</option>
-                <option value="ocean-teal">Ocean Teal</option>
-                <option value="rose-gold">Rose Gold</option>
-                <option value="slate-gray">Slate Gray</option>
-                <option value="crimson-red">Crimson Red</option>
-              </select>
-            </div>
-
-
-
-            <div class="toolbar-group">
-              <label for="editor-pattern" class="text-size-label">Background:</label>
-              <select id="editor-pattern" class="select tiny" aria-label="Editor background pattern">
-                <option value="plain">Plain</option>
-                <option value="lined">Lined</option>
-                <option value="grid">Grid</option>
-                <option value="dotted">Dotted</option>
-                <option value="blueprint">Blueprint</option>
-                <option value="sunset">Sunset</option>
-                <option value="mint">Mint</option>
-                <option value="lavender">Lavender</option>
-              </select>
-            </div>
-
-            <select id="format-action" class="select tiny" aria-label="Text formatting">
+      <!-- Formatting Toolbar -->
+      <div class="editor-toolbar" aria-label="Formatting controls">
+        <div class="toolbar-metadata">
+          <span id="metadata-time" class="metadata-item"></span>
+          <span class="metadata-divider">/</span>
+          <span id="metadata-count" class="metadata-item">0 words</span>
+        </div>
+        <div class="toolbar-controls">
+          <div class="toolbar-group">
+            <button class="toolbar-btn" id="edit-undo" type="button" aria-label="Undo" title="Undo">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="width:14px;height:14px;">
+                <path d="M3 7v6h6"></path><path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13"></path>
+              </svg>
+            </button>
+            <button class="toolbar-btn" id="edit-redo" type="button" aria-label="Redo" title="Redo">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="width:14px;height:14px;">
+                <path d="M21 7v6h-6"></path><path d="M3 17a9 9 0 0 1 9-9 9 9 0 0 1 6 2.3l3 4.7"></path>
+              </svg>
+            </button>
+          </div>
+          <div class="toolbar-divider"></div>
+          <div class="toolbar-group">
+            <select id="text-size" class="select tiny" aria-label="Text size">
+              <option value="12">12</option>
+              <option value="13">13</option>
+              <option value="14">14</option>
+              <option value="15" selected>15</option>
+              <option value="16">16</option>
+              <option value="18">18</option>
+              <option value="20">20</option>
+              <option value="24">24</option>
+            </select>
+            <select id="text-color" class="select tiny" aria-label="Text color">
+              <option value="" selected>Color</option>
+              <option value="#000000">Black</option>
+              <option value="#2d3436">Dark gray</option>
+              <option value="#ff6b6b">Red</option>
+              <option value="#45b7d1">Blue</option>
+              <option value="#96ceb4">Green</option>
+              <option value="#dda0dd">Purple</option>
+            </select>
+            <input type="color" id="custom-text-color" class="color-picker-tiny" title="Custom color" />
+            <select id="highlight-color" class="select tiny" aria-label="Highlight">
+              <option value="" selected>Highlight</option>
+              <option value="#FFFF00">Yellow</option>
+              <option value="#39FF14">Green</option>
+              <option value="#00FFFF">Cyan</option>
+              <option value="#FF00FF">Magenta</option>
+              <option value="#FF5F1F">Orange</option>
+              <option value="#FF69B4">Pink</option>
+            </select>
+          </div>
+          <div class="toolbar-divider"></div>
+          <div class="toolbar-group">
+            <select id="format-action" class="select tiny" aria-label="Format">
               <option value="">Format</option>
               <option value="bold">Bold</option>
               <option value="italic">Italic</option>
@@ -585,60 +446,109 @@
               <option value="alignRight">Align Right</option>
               <option value="bullet">Bullet List</option>
             </select>
-            <select id="edit-action" class="select tiny" aria-label="Edit actions">
+            <select id="edit-action" class="select tiny" aria-label="Edit">
               <option value="">Edit</option>
               <option value="cut">Cut</option>
               <option value="copy">Copy</option>
               <option value="paste">Paste</option>
             </select>
-            <select id="insert-action" class="select tiny" aria-label="Insert content">
+            <select id="insert-action" class="select tiny" aria-label="Insert">
               <option value="">Insert</option>
-              <option value="photo-video">Choose Photo or Video</option>
-              <option value="audio">Record Audio</option>
-              <option value="file">Attach File</option>
-              <option value="sketch">Add Sketch</option>
+              <option value="photo-video">Photo / Video</option>
+              <option value="audio">Audio</option>
+              <option value="file">File</option>
+              <option value="sketch">Sketch</option>
               <option value="shapes">Shapes</option>
               <option value="table">Table</option>
             </select>
-            <!-- Hidden inputs for triggers -->
-            <input type="file" id="media-upload-input" accept="image/*,video/*" hidden />
-            <input type="file" id="file-upload-input" hidden />
           </div>
-          <button class="btn-icon" id="toolbar-toggle" aria-label="Toggle toolbar">
-            <svg class="icon toggle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
-              stroke-linecap="round" stroke-linejoin="round">
-              <polyline points="6 9 12 15 18 9"></polyline>
-            </svg>
-          </button>
+          <div class="toolbar-divider"></div>
+          <div class="toolbar-group">
+            <select id="note-theme" class="select tiny" aria-label="Card theme">
+              <option value="classic-blue">Classic Blue</option>
+              <option value="elegant-purple">Elegant Purple</option>
+              <option value="forest-green">Forest Green</option>
+              <option value="sunset-orange">Sunset Orange</option>
+              <option value="ocean-teal">Ocean Teal</option>
+              <option value="rose-gold">Rose Gold</option>
+              <option value="slate-gray">Slate Gray</option>
+              <option value="crimson-red">Crimson Red</option>
+            </select>
+            <select id="editor-pattern" class="select tiny" aria-label="Editor background">
+              <option value="plain">Plain</option>
+              <option value="lined">Lined</option>
+              <option value="grid">Grid</option>
+              <option value="dotted">Dotted</option>
+              <option value="blueprint">Blueprint</option>
+              <option value="sunset">Sunset</option>
+              <option value="mint">Mint</option>
+              <option value="lavender">Lavender</option>
+            </select>
+          </div>
+          <input type="file" id="media-upload-input" accept="image/*,video/*" hidden />
+          <input type="file" id="file-upload-input" hidden />
         </div>
-        <div id="content" class="editor-content content-input" contenteditable="true" aria-label="Note content">
-          <!-- Text will go here -->
+        <button class="toolbar-btn toolbar-toggle-btn" id="toolbar-toggle" aria-label="Toggle toolbar">
+          <svg class="icon toggle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="6 9 12 15 18 9"></polyline>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Editor Body -->
+      <div class="editor-body">
+        <div id="content" class="editor-content content-input" contenteditable="true" role="textbox" aria-label="Note content" aria-multiline="true" data-pattern="plain"></div>
+      </div>
+
+      <!-- AI Popover (positioned relative to editor) -->
+      <div class="editor-tool-popover" id="editor-ai-popover">
+        <div class="editor-tool-popover-header">
+          <span>AI Assistant</span>
+          <button class="editor-tool-popover-close" data-close="editor-ai-popover" aria-label="Close">&times;</button>
         </div>
+        <textarea id="editor-ai-prompt" class="editor-tool-input" placeholder="Ask AI to write, summarize, or explain..." rows="3"></textarea>
+        <button class="editor-tool-generate-btn" id="editor-ai-generate-btn">
+          <svg viewBox="0 0 24 24" fill="currentColor" style="width:12px;height:12px;"><path d="M12 2.5C12 2.5 13.5 7.5 17 9C13.5 10.5 12 15.5 12 15.5C12 15.5 10.5 10.5 7 9C10.5 7.5 12 2.5 12 2.5Z"/></svg>
+          Generate
+        </button>
+      </div>
+      <div class="editor-tool-popover" id="editor-mail-popover">
+        <div class="editor-tool-popover-header">
+          <span>Mail Writer</span>
+          <button class="editor-tool-popover-close" data-close="editor-mail-popover" aria-label="Close">&times;</button>
+        </div>
+        <input type="email" id="editor-mail-sender" class="editor-tool-input editor-tool-input-sm" placeholder="Your Email" />
+        <input type="email" id="editor-mail-recipient" class="editor-tool-input editor-tool-input-sm" placeholder="Recipient Email" />
+        <textarea id="editor-mail-prompt" class="editor-tool-input" placeholder="What is this email about?" rows="3"></textarea>
+        <button class="editor-tool-generate-btn" id="editor-mail-generate-btn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" style="width:12px;height:12px;"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+          Draft in Gmail
+        </button>
       </div>
     </section>
   </main>
 
+  <!-- ═══ MODALS ═══ -->
 
   <!-- Profile Modal -->
   <dialog id="profile-modal" class="modal">
     <div class="modal-content">
       <div class="modal-header">
         <h2>User Profile</h2>
-        <button class="btn-icon close-modal" aria-label="Close modal">×</button>
+        <button class="btn-icon close-modal" aria-label="Close">&times;</button>
       </div>
       <div class="profile-body">
         <div class="profile-header">
           <div class="avatar-wrapper">
-            <img id="profile-avatar-large" src="" alt="Profile Picture" class="profile-avatar-large">
-            <button class="btn tiny secondary edit-avatar-btn" id="change-avatar-btn">Change</button>
+            <img id="profile-avatar-large" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 24 24' fill='none' stroke='%236366f1' stroke-width='1.5'%3E%3Ccircle cx='12' cy='7' r='4'/%3E%3Cpath d='M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2'/%3E%3C/svg%3E" alt="Avatar" class="profile-avatar-large">
+            <button class="btn tiny secondary" id="change-avatar-btn">Change</button>
             <input type="file" id="avatar-upload" accept="image/*" hidden>
           </div>
           <div class="profile-info">
             <h3 id="profile-username"></h3>
-            <span class="member-since" id="member-since">Joined: December 2025</span>
+            <span class="member-since" id="member-since">Joined: March 2026</span>
           </div>
         </div>
-
         <div class="stats-grid">
           <div class="stat-card">
             <span class="stat-value" id="stat-total-notes">0</span>
@@ -662,19 +572,12 @@
     <div class="modal-content">
       <div class="modal-header">
         <h2>Record Audio</h2>
-        <button class="btn-icon close-modal">×</button>
+        <button class="btn-icon close-modal">&times;</button>
       </div>
       <div class="audio-body">
         <div class="audio-visualizer" id="audio-visualizer">
-          <!-- Simple waveform visualization -->
-          <div class="wave"></div>
-          <div class="wave"></div>
-          <div class="wave"></div>
-          <div class="wave"></div>
-          <div class="wave"></div>
-          <div class="wave"></div>
-          <div class="wave"></div>
-          <div class="wave"></div>
+          <div class="wave"></div><div class="wave"></div><div class="wave"></div><div class="wave"></div>
+          <div class="wave"></div><div class="wave"></div><div class="wave"></div><div class="wave"></div>
         </div>
         <div class="audio-controls">
           <button class="btn primary" id="start-record-btn">Record</button>
@@ -694,7 +597,7 @@
     <div class="modal-content">
       <div class="modal-header">
         <h2>Add Sketch</h2>
-        <button class="btn-icon close-modal">×</button>
+        <button class="btn-icon close-modal">&times;</button>
       </div>
       <div class="sketch-body">
         <canvas id="sketch-canvas" width="600" height="400"></canvas>
@@ -702,8 +605,8 @@
           <button class="btn tiny active" id="tool-pen">Pen</button>
           <button class="btn tiny" id="tool-eraser">Eraser</button>
           <div class="divider-vertical"></div>
-          <button class="btn tiny" id="sketch-undo" title="Undo">↺</button>
-          <button class="btn tiny" id="sketch-redo" title="Redo">↻</button>
+          <button class="btn tiny" id="sketch-undo" title="Undo">&larrhk;</button>
+          <button class="btn tiny" id="sketch-redo" title="Redo">&rarrhk;</button>
           <div class="divider-vertical"></div>
           <input type="color" id="sketch-color" value="#000000" title="Color">
           <input type="range" id="sketch-size" min="1" max="20" value="2" title="Size">
@@ -722,46 +625,32 @@
     <div class="modal-content">
       <div class="modal-header">
         <h2>Insert Shape</h2>
-        <button class="btn-icon close-modal">×</button>
+        <button class="btn-icon close-modal">&times;</button>
       </div>
       <div class="shapes-body">
         <div class="shapes-grid">
           <button class="shape-btn" data-shape="rectangle" aria-label="Rectangle">
-            <svg viewBox="0 0 24 24" width="24" height="24">
-              <rect x="3" y="5" width="18" height="14" rx="2" stroke="currentColor" fill="none" stroke-width="2" />
-            </svg>
+            <svg viewBox="0 0 24 24" width="24" height="24"><rect x="3" y="5" width="18" height="14" rx="2" stroke="currentColor" fill="none" stroke-width="2"/></svg>
             <span>Rectangle</span>
           </button>
           <button class="shape-btn" data-shape="circle" aria-label="Circle">
-            <svg viewBox="0 0 24 24" width="24" height="24">
-              <circle cx="12" cy="12" r="9" stroke="currentColor" fill="none" stroke-width="2" />
-            </svg>
+            <svg viewBox="0 0 24 24" width="24" height="24"><circle cx="12" cy="12" r="9" stroke="currentColor" fill="none" stroke-width="2"/></svg>
             <span>Circle</span>
           </button>
           <button class="shape-btn" data-shape="triangle" aria-label="Triangle">
-            <svg viewBox="0 0 24 24" width="24" height="24">
-              <path d="M12 4L21 20H3L12 4Z" stroke="currentColor" fill="none" stroke-width="2" />
-            </svg>
+            <svg viewBox="0 0 24 24" width="24" height="24"><path d="M12 4L21 20H3L12 4Z" stroke="currentColor" fill="none" stroke-width="2"/></svg>
             <span>Triangle</span>
           </button>
           <button class="shape-btn" data-shape="star" aria-label="Star">
-            <svg viewBox="0 0 24 24" width="24" height="24">
-              <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"
-                stroke="currentColor" fill="none" stroke-width="2" />
-            </svg>
+            <svg viewBox="0 0 24 24" width="24" height="24"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" stroke="currentColor" fill="none" stroke-width="2"/></svg>
             <span>Star</span>
           </button>
           <button class="shape-btn" data-shape="arrow-right" aria-label="Arrow">
-            <svg viewBox="0 0 24 24" width="24" height="24">
-              <path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="currentColor" fill="none" stroke-width="2"
-                stroke-linecap="round" stroke-linejoin="round" />
-            </svg>
+            <svg viewBox="0 0 24 24" width="24" height="24"><path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
             <span>Arrow</span>
           </button>
           <button class="shape-btn" data-shape="line" aria-label="Line">
-            <svg viewBox="0 0 24 24" width="24" height="24">
-              <line x1="3" y1="12" x2="21" y2="12" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
-            </svg>
+            <svg viewBox="0 0 24 24" width="24" height="24"><line x1="3" y1="12" x2="21" y2="12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
             <span>Line</span>
           </button>
         </div>
@@ -772,44 +661,31 @@
     </div>
   </dialog>
 
-
   <!-- Custom Tag Creation Modal -->
   <dialog id="custom-tag-modal" class="modal">
     <div class="modal-content">
       <div class="modal-header">
         <h2>Create new label</h2>
-        <button class="btn-icon close-modal">×</button>
+        <button class="btn-icon close-modal">&times;</button>
       </div>
-      <div class="modal-body" style="padding: 20px;">
-        <div class="form-group" style="margin-bottom: 20px; display: flex; justify-content: center;">
-          <div class="label-preview-container">
-            <span class="tag" style="font-size: 14px; padding: 6px 16px;" id="new-tag-preview">Label preview</span>
-          </div>
+      <div class="modal-body">
+        <div class="form-group" style="display:flex;justify-content:center;margin-bottom:20px;">
+          <span class="tag large" id="new-tag-preview">Label preview</span>
         </div>
-
-        <div class="form-group" style="margin-bottom: 16px;">
-          <label for="new-tag-name" style="display: block; margin-bottom: 8px; font-weight: 500;">Name</label>
-          <input type="text" id="new-tag-name" class="search-input"
-            style="width: 100%; border: 1px solid var(--border);" placeholder="Label name" maxlength="20">
+        <div class="form-group">
+          <label for="new-tag-name">Name</label>
+          <input type="text" id="new-tag-name" class="form-input" placeholder="Label name" maxlength="20">
         </div>
-
-        <div class="form-group" style="margin-bottom: 16px;">
-          <label for="new-tag-desc" style="display: block; margin-bottom: 8px; font-weight: 500;">Description
-            (optional)</label>
-          <input type="text" id="new-tag-desc" class="search-input"
-            style="width: 100%; border: 1px solid var(--border);" placeholder="Description">
+        <div class="form-group">
+          <label for="new-tag-desc">Description (optional)</label>
+          <input type="text" id="new-tag-desc" class="form-input" placeholder="Description">
         </div>
-
-        <div class="form-group" style="margin-bottom: 16px;">
-          <label style="display: block; margin-bottom: 8px; font-weight: 500;">Color</label>
-          <div class="color-options" id="new-tag-colors"
-            style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 8px;">
-            <!-- Color swatches generated by JS -->
-          </div>
-          <div class="custom-color-input" style="display: flex; align-items: center; gap: 8px;">
-            <input type="color" id="new-tag-color-picker"
-              style="width: 36px; height: 36px; padding: 0; border: none; background: none; cursor: pointer;">
-            <span id="new-tag-color-hex" style="font-family: monospace; color: var(--text-dim);">#000000</span>
+        <div class="form-group">
+          <label>Color</label>
+          <div class="color-options" id="new-tag-colors"></div>
+          <div class="custom-color-row">
+            <input type="color" id="new-tag-color-picker">
+            <span id="new-tag-color-hex">#000000</span>
           </div>
         </div>
       </div>
@@ -825,32 +701,20 @@
     <div class="modal-content">
       <div class="modal-header">
         <h2>Share Note</h2>
-        <button class="btn-icon close-modal">×</button>
+        <button class="btn-icon close-modal">&times;</button>
       </div>
-      <div class="share-body"
-        style="display: flex; flex-direction: column; align-items: stretch; gap: 15px; padding: 25px;">
-
-        <p style="text-align: center; color: var(--text-muted); margin-bottom: 5px;">
-          Share this note directly as text via:
-        </p>
-
-        <a id="share-whatsapp" href="#" target="_blank" class="btn full-width"
-          style="background-color: #25D366; color: white; text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 10px; border: none;">
-          <span style="font-size: 1.2em;">💬</span> Share on WhatsApp
+      <div class="share-body">
+        <p class="share-description">Share this note as text:</p>
+        <a id="share-whatsapp" href="#" target="_blank" class="btn share-btn whatsapp">
+          <span>&#x1F4AC;</span> Share on WhatsApp
         </a>
-
-        <a id="share-email" href="#" class="btn full-width"
-          style="background-color: #EA4335; color: white; text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 10px; border: none;">
-          <span style="font-size: 1.2em;">✉️</span> Share via Email
+        <a id="share-email" href="#" class="btn share-btn email">
+          <span>&#x2709;&#xFE0F;</span> Share via Email
         </a>
-
-        <div style="height: 1px; background: var(--border); margin: 5px 0;"></div>
-
-        <button id="share-copy-text" class="btn secondary full-width"
-          style="display: flex; align-items: center; justify-content: center; gap: 10px;">
-          <span style="font-size: 1.2em;">📋</span> Copy Text to Clipboard
+        <div class="share-divider"></div>
+        <button id="share-copy-text" class="btn secondary full-width">
+          <span>&#x1F4CB;</span> Copy Text to Clipboard
         </button>
-
       </div>
       <div class="modal-footer">
         <button class="btn secondary close-modal">Close</button>
@@ -858,16 +722,49 @@
     </div>
   </dialog>
 
+  <!-- Export Modal -->
+  <dialog id="export-modal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Export Notes</h2>
+        <button class="btn-icon close-modal">&times;</button>
+      </div>
+      <div class="modal-body" style="display:flex;flex-direction:column;gap:12px;">
+        <button class="btn secondary full-width" id="export-txt">Export as Text (.txt)</button>
+        <button class="btn secondary full-width" id="export-md">Export as Markdown (.md)</button>
+        <button class="btn secondary full-width" id="export-pdf">Export as PDF (Print)</button>
+      </div>
+      <div class="modal-footer">
+        <button class="btn secondary close-modal">Cancel</button>
+      </div>
+    </div>
+  </dialog>
+
+  <!-- Confirm Dialog -->
+  <dialog class="confirm-dialog" id="confirm-dialog">
+    <div class="confirm-content">
+      <h3 class="confirm-title" id="confirm-title">Delete Note</h3>
+      <p class="confirm-message" id="confirm-message">Are you sure? This cannot be undone.</p>
+      <div class="confirm-actions">
+        <button class="btn secondary" id="confirm-cancel">Cancel</button>
+        <button class="btn danger" id="confirm-ok">Delete</button>
+      </div>
+    </div>
+  </dialog>
+
+  <!-- Footer -->
   <footer class="global-footer">
-    <p>Global Notes Workspace — Organize ideas. Work smarter. A simple, powerful workspace for your thoughts, designed
-      for productivity, built with care.</p>
+    <p>Global Notes Workspace</p>
   </footer>
 
-  <link rel="stylesheet" href="CSS/footer.css">
+  <!-- Toast Container -->
+  <div class="toast-container" id="toast-container"></div>
+
+  <!-- Scripts -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
   <script type="text/javascript" src="JS/vendor/lz-string.min.js"></script>
   <script type="text/javascript" src="JS/vendor/qrcode.min.js"></script>
-  <script type="module" src="JS/notesApp.js?v=2.3"></script>
+  <script type="module" src="JS/notesApp.js?v=3.0"></script>
   <script>
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('sw.js')
