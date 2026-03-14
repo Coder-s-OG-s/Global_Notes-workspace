@@ -18,7 +18,11 @@ export function applyTheme(theme) {
   const normalized = VALID_THEMES.includes(theme) ? theme : DEFAULT_THEME;
   const root = document.documentElement;
   if (root) {
+    // Add transition class for smooth crossfade
+    root.classList.add("theme-transitioning");
     root.dataset.theme = normalized;
+    // Remove transition class after animation completes
+    setTimeout(() => root.classList.remove("theme-transitioning"), 350);
   }
 
   // Let CSS variables drive colors; clear any previous inline overrides

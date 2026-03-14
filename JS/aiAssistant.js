@@ -1,39 +1,29 @@
-
 import { generateTextWithGemini } from './geminiAPI.js';
+import { showToast, escapeHtml } from './utilities.js';
 
 export function wireAIAssistant(state, callbacks) {
     const generateBtn = document.getElementById("ai-generate-btn");
     const promptInput = document.getElementById("ai-sidebar-prompt");
     const contentEditor = document.getElementById("content");
 
-
-
     if (!generateBtn || !promptInput) return;
 
-
-
-    // --- Generate Logic ---
     generateBtn.addEventListener("click", async () => {
         const prompt = promptInput.value.trim();
         if (!prompt) return;
 
-        // UI Loading State
         const originalText = generateBtn.textContent;
         generateBtn.textContent = "⏳ Thinking...";
         generateBtn.disabled = true;
         promptInput.disabled = true;
 
         try {
-            // Call the real Gemini API
             const text = await generateTextWithGemini(prompt);
             insertTextAtCursor(text);
-            promptInput.value = ""; // Clear after success
+            promptInput.value = "";
         } catch (err) {
-            console.error("AI Generation failed", err);
-            // The error from generateTextWithGemini is already user-friendly
-            alert("Failed to generate text. Please check the console for details.");
+            showToast("AI generation failed. Please try again.", "error");
         } finally {
-            // Reset UI
             generateBtn.textContent = originalText;
             generateBtn.disabled = false;
             promptInput.disabled = false;
@@ -44,18 +34,19 @@ export function wireAIAssistant(state, callbacks) {
         if (!contentEditor) return;
         contentEditor.focus();
 
-        // A single newline should be a line break, more should be paragraphs.
         const paragraphs = text.split('\n').filter(p => p.trim() !== '');
 
-        // Using execCommand for broader compatibility, with a fallback.
+        // Use insertText (safe) for single lines, safe HTML insertion for multi-line
         try {
             if (paragraphs.length <= 1) {
                 document.execCommand('insertText', false, text);
             } else {
-                document.execCommand('insertHTML', false, paragraphs.join('<br>'));
+                // Escape HTML entities in each paragraph to prevent XSS
+                const safeHtml = paragraphs.map(p => escapeHtml(p)).join('<br>');
+                document.execCommand('insertHTML', false, safeHtml);
             }
         } catch (e) {
-            console.warn("execCommand is not supported. Falling back to range manipulation.");
+            // Fallback: DOM-based insertion with text nodes (inherently safe)
             const selection = window.getSelection();
             if (!selection.rangeCount) return;
 

@@ -1,3 +1,4 @@
+import { stripHtml } from './utilities.js';
 
 /**
  * Wires up the Social Share Modal logic.
@@ -100,16 +101,7 @@ export function wireShareFeature(state, callbacks) {
  * Shared via Global Notes Workspace
  */
 function generateShareText(note) {
-    let content = note.content || "";
-
-    // Strip HTML tags for clean text sharing if content is HTML
-    if (content.includes('<') && content.includes('>')) {
-        // Create a temporary element to strip tags correctly
-        const tempDiv = document.createElement("div");
-        tempDiv.innerHTML = content;
-        content = tempDiv.textContent || tempDiv.innerText || "";
-    }
-
+    const content = stripHtml(note.content || "");
     return `${note.title || "Untitled Note"}\n\n${content}\n\nShared via Global Notes Workspace`;
 }
 

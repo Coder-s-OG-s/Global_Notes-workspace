@@ -69,14 +69,10 @@ export function wireAutoSave(state, callbacks) {
         note.content = currentContent;
         note.updatedAt = new Date().toISOString();
 
-        console.log(`[AutoSave] Saving note ${note.id}...`);
-
-        // Persist to storage
+        // Persist to storage (async — errors handled inside persistNotes via toast)
         callbacks.persistNotes();
 
         // Update sidebar to show new time/preview
-        // We pass true/false to renderNotesList if we want to optimize re-rendering, 
-        // but for now standard render is fine.
         callbacks.renderNotesList();
     };
 

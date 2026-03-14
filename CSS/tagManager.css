@@ -1,31 +1,8 @@
-/* ===== Tag Manager & Custom Tags ===== */
+/* Tag Manager & Custom Tags */
 
 .tag-manager-container {
     position: relative;
     display: inline-block;
-}
-
-.circular {
-    border-radius: 50%;
-    width: 28px;
-    height: 28px;
-    padding: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 18px;
-    background: var(--surface-2);
-    border: 1px dashed var(--text-muted);
-    color: var(--text-muted);
-    cursor: pointer;
-    transition: all 0.2s ease;
-}
-
-.circular:hover {
-    background: var(--surface-3);
-    color: var(--primary);
-    border-color: var(--primary);
-    transform: scale(1.05);
 }
 
 .tag-menu-popover {
@@ -42,24 +19,10 @@
     display: flex;
     flex-direction: column;
     overflow: hidden;
-    animation: slideDown 0.15s ease-out;
+    animation: dropdownFade 0.15s ease-out;
 }
 
-@keyframes slideDown {
-    from {
-        opacity: 0;
-        transform: translateY(-5px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-.tag-menu-popover.hidden {
-    display: none;
-}
+.tag-menu-popover.hidden { display: none; }
 
 .tag-menu-header {
     padding: 8px;
@@ -75,7 +38,6 @@
     color: var(--text);
     font-size: 13px;
 }
-
 #tag-search:focus {
     outline: none;
     border-color: var(--primary);
@@ -101,15 +63,8 @@
     cursor: pointer;
     text-align: left;
 }
-
-.tag-menu-item:hover {
-    background: var(--surface-2);
-}
-
-.tag-menu-item.selected {
-    background: var(--surface-3);
-    font-weight: 500;
-}
+.tag-menu-item:hover { background: var(--surface-2); }
+.tag-menu-item.selected { background: var(--surface-3); font-weight: 500; }
 
 .tag-color-dot {
     width: 10px;
@@ -130,6 +85,13 @@
     background: var(--surface-2);
 }
 
+.tag-menu-empty {
+    padding: 12px;
+    text-align: center;
+    font-size: 13px;
+    color: var(--text-muted);
+}
+
 .color-swatch {
     width: 24px;
     height: 24px;
@@ -138,13 +100,7 @@
     cursor: pointer;
     transition: transform 0.1s;
 }
-
 .color-swatch:hover {
     transform: scale(1.1);
     z-index: 1;
-}
-
-.tag.large {
-    font-size: 14px;
-    padding: 6px 12px;
 }

@@ -3,7 +3,7 @@
  */
 
 export function upgradeToolbarSelects() {
-    const selects = document.querySelectorAll('.editor-toolbar select.tiny');
+    const selects = document.querySelectorAll('.editor-toolbar select.tiny, .editor-toolbar .select.tiny');
 
     selects.forEach(select => {
         // Skip hidden selects or those already upgraded

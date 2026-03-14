@@ -1,5 +1,7 @@
 import { createNote, persistNotes } from "./noteManager.js";
 import { renderActiveNote, renderNotesList } from "./renderer.js";
+import { deleteNote as deleteNoteFromCloud } from "./supabaseStorage.js";
+import { showToast, showConfirm } from "./utilities.js";
 
 const $ = (selector) => document.querySelector(selector);
 
@@ -110,9 +112,19 @@ export function handleNewNote(notes, activeUser, getActiveFilter, getSelectedDat
   callbacks.setActiveNote(newNote.id);
 }
 
-// Handles deletion of the active note, or clears it if it's the last note
-export function handleDeleteNote(notes, activeNoteId, activeUser, callbacks) {
+// Handles deletion of the active note with confirmation dialog
+export async function handleDeleteNote(notes, activeNoteId, activeUser, callbacks) {
   if (!activeNoteId) return;
+
+  const noteToDelete = notes.find(n => n.id === activeNoteId);
+  const noteTitle = noteToDelete?.title || "Untitled note";
+
+  const confirmed = await showConfirm(
+    "Delete Note",
+    `Are you sure you want to delete "${noteTitle}"? This cannot be undone.`
+  );
+  if (!confirmed) return;
+
   if (notes.length === 1) {
     const only = notes[0];
     only.title = "";
@@ -122,16 +134,22 @@ export function handleDeleteNote(notes, activeNoteId, activeUser, callbacks) {
     persistNotes(activeUser, notes);
     callbacks.renderActiveNote();
     callbacks.renderNotesList();
+    showToast("Note cleared", "success");
     return;
   }
   // Filter out the note to delete
   const filteredNotes = notes.filter((n) => n.id !== activeNoteId);
+  // Delete from Supabase
+  deleteNoteFromCloud(activeNoteId).catch(err => {
+    showToast("Note deleted locally but cloud sync failed", "warning");
+  });
   // Update the notes array by removing deleted note
   notes.splice(0, notes.length, ...filteredNotes);
   // Set active note to first remaining note
   const nextActiveId = filteredNotes.length > 0 ? filteredNotes[0].id : null;
   persistNotes(activeUser, notes);
   callbacks.setActiveNote(nextActiveId);
+  showToast("Note deleted", "success");
 }
 
 // Creates a copy of the active note with a new ID and current timestamp
@@ -154,6 +172,7 @@ export function handleToggleFavorite(notes, activeNoteId, activeUser, callbacks)
   if (!note) return;
   note.isFavorite = !note.isFavorite; // Toggle
   note.updatedAt = new Date().toISOString();
+
   persistNotes(activeUser, notes);
   callbacks.renderActiveNote();
   callbacks.renderNotesList();

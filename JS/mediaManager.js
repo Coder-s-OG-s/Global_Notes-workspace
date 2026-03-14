@@ -1,7 +1,9 @@
-import { escapeHtml } from "./utilities.js";
+import { escapeHtml, showToast } from "./utilities.js";
 import { insertHtmlAtCursor } from "./formattingToolbar.js";
 import { SketchPad } from "./sketchPad.js";
 import { AudioRecorder } from "./audioRecorder.js";
+
+const MAX_FILE_SIZE_MB = 10;
 
 const $ = (selector) => document.querySelector(selector);
 
@@ -55,18 +57,28 @@ export function wireUploadButtons() {
 
   // --- File Input Handlers ---
 
+  // File size check
+  function checkFileSize(file) {
+    if (file.size > MAX_FILE_SIZE_MB * 1024 * 1024) {
+      showToast(`File too large (max ${MAX_FILE_SIZE_MB}MB). Please use a smaller file.`, "error");
+      return false;
+    }
+    return true;
+  }
+
   // Generic handler for images/videos
   const handleMediaUpload = (input) => {
     input.addEventListener("change", () => {
       const file = input.files && input.files[0];
       if (!file) return;
+      if (!checkFileSize(file)) { input.value = ""; return; }
 
       if (file.type.startsWith('image/')) {
         insertImage(file);
       } else if (file.type.startsWith('video/')) {
         insertVideo(file);
       }
-      input.value = ""; // Reset
+      input.value = "";
     });
   };
 
@@ -77,6 +89,7 @@ export function wireUploadButtons() {
     fileInput.addEventListener("change", () => {
       const file = fileInput.files && fileInput.files[0];
       if (!file) return;
+      if (!checkFileSize(file)) { fileInput.value = ""; return; }
       insertFileLink(file);
       fileInput.value = "";
     });
@@ -115,7 +128,9 @@ export function wireUploadButtons() {
     const safeName = escapeHtml(file.name);
     const fileUrl = URL.createObjectURL(file);
 
-    // Note: Blob URLs are session-specific. Real apps would upload to server.
+    // Revoke blob URL after a delay to prevent memory leak
+    setTimeout(() => URL.revokeObjectURL(fileUrl), 60000);
+
     const html = `<a href="${fileUrl}" target="_blank" contenteditable="false" style="text-decoration: none; display: block; cursor: pointer;">
         <div class="file-attachment" style="padding: 10px; border: 1px solid var(--border); border-radius: 8px; background: var(--surface-2); display: flex; align-items: center; gap: 10px; margin: 10px 0;">
             <span style="font-size: 20px;">📄</span>

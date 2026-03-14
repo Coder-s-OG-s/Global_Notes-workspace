@@ -26,6 +26,8 @@ export function wireEditorQuickTools() {
 
             // Close all popovers first
             closeAllPopovers();
+            // Close overflow menu if open
+            document.querySelectorAll('.overflow-menu').forEach(m => m.classList.add('hidden'));
 
             if (!isOpen) {
                 popover.classList.add('open');
@@ -47,7 +49,7 @@ export function wireEditorQuickTools() {
 
     // Click outside closes all popovers
     document.addEventListener('click', (e) => {
-        if (!e.target.closest('.editor-quick-tool')) {
+        if (!e.target.closest('.editor-quick-tool') && !e.target.closest('.editor-tool-popover')) {
             closeAllPopovers();
         }
     });
