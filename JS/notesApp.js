@@ -14,7 +14,7 @@ import { wireSidebarToggle, wireToolbarToggle, wireSidebarResize, wireToolTabs }
 import { initSmartCalendar } from "./smartCalendar.js";
 import { wireProfileManager, updateHeaderAvatar } from "./profileManager.js";
 import { wireSlashCommands } from "./slashCommands.js";
-import { handleArchiveNote, handleUnarchiveNote, removeTagFromActiveNote } from "./noteOperations.js";
+import { handleArchiveNote, handleUnarchiveNote, removeTagFromActiveNote, handleDeleteNote } from "./noteOperations.js";
 // mailFeature.js is superseded by editorQuickTools.js for the mail popover
 import { wireShareFeature, checkSharedUrl } from "./shareFeature.js";
 import { wireShapeManager } from "./shapeManager.js";
@@ -91,7 +91,8 @@ const callbacks = {
 
     renderNotesList(filteredNotes, state.activeNoteId, setActiveNote, state.activeFolderId, {
       archiveNote: (id) => handleArchiveNote(state.notes, id, state.activeUser, callbacks),
-      unarchiveNote: (id) => handleUnarchiveNote(state.notes, id, state.activeUser, callbacks)
+      unarchiveNote: (id) => handleUnarchiveNote(state.notes, id, state.activeUser, callbacks),
+      deleteNote: (id) => handleDeleteNote(state.notes, id, state.activeUser, callbacks)
     });
     state.calendarWidget?.render();
   },

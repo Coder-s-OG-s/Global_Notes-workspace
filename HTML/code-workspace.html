@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-    <title>Code Workspace - Antigravity</title>
+    <title>Code Workspace - Global Notes Workspace</title>
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -24,7 +24,7 @@
 <body class="code-workspace-page">
 
     <div id="api-warning" class="api-warning-banner hidden">
-        ⚠ AI features disabled. Add your OpenAI API key in AI_CONFIG at the top of code-workspace.js to enable them.
+        ⚠ AI features disabled. Ensure your Gemini API key is set in JS/config.js.
     </div>
 
     <header class="code-header">
@@ -35,22 +35,45 @@
                 </svg>
             </a>
             <a href="../index.html" class="header-brand">
-                <img src="../assets/images/logo.png" alt="Antigravity" width="24" height="24">
-                <h1 class="brand-h1">Antigravity</h1>
+                <img src="../assets/images/logo.png" alt="Global Code Workspace" width="28" height="28">
+                <h1 class="brand-h1">Global Code Workspace</h1>
             </a>
-            <span class="page-title-badge">Code Workspace</span>
         </div>
 
         <div class="header-center">
             <select id="language-selector" class="lang-select">
-                <option value="javascript">JavaScript</option>
-                <option value="python">Python</option>
-                <option value="java">Java</option>
-                <option value="cpp">C++</option>
-                <option value="htmlmixed">HTML</option>
-                <option value="css">CSS</option>
-                <option value="sql">SQL</option>
-                <option value="typescript">TypeScript</option>
+                <optgroup label="Popular">
+                    <option value="javascript">JavaScript</option>
+                    <option value="typescript">TypeScript</option>
+                    <option value="python">Python</option>
+                    <option value="python3">Python 3</option>
+                </optgroup>
+                <optgroup label="Systems & App">
+                    <option value="cpp">C++</option>
+                    <option value="c">C</option>
+                    <option value="rust">Rust</option>
+                    <option value="go">Go</option>
+                    <option value="kotlin">Kotlin</option>
+                    <option value="swift">Swift</option>
+                </optgroup>
+                <optgroup label="Backend & Script">
+                    <option value="java">Java</option>
+                    <option value="csharp">C#</option>
+                    <option value="ruby">Ruby</option>
+                    <option value="php">PHP</option>
+                    <option value="dart">Dart</option>
+                    <option value="scala">Scala</option>
+                </optgroup>
+                <optgroup label="Functional">
+                    <option value="elixir">Elixir</option>
+                    <option value="erlang">Erlang</option>
+                    <option value="racket">Racket</option>
+                </optgroup>
+                <optgroup label="Web & Data">
+                    <option value="htmlmixed">HTML</option>
+                    <option value="css">CSS</option>
+                    <option value="sql">SQL</option>
+                </optgroup>
             </select>
         </div>
 
@@ -123,9 +146,13 @@
 
             <!-- AI Result Panel -->
             <div id="ai-result-panel" class="ai-result-container">
+                <div class="ai-panel-resizer" id="ai-panel-resizer"></div>
                 <div class="ai-panel-header">
                     <div class="ai-panel-title" id="ai-panel-title">AI Assistant</div>
-                    <button class="panel-close-btn" id="close-panel-btn">×</button>
+                    <div class="ai-panel-actions">
+                        <button class="panel-action-btn" id="expand-panel-btn" title="Expand/Collapse">⤢</button>
+                        <button class="panel-close-btn" id="close-panel-btn">×</button>
+                    </div>
                 </div>
                 <div class="ai-panel-content" id="ai-panel-content">
                     <!-- AI Response goes here -->

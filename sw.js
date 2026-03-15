@@ -1,4 +1,4 @@
-const CACHE_NAME = 'my-note-app-cache-v9';
+const CACHE_NAME = 'my-note-app-cache-v10';
 const urlsToCache = [
   '/',
   '/index.html',

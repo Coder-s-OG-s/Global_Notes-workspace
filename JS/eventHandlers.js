@@ -84,6 +84,10 @@ export function wireCrudButtons(state, getActiveFilter, callbacks) {
     handleDeleteNote(state.notes, state.activeNoteId, state.activeUser, callbacks);
   });
 
+  $("#delete-note-main")?.addEventListener("click", () => {
+    handleDeleteNote(state.notes, state.activeNoteId, state.activeUser, callbacks);
+  });
+
   $("#duplicate-note")?.addEventListener("click", () => {
     handleDuplicateNote(state.notes, state.activeNoteId, state.activeUser, callbacks);
   });

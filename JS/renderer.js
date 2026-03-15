@@ -70,6 +70,8 @@ export function renderNotesList(notes, activeNoteId, setActiveNote, activeFolder
       ? `<button class="note-action-btn unarchive-btn" title="Unarchive"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg></button>`
       : `<button class="note-action-btn archive-btn" title="Archive"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 8v13H3V8"/><path d="M1 3h22v5H1z"/><path d="M10 12h4"/></svg></button>`;
 
+    const deleteActionHtml = `<button class="note-action-btn delete-item-btn" title="Delete Note"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>`;
+
     btn.innerHTML = `
     <div class="note-row">
       <div class="note-main">
@@ -83,6 +85,7 @@ export function renderNotesList(notes, activeNoteId, setActiveNote, activeFolder
       <time class="note-time-label" datetime="${safeDatetime}">${friendlyDate}</time>
       <div class="note-actions-hover">
         ${archiveActionHtml}
+        ${deleteActionHtml}
       </div>
     </div>
     `;
@@ -105,6 +108,14 @@ export function renderNotesList(notes, activeNoteId, setActiveNote, activeFolder
       unarchiveBtn.addEventListener("click", (e) => {
         e.stopPropagation();
         noteActions.unarchiveNote(note.id);
+      });
+    }
+
+    const deleteBtn = btn.querySelector(".delete-item-btn");
+    if (deleteBtn && noteActions) {
+      deleteBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        noteActions.deleteNote(note.id);
       });
     }
 

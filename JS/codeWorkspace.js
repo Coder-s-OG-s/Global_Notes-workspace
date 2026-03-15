@@ -1,23 +1,27 @@
-/**
- * Code Workspace Module for Antigravity with AI Features
- * 
- * PASTE YOUR OPENAI API KEY BELOW:
- */
-
-const AI_CONFIG = {
-    apiKey: "YOUR_OPENAI_API_KEY_HERE",   // ← user replaces this once
-    model: "gpt-4o-mini",
-    maxTokens: 1500,
-    baseUrl: "https://api.openai.com/v1/chat/completions"
-};
+import config from './config.js';
+import { generateTextWithGemini } from './geminiAPI.js';
 
 const STORAGE_KEY = 'antigravity_snippets';
 
 const languageMap = {
     javascript: { name: 'JavaScript', mode: 'javascript' },
     python: { name: 'Python', mode: 'python' },
+    python3: { name: 'Python3', mode: 'python' },
     java: { name: 'Java', mode: 'text/x-java' },
     cpp: { name: 'C++', mode: 'text/x-c++src' },
+    csharp: { name: 'C#', mode: 'text/x-csharp' },
+    c: { name: 'C', mode: 'text/x-csrc' },
+    go: { name: 'Go', mode: 'text/x-go' },
+    kotlin: { name: 'Kotlin', mode: 'text/x-kotlin' },
+    swift: { name: 'Swift', mode: 'text/x-swift' },
+    rust: { name: 'Rust', mode: 'text/x-rustsrc' },
+    ruby: { name: 'Ruby', mode: 'text/x-ruby' },
+    php: { name: 'PHP', mode: 'text/x-php' },
+    dart: { name: 'Dart', mode: 'application/dart' },
+    scala: { name: 'Scala', mode: 'text/x-scala' },
+    elixir: { name: 'Elixir', mode: 'text/x-elixir' },
+    erlang: { name: 'Erlang', mode: 'text/x-erlang' },
+    racket: { name: 'Racket', mode: 'text/x-scheme' },
     htmlmixed: { name: 'HTML', mode: 'htmlmixed' },
     css: { name: 'CSS', mode: 'css' },
     sql: { name: 'SQL', mode: 'text/x-sql' },
@@ -30,8 +34,9 @@ class CodeWorkspace {
         this.activeSnippetId = null;
         this.editor = null;
         this.chatHistory = [
-            { role: "system", content: "You are a helpful programming assistant embedded in a code editor called Antigravity. Help users understand, debug, and improve their code. Be concise, practical, and friendly. Format code in your responses using backtick blocks." }
+            { role: "system", content: "You are a helpful programming assistant embedded in a code editor called Global Code Workspace. Help users understand, debug, and improve their code. Be concise, practical, and friendly. Format code in your responses using backtick blocks." }
         ];
+        this.isCustomHeight = false;
 
         this.init();
     }
@@ -40,13 +45,15 @@ class CodeWorkspace {
         this.initEditor();
         this.renderSnippetList();
         this.attachEventListeners();
+        this.setupCustomLanguageSelect();
         this.initChat();
         this.checkAPIKey();
         this.createNewSnippet();
     }
 
     checkAPIKey() {
-        if (AI_CONFIG.apiKey === "YOUR_OPENAI_API_KEY_HERE") {
+        const apiKey = config.GEMINI_API_KEY;
+        if (!apiKey || apiKey === "YOUR_GEMINI_API_KEY" || apiKey.includes("YOUR")) {
             document.getElementById('api-warning').classList.remove('hidden');
             ['ai-explain-btn', 'ai-docs-btn', 'ai-improve-btn', 'ai-chat-btn'].forEach(id => {
                 const btn = document.getElementById(id);
@@ -117,6 +124,11 @@ class CodeWorkspace {
         document.getElementById('snippet-search').addEventListener('input', (e) => this.renderSnippetList(e.target.value));
 
         document.getElementById('close-panel-btn').addEventListener('click', () => this.togglePanel(false));
+        document.getElementById('expand-panel-btn').addEventListener('click', () => this.toggleExpand());
+
+        // Resizer Logic
+        const resizer = document.getElementById('ai-panel-resizer');
+        resizer.addEventListener('mousedown', (e) => this.startResizing(e));
 
         // AI Feature Buttons
         document.getElementById('ai-explain-btn').addEventListener('click', () => this.handleAIRequest('explain'));
@@ -124,29 +136,111 @@ class CodeWorkspace {
         document.getElementById('ai-improve-btn').addEventListener('click', () => this.handleAIRequest('improve'));
     }
 
-    // --- AI Shared Logic ---
-    async callAI(systemPrompt, userContent) {
-        if (AI_CONFIG.apiKey === "YOUR_OPENAI_API_KEY_HERE") throw new Error("API key missing");
+    setupCustomLanguageSelect() {
+        const select = document.getElementById('language-selector');
+        if (!select) return;
 
-        const response = await fetch(AI_CONFIG.baseUrl, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": `Bearer ${AI_CONFIG.apiKey}`
-            },
-            body: JSON.stringify({
-                model: AI_CONFIG.model,
-                max_tokens: AI_CONFIG.maxTokens,
-                messages: [
-                    { role: "system", content: systemPrompt },
-                    { role: "user", content: userContent }
-                ]
-            })
+        const wrapper = document.createElement('div');
+        wrapper.className = 'lang-select-wrapper';
+
+        select.classList.add('hidden-select');
+
+        const trigger = document.createElement('div');
+        trigger.className = 'lang-select-trigger';
+        trigger.innerHTML = `
+            <span class="trigger-value">${select.options[select.selectedIndex]?.text || 'Select Language'}</span>
+            <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+        `;
+
+        const menu = document.createElement('div');
+        menu.className = 'lang-select-menu';
+        document.body.appendChild(menu);
+
+        const updateMenu = () => {
+            menu.innerHTML = '';
+            const groups = select.querySelectorAll('optgroup');
+
+            groups.forEach(group => {
+                const column = document.createElement('div');
+                column.className = 'lang-select-column';
+
+                const label = document.createElement('div');
+                label.className = 'lang-select-group-label';
+                label.textContent = group.label;
+                column.appendChild(label);
+
+                group.querySelectorAll('option').forEach(opt => {
+                    const item = document.createElement('div');
+                    item.className = 'lang-select-option' + (opt.value === select.value ? ' selected' : '');
+                    item.innerHTML = `<span>${opt.text}</span>`;
+                    item.onclick = (e) => {
+                        e.stopPropagation();
+                        select.value = opt.value;
+                        select.dispatchEvent(new Event('change'));
+                        trigger.querySelector('.trigger-value').textContent = opt.text;
+                        menu.classList.remove('show');
+                        trigger.classList.remove('active');
+                        updateMenu();
+                    };
+                    column.appendChild(item);
+                });
+                menu.appendChild(column);
+            });
+        };
+
+        updateMenu();
+
+        trigger.onclick = (e) => {
+            e.stopPropagation();
+            const rect = trigger.getBoundingClientRect();
+
+            // Positioning directly under the trigger
+            menu.style.top = `${rect.bottom + 8}px`;
+
+            // Center the mega-menu relative to the trigger
+            let left = rect.left + (rect.width / 2) - (menu.offsetWidth / 2);
+
+            // Boundary checks (prevent going off-screen)
+            const padding = 20;
+            if (left < padding) left = padding;
+            if (left + menu.offsetWidth > window.innerWidth - padding) {
+                left = window.innerWidth - menu.offsetWidth - padding;
+            }
+
+            menu.style.left = `${left}px`;
+
+            const isShowing = menu.classList.contains('show');
+            document.querySelectorAll('.lang-select-menu').forEach(m => m.classList.remove('show'));
+            document.querySelectorAll('.lang-select-trigger').forEach(t => t.classList.remove('active'));
+
+            if (!isShowing) {
+                menu.classList.add('show');
+                trigger.classList.add('active');
+            }
+        };
+
+        document.addEventListener('click', () => {
+            menu.classList.remove('show');
+            trigger.classList.remove('active');
         });
 
-        const data = await response.json();
-        if (!response.ok) throw new Error(data.error?.message || "AI request failed");
-        return data.choices[0].message.content;
+        select.parentNode.insertBefore(wrapper, select);
+        wrapper.appendChild(select);
+        wrapper.appendChild(trigger);
+
+        // sync back if select value changes programmatically
+        select.addEventListener('change', () => {
+            trigger.querySelector('.trigger-value').textContent = select.options[select.selectedIndex]?.text;
+            updateMenu();
+        });
+    }
+
+    // --- AI Shared Logic ---
+    async callAI(systemPrompt, userContent) {
+        const fullPrompt = `${systemPrompt}\n\nUSER CODE/CONTEXT:\n${userContent}`;
+        return await generateTextWithGemini(fullPrompt);
     }
 
     async handleAIRequest(type) {
@@ -209,6 +303,9 @@ class CodeWorkspace {
 
         if (show) {
             panel.classList.add('show');
+            if (!this.isCustomHeight) {
+                panel.style.height = '280px';
+            }
             if (loadingText) {
                 content.innerHTML = `
             <div class="panel-loading">
@@ -219,31 +316,68 @@ class CodeWorkspace {
             }
         } else {
             panel.classList.remove('show');
+            panel.style.height = '0';
+            this.isCustomHeight = false;
         }
+    }
+
+    startResizing(e) {
+        e.preventDefault();
+        const panel = document.getElementById('ai-result-panel');
+        const startY = e.clientY;
+        const startHeight = parseInt(document.defaultView.getComputedStyle(panel).height, 10);
+
+        const doDrag = (e) => {
+            const height = startHeight + (startY - e.clientY);
+            if (height > 100 && height < window.innerHeight * 0.8) {
+                panel.style.height = height + 'px';
+                panel.style.transition = 'none'; // Disable transition while dragging
+                this.isCustomHeight = true;
+                this.editor.refresh(); // Keep CodeMirror in sync
+            }
+        };
+
+        const stopDrag = () => {
+            panel.style.transition = ''; // Restore transition
+            document.removeEventListener('mousemove', doDrag);
+            document.removeEventListener('mouseup', stopDrag);
+        };
+
+        document.addEventListener('mousemove', doDrag);
+        document.addEventListener('mouseup', stopDrag);
+    }
+
+    toggleExpand() {
+        const panel = document.getElementById('ai-result-panel');
+        const isMaximized = panel.style.height === '80vh';
+
+        if (isMaximized) {
+            panel.style.height = '280px';
+            this.isCustomHeight = false;
+        } else {
+            panel.style.height = '80vh';
+            this.isCustomHeight = true;
+        }
+        setTimeout(() => this.editor.refresh(), 300);
     }
 
     renderAIResult(title, content, hasImprovedCode = false) {
         document.getElementById('ai-panel-title').textContent = title;
         const contentEl = document.getElementById('ai-panel-content');
 
-        // Basic Markdown-ish rendering
-        let html = content
-            .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-            .replace(/\n\n/g, '<p></p>')
-            .replace(/\n/g, '<br>');
-
-        // Extract code blocks
-        const codeBlockRegex = /```([\s\S]*?)```/g;
-        html = html.replace(codeBlockRegex, (match, code) => {
-            return `<pre><code>${this.escapeHtml(code.trim())}</code></pre>`;
-        });
-
-        contentEl.innerHTML = html;
+        contentEl.innerHTML = this.renderMarkdown(content);
 
         if (hasImprovedCode) {
             const codeBlocks = content.match(/```([\s\S]*?)```/);
             if (codeBlocks) {
-                const improvedCode = codeBlocks[1].trim();
+                let improvedCode = codeBlocks[1].trim();
+                // Strip language tag (e.g., "python") from first line if present
+                const lines = improvedCode.split('\n');
+                if (lines.length > 0 && /^[a-z#]+$/i.test(lines[0].trim())) {
+                    lines.shift();
+                    improvedCode = lines.join('\n');
+                }
+
                 const copyBtn = document.createElement('button');
                 copyBtn.className = 'btn primary';
                 copyBtn.style.marginTop = '10px';
@@ -256,6 +390,37 @@ class CodeWorkspace {
                 contentEl.appendChild(copyBtn);
             }
         }
+    }
+
+    renderMarkdown(text) {
+        const codeBlocks = [];
+        const placeholder = (i) => `__CODE_BLOCK_${i}__`;
+
+        // 1. Extract code blocks with placeholders
+        let processed = text.replace(/```([\s\S]*?)```/g, (match, code) => {
+            let cleanCode = code.trim();
+            const lines = cleanCode.split('\n');
+            // Remove language tag if present (e.g., ```python)
+            if (lines.length > 0 && /^[a-z#]+$/i.test(lines[0].trim())) {
+                lines.shift();
+                cleanCode = lines.join('\n');
+            }
+            codeBlocks.push(`<pre><code>${this.escapeHtml(cleanCode)}</code></pre>`);
+            return placeholder(codeBlocks.length - 1);
+        });
+
+        // 2. Escape non-code text and format
+        processed = this.escapeHtml(processed)
+            .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+            .replace(/\n\n/g, '<p></p>')
+            .replace(/\n/g, '<br>');
+
+        // 3. Re-insert code blocks
+        codeBlocks.forEach((block, i) => {
+            processed = processed.replace(placeholder(i), block);
+        });
+
+        return processed;
     }
 
     renderAIError(msg) {
@@ -351,31 +516,24 @@ class CodeWorkspace {
         this.addMessageToChat('assistant', '<span class="ai-spinner"></span>', loadingId);
 
         try {
-            const response = await fetch(AI_CONFIG.baseUrl, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${AI_CONFIG.apiKey}`
-                },
-                body: JSON.stringify({
-                    model: AI_CONFIG.model,
-                    messages: this.chatHistory
-                })
+            // Simple prompt concatenation for Gemini
+            let fullPrompt = "You are a helpful programming assistant for Global Code Workspace.\n\nChat History:\n";
+            this.chatHistory.forEach(msg => {
+                fullPrompt += `${msg.role === 'user' ? 'User' : 'Assistant'}: ${msg.content}\n`;
             });
 
-            const data = await response.json();
+            const aiMsg = await generateTextWithGemini(fullPrompt);
             const loadingEl = document.getElementById(loadingId);
 
-            if (!response.ok) {
-                loadingEl.innerHTML = "Sorry, I couldn't reach the AI. Check your API key and internet connection.";
+            if (aiMsg.includes("Deployment Error") || aiMsg.includes("error contacting the AI service")) {
+                loadingEl.innerHTML = "Sorry, I couldn't reach the AI. Check your Gemini API key in config.js.";
                 return;
             }
 
-            const aiMsg = data.choices[0].message.content;
             this.chatHistory.push({ role: "assistant", content: aiMsg });
 
-            // Render with simple markdown code format
-            loadingEl.innerHTML = this.escapeHtml(aiMsg).replace(/```([\s\S]*?)```/g, '<pre><code>$1</code></pre>');
+            // Render with the new markdown helper
+            loadingEl.innerHTML = this.renderMarkdown(aiMsg);
 
             const messagesContainer = document.getElementById('chat-messages');
             messagesContainer.scrollTop = messagesContainer.scrollHeight;
