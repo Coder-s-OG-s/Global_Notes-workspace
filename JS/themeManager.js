@@ -37,6 +37,17 @@ export function applyTheme(theme) {
   if (selector) {
     selector.value = normalized;
   }
+  // Handle visibility of the 'Note Card Theme' selector (only relevant for light themes)
+  const noteThemeSelect = document.querySelector("#note-theme");
+  if (noteThemeSelect) {
+    const isDark = normalized === "amoled-dark" || normalized === "corporate-gray";
+    // Target ONLY the note-theme custom wrapper or the select itself
+    const target = noteThemeSelect.closest(".custom-select-wrapper") || noteThemeSelect;
+
+    if (target) {
+      target.classList.toggle("hidden", isDark);
+    }
+  }
 }
 
 // Saves the user's theme preference to localStorage and applies it

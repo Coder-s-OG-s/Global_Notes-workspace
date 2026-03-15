@@ -111,62 +111,73 @@ html[data-theme="professional-light"] {
   --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.1);
 }
 
-/* ── Theme: Nature Green ── */
+/* ── Theme: Nature (Purple Edition) ── */
 html[data-theme="nature-green"] {
-  --bg: #fbfcfb;
-  --bg-rgb: 251, 252, 251;
+  --bg: #faf9ff;
+  --bg-rgb: 250, 249, 255;
   --surface: #ffffff;
   --surface-rgb: 255, 255, 255;
-  --surface-2: #f3f6f4;
-  --surface-2-rgb: 243, 246, 244;
-  --surface-3: #e5ebe7;
-  --surface-hover: #dce3de;
-  --text: #1a2e22;
-  --text-dim: #3d5a47;
-  --text-muted: #6d8c78;
-  --primary: #2d8a4e;
-  --primary-strong: #1f7a3f;
-  --primary-light: #4caf6a;
-  --primary-glow: rgba(45, 138, 78, 0.12);
-  --border: #dce3de;
-  --border-light: #c8d4cb;
+  --surface-2: #f3f1ff;
+  --surface-2-rgb: 243, 241, 255;
+  --surface-3: #e9e4ff;
+  --surface-hover: #dfdaff;
+  --text: #1e1b4b;
+  --text-dim: #4338ca;
+  --text-muted: #6366f1;
+  --primary: #9333ea;
+  --primary-strong: #7e22ce;
+  --primary-light: #a855f7;
+  --primary-glow: rgba(147, 51, 234, 0.12);
+  --border: #ddd9ff;
+  --border-light: #cecaf7;
   --accent: #d4920a;
   --danger: #d1242f;
   --success: #2da44e;
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
-  --shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.08);
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.07);
 }
 
-/* ── Theme: Corporate Gray ── */
+/* ── Theme: Midnight Professional (Deep Blue) ── */
 html[data-theme="corporate-gray"] {
-  --bg: #16161a;
-  --bg-rgb: 22, 22, 26;
-  --surface: #1e1e23;
-  --surface-rgb: 30, 30, 35;
-  --surface-2: #25252b;
-  --surface-2-rgb: 37, 37, 43;
-  --surface-3: #2f2f36;
-  --surface-hover: #38383f;
-  --active-bg: rgba(130, 130, 145, 0.1);
-  --text: #ececef;
-  --text-dim: #b0b0b9;
-  --text-muted: #6e6e7a;
-  --primary: #7c7c8a;
-  --primary-strong: #65656f;
-  --primary-light: #9e9ea8;
-  --primary-glow: rgba(124, 124, 138, 0.15);
-  --border: #2d2d34;
-  --border-light: #3a3a42;
-  --accent: #b0b0b9;
-  --danger: #e5534b;
-  --success: #3fb950;
-  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.5);
-  --shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
-  --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.7);
-  --radius: 6px;
-  --radius-sm: 4px;
-  --radius-lg: 8px;
+  --bg: #0b0f1a;
+  --bg-rgb: 11, 15, 26;
+  --surface: #161b2a;
+  --surface-rgb: 22, 27, 42;
+  --surface-2: #1c2336;
+  --surface-2-rgb: 28, 35, 54;
+  --surface-3: #262f45;
+  --surface-hover: #2e3a55;
+  --active-bg: rgba(56, 189, 248, 0.1);
+  --text: #f8fafc;
+  --text-dim: #cbd5e1;
+  --text-muted: #64748b;
+  --primary: #38bdf8;
+  --primary-strong: #0ea5e9;
+  --primary-light: #7dd3fc;
+  --primary-glow: rgba(56, 189, 248, 0.15);
+  --border: #262f45;
+  --border-light: #334155;
+  --accent: #f59e0b;
+  --danger: #ef4444;
+  --success: #10b981;
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+  --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.6);
+  --radius: 8px;
+  --radius-sm: 6px;
+  --radius-lg: 12px;
+}
+
+/* ── Global Dark/Midnight Overrides for Muted Text ── */
+html[data-theme="amoled-dark"] .btn.ghost,
+html[data-theme="corporate-gray"] .btn.ghost {
+  color: var(--text-dim);
+}
+
+html[data-theme="amoled-dark"] .btn.ghost:hover,
+html[data-theme="corporate-gray"] .btn.ghost:hover {
+  color: #ffffff;
 }
 
 /* ── Theme: Minimal White ── */
@@ -391,6 +402,11 @@ body {
   color: var(--text);
 }
 
+.btn.icon-only.ghost {
+  color: var(--text);
+  /* Stronger color for icon-only ghost buttons */
+}
+
 .btn.danger {
   background: rgba(229, 83, 75, 0.1);
   color: var(--danger);
@@ -410,6 +426,37 @@ body {
 .btn.icon-only {
   width: 32px;
   padding: 0;
+  transition: all var(--transition-fast);
+}
+
+.btn.icon-only:hover {
+  background: var(--surface-hover);
+  border-radius: 50%;
+  /* Modern circular hover for icon buttons */
+}
+
+.editor-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.editor-header-actions .btn.ghost {
+  color: var(--text);
+  /* Force high contrast for header actions */
+  opacity: 0.8;
+  transition: all 0.2s ease;
+}
+
+.editor-header-actions .btn.ghost:hover {
+  opacity: 1;
+  background: var(--surface-3);
+  transform: scale(1.05);
+}
+
+.editor-header-actions .icon {
+  stroke-width: 2.5px;
+  /* Slightly thicker for better visibility */
 }
 
 .full-width {
@@ -419,8 +466,21 @@ body {
 .icon {
   width: 18px;
   height: 18px;
+  stroke: currentColor;
+  /* Inherit color from parent text/btn */
   stroke-linecap: round;
   stroke-linejoin: round;
+  stroke-width: 2.2px;
+}
+
+/* Default to none if not specified, but allow fill="currentColor" in HTML to work */
+.icon:not([fill]) {
+  fill: none;
+}
+
+/* Ensure stroke-width carries over to children if they don't have it */
+.icon * {
+  stroke-width: inherit;
 }
 
 /* ════════════════════════════════════════
@@ -1964,81 +2024,114 @@ html[data-theme="amoled-dark"] .editor[data-theme] {
   opacity: 0.85;
 }
 
+/* --- Note Card Themes (Subtle Professional) --- */
+.note-item.active[data-theme=""] .note-card,
+.note-item.active:not([data-theme]) .note-card {
+  background: var(--active-bg);
+  border-left: 3px solid var(--primary);
+}
+
+/* Base style for any themed card */
+.note-card[data-theme] {
+  transition: all 0.2s ease;
+  border-left: 3px solid transparent;
+}
+
 /* Classic Blue */
 .note-card[data-theme="classic-blue"],
 .editor[data-theme="classic-blue"] {
-  --note-theme-bg: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
-  --note-theme-border: #bfdbfe;
-  --note-theme-text: #172554;
+  --note-theme-bg: rgba(59, 130, 246, 0.08);
+  --note-theme-border: #3b82f6;
+  --note-theme-text: var(--text);
   --note-theme-accent: #3b82f6;
-}
-
-html[data-theme="amoled-dark"] .editor[data-theme="classic-blue"] {
-  background: var(--surface) !important;
-  border-color: var(--border) !important;
 }
 
 /* Elegant Purple */
 .note-card[data-theme="elegant-purple"],
 .editor[data-theme="elegant-purple"] {
-  --note-theme-bg: linear-gradient(135deg, #f3e8ff 0%, #e9d5ff 100%);
+  --note-theme-bg: rgba(147, 51, 234, 0.08);
   --note-theme-border: #9333ea;
-  --note-theme-text: #581c87;
+  --note-theme-text: var(--text);
   --note-theme-accent: #a855f7;
 }
 
 /* Forest Green */
 .note-card[data-theme="forest-green"],
 .editor[data-theme="forest-green"] {
-  --note-theme-bg: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
-  --note-theme-border: #16a34a;
-  --note-theme-text: #14532d;
+  --note-theme-bg: rgba(34, 197, 94, 0.08);
+  --note-theme-border: #22c55e;
+  --note-theme-text: var(--text);
   --note-theme-accent: #22c55e;
 }
 
 /* Sunset Orange */
 .note-card[data-theme="sunset-orange"],
 .editor[data-theme="sunset-orange"] {
-  --note-theme-bg: linear-gradient(135deg, #ffedd5 0%, #fed7aa 100%);
-  --note-theme-border: #ea580c;
-  --note-theme-text: #7c2d12;
+  --note-theme-bg: rgba(249, 115, 22, 0.08);
+  --note-theme-border: #f97316;
+  --note-theme-text: var(--text);
   --note-theme-accent: #f97316;
 }
 
 /* Ocean Teal */
 .note-card[data-theme="ocean-teal"],
 .editor[data-theme="ocean-teal"] {
-  --note-theme-bg: linear-gradient(135deg, #ccfbf1 0%, #99f6e4 100%);
-  --note-theme-border: #0d9488;
-  --note-theme-text: #134e4a;
+  --note-theme-bg: rgba(20, 184, 166, 0.08);
+  --note-theme-border: #14b8a6;
+  --note-theme-text: var(--text);
   --note-theme-accent: #14b8a6;
 }
 
 /* Rose Gold */
 .note-card[data-theme="rose-gold"],
 .editor[data-theme="rose-gold"] {
-  --note-theme-bg: linear-gradient(135deg, #fce7f3 0%, #fbcfe8 100%);
-  --note-theme-border: #db2777;
-  --note-theme-text: #831843;
+  --note-theme-bg: rgba(236, 72, 153, 0.08);
+  --note-theme-border: #ec4899;
+  --note-theme-text: var(--text);
   --note-theme-accent: #ec4899;
 }
 
 /* Slate Gray */
 .note-card[data-theme="slate-gray"],
 .editor[data-theme="slate-gray"] {
-  --note-theme-bg: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
-  --note-theme-border: #475569;
-  --note-theme-text: #1e293b;
+  --note-theme-bg: rgba(100, 116, 139, 0.1);
+  --note-theme-border: #64748b;
+  --note-theme-text: var(--text);
   --note-theme-accent: #64748b;
 }
 
 /* Crimson Red */
 .note-card[data-theme="crimson-red"],
 .editor[data-theme="crimson-red"] {
-  --note-theme-bg: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+  --note-theme-bg: rgba(220, 38, 38, 0.08);
   --note-theme-border: #dc2626;
-  --note-theme-text: #7f1d1d;
-  --note-theme-accent: #ef4444;
+  --note-theme-text: var(--text);
+  --note-theme-accent: #dc2626;
+}
+
+/* Applied logic for active themed cards & Editor Tinting */
+.note-item.active[data-theme]:not([data-theme=""]) .note-card,
+.editor[data-theme]:not([data-theme=""]) {
+  background-color: var(--note-theme-bg) !important;
+  border-left-color: var(--note-theme-border) !important;
+}
+
+/* Hide card theme selector in high-contrast dark modes as requested */
+html[data-theme="amoled-dark"] #note-theme,
+html[data-theme="corporate-gray"] #note-theme,
+html[data-theme="amoled-dark"] .custom-select-wrapper:has(#note-theme),
+html[data-theme="corporate-gray"] .custom-select-wrapper:has(#note-theme) {
+  display: none !important;
+}
+
+.note-card[data-theme] .note-title {
+  color: var(--note-theme-text) !important;
+}
+
+/* Ensure the editor text stays readable */
+.editor[data-theme]:not([data-theme=""]) .title-input,
+.editor[data-theme]:not([data-theme=""]) .content-input {
+  color: var(--text) !important;
 }
 
 /* ════════════════════════════════════════

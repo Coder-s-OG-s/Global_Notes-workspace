@@ -34,7 +34,17 @@ class CodeWorkspace {
         this.activeSnippetId = null;
         this.editor = null;
         this.chatHistory = [
-            { role: "system", content: "You are a helpful programming assistant embedded in a code editor called Global Code Workspace. Help users understand, debug, and improve their code. Be concise, practical, and friendly. Format code in your responses using backtick blocks." }
+            {
+                role: "system",
+                content: `You are a Senior Staff Software Engineer and Expert Programming Tutor at Global Code Workspace.
+                Your goal is to provide elite-level, production-grade assistance.
+                Rules for your responses:
+                1. Code-First Approach: If the user asks for code or a solution, prioritize providing the code block immediately. Keep explanations extremely minimal, technical, and high-level.
+                2. Structure: Use clear headings (###) and bolding. Ensure there is a logic gap between text and code.
+                3. Depth: Only include complexity analysis if specifically relevant or manually requested for algorithms.
+                4. Tone: Technical, direct, and professional. Avoid "Sure!", "I can help", or polite filler.
+                5. Spacing: Use double newlines between different sections of your answer.`
+            }
         ];
         this.isCustomHeight = false;
 
@@ -142,8 +152,25 @@ class CodeWorkspace {
                 const from = cm.getCursor("from");
                 const to = cm.getCursor("to");
                 cm.replaceRange("", { line: from.line, ch: 0 }, { line: to.line + 1, ch: 0 });
-            }
+            },
+            "Ctrl-B": (cm) => this.applyFormatting(cm, "**"),
+            "Cmd-B": (cm) => this.applyFormatting(cm, "**"),
+            "Ctrl-I": (cm) => this.applyFormatting(cm, "*"),
+            "Cmd-I": (cm) => this.applyFormatting(cm, "*"),
+            "Ctrl-K": (cm) => this.applyFormatting(cm, "`"),
+            "Cmd-K": (cm) => this.applyFormatting(cm, "`")
         });
+    }
+
+    applyFormatting(cm, symbol) {
+        const selection = cm.getSelection();
+        if (selection) {
+            cm.replaceSelection(`${symbol}${selection}${symbol}`);
+        } else {
+            const cursor = cm.getCursor();
+            cm.replaceSelection(`${symbol}${symbol}`);
+            cm.setCursor({ line: cursor.line, ch: cursor.ch + symbol.length });
+        }
     }
 
     loadSnippets() {
@@ -182,10 +209,6 @@ class CodeWorkspace {
         document.getElementById('ai-docs-btn').addEventListener('click', () => this.handleAIRequest('docs'));
         document.getElementById('ai-improve-btn').addEventListener('click', () => this.handleAIRequest('improve'));
 
-        document.getElementById('export-pdf-btn').addEventListener('click', () => {
-            const title = this.snippets.find(s => s.id === this.activeSnippetId)?.title || "My Code Note";
-            this.downloadPDF(title, null, true);
-        });
     }
 
     setupCustomLanguageSelect() {
@@ -540,19 +563,27 @@ class CodeWorkspace {
                 lines.shift();
                 cleanCode = lines.join('\n');
             }
-            codeBlocks.push(`<pre><code>${this.escapeHtml(cleanCode)}</code></pre>`);
+
+            const escaped = this.escapeHtml(cleanCode);
+            codeBlocks.push(`
+                <div class="code-block-container" style="position: relative; margin: 10px 0;">
+                    <button class="chat-copy-btn" onclick="window.workspace.copyChatCode(this)">Copy</button>
+                    <pre><code>${escaped}</code></pre>
+                </div>
+            `);
             return placeholder(codeBlocks.length - 1);
         });
 
         // 2. Escape non-code text and format
         processed = this.escapeHtml(processed)
             .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-            .replace(/\n\n/g, '<p></p>')
+            .replace(/\n\n/g, '<div style="margin-bottom: 24px;"></div>')
             .replace(/\n/g, '<br>');
 
-        // 3. Re-insert code blocks
+        // 3. Re-insert code blocks with guaranteed vertical gaps
         codeBlocks.forEach((block, i) => {
-            processed = processed.replace(placeholder(i), block);
+            const blockWithGap = `<div style="margin: 20px 0;">${block}</div>`;
+            processed = processed.replace(placeholder(i), blockWithGap);
         });
 
         return processed;
@@ -651,11 +682,19 @@ class CodeWorkspace {
         this.addMessageToChat('assistant', '<span class="ai-spinner"></span>', loadingId);
 
         try {
-            // Simple prompt concatenation for Gemini
-            let fullPrompt = "You are a helpful programming assistant for Global Code Workspace.\n\nChat History:\n";
-            this.chatHistory.forEach(msg => {
-                fullPrompt += `${msg.role === 'user' ? 'User' : 'Assistant'}: ${msg.content}\n`;
+            // Build the prompt with clear role distinction and context
+            const systemRule = this.chatHistory.find(m => m.role === 'system')?.content || '';
+            let fullPrompt = `${systemRule}\n\nCONVERSATION HISTORY:\n`;
+
+            this.chatHistory.filter(m => m.role !== 'system').forEach(msg => {
+                const label = msg.role === 'user' ? 'USER' : 'ASSISTANT';
+                fullPrompt += `[${label}]: ${msg.content}\n`;
             });
+
+            // If user mentioned current code, add it to prompt context explicitly
+            const currentCode = this.editor.getValue();
+            fullPrompt += `\n[CURRENT_CODE_IN_EDITOR]:\n${currentCode}\n`;
+            fullPrompt += `\n[ASSISTANT_NEXT_RESPONSE]: Provide a highly structured, professional answer focusing on clean patterns and architectural insights.`;
 
             const aiMsg = await generateTextWithGemini(fullPrompt);
             const loadingEl = document.getElementById(loadingId);
@@ -796,6 +835,20 @@ class CodeWorkspace {
         toast.textContent = message;
         toast.classList.add('show');
         setTimeout(() => toast.classList.remove('show'), 3000);
+    }
+
+    copyChatCode(btn) {
+        const container = btn.closest('.code-block-container');
+        const code = container.querySelector('code').textContent;
+        navigator.clipboard.writeText(code).then(() => {
+            const original = btn.textContent;
+            btn.textContent = 'Copied!';
+            btn.classList.add('copied');
+            setTimeout(() => {
+                btn.textContent = original;
+                btn.classList.remove('copied');
+            }, 2000);
+        });
     }
 
     escapeHtml(text) {
