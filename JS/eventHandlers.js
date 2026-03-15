@@ -243,7 +243,7 @@ export function syncThemeSelector(activeNote) {
   const themeSelect = $("#note-theme");
   if (!themeSelect || !activeNote) return;
 
-  themeSelect.value = activeNote.theme || "classic-blue";
+  themeSelect.value = activeNote.theme || "";
 }
 
 // Handles editor pattern selector dropdown for changing text area background
