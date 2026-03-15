@@ -21,6 +21,7 @@ import { wireShapeManager } from "./shapeManager.js";
 import { wireTagManager } from "./tagManager.js";
 import { wireAutoSave } from "./autoSave.js";
 import { getSession } from "./authService.js";
+import { supabase } from "./supabaseClient.js";
 import { wireEditorQuickTools } from "./editorQuickTools.js";
 import { upgradeToolbarSelects } from "./customSelect.js";
 
@@ -217,6 +218,25 @@ async function initApp() {
 
   // Check for shared URL params LAST (User's preferred flow)
   checkSharedUrl();
+
+  // Listen for auth state changes (catches OAuth redirect session)
+  supabase.auth.onAuthStateChange(async (event, session) => {
+    if (event === 'SIGNED_IN' && session?.user && !state.activeUser) {
+      const username = session.user.user_metadata?.username || session.user.email;
+      setActiveUser(username);
+      state.activeUser = username;
+
+      const didMerge = mergeGuestNotes(username);
+      await callbacks.loadNotesForCurrentUser();
+      if (didMerge) {
+        await callbacks.persistNotes();
+      }
+
+      callbacks.updateUserDisplay();
+      callbacks.renderNotesList();
+      callbacks.renderActiveNote();
+    }
+  });
 }
 
 // Redirect 0.0.0.0 to localhost to avoid "Not Secure" warning on desktop

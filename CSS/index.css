@@ -605,7 +605,7 @@ body {
   flex-direction: column;
   height: 100%;
   position: relative;
-  overflow: visible;
+  overflow: hidden;
   z-index: 10;
 }
 
@@ -1593,14 +1593,15 @@ html[data-theme="amoled-dark"] .editor[data-theme="classic-blue"] { background: 
   .app-sidebar {
     position: fixed;
     left: -280px;
-    top: 0;
+    top: var(--header-height);
     width: 280px;
-    height: 100vh;
+    height: calc(100vh - var(--header-height));
     z-index: 100;
     background: var(--surface);
     transition: left 0.25s ease;
     border-right: 1px solid var(--border);
     box-shadow: none;
+    overflow: hidden;
   }
 
   .layout.sidebar-visible .app-sidebar {
