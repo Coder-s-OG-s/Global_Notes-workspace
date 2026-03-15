@@ -39,10 +39,12 @@ body {
   min-height: 100vh;
   /* Allow scrolling */
   display: flex;
+  flex-direction: column;
+  /* CRITICAL: Stack card and footer vertically */
   justify-content: center;
   align-items: center;
   /* Ensure padding prevents edge collision on small screens */
-  padding: 20px 0;
+  padding: 40px 20px;
   overflow-y: auto;
   /* Force scroll capability */
 }
@@ -50,25 +52,28 @@ body {
 /* ===== MAIN CARD CONTAINER ===== */
 .auth-container {
   width: 100%;
-  padding: 24px;
+  max-width: 1000px;
+  /* Give it some breathing room */
   display: flex;
   justify-content: center;
   align-items: center;
+  margin-bottom: 24px;
 }
 
 .main-card {
   width: 100%;
   max-width: 900px;
-  /* Slightly tighter width */
   min-height: 560px;
   background-color: var(--bg-card);
-  border-radius: 12px;
-  /* Tighter radius */
+  border-radius: 20px;
+  /* Slightly smoother corners */
   display: flex;
   overflow: hidden;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  /* Professional shadow */
-  border: 1px solid var(--border-color);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  /* Stronger shadow for depth */
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  /* Subtle rim light */
+  backdrop-filter: blur(10px);
 }
 
 /* ===== LEFT SIDE (BRANDING) ===== */
@@ -91,8 +96,8 @@ body {
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(135deg, rgba(0, 0, 0, 0.4) 0%, rgba(0, 0, 0, 0.1) 100%);
-  /* Simpler overlay */
+  background: linear-gradient(225deg, rgba(99, 102, 241, 0.15) 0%, rgba(0, 0, 0, 0.6) 100%);
+  /* Tinted overlay */
   pointer-events: none;
   z-index: 2;
 }
@@ -184,7 +189,9 @@ body {
 
 .social-btn:hover {
   background-color: #333;
-  border-color: #555;
+  border-color: var(--primary-color);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
 .social-icon {

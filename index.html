@@ -8,13 +8,14 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="CSS/index.css?v=5.0" />
+  <link rel="stylesheet" href="CSS/index.css?v=5.1" />
   <link rel="stylesheet" href="CSS/tagManager.css" />
   <link rel="stylesheet" href="CSS/footer.css" />
   <link rel="manifest" href="/manifest.json">
 
   <meta name="google-site-verification" content="WbUo_0T0kC4YmSlPrwLvwl-ez09WyeheFaD1YThQZqY" />
-  <meta name="description" content="Global Notes Workspace - A powerful, offline-capable workspace for organizing your thoughts, notes, and ideas.">
+  <meta name="description"
+    content="Global Notes Workspace - A powerful, offline-capable workspace for organizing your thoughts, notes, and ideas.">
   <meta name="keywords" content="notes, workspace, productivity, offline notes, organization">
   <meta name="author" content="Global Notes Workspace">
   <meta name="theme-color" content="#191919">
@@ -43,7 +44,8 @@
       <!-- Left: Toggle + Brand -->
       <div class="navbar-left">
         <button class="btn ghost icon-only mobile-toggle" id="sidebar-toggle" aria-label="Toggle Menu">
-          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round">
             <line x1="3" y1="12" x2="21" y2="12"></line>
             <line x1="3" y1="6" x2="21" y2="6"></line>
             <line x1="3" y1="18" x2="21" y2="18"></line>
@@ -58,11 +60,13 @@
       <!-- Center: Search -->
       <div class="navbar-center">
         <div class="search-container">
-          <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round">
             <circle cx="11" cy="11" r="8"></circle>
             <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
           </svg>
-          <input type="search" id="search" class="search-input" placeholder="Search notes..." aria-label="Search notes" />
+          <input type="search" id="search" class="search-input" placeholder="Search notes..."
+            aria-label="Search notes" />
         </div>
         <div class="date-filter smart-calendar-container" id="search-date-filter">
           <button class="calendar-icon-btn" id="calendar-toggle" aria-label="Toggle calendar">
@@ -89,7 +93,8 @@
       <!-- Right: Actions + Profile -->
       <div class="navbar-right">
         <button class="btn primary" id="new-note">
-          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" style="width:14px;height:14px;">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+            stroke-linecap="round" style="width:14px;height:14px;">
             <line x1="12" y1="5" x2="12" y2="19"></line>
             <line x1="5" y1="12" x2="19" y2="12"></line>
           </svg>
@@ -106,9 +111,12 @@
         <!-- Preferences -->
         <div class="dropdown-wrapper" id="preferences-dropdown-wrapper">
           <button class="btn ghost icon-only" id="preferences-toggle" title="Settings" aria-label="Settings">
-            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round">
               <circle cx="12" cy="12" r="3"></circle>
-              <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+              <path
+                d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z">
+              </path>
             </svg>
           </button>
           <div class="dropdown-menu hidden" id="preferences-menu">
@@ -158,7 +166,9 @@
           <button class="btn secondary" id="login">Sign In</button>
           <div class="profile-dropdown-wrapper hidden" id="user-pill">
             <button class="profile-avatar-btn" id="profile-toggle">
-              <img id="header-avatar" class="header-avatar" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 24 24' fill='none' stroke='%236366f1' stroke-width='2'%3E%3Ccircle cx='12' cy='7' r='4'/%3E%3Cpath d='M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2'/%3E%3C/svg%3E" alt="Profile" />
+              <img id="header-avatar" class="header-avatar"
+                src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 24 24' fill='none' stroke='%236366f1' stroke-width='2'%3E%3Ccircle cx='12' cy='7' r='4'/%3E%3Cpath d='M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2'/%3E%3C/svg%3E"
+                alt="Profile" />
             </button>
             <div class="dropdown-menu hidden" id="profile-menu">
               <div class="dropdown-header user-info">
@@ -167,7 +177,8 @@
               </div>
               <div class="dropdown-divider"></div>
               <button class="dropdown-item" id="open-profile-modal">
-                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                  stroke-linecap="round">
                   <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
                   <circle cx="12" cy="7" r="4"></circle>
                 </svg>
@@ -175,7 +186,8 @@
               </button>
               <div class="dropdown-divider"></div>
               <button class="dropdown-item danger-text" id="logout">
-                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                  stroke-linecap="round">
                   <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
                   <polyline points="16 17 21 12 16 7"></polyline>
                   <line x1="21" y1="12" x2="9" y2="12"></line>
@@ -197,7 +209,8 @@
         <div class="sidebar-top-row">
           <span class="user-workspace-name">My Workspace</span>
           <button class="btn ghost icon-only mobile-close" id="sidebar-close" aria-label="Close sidebar">
-            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round">
               <line x1="18" y1="6" x2="6" y2="18"></line>
               <line x1="6" y1="6" x2="18" y2="18"></line>
             </svg>
@@ -213,7 +226,8 @@
         <ul class="library-list">
           <li class="library-item active" id="nav-all-notes">
             <button class="library-btn" title="All Notes">
-              <svg class="library-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <svg class="library-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
                 <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
                 <polyline points="14 2 14 8 20 8"></polyline>
                 <line x1="16" y1="13" x2="8" y2="13"></line>
@@ -224,7 +238,8 @@
           </li>
           <li class="library-item" id="nav-recent">
             <button class="library-btn" title="Recent">
-              <svg class="library-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <svg class="library-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
                 <circle cx="12" cy="12" r="10"></circle>
                 <polyline points="12 6 12 12 16 14"></polyline>
               </svg>
@@ -233,15 +248,19 @@
           </li>
           <li class="library-item" id="nav-favorites">
             <button class="library-btn" title="Favorites">
-              <svg class="library-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+              <svg class="library-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <polygon
+                  points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2">
+                </polygon>
               </svg>
               <span>Favorites</span>
             </button>
           </li>
           <li class="library-item" id="nav-archived">
             <button class="library-btn" title="Archived">
-              <svg class="library-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <svg class="library-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
                 <path d="M21 8v13H3V8"></path>
                 <path d="M1 3h22v5H1z"></path>
                 <path d="M10 12h4"></path>
@@ -268,7 +287,8 @@
         <div class="section-header">
           <span class="section-title">Folders</span>
           <button class="folder-create-btn" id="create-folder" title="New Folder" aria-label="New Folder">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round" style="width:14px;height:14px;">
               <line x1="12" y1="5" x2="12" y2="19"></line>
               <line x1="5" y1="12" x2="19" y2="12"></line>
             </svg>
@@ -301,15 +321,26 @@
         <input type="text" class="title-input" id="title" placeholder="Untitled note" aria-label="Note title" />
         <div class="editor-header-actions">
           <button class="btn ghost icon-only" id="toggle-favorite" aria-label="Toggle favorite" title="Favorite">
-            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <polygon
+                points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2">
+              </polygon>
             </svg>
           </button>
           <button class="btn ghost icon-only" id="save-note" aria-label="Save note" title="Save">
-            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round">
               <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
               <polyline points="17 21 17 13 7 13 7 21"></polyline>
               <polyline points="7 3 7 8 15 8"></polyline>
+            </svg>
+          </button>
+          <button class="btn ghost icon-only danger-text" id="delete-note-main" aria-label="Delete note" title="Delete">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round">
+              <polyline points="3 6 5 6 21 6" />
+              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
             </svg>
           </button>
           <!-- Overflow Menu -->
@@ -325,33 +356,60 @@
               <!-- AI Quick Popover -->
               <div class="editor-quick-tool" id="editor-ai-tool">
                 <button class="overflow-item" id="editor-ai-trigger">
-                  <svg class="overflow-item-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.5C12 2.5 13.5 7.5 17 9C13.5 10.5 12 15.5 12 15.5C12 15.5 10.5 10.5 7 9C10.5 7.5 12 2.5 12 2.5Z"/></svg>
+                  <svg class="overflow-item-icon" viewBox="0 0 24 24" fill="currentColor">
+                    <path
+                      d="M12 2.5C12 2.5 13.5 7.5 17 9C13.5 10.5 12 15.5 12 15.5C12 15.5 10.5 10.5 7 9C10.5 7.5 12 2.5 12 2.5Z" />
+                  </svg>
                   AI Assistant
                 </button>
               </div>
               <!-- Mail Quick Popover -->
               <div class="editor-quick-tool" id="editor-mail-tool">
                 <button class="overflow-item" id="editor-mail-trigger">
-                  <svg class="overflow-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="3"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+                  <svg class="overflow-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                    stroke-width="2">
+                    <rect x="2" y="4" width="20" height="16" rx="3" />
+                    <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+                  </svg>
                   Mail Writer
                 </button>
               </div>
               <div class="overflow-divider"></div>
               <button class="overflow-item" id="share-note">
-                <svg class="overflow-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+                <svg class="overflow-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                  stroke-linecap="round">
+                  <circle cx="18" cy="5" r="3" />
+                  <circle cx="6" cy="12" r="3" />
+                  <circle cx="18" cy="19" r="3" />
+                  <line x1="8.59" y1="13.51" x2="15.42" y2="17.49" />
+                  <line x1="15.41" y1="6.51" x2="8.59" y2="10.49" />
+                </svg>
                 Share
               </button>
               <button class="overflow-item" id="duplicate-note">
-                <svg class="overflow-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                <svg class="overflow-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                  stroke-linecap="round">
+                  <rect x="9" y="9" width="13" height="13" rx="2" />
+                  <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+                </svg>
                 Duplicate
               </button>
               <button class="overflow-item" id="export">
-                <svg class="overflow-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                <svg class="overflow-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                  stroke-linecap="round">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                  <polyline points="7 10 12 15 17 10" />
+                  <line x1="12" y1="15" x2="12" y2="3" />
+                </svg>
                 Export
               </button>
               <div class="overflow-divider"></div>
               <button class="overflow-item danger" id="delete-note">
-                <svg class="overflow-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                <svg class="overflow-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                  stroke-linecap="round">
+                  <polyline points="3 6 5 6 21 6" />
+                  <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                </svg>
                 Delete
               </button>
             </div>
@@ -364,14 +422,16 @@
         <div class="tags-chips" id="tags"></div>
         <div class="tag-manager-container">
           <button class="circular" id="add-tag-btn" aria-label="Add tag" title="Add tag">
-            <svg class="icon" style="width:14px;height:14px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+            <svg class="icon" style="width:14px;height:14px;" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              stroke-width="2" stroke-linecap="round">
               <line x1="12" y1="5" x2="12" y2="19"></line>
               <line x1="5" y1="12" x2="19" y2="12"></line>
             </svg>
           </button>
           <div id="tag-menu" class="tag-menu-popover hidden">
             <div class="tag-menu-header">
-              <input type="text" id="tag-search" placeholder="Search tags..." aria-label="Search tags" autocomplete="off">
+              <input type="text" id="tag-search" placeholder="Search tags..." aria-label="Search tags"
+                autocomplete="off">
             </div>
             <div class="tag-menu-list" id="tag-menu-list"></div>
             <div class="tag-menu-footer">
@@ -391,13 +451,17 @@
         <div class="toolbar-controls">
           <div class="toolbar-group">
             <button class="toolbar-btn" id="edit-undo" type="button" aria-label="Undo" title="Undo">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="width:14px;height:14px;">
-                <path d="M3 7v6h6"></path><path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13"></path>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                style="width:14px;height:14px;">
+                <path d="M3 7v6h6"></path>
+                <path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13"></path>
               </svg>
             </button>
             <button class="toolbar-btn" id="edit-redo" type="button" aria-label="Redo" title="Redo">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="width:14px;height:14px;">
-                <path d="M21 7v6h-6"></path><path d="M3 17a9 9 0 0 1 9-9 9 9 0 0 1 6 2.3l3 4.7"></path>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                style="width:14px;height:14px;">
+                <path d="M21 7v6h-6"></path>
+                <path d="M3 17a9 9 0 0 1 9-9 9 9 0 0 1 6 2.3l3 4.7"></path>
               </svg>
             </button>
           </div>
@@ -489,7 +553,8 @@
           <input type="file" id="file-upload-input" hidden />
         </div>
         <button class="toolbar-btn toolbar-toggle-btn" id="toolbar-toggle" aria-label="Toggle toolbar">
-          <svg class="icon toggle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <svg class="icon toggle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+            stroke-linecap="round" stroke-linejoin="round">
             <polyline points="6 9 12 15 18 9"></polyline>
           </svg>
         </button>
@@ -497,7 +562,8 @@
 
       <!-- Editor Body -->
       <div class="editor-body">
-        <div id="content" class="editor-content content-input" contenteditable="true" role="textbox" aria-label="Note content" aria-multiline="true" data-pattern="plain"></div>
+        <div id="content" class="editor-content content-input" contenteditable="true" role="textbox"
+          aria-label="Note content" aria-multiline="true" data-pattern="plain"></div>
       </div>
 
       <!-- AI Popover (positioned relative to editor) -->
@@ -506,9 +572,13 @@
           <span>AI Assistant</span>
           <button class="editor-tool-popover-close" data-close="editor-ai-popover" aria-label="Close">&times;</button>
         </div>
-        <textarea id="editor-ai-prompt" class="editor-tool-input" placeholder="Ask AI to write, summarize, or explain..." rows="3"></textarea>
+        <textarea id="editor-ai-prompt" class="editor-tool-input"
+          placeholder="Ask AI to write, summarize, or explain..." rows="3"></textarea>
         <button class="editor-tool-generate-btn" id="editor-ai-generate-btn">
-          <svg viewBox="0 0 24 24" fill="currentColor" style="width:12px;height:12px;"><path d="M12 2.5C12 2.5 13.5 7.5 17 9C13.5 10.5 12 15.5 12 15.5C12 15.5 10.5 10.5 7 9C10.5 7.5 12 2.5 12 2.5Z"/></svg>
+          <svg viewBox="0 0 24 24" fill="currentColor" style="width:12px;height:12px;">
+            <path
+              d="M12 2.5C12 2.5 13.5 7.5 17 9C13.5 10.5 12 15.5 12 15.5C12 15.5 10.5 10.5 7 9C10.5 7.5 12 2.5 12 2.5Z" />
+          </svg>
           Generate
         </button>
       </div>
@@ -517,11 +587,17 @@
           <span>Mail Writer</span>
           <button class="editor-tool-popover-close" data-close="editor-mail-popover" aria-label="Close">&times;</button>
         </div>
-        <input type="email" id="editor-mail-sender" class="editor-tool-input editor-tool-input-sm" placeholder="Your Email" />
-        <input type="email" id="editor-mail-recipient" class="editor-tool-input editor-tool-input-sm" placeholder="Recipient Email" />
-        <textarea id="editor-mail-prompt" class="editor-tool-input" placeholder="What is this email about?" rows="3"></textarea>
+        <input type="email" id="editor-mail-sender" class="editor-tool-input editor-tool-input-sm"
+          placeholder="Your Email" />
+        <input type="email" id="editor-mail-recipient" class="editor-tool-input editor-tool-input-sm"
+          placeholder="Recipient Email" />
+        <textarea id="editor-mail-prompt" class="editor-tool-input" placeholder="What is this email about?"
+          rows="3"></textarea>
         <button class="editor-tool-generate-btn" id="editor-mail-generate-btn">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" style="width:12px;height:12px;"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+            style="width:12px;height:12px;">
+            <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z" />
+          </svg>
           Draft in Gmail
         </button>
       </div>
@@ -540,7 +616,9 @@
       <div class="profile-body">
         <div class="profile-header">
           <div class="avatar-wrapper">
-            <img id="profile-avatar-large" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 24 24' fill='none' stroke='%236366f1' stroke-width='1.5'%3E%3Ccircle cx='12' cy='7' r='4'/%3E%3Cpath d='M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2'/%3E%3C/svg%3E" alt="Avatar" class="profile-avatar-large">
+            <img id="profile-avatar-large"
+              src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 24 24' fill='none' stroke='%236366f1' stroke-width='1.5'%3E%3Ccircle cx='12' cy='7' r='4'/%3E%3Cpath d='M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2'/%3E%3C/svg%3E"
+              alt="Avatar" class="profile-avatar-large">
             <button class="btn tiny secondary" id="change-avatar-btn">Change</button>
             <input type="file" id="avatar-upload" accept="image/*" hidden>
           </div>
@@ -576,8 +654,14 @@
       </div>
       <div class="audio-body">
         <div class="audio-visualizer" id="audio-visualizer">
-          <div class="wave"></div><div class="wave"></div><div class="wave"></div><div class="wave"></div>
-          <div class="wave"></div><div class="wave"></div><div class="wave"></div><div class="wave"></div>
+          <div class="wave"></div>
+          <div class="wave"></div>
+          <div class="wave"></div>
+          <div class="wave"></div>
+          <div class="wave"></div>
+          <div class="wave"></div>
+          <div class="wave"></div>
+          <div class="wave"></div>
         </div>
         <div class="audio-controls">
           <button class="btn primary" id="start-record-btn">Record</button>
@@ -630,27 +714,41 @@
       <div class="shapes-body">
         <div class="shapes-grid">
           <button class="shape-btn" data-shape="rectangle" aria-label="Rectangle">
-            <svg viewBox="0 0 24 24" width="24" height="24"><rect x="3" y="5" width="18" height="14" rx="2" stroke="currentColor" fill="none" stroke-width="2"/></svg>
+            <svg viewBox="0 0 24 24" width="24" height="24">
+              <rect x="3" y="5" width="18" height="14" rx="2" stroke="currentColor" fill="none" stroke-width="2" />
+            </svg>
             <span>Rectangle</span>
           </button>
           <button class="shape-btn" data-shape="circle" aria-label="Circle">
-            <svg viewBox="0 0 24 24" width="24" height="24"><circle cx="12" cy="12" r="9" stroke="currentColor" fill="none" stroke-width="2"/></svg>
+            <svg viewBox="0 0 24 24" width="24" height="24">
+              <circle cx="12" cy="12" r="9" stroke="currentColor" fill="none" stroke-width="2" />
+            </svg>
             <span>Circle</span>
           </button>
           <button class="shape-btn" data-shape="triangle" aria-label="Triangle">
-            <svg viewBox="0 0 24 24" width="24" height="24"><path d="M12 4L21 20H3L12 4Z" stroke="currentColor" fill="none" stroke-width="2"/></svg>
+            <svg viewBox="0 0 24 24" width="24" height="24">
+              <path d="M12 4L21 20H3L12 4Z" stroke="currentColor" fill="none" stroke-width="2" />
+            </svg>
             <span>Triangle</span>
           </button>
           <button class="shape-btn" data-shape="star" aria-label="Star">
-            <svg viewBox="0 0 24 24" width="24" height="24"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" stroke="currentColor" fill="none" stroke-width="2"/></svg>
+            <svg viewBox="0 0 24 24" width="24" height="24">
+              <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"
+                stroke="currentColor" fill="none" stroke-width="2" />
+            </svg>
             <span>Star</span>
           </button>
           <button class="shape-btn" data-shape="arrow-right" aria-label="Arrow">
-            <svg viewBox="0 0 24 24" width="24" height="24"><path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <svg viewBox="0 0 24 24" width="24" height="24">
+              <path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="currentColor" fill="none" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
             <span>Arrow</span>
           </button>
           <button class="shape-btn" data-shape="line" aria-label="Line">
-            <svg viewBox="0 0 24 24" width="24" height="24"><line x1="3" y1="12" x2="21" y2="12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            <svg viewBox="0 0 24 24" width="24" height="24">
+              <line x1="3" y1="12" x2="21" y2="12" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+            </svg>
             <span>Line</span>
           </button>
         </div>
@@ -764,7 +862,7 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
   <script type="text/javascript" src="JS/vendor/lz-string.min.js"></script>
   <script type="text/javascript" src="JS/vendor/qrcode.min.js"></script>
-  <script type="module" src="JS/notesApp.js?v=3.0"></script>
+  <script type="module" src="JS/notesApp.js?v=3.1"></script>
   <script>
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('sw.js')
