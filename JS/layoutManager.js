@@ -87,7 +87,15 @@ export function wireSidebarResize() {
     // Load saved width
     const savedWidth = localStorage.getItem("notesWorkspace.sidebarWidth");
     if (savedWidth) {
-        document.documentElement.style.setProperty("--sidebar-width", savedWidth);
+        let widthVal = parseInt(savedWidth);
+        const minWidth = 240;
+        const maxWidth = 550;
+
+        if (!isNaN(widthVal)) {
+            if (widthVal < minWidth) widthVal = minWidth;
+            if (widthVal > maxWidth) widthVal = maxWidth;
+            document.documentElement.style.setProperty("--sidebar-width", `${widthVal}px`);
+        }
     }
 
     let isResizing = false;
