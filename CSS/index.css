@@ -462,6 +462,16 @@ body {
   flex-shrink: 0;
 }
 
+#nav-code {
+  color: var(--primary);
+  opacity: 1; /* Ensure it's not dimmed like standard ghost buttons */
+}
+
+#nav-code:hover {
+  background: var(--primary-glow);
+  color: var(--primary-strong);
+}
+
 /* ── Dropdowns ── */
 .dropdown-wrapper { position: relative; }
 .dropdown-menu {
@@ -1255,18 +1265,21 @@ body {
 /* ════════════════════════════════════════
    NOTE CARD THEMES
    ════════════════════════════════════════ */
-.editor[data-theme] {
+.editor[data-theme], .note-card[data-theme] {
   background: var(--note-theme-bg, var(--surface)) !important;
   border-color: var(--note-theme-border, var(--border)) !important;
 }
-html[data-theme="amoled-dark"] .editor[data-theme] {
+html[data-theme="amoled-dark"] .editor[data-theme],
+html[data-theme="amoled-dark"] .note-card[data-theme] {
   background: var(--surface) !important;
   border-color: var(--border) !important;
   --note-theme-text: var(--text);
   --note-theme-accent: var(--primary);
 }
 .note-card[data-theme] .note-title { color: var(--note-theme-text, var(--text)); }
-.note-card[data-theme] .note-preview { color: var(--note-theme-text, var(--text-dim)); opacity: 0.85; }
+.note-card[data-theme] .note-preview,
+.note-card[data-theme] .note-preview-compact { color: var(--note-theme-text, var(--text-dim)); opacity: 0.85; }
+.note-card[data-theme] .note-time-label { color: var(--note-theme-text, var(--text-muted)); opacity: 0.7; }
 
 /* Classic Blue */
 .note-card[data-theme="classic-blue"], .editor[data-theme="classic-blue"] {
