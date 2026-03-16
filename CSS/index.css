@@ -767,6 +767,17 @@ body {
   flex-shrink: 0;
 }
 
+#nav-code {
+  color: var(--primary);
+  opacity: 1;
+  /* Ensure it's not dimmed like standard ghost buttons */
+}
+
+#nav-code:hover {
+  background: var(--primary-glow);
+  color: var(--primary-strong);
+}
+
 /* ── Dropdowns ── */
 .dropdown-wrapper {
   position: relative;
@@ -2003,12 +2014,14 @@ body {
 /* ════════════════════════════════════════
    NOTE CARD THEMES
    ════════════════════════════════════════ */
-.editor[data-theme] {
+.editor[data-theme],
+.note-card[data-theme] {
   background: var(--note-theme-bg, var(--surface)) !important;
   border-color: var(--note-theme-border, var(--border)) !important;
 }
 
-html[data-theme="amoled-dark"] .editor[data-theme] {
+html[data-theme="amoled-dark"] .editor[data-theme],
+html[data-theme="amoled-dark"] .note-card[data-theme] {
   background: var(--surface) !important;
   border-color: var(--border) !important;
   --note-theme-text: var(--text);
@@ -2019,9 +2032,15 @@ html[data-theme="amoled-dark"] .editor[data-theme] {
   color: var(--note-theme-text, var(--text));
 }
 
-.note-card[data-theme] .note-preview {
+.note-card[data-theme] .note-preview,
+.note-card[data-theme] .note-preview-compact {
   color: var(--note-theme-text, var(--text-dim));
   opacity: 0.85;
+}
+
+.note-card[data-theme] .note-time-label {
+  color: var(--note-theme-text, var(--text-muted));
+  opacity: 0.7;
 }
 
 /* --- Note Card Themes (Subtle Professional) --- */
