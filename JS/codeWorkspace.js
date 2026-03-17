@@ -4,28 +4,28 @@ import { generateTextWithGemini } from './geminiAPI.js';
 const STORAGE_KEY = 'antigravity_snippets';
 
 const languageMap = {
-    javascript: { name: 'JavaScript', mode: 'javascript' },
-    python: { name: 'Python', mode: 'python' },
-    python3: { name: 'Python3', mode: 'python' },
-    java: { name: 'Java', mode: 'text/x-java' },
-    cpp: { name: 'C++', mode: 'text/x-c++src' },
-    csharp: { name: 'C#', mode: 'text/x-csharp' },
-    c: { name: 'C', mode: 'text/x-csrc' },
-    go: { name: 'Go', mode: 'text/x-go' },
-    kotlin: { name: 'Kotlin', mode: 'text/x-kotlin' },
-    swift: { name: 'Swift', mode: 'text/x-swift' },
-    rust: { name: 'Rust', mode: 'text/x-rustsrc' },
-    ruby: { name: 'Ruby', mode: 'text/x-ruby' },
-    php: { name: 'PHP', mode: 'text/x-php' },
-    dart: { name: 'Dart', mode: 'application/dart' },
-    scala: { name: 'Scala', mode: 'text/x-scala' },
-    elixir: { name: 'Elixir', mode: 'text/x-elixir' },
-    erlang: { name: 'Erlang', mode: 'text/x-erlang' },
-    racket: { name: 'Racket', mode: 'text/x-scheme' },
-    htmlmixed: { name: 'HTML', mode: 'htmlmixed' },
-    css: { name: 'CSS', mode: 'css' },
-    sql: { name: 'SQL', mode: 'text/x-sql' },
-    typescript: { name: 'TypeScript', mode: 'text/typescript' }
+    javascript: { name: 'JavaScript', mode: 'javascript', indent: 4 },
+    python: { name: 'Python', mode: 'python', indent: 4 },
+    python3: { name: 'Python3', mode: 'python', indent: 4 },
+    java: { name: 'Java', mode: 'text/x-java', indent: 4 },
+    cpp: { name: 'C++', mode: 'text/x-c++src', indent: 4 },
+    csharp: { name: 'C#', mode: 'text/x-csharp', indent: 4 },
+    c: { name: 'C', mode: 'text/x-csrc', indent: 4 },
+    go: { name: 'Go', mode: 'text/x-go', indent: 4, useTabs: true },
+    kotlin: { name: 'Kotlin', mode: 'text/x-kotlin', indent: 4 },
+    swift: { name: 'Swift', mode: 'text/x-swift', indent: 4 },
+    rust: { name: 'Rust', mode: 'text/x-rustsrc', indent: 4 },
+    ruby: { name: 'Ruby', mode: 'text/x-ruby', indent: 2 },
+    php: { name: 'PHP', mode: 'text/x-php', indent: 4 },
+    dart: { name: 'Dart', mode: 'application/dart', indent: 2 },
+    scala: { name: 'Scala', mode: 'text/x-scala', indent: 2 },
+    elixir: { name: 'Elixir', mode: 'text/x-elixir', indent: 2 },
+    erlang: { name: 'Erlang', mode: 'text/x-erlang', indent: 4 },
+    racket: { name: 'Racket', mode: 'text/x-scheme', indent: 2 },
+    htmlmixed: { name: 'HTML', mode: 'htmlmixed', indent: 4 },
+    css: { name: 'CSS', mode: 'css', indent: 4 },
+    sql: { name: 'SQL', mode: 'text/x-sql', indent: 4 },
+    typescript: { name: 'TypeScript', mode: 'text/typescript', indent: 4 }
 };
 
 class CodeWorkspace {
@@ -90,7 +90,8 @@ class CodeWorkspace {
             lineNumbers: true,
             theme: 'dracula',
             mode: 'javascript',
-            tabSize: 2,
+            tabSize: 4,
+            indentUnit: 4,
             indentWithTabs: false,
             autoCloseBrackets: true,
             autoCloseTags: true,
@@ -104,8 +105,13 @@ class CodeWorkspace {
                 if (cm.somethingSelected()) {
                     cm.indentSelection("add");
                 } else {
-                    const spaces = Array(cm.getOption("indentUnit") + 1).join(" ");
-                    cm.replaceSelection(spaces);
+                    if (cm.getOption("indentWithTabs")) {
+                        cm.replaceSelection("\t");
+                    } else {
+                        const n = cm.getOption("indentUnit");
+                        const spaces = Array(n + 1).join(" ");
+                        cm.replaceSelection(spaces);
+                    }
                 }
             },
             "Shift-Tab": (cm) => cm.indentSelection("subtract"),
@@ -185,8 +191,7 @@ class CodeWorkspace {
     attachEventListeners() {
         document.getElementById('language-selector').addEventListener('change', (e) => {
             const lang = e.target.value;
-            const mode = languageMap[lang].mode;
-            this.editor.setOption('mode', mode);
+            this.updateEditorSettings(lang);
             if (this.activeSnippetId) {
                 this.updateActiveSnippetMeta({ language: lang });
             }
@@ -783,8 +788,18 @@ class CodeWorkspace {
         this.activeSnippetId = id;
         this.editor.setValue(snippet.code);
         document.getElementById('language-selector').value = snippet.language;
-        this.editor.setOption('mode', languageMap[snippet.language].mode);
+        this.updateEditorSettings(snippet.language);
         this.renderSnippetList();
+    }
+
+    updateEditorSettings(lang) {
+        const settings = languageMap[lang];
+        if (this.editor && settings) {
+            this.editor.setOption('mode', settings.mode);
+            this.editor.setOption('indentUnit', settings.indent || 4);
+            this.editor.setOption('tabSize', settings.indent || 4);
+            this.editor.setOption('indentWithTabs', !!settings.useTabs);
+        }
     }
 
     updateActiveSnippetMeta(updates) {
