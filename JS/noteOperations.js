@@ -112,36 +112,57 @@ export function handleNewNote(notes, activeUser, getActiveFilter, getSelectedDat
   callbacks.setActiveNote(newNote.id);
 }
 
-// Handles deletion of the active note with confirmation dialog
-export async function handleDeleteNote(notes, activeNoteId, activeUser, callbacks) {
-  if (!activeNoteId) return;
+// Handles deletion of any note with a professional confirmation dialog.
+export async function handleDeleteNote(notes, noteId, activeUser, callbacks) {
+  if (!noteId) return;
 
-  const noteToDelete = notes.find(n => n.id === activeNoteId);
+  const noteToDelete = notes.find(n => n.id === noteId);
   const noteTitle = noteToDelete?.title || "Untitled note";
 
+  // Use the professional confirm dialog from utilities.js
   const confirmed = await showConfirm(
     "Delete Note",
-    `Are you sure you want to delete "${noteTitle}"? This cannot be undone.`
+    `Are you sure you want to permanently delete "${noteTitle}"? This action cannot be undone.`,
+    "Delete Note"
   );
   if (!confirmed) return;
 
-  // Filter out the note to delete
-  const filteredNotes = notes.filter((n) => n.id !== activeNoteId);
+  try {
+    // Check if we are deleting the note currently open in the editor
+    const currentActiveId = (typeof callbacks.getActiveNoteId === 'function') ? callbacks.getActiveNoteId() : null;
+    const wasActive = currentActiveId === noteId;
 
-  // Delete from Supabase
-  deleteNoteFromCloud(activeNoteId).catch(err => {
-    console.error("Cloud deletion failed", err);
-  });
+    // Filter out the note
+    const filteredNotes = notes.filter((n) => n.id !== noteId);
+    
+    // Attempt cloud deletion but don't let it block local UI if it fails
+    if (activeUser) {
+      deleteNoteFromCloud(noteId).catch(err => {
+        console.error("Cloud deletion failed", err);
+      });
+    }
 
-  // Update original array
-  notes.splice(0, notes.length, ...filteredNotes);
+    // Update notes array
+    notes.splice(0, notes.length, ...filteredNotes);
 
-  // If no notes left, go to dashboard
-  const nextActiveId = filteredNotes.length > 0 ? filteredNotes[0].id : null;
+    // Persist changes locally
+    await persistNotes(activeUser, notes);
 
-  await persistNotes(activeUser, notes);
-  callbacks.setActiveNote(nextActiveId);
-  showToast("Note deleted", "success");
+    if (wasActive) {
+      // If we deleted the ACTIVE note, navigate away
+      const nextActiveId = filteredNotes.length > 0 ? filteredNotes[0].id : null;
+      callbacks.setActiveNote(nextActiveId);
+    } else {
+      // If we deleted a card from the grid, just refresh the dashboard
+      callbacks.renderNotesList();
+      callbacks.renderNotesDashboard();
+    }
+
+    showToast(`"${noteTitle}" deleted`, "success");
+  } catch (error) {
+    console.error("Deletion failed", error);
+    showToast("Failed to delete note", "error");
+  }
 }
 
 // Creates a copy of the active note with a new ID and current timestamp

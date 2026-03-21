@@ -1,3 +1,4 @@
+import { getTagColor, formatDate, showConfirm } from "./utilities.js";
 import { getSelectedDate } from "./filterSearchSort.js";
 import {
   handleNewNote,
@@ -129,18 +130,24 @@ export function wireFolderButtons(state, callbacks) {
 
       if (target.classList.contains("folder-delete-btn")) {
         event.stopPropagation();
-        const confirmed = confirm("Delete this folder? Notes inside will move back to All Notes.");
-        if (!confirmed) return;
+        (async () => {
+          const confirmed = await showConfirm(
+            "Delete Folder",
+            `Are you sure you want to delete this folder? Notes inside will be moved back to "All Notes".`,
+            "Delete Folder"
+          );
+          if (!confirmed) return;
 
-        deleteFolder(state.activeUser, folderId, state.notes);
-        state.folders = state.folders.filter((f) => f.id !== folderId);
+          deleteFolder(state.activeUser, folderId, state.notes);
+          state.folders = state.folders.filter((f) => f.id !== folderId);
 
-        if (state.activeFolderId === folderId) {
-          callbacks.setActiveFolder(null);
-        } else {
-          callbacks.renderFolders();
-          callbacks.renderNotesList();
-        }
+          if (state.activeFolderId === folderId) {
+            callbacks.setActiveFolder(null);
+          } else {
+            callbacks.renderFolders();
+            callbacks.renderNotesList();
+          }
+        })();
       } else if (target.classList.contains("folder-rename-btn")) {
         event.stopPropagation();
         const currentFolder = state.folders.find((f) => f.id === folderId);

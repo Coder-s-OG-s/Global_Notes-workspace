@@ -2,6 +2,7 @@ import config from './config.js';
 import { generateTextWithGemini } from './geminiAPI.js';
 import { wireThemeToggle, setThemeStorageKey } from './themeManager.js';
 import { CODE_THEME_KEY } from './constants.js';
+import { showConfirm } from './utilities.js';
 
 const STORAGE_KEY = 'antigravity_snippets';
 
@@ -776,9 +777,14 @@ class CodeWorkspace {
         this.showToast('Snippet Saved Successfully!');
     }
 
-    deleteSnippet(id, event) {
+    async deleteSnippet(id, event) {
         if (event) event.stopPropagation();
-        if (!confirm('Are you sure you want to delete this snippet?')) return;
+        const confirmed = await showConfirm(
+            "Delete Snippet",
+            "Are you sure you want to delete this code snippet? This cannot be undone.",
+            "Delete"
+        );
+        if (!confirmed) return;
         this.snippets = this.snippets.filter(s => s.id !== id);
         this.saveToStorage();
         if (this.activeSnippetId === id) this.createNewSnippet();

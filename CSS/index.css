@@ -2981,43 +2981,74 @@ html[data-theme="corporate-gray"] .custom-select-wrapper:has(#note-theme) {
   border: none;
   padding: 0;
   background: transparent;
-  max-width: 380px;
+  max-width: 400px;
   width: 90%;
   border-radius: var(--radius-lg);
-  animation: modalIn 0.2s ease both;
+  outline: none;
+  animation: modalIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) both;
 }
 
 .confirm-dialog::backdrop {
-  background: rgba(0, 0, 0, 0.6);
-  animation: fadeIn 0.15s ease both;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  animation: fadeIn 0.2s ease both;
 }
 
 .confirm-content {
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-lg);
-  padding: 24px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), 0 0 0 1px var(--border);
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
 .confirm-title {
-  font-size: 16px;
-  font-weight: 600;
-  margin: 0 0 8px;
+  font-size: 18px;
+  font-weight: 700;
+  margin: 0;
   color: var(--text);
+  letter-spacing: -0.02em;
 }
 
 .confirm-message {
   font-size: 14px;
   color: var(--text-dim);
-  margin: 0 0 20px;
-  line-height: 1.5;
+  margin: 0 0 12px;
+  line-height: 1.6;
 }
 
 .confirm-actions {
   display: flex;
   justify-content: flex-end;
-  gap: 8px;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.confirm-actions .btn {
+  height: 38px;
+  font-weight: 600;
+  min-width: 100px;
+}
+
+.confirm-actions .btn.danger {
+  background: var(--danger);
+  color: #fff;
+  border-color: rgba(0,0,0,0.1);
+}
+
+.confirm-actions .btn.danger:hover {
+  background: #ff4d4d;
+  box-shadow: 0 4px 12px rgba(229, 83, 75, 0.3);
+  transform: translateY(-1px);
+}
+
+.confirm-actions .btn.secondary:hover {
+  background: var(--surface-3);
+  transform: translateY(-1px);
 }
 
 /* ════════════════════════════════════════
@@ -3036,16 +3067,51 @@ html[data-theme="corporate-gray"] .custom-select-wrapper:has(#note-theme) {
 .toast {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 12px 16px;
-  border-radius: var(--radius);
-  background: var(--surface);
+  gap: 12px;
+  padding: 10px 16px;
+  border-radius: var(--radius-lg);
+  background: var(--surface-2);
   border: 1px solid var(--border);
-  box-shadow: var(--shadow-lg);
-  font-size: 13px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+  font-size: 14px;
+  font-weight: 500;
   color: var(--text);
-  animation: slideUp 0.2s ease both;
-  max-width: 360px;
+  animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) both;
+  max-width: 400px;
+  min-width: 280px;
+}
+
+.toast-icon {
+  font-size: 16px;
+  flex-shrink: 0;
+}
+
+.toast-message {
+  flex: 1;
+  line-height: 1.4;
+}
+
+.toast-close {
+  background: transparent;
+  border: none;
+  color: var(--text-dim);
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 4px;
+  margin-right: -4px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  opacity: 0.6;
+}
+
+.toast-close:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--text);
+  opacity: 1;
 }
 
 .toast.removing {

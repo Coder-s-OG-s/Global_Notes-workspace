@@ -1,4 +1,4 @@
-import { escapeHtml, showToast } from "./utilities.js";
+import { escapeHtml, showToast, showConfirm } from "./utilities.js";
 import { insertHtmlAtCursor } from "./formattingToolbar.js";
 
 import { AudioRecorder } from "./audioRecorder.js";
@@ -278,12 +278,19 @@ export function wireUploadButtons() {
       selection.removeAllRanges();
       selection.addRange(range);
 
-      if (confirm(`Delete this ${typeName}?`)) {
-        deletable.remove();
-      } else {
-        // Deselect if cancelled
-        selection.removeAllRanges();
-      }
+      (async () => {
+        const confirmed = await showConfirm(
+          `Delete ${typeName}`,
+          `Are you sure you want to remove this ${typeName}?`,
+          "Delete"
+        );
+        if (confirmed) {
+          deletable.remove();
+        } else {
+          // Deselect if cancelled
+          selection.removeAllRanges();
+        }
+      })();
     }
   });
 

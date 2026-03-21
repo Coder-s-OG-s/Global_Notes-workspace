@@ -124,25 +124,42 @@ function dismissToast(toast) {
 export function showConfirm(title, message, confirmLabel = 'Delete') {
   return new Promise((resolve) => {
     const dialog = document.getElementById('confirm-dialog');
-    if (!dialog) { resolve(confirm(message)); return; }
-
-    document.getElementById('confirm-title').textContent = title;
-    document.getElementById('confirm-message').textContent = message;
+    const titleEl = document.getElementById('confirm-title');
+    const messageEl = document.getElementById('confirm-message');
     const okBtn = document.getElementById('confirm-ok');
+    const cancelBtn = document.getElementById('confirm-cancel');
+
+    if (!dialog || !okBtn || !cancelBtn) { 
+      resolve(confirm(message)); 
+      return; 
+    }
+
+    if (titleEl) titleEl.textContent = title;
+    if (messageEl) messageEl.textContent = message;
     okBtn.textContent = confirmLabel;
+
+    const onCancel = () => {
+      cleanup();
+      resolve(false);
+    };
+
+    const onOk = () => {
+      cleanup();
+      resolve(true);
+    };
+
+    const onClose = () => {
+      cleanup();
+      resolve(false);
+    };
 
     const cleanup = () => {
       cancelBtn.removeEventListener('click', onCancel);
       okBtn.removeEventListener('click', onOk);
       dialog.removeEventListener('close', onClose);
-      dialog.close();
+      if (dialog.open) dialog.close();
     };
 
-    const onCancel = () => { cleanup(); resolve(false); };
-    const onOk = () => { cleanup(); resolve(true); };
-    const onClose = () => { cleanup(); resolve(false); };
-
-    const cancelBtn = document.getElementById('confirm-cancel');
     cancelBtn.addEventListener('click', onCancel);
     okBtn.addEventListener('click', onOk);
     dialog.addEventListener('close', onClose);

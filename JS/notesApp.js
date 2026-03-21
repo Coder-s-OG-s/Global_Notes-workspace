@@ -130,6 +130,7 @@ const callbacks = {
     await persistNotes(state.activeUser, state.notes);
     state.calendarWidget?.render(); // Update calendar indicators
   },
+  getActiveNoteId: () => state.activeNoteId,
   // Loads notes and folders for the current user, ensuring at least one note exists
   loadNotesForCurrentUser: async () => {
     state.notes = await loadNotesForCurrentUser(state.activeUser);

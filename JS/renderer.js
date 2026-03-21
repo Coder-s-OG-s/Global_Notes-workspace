@@ -1,4 +1,4 @@
-import { getTagColor, escapeHtml, formatDate } from "./utilities.js";
+import { getTagColor, escapeHtml, formatDate, showConfirm } from "./utilities.js";
 import { applyFilterSearchAndSort } from "./filterSearchSort.js";
 //import { getFolders } from "./folderManager.js";
 
@@ -325,9 +325,7 @@ export function renderNotesDashboard(notes, activeFolderId, activeLibraryFilter,
     if (deleteBtn && noteActions) {
       deleteBtn.addEventListener("click", (e) => {
         e.stopPropagation();
-        if (confirm("Are you sure you want to delete this note?")) {
-          noteActions.deleteNote(note.id);
-        }
+        noteActions.deleteNote(note.id);
       });
     }
 
