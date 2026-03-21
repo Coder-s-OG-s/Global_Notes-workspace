@@ -3051,6 +3051,28 @@ html[data-theme="corporate-gray"] .custom-select-wrapper:has(#note-theme) {
   transform: translateY(-1px);
 }
 
+.prompt-input-wrapper {
+  margin: 8px 0 12px;
+}
+
+.prompt-input {
+  width: 100%;
+  padding: 12px 16px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text);
+  font-size: 14px;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.prompt-input:focus {
+  border-color: var(--primary);
+  background: var(--surface);
+  box-shadow: 0 0 0 3px var(--primary-glow);
+}
+
 /* ════════════════════════════════════════
    TOAST NOTIFICATIONS
    ════════════════════════════════════════ */
