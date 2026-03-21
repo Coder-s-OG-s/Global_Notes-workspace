@@ -1,4 +1,5 @@
 import { getTagColor, formatDate, showConfirm, showPrompt } from "./utilities.js";
+import { getTagColor, formatDate, showConfirm } from "./utilities.js";
 import { getSelectedDate } from "./filterSearchSort.js";
 import {
   handleNewNote,

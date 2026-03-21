@@ -3,6 +3,7 @@ import { generateTextWithGemini } from './geminiAPI.js';
 import { wireThemeToggle, setThemeStorageKey } from './themeManager.js';
 import { CODE_THEME_KEY } from './constants.js';
 import { showConfirm, showPrompt } from './utilities.js';
+import { showConfirm } from './utilities.js';
 
 const STORAGE_KEY = 'antigravity_snippets';
 

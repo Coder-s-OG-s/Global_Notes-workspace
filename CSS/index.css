@@ -3133,6 +3133,42 @@ html[data-theme="corporate-gray"] .custom-select-wrapper:has(#note-theme) {
 .toast-close:hover {
   background: rgba(255, 255, 255, 0.1);
   color: var(--text);
+  color: var(--text);
+  animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) both;
+  max-width: 400px;
+  min-width: 280px;
+}
+
+.toast-icon {
+  font-size: 16px;
+  flex-shrink: 0;
+}
+
+.toast-message {
+  flex: 1;
+  line-height: 1.4;
+}
+
+.toast-close {
+  background: transparent;
+  border: none;
+  color: var(--text-dim);
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 4px;
+  margin-right: -4px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  opacity: 0.6;
+}
+
+.toast-close:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--text);
   opacity: 1;
 }
 
