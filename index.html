@@ -4,248 +4,268 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Global Notes Workspace - Your Smart Workspace for Ideas</title>
+  <title>Noted — Think clearly. Build better.</title>
   <meta name="description"
-    content="Organize your notes, ideas, and knowledge in one powerful, sleek workspace. Built for professionals, students, and developers.">
+    content="The professional workspace for your notes, ideas, and code. Free forever, no credit card required.">
+
+  <!-- Typography -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link
-    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Outfit:wght@700;800&display=swap"
+    href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300..500;1,9..40,300..500&family=Syne:wght@800&display=swap"
     rel="stylesheet">
+
+  <!-- Styles -->
   <link rel="stylesheet" href="CSS/landing.css">
   <link rel="icon" type="image/png" href="assets/images/logo_workspace.png" />
+
+  <!-- Animation Library (optional, but CSS is fine) -->
 </head>
 
 <body>
 
-  <nav id="landing-nav">
-    <div class="container navbar">
-      <a href="/" class="brand">
-        <img src="assets/images/logo_workspace.png" alt="Global Notes Workspace">
-        <span>Global Notes Workspace</span>
+  <!-- Sticky Navbar -->
+  <nav id="navbar" class="fixed-nav">
+    <div class="container nav-content">
+      <a href="#" class="brand">
+        <img src="assets/images/logo_workspace.png" alt="Noted Logo"
+          style="width: 34px; height: 34px; border-radius: 8px;">
+        <span class="brand-name">Noted</span>
       </a>
       <div class="nav-links">
         <a href="#features">Features</a>
-        <a href="#solutions">Solutions</a>
+        <a href="#how-it-works">How it works</a>
+        <a href="#who-it-is-for">Who it's for</a>
       </div>
-      <a href="HTML/signup.html" class="btn btn-primary">Get Started</a>
+      <div class="nav-ctas">
+        <a href="HTML/signup.html" class="btn-ghost">Sign in</a>
+        <a href="HTML/signup.html" class="btn-pill-black">Start free &rarr;</a>
+      </div>
+      <button class="menu-toggle" id="menu-toggle">
+        <span></span>
+        <span></span>
+      </button>
     </div>
   </nav>
 
-  <header class="hero">
-    <div class="container">
-      <div class="badge">Professional Workspace</div>
-      <h1 style="font-family: 'Outfit', sans-serif;">Your Smart Workspace for<br>Notes, Ideas, and Knowledge</h1>
-      <p>Write notes, organize ideas, sync code snippets, and manage your knowledge in one powerful workspace designed
-        for focus.</p>
-      <div class="hero-btns">
-        <a href="HTML/signup.html" class="btn btn-primary">Get Started for Free</a>
-        <a href="#features" class="btn btn-secondary">Explore Features</a>
+  <!-- Hero Section -->
+  <header class="hero" id="top">
+    <div class="container hero-content">
+      <div class="badge-pill animate-up">
+        <span class="pulse-dot"></span>
+        Free forever &middot; No credit card needed
       </div>
-
-      <div class="hero-mockups">
-        <div class="mockup-container">
-          <span>Notes Workspace</span>
-          <img src="assets/images/notes_workspace_real.png" alt="Notes Workspace Mockup">
-        </div>
-        <div class="mockup-container">
-          <span>Code Workspace</span>
-          <img src="assets/images/code_workspace_real.png" alt="Code Workspace Mockup">
-        </div>
+      <h1 class="hero-headline animate-up">
+        Think clearly.<br>
+        <span class="muted-gray">Build</span> better.
+      </h1>
+      <p class="hero-subtext animate-up">
+        A refined workspace where your notes, code, and ideas live in perfect harmony.
+        Organize your knowledge, capture every spark, and build what matters.
+      </p>
+      <div class="hero-actions animate-up">
+        <a href="HTML/signup.html" class="btn-pill-black lg">Get started for free</a>
+        <a href="#how-it-works" class="btn-ghost lg">See how it works</a>
       </div>
+      <p class="hero-meta animate-up">
+        100% free &middot; No sign-up friction &middot; Works in your browser
+      </p>
     </div>
   </header>
 
-  <section class="container" id="features">
-    <div class="section-title reveal">
-      <p
-        style="color: var(--primary); font-weight: 800; margin-bottom: 1.5rem; text-transform: uppercase; letter-spacing: 0.15em; font-size: 0.75rem;">
-        Use Cases</p>
-      <h2 style="font-family: 'Outfit', sans-serif;">Built for Everyone Who Works<br>With Information</h2>
-    </div>
-    <div class="features-grid reveal">
-      <div class="feature-card">
-        <div class="feature-icon">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-            stroke-linecap="round" stroke-linejoin="round">
-            <path d="M22 10v6M2 10l10-5 10 5-10 5z" />
-            <path d="M6 12v5c0 2 2 3 6 3s6-1 6-3v-5" />
-          </svg>
-        </div>
-        <h3 style="font-family: 'Outfit', sans-serif;">Students</h3>
-        <p>Perfect for lecture notes, study guides, and research projects. Keep your academic life organized in one
-          place.</p>
-      </div>
-      <div class="feature-card">
-        <div class="feature-icon">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-            stroke-linecap="round" stroke-linejoin="round">
-            <polyline points="16 18 22 12 16 6" />
-            <polyline points="8 6 2 12 8 18" />
-          </svg>
-        </div>
-        <h3 style="font-family: 'Outfit', sans-serif;">Developers</h3>
-        <p>Store code snippets, documentation, and technical specs with our dedicated code workspace and AI assistance.
-        </p>
-      </div>
-      <div class="feature-card">
-        <div class="feature-icon">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-            stroke-linecap="round" stroke-linejoin="round">
-            <path d="M12 19l7-7 3 3-7 7-3-3z" />
-            <path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z" />
-            <path d="M2 2l5 5" />
-            <path d="M11 11l1 1" />
-          </svg>
-        </div>
-        <h3 style="font-family: 'Outfit', sans-serif;">Writers & Creatives</h3>
-        <p>A distraction-free environment for drafts, dreams, and creative projects. Capture inspiration whenever it
-          strikes.</p>
-      </div>
-      <div class="feature-card">
-        <div class="feature-icon">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-            stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="11" cy="11" r="8" />
-            <line x1="21" y1="21" x2="16.65" y2="16.65" />
-          </svg>
-        </div>
-        <h3 style="font-family: 'Outfit', sans-serif;">Researchers</h3>
-        <p>A robust system for organizing complex information, tagging data, and retrieving knowledge instantly.</p>
-      </div>
-    </div>
-  </section>
-
-  <section id="solutions" style="background-color: var(--bg-soft);">
+  <!-- App Screenshots Section -->
+  <section class="screenshots">
     <div class="container">
-      <div class="section-title reveal">
-        <h2 style="font-family: 'Outfit', sans-serif;">One Workspace for Thoughts<br>and Knowledge</h2>
-      </div>
-      <div class="features-grid reveal">
-        <div class="feature-card">
-          <div class="feature-icon">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-              stroke-linecap="round" stroke-linejoin="round">
-              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-              <polyline points="14 2 14 8 20 8" />
-              <line x1="16" y1="13" x2="8" y2="13" />
-              <line x1="16" y1="17" x2="8" y2="17" />
-              <polyline points="10 9 9 9 8 9" />
-            </svg>
-          </div>
-          <h3 style="font-family: 'Outfit', sans-serif;">Note Management</h3>
-          <p>Organize your notes into folders and subfolders. Use smart tags to cross-reference related information
-            easily.</p>
+      <div class="screenshots-grid">
+        <div class="browser-frame left-frame hover-lift">
+          <img src="assets/images/notes_workspace_real.png" alt="Notes Workspace">
+          <div class="caption">Notes Workspace</div>
         </div>
-        <div class="feature-card">
-          <div class="feature-icon">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-              stroke-linecap="round" stroke-linejoin="round">
-              <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
-              <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
-            </svg>
-          </div>
-          <h3 style="font-family: 'Outfit', sans-serif;">Drafts & Dreams</h3>
-          <p>A dedicated place for your rough ideas before they become projects. High-quality editing tools at your
-            fingertips.</p>
-        </div>
-        <div class="feature-card">
-          <div class="feature-icon">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-              stroke-linecap="round" stroke-linejoin="round">
-              <circle cx="11" cy="11" r="8" />
-              <line x1="21" y1="21" x2="16.65" y2="16.65" />
-              <path d="M11 8v3l2 2" />
-            </svg>
-          </div>
-          <h3 style="font-family: 'Outfit', sans-serif;">Fast Search</h3>
-          <p>Find anything in seconds. Our powerful search indexes all your notes, including text within files and
-            snippets.</p>
+        <div class="browser-frame right-frame hover-lift">
+          <img src="assets/images/code_workspace_real.png" alt="Code + Notes Workspace">
+          <div class="caption">Code + Notes side by side</div>
         </div>
       </div>
     </div>
   </section>
 
-  <section class="cta-section">
+  <!-- Features Section -->
+  <section id="features" class="features">
     <div class="container">
-      <h2 style="font-family: 'Outfit', sans-serif;">Turn Your Ideas and Knowledge into an Organized Workspace</h2>
-      <p>Join thousands of professionals and students who have transformed their note-taking experience.</p>
-      <a href="HTML/signup.html" class="btn btn-white btn-large">Get Started for Free</a>
+      <div class="section-header">
+        <span class="eyebrow">Features</span>
+        <h2>Everything your brain needs to stay productive</h2>
+      </div>
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="icon-box">✍️</div>
+          <h3>Rich Note Editor</h3>
+          <p>Full markdown support, slash commands, and an elegant writing experience that stays out of your way.</p>
+        </div>
+        <div class="feature-card">
+          <div class="icon-box">💻</div>
+          <h3>Code Workspace</h3>
+          <p>Integrated code editor with syntax highlighting for 50+ languages, perfect for documentation and snippets.
+          </p>
+        </div>
+        <div class="feature-card">
+          <div class="icon-box">🔍</div>
+          <h3>Instant Search</h3>
+          <p>Find anything across your entire workspace in milliseconds with our lightning-fast global search.</p>
+        </div>
+        <div class="feature-card">
+          <div class="icon-box">📁</div>
+          <h3>Smart Organization</h3>
+          <p>Nested folders, tags, and bi-directional linking to build your personal knowledge graph.</p>
+        </div>
+        <div class="feature-card">
+          <div class="icon-box">🤖</div>
+          <h3>AI Writing Assistant</h3>
+          <p>Draft, summarize, and refine your thoughts with integrated AI that understands your context.</p>
+        </div>
+        <div class="feature-card">
+          <div class="icon-box">🤝</div>
+          <h3>Share & Collaborate</h3>
+          <p>Publish pages to the web or collaborate with your team in real-time with full version history.</p>
+        </div>
+      </div>
     </div>
   </section>
 
-  <footer class="footer">
+  <!-- Who It's For Section -->
+  <section id="who-it-is-for" class="who-it-is-for dark-bg">
+    <div class="container">
+      <div class="section-header">
+        <span class="eyebrow amber">Who it's for</span>
+        <h2 class="white">Built for everyone who works with information</h2>
+      </div>
+      <div class="who-grid">
+        <div class="who-card">
+          <span class="who-number">01</span>
+          <div class="who-icon">🎓</div>
+          <h3>Students</h3>
+          <p>Organize lecture notes, research citations, and study guides in one centralized academic hub.</p>
+          <div class="tag-pills">
+            <span>Lecture Notes</span>
+            <span>Study Guides</span>
+          </div>
+        </div>
+        <div class="who-card">
+          <span class="who-number">02</span>
+          <div class="who-icon">💻</div>
+          <h3>Developers</h3>
+          <p>Maintain documentation, store re-usable code snippets, and plan your next big project.</p>
+          <div class="tag-pills">
+            <span>Code Snippets</span>
+            <span>Docs</span>
+          </div>
+        </div>
+        <div class="who-card">
+          <span class="who-number">03</span>
+          <div class="who-icon">✍️</div>
+          <h3>Writers & Creatives</h3>
+          <p>Draft your next masterpiece in a distraction-free environment that keeps your ideas organized.</p>
+          <div class="tag-pills">
+            <span>Drafts</span>
+            <span>World Building</span>
+          </div>
+        </div>
+        <div class="who-card">
+          <span class="who-number">04</span>
+          <div class="who-icon">📊</div>
+          <h3>Professionals & Teams</h3>
+          <p>Streamline meeting notes, project specs, and team knowledge without the overhead.</p>
+          <div class="tag-pills">
+            <span>Meeting Notes</span>
+            <span>Wiki</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- How It Works Section -->
+  <section id="how-it-works" class="how-it-works off-white-bg">
+    <div class="container">
+      <div class="how-grid">
+        <div class="how-step">
+          <span class="step-num">01</span>
+          <h3>Capture anything instantly</h3>
+          <p>Quickly jot down ideas, paste code snippets, or upload files from any device.</p>
+        </div>
+        <div class="how-step">
+          <span class="step-num">02</span>
+          <h3>Organize with smart folders</h3>
+          <p>Use our intuitive hierarchy and tagging system to keep your workspace clutter-free.</p>
+        </div>
+        <div class="how-step">
+          <span class="step-num">03</span>
+          <h3>Share & get to work</h3>
+          <p>Invite collaborators or publish your notes to the world with a single click.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Section -->
+  <section class="cta-banner dark-bg">
+    <div class="amber-glow"></div>
+    <div class="container text-center">
+      <h2 class="white lg">Your second brain starts here</h2>
+      <p class="cta-subtext">Free forever. No credit card. No catch. Just a better way to think.</p>
+      <a href="HTML/signup.html" class="btn-pill-white lg">Open the app &mdash; it's free</a>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer dark-bg">
     <div class="container">
       <div class="footer-grid">
-        <div class="footer-brand">
+        <div class="footer-col brand-col">
           <a href="#" class="brand">
-            <img src="assets/images/logo_workspace.png" alt="Global Notes Workspace">
-            <span style="font-family: 'Outfit', sans-serif;">Global Notes Workspace</span>
+            <img src="assets/images/logo_workspace.png" alt="Noted Logo"
+              style="width: 34px; height: 34px; border-radius: 8px;">
+            <span class="brand-name white">Noted</span>
           </a>
-          <p>Our mission is to empower individuals to capture, organize, and synthesize their information more
-            effectively.</p>
+          <p class="footer-desc">The refined workspace for thinkers and builders. Crafted with care for the modern web.
+          </p>
         </div>
-        <div class="footer-links">
+        <div class="footer-col">
           <h4>Product</h4>
           <ul>
-            <li><a href="#">Features</a></li>
-            <li><a href="#">Solutions</a></li>
-            <li><a href="#">Pricing</a></li>
-            <li><a href="#">Updates</a></li>
+            <li><a href="#features">Features</a></li>
+            <li><a href="#how-it-works">How it works</a></li>
+            <li><a href="#">Security</a></li>
+            <li><a href="#">Roadmap</a></li>
           </ul>
         </div>
-        <div class="footer-links">
+        <div class="footer-col">
           <h4>Resources</h4>
           <ul>
-            <li><a href="#">Blog</a></li>
-            <li><a href="#">Guides</a></li>
+            <li><a href="#">Documentation</a></li>
             <li><a href="#">Help Center</a></li>
-            <li><a href="#">API</a></li>
+            <li><a href="#">Community</a></li>
+            <li><a href="#">Blog</a></li>
           </ul>
         </div>
-        <div class="footer-links">
+        <div class="footer-col">
           <h4>Company</h4>
           <ul>
-            <li><a href="#">About Us</a></li>
-            <li><a href="#">Careers</a></li>
+            <li><a href="#">About</a></li>
+            <li><a href="#">Privacy</a></li>
+            <li><a href="#">Terms</a></li>
             <li><a href="#">Contact</a></li>
-            <li><a href="#">Legal</a></li>
           </ul>
         </div>
       </div>
       <div class="footer-bottom">
-        <p>&copy; 2025 Global Notes Workspace. All rights reserved.</p>
+        <p>&copy; 2026 Noted. All rights reserved.</p>
+        <p>Made with ☕ for builders.</p>
       </div>
     </div>
   </footer>
 
-  <script>
-    // Navbar Scroll Effect
-    window.addEventListener('scroll', () => {
-      const nav = document.getElementById('landing-nav');
-      if (window.scrollY > 20) {
-        nav.classList.add('scrolled');
-      } else {
-        nav.classList.remove('scrolled');
-      }
-    });
-
-    // Reveal on Scroll
-    const observerOptions = {
-      threshold: 0.1
-    };
-
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('active');
-        }
-      });
-    }, observerOptions);
-
-    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
-  </script>
-
+  <script src="JS/landing.js"></script>
 </body>
 
 </html>

@@ -55,7 +55,9 @@ export async function getSession() {
  * @param {string} provider - 'google' or 'github'
  */
 export async function signInWithProvider(provider) {
-    const redirectUrl = window.location.origin + '/app.html';
+    // Dynamically calculate the app.html path relative to the current page (HTML/signup.html)
+    // This ensures it works regardless of whether the site is at the root or in a subdirectory
+    const redirectUrl = new URL('../app.html', window.location.href).href;
     console.log("Initiating OAuth with redirect to:", redirectUrl);
 
     const { data, error } = await supabase.auth.signInWithOAuth({
