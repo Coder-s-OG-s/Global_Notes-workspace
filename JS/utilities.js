@@ -168,6 +168,77 @@ export function showConfirm(title, message, confirmLabel = 'Delete') {
   });
 }
 
+/**
+ * Shows a custom prompt dialog. Returns a promise that resolves to the string or null.
+ * @param {string} title - Dialog title.
+ * @param {string} defaultValue - Initial value.
+ * @param {string} confirmLabel - Label for the confirm button.
+ * @returns {Promise<string|null>}
+ */
+export function showPrompt(title, defaultValue = '', confirmLabel = 'OK') {
+  return new Promise((resolve) => {
+    const dialog = document.getElementById('prompt-dialog');
+    const titleEl = document.getElementById('prompt-title');
+    const inputEl = document.getElementById('prompt-input');
+    const okBtn = document.getElementById('prompt-ok');
+    const cancelBtn = document.getElementById('prompt-cancel');
+
+    if (!dialog || !okBtn || !cancelBtn || !inputEl) {
+      resolve(prompt(title, defaultValue));
+      return;
+    }
+
+    if (titleEl) titleEl.textContent = title;
+    inputEl.value = defaultValue;
+    okBtn.textContent = confirmLabel;
+
+    const onCancel = () => {
+      cleanup();
+      resolve(null);
+    };
+
+    const onOk = (e) => {
+      if (e) e.preventDefault();
+      const val = inputEl.value;
+      cleanup();
+      resolve(val);
+    };
+
+    const onClose = () => {
+      cleanup();
+      resolve(null);
+    };
+
+    const onKeyDown = (e) => {
+      if (e.key === 'Enter') {
+        onOk();
+      } else if (e.key === 'Escape') {
+        onCancel();
+      }
+    };
+
+    const cleanup = () => {
+      cancelBtn.removeEventListener('click', onCancel);
+      okBtn.removeEventListener('click', onOk);
+      dialog.removeEventListener('close', onClose);
+      inputEl.removeEventListener('keydown', onKeyDown);
+      if (dialog.open) dialog.close();
+    };
+
+    cancelBtn.addEventListener('click', onCancel);
+    okBtn.addEventListener('click', onOk);
+    dialog.addEventListener('close', onClose);
+    inputEl.addEventListener('keydown', onKeyDown);
+
+    dialog.showModal();
+    // Auto-focus and select text
+    setTimeout(() => {
+      inputEl.focus();
+      inputEl.select();
+    }, 50);
+  });
+}
+
 // ========================================
 // HTML SANITIZATION
 // ========================================

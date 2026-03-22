@@ -40,10 +40,14 @@ export function removeTagFromActiveNote(notes, activeNoteId, tag, activeUser, ca
 }
 
 // Saves the current state of the active note including title, content, and tags
-export function handleSaveNote(notes, activeNoteId, activeUser, getActiveFilter, callbacks) {
+export async function handleSaveNote(notes, activeNoteId, activeUser, getActiveFilter, callbacks) {
   // Check if user is logged in
   if (!activeUser) {
-    const shouldLogin = confirm("You need to be logged in to save notes. Would you like to log in now?");
+    const shouldLogin = await showConfirm(
+      "Login Required",
+      "You need to be logged in to save notes. Would you like to log in now?",
+      "Log In"
+    );
     if (shouldLogin) {
       window.location.href = "./HTML/signup.html";
     }

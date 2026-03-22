@@ -1,4 +1,4 @@
-import { escapeHtml, showToast, showConfirm } from "./utilities.js";
+import { escapeHtml, showToast, showConfirm, showPrompt } from "./utilities.js";
 import { insertHtmlAtCursor } from "./formattingToolbar.js";
 
 import { AudioRecorder } from "./audioRecorder.js";
@@ -139,9 +139,14 @@ export function wireUploadButtons() {
     insertHtmlAtCursor(html);
   }
 
-  function insertTable() {
-    let rows = parseInt(prompt("Number of rows?", "3"), 10);
-    let cols = parseInt(prompt("Number of columns?", "3"), 10);
+  async function insertTable() {
+    let rowsStr = await showPrompt("Insert Table", "3", "Insert");
+    if (rowsStr === null) return;
+    let colsStr = await showPrompt("Columns", "3", "Next");
+    if (colsStr === null) return;
+    
+    let rows = parseInt(rowsStr, 10);
+    let cols = parseInt(colsStr, 10);
     if (!Number.isFinite(rows) || rows <= 0) rows = 2;
     if (!Number.isFinite(cols) || cols <= 0) cols = 2;
 
@@ -202,17 +207,20 @@ export function wireUploadButtons() {
     // Table deletion
     if ((target instanceof HTMLTableElement || target.closest("table.note-table")) && (event.button === 2 || event.ctrlKey || event.metaKey)) {
       event.preventDefault();
-      if (confirm("Delete this table?")) target.closest("table").remove();
+      (async () => {
+        const confirmed = await showConfirm("Delete Table", "Are you sure you want to delete this table?", "Delete");
+        if (confirmed) target.closest("table").remove();
+      })();
     }
   });
 
-  function handleImageClick(img) {
+  async function handleImageClick(img) {
     const figure = img.closest("figure.note-image");
     const currentSize = figure.classList.contains("note-image-size-small") ? "small" :
       figure.classList.contains("note-image-size-medium") ? "medium" :
         figure.classList.contains("note-image-size-large") ? "large" : "custom";
 
-    const input = prompt("Set image size (small, medium, large, or %/px):", currentSize);
+    const input = await showPrompt("Set Image Size", currentSize, "Set Size");
     if (!input) return;
 
     const val = input.trim().toLowerCase();
@@ -296,7 +304,7 @@ export function wireUploadButtons() {
 
 
   // Shape Click Handling for Resize
-  contentEl.addEventListener("click", (event) => {
+  contentEl.addEventListener("click", async (event) => {
     const target = event.target;
     const container = target.closest(".note-shape-container");
 
@@ -304,7 +312,7 @@ export function wireUploadButtons() {
       const svg = container.querySelector("svg");
       if (svg) {
         const currentWidth = svg.getAttribute("width") || "100";
-        const newSize = prompt("Set shape size (e.g., 50, 200, 100%):", currentWidth);
+        const newSize = await showPrompt("Set Shape Size", currentWidth, "Set Size");
         if (newSize) {
           svg.setAttribute("width", newSize);
           svg.setAttribute("height", newSize);

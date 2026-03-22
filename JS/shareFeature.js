@@ -1,4 +1,4 @@
-import { stripHtml } from './utilities.js';
+import { stripHtml, showConfirm } from './utilities.js';
 
 /**
  * Wires up the Social Share Modal logic.
@@ -14,10 +14,14 @@ export function wireShareFeature(state, callbacks) {
     const copyTextBtn = document.getElementById('share-copy-text');
 
     if (shareBtn && shareModal) {
-        shareBtn.addEventListener('click', () => {
+        shareBtn.addEventListener('click', async () => {
             // Check if user is logged in
             if (!state.activeUser) {
-                const shouldLogin = confirm("You need to be logged in to share notes. Would you like to log in now?");
+                const shouldLogin = await showConfirm(
+                    "Login Required",
+                    "You need to be logged in to share notes. Would you like to log in now?",
+                    "Log In"
+                );
                 if (shouldLogin) {
                     window.location.href = "./HTML/signup.html";
                 }

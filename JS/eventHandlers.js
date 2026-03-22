@@ -1,4 +1,4 @@
-import { getTagColor, formatDate, showConfirm } from "./utilities.js";
+import { getTagColor, formatDate, showConfirm, showPrompt } from "./utilities.js";
 import { getSelectedDate } from "./filterSearchSort.js";
 import {
   handleNewNote,
@@ -70,9 +70,13 @@ export function wireCrudButtons(state, getActiveFilter, callbacks) {
     handleNewNote(state.notes, state.activeUser, getActiveFilter, getSelectedDate, callbacks, state.activeFolderId);
   });
 
-  $("#save-note")?.addEventListener("click", () => {
+  $("#save-note")?.addEventListener("click", async () => {
     if (!state.activeUser) {
-      const shouldLogin = confirm("You need to be logged in to save notes. Would you like to log in now?");
+      const shouldLogin = await showConfirm(
+        "Login Required",
+        "You need to be logged in to save notes. Would you like to log in now?",
+        "Log In"
+      );
       if (shouldLogin) {
         window.location.href = "./HTML/signup.html";
       }
@@ -104,8 +108,8 @@ export function wireFolderButtons(state, callbacks) {
   const foldersListEl = $("#folders-list");
 
   if (createFolderBtn) {
-    createFolderBtn.addEventListener("click", () => {
-      const folderName = prompt("Enter folder name:");
+    createFolderBtn.addEventListener("click", async () => {
+      const folderName = await showPrompt("Create New Folder", "", "Create");
       if (folderName && folderName.trim()) {
         const newFolder = createNewFolder(state.activeUser, folderName.trim());
         state.folders.push(newFolder);
@@ -150,16 +154,18 @@ export function wireFolderButtons(state, callbacks) {
         })();
       } else if (target.classList.contains("folder-rename-btn")) {
         event.stopPropagation();
-        const currentFolder = state.folders.find((f) => f.id === folderId);
-        const currentName = currentFolder ? currentFolder.name : "";
-        const newName = prompt("Rename folder:", currentName);
-        if (!newName || !newName.trim()) return;
+        (async () => {
+          const currentFolder = state.folders.find((f) => f.id === folderId);
+          const currentName = currentFolder ? currentFolder.name : "";
+          const newName = await showPrompt("Rename Folder", currentName, "Save");
+          if (!newName || !newName.trim()) return;
 
-        renameFolder(state.activeUser, folderId, newName.trim());
-        if (currentFolder) {
-          currentFolder.name = newName.trim();
-        }
-        callbacks.renderFolders();
+          renameFolder(state.activeUser, folderId, newName.trim());
+          if (currentFolder) {
+            currentFolder.name = newName.trim();
+          }
+          callbacks.renderFolders();
+        })();
       }
     });
   }

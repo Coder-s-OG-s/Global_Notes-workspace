@@ -184,6 +184,32 @@
         </section>
     </main>
 
+    <!-- Confirm Dialog -->
+    <dialog class="confirm-dialog" id="confirm-dialog">
+        <div class="confirm-content">
+            <h3 class="confirm-title" id="confirm-title">Delete Snippet</h3>
+            <p class="confirm-message" id="confirm-message">Are you sure? This cannot be undone.</p>
+            <div class="confirm-actions">
+                <button class="btn secondary" id="confirm-cancel">Cancel</button>
+                <button class="btn danger" id="confirm-ok">Delete</button>
+            </div>
+        </div>
+    </dialog>
+
+    <!-- Prompt Dialog -->
+    <dialog class="confirm-dialog" id="prompt-dialog">
+        <div class="confirm-content">
+            <h3 class="confirm-title" id="prompt-title">Enter Details</h3>
+            <div class="prompt-body">
+                <input type="text" id="prompt-input" class="prompt-input-field" placeholder="Type here..." autocomplete="off">
+            </div>
+            <div class="confirm-actions">
+                <button class="btn secondary" id="prompt-cancel">Cancel</button>
+                <button class="btn primary" id="prompt-ok">OK</button>
+            </div>
+        </div>
+    </dialog>
+
     <div id="toast" class="notification-toast">Snippet Saved!</div>
 
     <!-- Floating AI Chat will be injected by JS -->
