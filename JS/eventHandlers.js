@@ -6,6 +6,8 @@ import {
   handleDeleteNote,
   handleDuplicateNote,
   handleToggleFavorite,
+  handleArchiveNote,
+  handleUnarchiveNote,
   addTagToActiveNote
 } from "./noteOperations.js";
 import {
@@ -99,6 +101,16 @@ export function wireCrudButtons(state, getActiveFilter, callbacks) {
 
   $("#toggle-favorite")?.addEventListener("click", () => {
     handleToggleFavorite(state.notes, state.activeNoteId, state.activeUser, callbacks);
+  });
+
+  $("#archive-note")?.addEventListener("click", () => {
+    const note = state.notes.find(n => n.id === state.activeNoteId);
+    if (!note) return;
+    if (note.isArchived) {
+      handleUnarchiveNote(state.notes, note.id, state.activeUser, callbacks);
+    } else {
+      handleArchiveNote(state.notes, note.id, state.activeUser, callbacks);
+    }
   });
 }
 

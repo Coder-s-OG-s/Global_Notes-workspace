@@ -94,6 +94,16 @@ export function renderActiveNote(note, removeTagFromActiveNote) {
     });
   }//check this
 
+  // Update Archive Button State in overflow menu
+  const archiveBtn = $("#archive-note");
+  if (archiveBtn) {
+    const archiveIcon = note.isArchived 
+      ? `<svg class="overflow-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10V6a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v4M3 14v6a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-6M8 12h8"/></svg>`
+      : `<svg class="overflow-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="21 8 21 21 3 21 3 8"></polyline><rect x="1" y="3" width="22" height="5"></rect><line x1="10" y1="12" x2="14" y2="12"></line></svg>`;
+    
+    archiveBtn.innerHTML = `${archiveIcon} ${note.isArchived ? 'Unarchive' : 'Archive'}`;
+  }
+
   $all(".notes-list .note-item").forEach((li) => {
     li.classList.toggle("active", li.dataset.id === note.id);
   });
@@ -308,18 +318,39 @@ export function renderNotesDashboard(notes, activeFolderId, activeLibraryFilter,
     const plainContent = rawContent.replace(/<[^>]*>/g, " ");
     const previewText = plainContent.trim().slice(0, 150) + (plainContent.trim().length > 150 ? "…" : "");
 
+    const archiveIcon = note.isArchived 
+      ? `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10V6a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v4M3 14v6a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-6M8 12h8"/></svg>`
+      : `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="21 8 21 21 3 21 3 8"></polyline><rect x="1" y="3" width="22" height="5"></rect><line x1="10" y1="12" x2="14" y2="12"></line></svg>`;
+
     card.innerHTML = `
       <h3 class="note-title">${escapeHtml(note.title || "Untitled note")}</h3>
       <p class="note-preview-compact">${escapeHtml(previewText || "Empty note")}</p>
       <div class="note-card-footer">
         <time class="note-time-label">${formatDate(note.updatedAt)}</time>
-        <button class="note-card-delete" title="Delete Note">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
-        </button>
+        <div class="note-card-actions">
+           <button class="note-card-archive" title="${note.isArchived ? 'Unarchive' : 'Archive'} Note">
+            ${archiveIcon}
+          </button>
+          <button class="note-card-delete" title="Delete Note">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+          </button>
+        </div>
       </div>
     `;
 
     card.addEventListener("click", () => setActiveNote(note.id));
+
+    const archiveBtn = card.querySelector(".note-card-archive");
+    if (archiveBtn && noteActions) {
+      archiveBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        if (note.isArchived) {
+          noteActions.unarchiveNote(note.id);
+        } else {
+          noteActions.archiveNote(note.id);
+        }
+      });
+    }
 
     const deleteBtn = card.querySelector(".note-card-delete");
     if (deleteBtn && noteActions) {

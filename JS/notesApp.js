@@ -118,6 +118,8 @@ const callbacks = {
   renderFolders: () => renderFolders(state.folders, state.activeFolderId, callbacks.setActiveFolder),
   // Renders the Dashboard Grid
   renderNotesDashboard: () => renderNotesDashboard(state.notes, state.activeFolderId, state.activeLibraryFilter, setActiveNote, {
+    archiveNote: (id) => handleArchiveNote(state.notes, id, state.activeUser, callbacks),
+    unarchiveNote: (id) => handleUnarchiveNote(state.notes, id, state.activeUser, callbacks),
     deleteNote: (id) => handleDeleteNote(state.notes, id, state.activeUser, callbacks)
   }),
   // Updates the UI to show the current user's information

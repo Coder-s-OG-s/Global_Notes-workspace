@@ -1675,7 +1675,13 @@ html,
   margin-top: 15px;
 }
 
-.note-card-delete {
+.note-card-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.note-card-delete, .note-card-archive {
   background: transparent;
   border: none;
   color: var(--text-dim);
@@ -1690,7 +1696,8 @@ html,
   justify-content: center;
 }
 
-.note-card:hover .note-card-delete {
+.note-card:hover .note-card-delete,
+.note-card:hover .note-card-archive {
   opacity: 1;
   transform: scale(1);
 }
@@ -1698,6 +1705,11 @@ html,
 .note-card-delete:hover {
   background: rgba(239, 68, 68, 0.1);
   color: #ef4444;
+}
+
+.note-card-archive:hover {
+  background: var(--primary-glow);
+  color: var(--primary);
 }
 
 .empty-dashboard {
