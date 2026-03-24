@@ -1668,6 +1668,22 @@ html,
   border-color: var(--accent);
 }
 
+.note-card-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-bottom: 8px;
+}
+
+.note-card-tag {
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 4px;
+  text-transform: lowercase;
+  white-space: nowrap;
+}
+
 .note-card-footer {
   display: flex;
   justify-content: space-between;
