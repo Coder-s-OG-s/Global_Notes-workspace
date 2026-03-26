@@ -1,11 +1,11 @@
 import { NOTES_STORAGE_PREFIX, ACTIVE_USER_KEY, ACCOUNT_KEY } from "./constants.js";
-import * as db from "./supabaseStorage.js";
-import { supabase } from "./supabaseClient.js";
+import * as db from "./appwriteStorage.js";
+import { account, databases, ID } from "./appwriteClient.js";
 import { showToast } from "./utilities.js";
+import config from "./config.js";
 
-// Tracks whether Supabase notes table has is_favorite/is_archived columns.
-// null = not checked yet, true = has them, false = missing (needs migration)
-let _hasExtendedColumns = null;
+// Tracks whether Appwrite database is initialized with current schema
+let _hasExtendedColumns = true; 
 
 export function storageKeyForUser(user) {
   return `${NOTES_STORAGE_PREFIX}.${user || "guest"}`;
@@ -15,32 +15,36 @@ export async function getNotes(user) {
   let finalNotes = [];
 
   try {
-    // Check for Supabase session
-    const session = await supabase.auth.getSession();
-    const currentUser = session?.data?.session?.user;
+    // Check for Appwrite session
+    let currentUser = null;
+    try {
+      currentUser = await account.get();
+    } catch (e) {
+      currentUser = null;
+    }
 
-    // 1. Try fetching from Supabase if authenticated
+    // 1. Try fetching from Appwrite if authenticated
     let cloudNotes = [];
     if (currentUser && user !== 'guest') {
       try {
-        console.log("Fetching notes from Supabase...");
+        console.log("Fetching notes from Appwrite...");
         const dbNotes = await db.fetchNotes();
         // Map DB (snake_case) to App (camelCase)
         cloudNotes = dbNotes.map(n => ({
-          id: n.id,
+          id: n.$id || n.id,
           title: n.title,
           content: n.content,
-          tags: n.tags || [],
+          tags: typeof n.tags === 'string' ? JSON.parse(n.tags || '[]') : (n.tags || []),
           folderId: n.folder_id,
           theme: n.theme,
           editorPattern: n.editor_pattern,
           isFavorite: n.is_favorite || false,
           isArchived: n.is_archived || false,
-          createdAt: n.created_at,
-          updatedAt: n.updated_at
+          createdAt: n.$createdAt || n.created_at,
+          updatedAt: n.$updatedAt || n.updated_at
         }));
       } catch (err) {
-        console.error("Supabase fetch failed", err);
+        console.error("Appwrite fetch failed", err);
       }
     }
 
@@ -58,27 +62,16 @@ export async function getNotes(user) {
       }
     }
 
-    // 3. Merge Cloud and Local (Union by ID, preferring Cloud for content if timestamps equal? Or just union)
-    // Simple Merge: Map by ID. If same ID exists in both, prefer Cloud (assuming it's synced) 
-    // BUT we want to ensure NEW local items (guest merge) are included.
-    // If a note exists in Local but NOT Cloud, include it.
-    // If a note exists in BOTH, use Cloud (assuming Sync manages conflicts)
-    // Actually, if we just merged guest notes, they are in Local. They might not be in Cloud yet.
-    // So if Local has a note that Cloud doesn't, we MUST include it.
-
     const notesMap = new Map();
 
     // First add Cloud notes
     cloudNotes.forEach(n => notesMap.set(n.id, n));
 
-    // Then add Local notes if they don't exist in map OR if we want to support offline edits
-    // For now, let's just add missing local notes to the list
+    // Then add Local notes if they don't exist in map
     localNotes.forEach(n => {
       if (!notesMap.has(n.id)) {
         notesMap.set(n.id, n);
       }
-      // Optional: Conflict resolution if timestamps differ? 
-      // For this specific bug (Guest Merge), the ID (timestamp usually) won't collide with old Cloud notes.
     });
 
     finalNotes = Array.from(notesMap.values());
@@ -93,12 +86,9 @@ export async function getNotes(user) {
   return finalNotes;
 }
 
-
-
 /**
  * Saves notes.
- * HYBRID: If authenticated, Syncs to Supabase. Else LocalStorage.
- * Note: 'notes' is the full array. For Supabase, we upsert them all.
+ * HYBRID: If authenticated, Syncs to Appwrite. Else LocalStorage.
  */
 export async function setNotes(user, notes) {
   try {
@@ -107,53 +97,45 @@ export async function setNotes(user, notes) {
       localStorage.setItem(storageKeyForUser(user), JSON.stringify(notes));
     } catch (storageErr) {
       if (storageErr.name === 'QuotaExceededError' || storageErr.code === 22) {
-        showToast("Storage full — some data may not be saved locally. Consider exporting your notes.", "error", 6000);
+        showToast("Storage full — some data may not be saved locally.", "error", 6000);
       }
     }
 
-    const session = await supabase.auth.getSession();
-    const currentUser = session?.data?.session?.user;
+    let currentUser = null;
+    try {
+      currentUser = await account.get();
+    } catch (e) {
+      currentUser = null;
+    }
 
-    // 2. If authenticated, Sync to Supabase
+    // 2. If authenticated, Sync to Appwrite
     if (currentUser && user !== 'guest') {
       const dbNotes = notes.map(n => {
         const row = {
-          id: n.id,
-          user_id: currentUser.id,
+          id: n.id || ID.unique(),
+          user_id: currentUser.$id,
           title: n.title,
           content: n.content,
-          tags: n.tags,
+          tags: JSON.stringify(n.tags || []),
           folder_id: n.folderId,
           theme: n.theme,
           editor_pattern: n.editorPattern,
           created_at: n.createdAt,
-          updated_at: n.updatedAt
+          updated_at: n.updatedAt,
+          is_favorite: n.isFavorite || false,
+          is_archived: n.isArchived || false
         };
-        if (_hasExtendedColumns !== false) {
-          row.is_favorite = n.isFavorite || false;
-          row.is_archived = n.isArchived || false;
-        }
         return row;
       });
 
-      const { error } = await supabase.from('notes').upsert(dbNotes);
-
-      if (error && _hasExtendedColumns === null) {
-        const fallbackNotes = dbNotes.map(({ is_favorite, is_archived, ...rest }) => rest);
-        const { error: retryError } = await supabase.from('notes').upsert(fallbackNotes);
-        if (!retryError) {
-          _hasExtendedColumns = false;
-        } else {
-          showToast("Cloud sync failed — changes saved locally only", "warning");
-        }
-      } else if (error) {
-        showToast("Cloud sync failed — changes saved locally only", "warning");
-      } else if (!error && _hasExtendedColumns === null) {
-        _hasExtendedColumns = true;
-      }
+      // Appwrite doesn't have a single-call batch upsert for 100+ documents easily,
+      // But we can iterate or use a cloud function. For simplicity, we save individual notes if small.
+      // However, the original code used a single upsert. We will use a loop for now or promise.all
+      const savePromises = dbNotes.map(row => db.saveNote(row));
+      await Promise.allSettled(savePromises);
     }
   } catch (err) {
-    showToast("Failed to save notes — please try again", "error");
+    showToast("Failed to sync notes — changes saved locally only", "warning");
   }
 }
 
@@ -294,6 +276,13 @@ export function updateAccountDetails(username, updates) {
   if (index !== -1) {
     accounts[index] = { ...accounts[index], ...updates };
     setAccounts(accounts);
+    
+    // Sync to Appwrite if authenticated
+    account.get().then(user => {
+        // Appwrite supports preferences which is easier for simple profile data
+        account.updatePrefs(updates).catch(console.error);
+    }).catch(() => {});
+
     return true;
   }
   return false;

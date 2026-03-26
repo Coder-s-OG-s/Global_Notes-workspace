@@ -322,15 +322,14 @@ export function renderNotesDashboard(notes, activeFolderId, activeLibraryFilter,
       ? `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10V6a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v4M3 14v6a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-6M8 12h8"/></svg>`
       : `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="21 8 21 21 3 21 3 8"></polyline><rect x="1" y="3" width="22" height="5"></rect><line x1="10" y1="12" x2="14" y2="12"></line></svg>`;
 
-    const tagsHtml = (note.tags || []).map(tag => {
-      const color = getTagColor(tag);
-      return `<span class="note-card-tag" style="background-color: ${color}22; color: ${color}; border: 1px solid ${color}44;">${escapeHtml(tag)}</span>`;
-    }).join("");
+    const tagsHtml = (note.tags && note.tags.length > 0)
+      ? `<div class="note-card-tags">${note.tags.map(tag => `<span class="chip small tag-chip" style="--tag-color:${getTagColor(tag)}">${escapeHtml(tag)}</span>`).join('')}</div>`
+      : '';
 
     card.innerHTML = `
       <h3 class="note-title">${escapeHtml(note.title || "Untitled note")}</h3>
-      ${tagsHtml ? `<div class="note-card-tags">${tagsHtml}</div>` : ""}
       <p class="note-preview-compact">${escapeHtml(previewText || "Empty note")}</p>
+      ${tagsHtml}
       <div class="note-card-footer">
         <time class="note-time-label">${formatDate(note.updatedAt)}</time>
         <div class="note-card-actions">

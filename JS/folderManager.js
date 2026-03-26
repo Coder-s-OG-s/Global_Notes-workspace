@@ -1,5 +1,5 @@
-import { supabase } from "./supabaseClient.js";
-import { saveFolder as saveFolderToCloud, fetchFolders as fetchCloudFolders, deleteFolder as deleteFolderFromCloud } from "./supabaseStorage.js";
+import { saveFolder as saveFolderToCloud, fetchFolders as fetchCloudFolders, deleteFolder as deleteFolderFromCloud } from "./appwriteStorage.js";
+import { account } from "./appwriteClient.js";
 import { showToast } from "./utilities.js";
 
 // Folder Storage Keys
@@ -119,8 +119,8 @@ export async function syncFoldersFromCloud(activeUser) {
   if (!activeUser || activeUser === 'guest') return getFolders(activeUser);
 
   try {
-    const session = await supabase.auth.getSession();
-    if (!session?.data?.session?.user) return getFolders(activeUser);
+    const user = await account.get().catch(() => null);
+    if (!user) return getFolders(activeUser);
 
     const cloudFolders = await fetchCloudFolders();
     const localFolders = getFolders(activeUser);

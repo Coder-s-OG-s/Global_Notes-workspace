@@ -1,53 +1,62 @@
-import { supabase } from "./supabaseClient.js";
+import { account, ID } from './appwriteClient.js';
 
 /**
  * Signs up a new user with email and password.
- * Also stores the username in metadata for the profile trigger to pick up.
+ * Appwrite also stores the name automatically.
  */
 export async function signUp(email, password, username) {
-    const { data, error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-            data: {
-                username: username,
-                avatar_url: `https://ui-avatars.com/api/?name=${username}&background=random`
-            }
-        }
-    });
+    try {
+        const response = await account.create(
+            ID.unique(),
+            email,
+            password,
+            username
+        );
 
-    if (error) throw error;
-    return data;
+        // Optionally store avatar in user preferences
+        await account.updatePrefs({
+            avatar_url: `https://ui-avatars.com/api/?name=${username}&background=random`,
+            username: username
+        });
+
+        // After signup, automatically log them in
+        return await signIn(email, password);
+    } catch (error) {
+        throw error;
+    }
 }
 
 /**
  * Signs in an existing user.
  */
 export async function signIn(email, password) {
-    const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password
-    });
-
-    if (error) throw error;
-    return data;
+    try {
+        return await account.createEmailPasswordSession(email, password);
+    } catch (error) {
+        throw error;
+    }
 }
 
 /**
  * Signs out the current user.
  */
 export async function signOut() {
-    const { error } = await supabase.auth.signOut();
-    if (error) throw error;
+    try {
+        await account.deleteSession('current');
+    } catch (error) {
+        throw error;
+    }
 }
 
 /**
  * Gets the current active session.
  */
 export async function getSession() {
-    const { data, error } = await supabase.auth.getSession();
-    if (error) return null;
-    return data.session;
+    try {
+        return await account.getSession('current');
+    } catch (error) {
+        return null;
+    }
 }
 
 /**
@@ -55,26 +64,25 @@ export async function getSession() {
  * @param {string} provider - 'google' or 'github'
  */
 export async function signInWithProvider(provider) {
-    // Dynamically calculate the app.html path relative to the current page (HTML/signup.html)
-    // This ensures it works regardless of whether the site is at the root or in a subdirectory
     const redirectUrl = new URL('../app.html', window.location.href).href;
-    console.log("Initiating OAuth with redirect to:", redirectUrl);
+    console.log("Initiating Appwrite OAuth with redirect to:", redirectUrl);
 
-    const { data, error } = await supabase.auth.signInWithOAuth({
-        provider: provider,
-        options: {
-            redirectTo: redirectUrl
-        }
-    });
-
-    if (error) throw error;
-    return data;
+    // Appwrite uses createOAuth2Session
+    // Note: Provider strings must be 'google', 'github', etc.
+    return account.createOAuth2Session(
+        provider,
+        redirectUrl,
+        redirectUrl // Failure redirect
+    );
 }
 
 /**
  * Get current user details
  */
 export async function getCurrentUser() {
-    const { data: { user } } = await supabase.auth.getUser();
-    return user;
+    try {
+        return await account.get();
+    } catch (error) {
+        return null;
+    }
 }
