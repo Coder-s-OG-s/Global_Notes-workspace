@@ -1,27 +1,24 @@
 import config from './config.js';
 
-// PLEASE NOTE: This is a sample implementation. You will need to secure your API key.
-// Do not expose it in client-side code in a production environment.
-// Consider using a backend proxy or a serverless function to handle API calls securely.
-
-const { GEMINI_API_KEY: API_KEY } = config; // <-- IMPORTANT: Replace with your API key
-const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemma-3-4b-it:generateContent?key=${API_KEY}`;
-
 /**
- * Calls the Gemini API to generate content.
+ * Calls the Groq API (OpenAI compatible) to generate content.
+ * Keeps the original function name to avoid breaking imports in other files.
  * @param {string} prompt The user's prompt.
  * @returns {Promise<string>} The generated text.
  */
 export async function generateTextWithGemini(prompt) {
-    if (!API_KEY || API_KEY === '' || API_KEY === 'YOUR_GEMINI_API_KEY') {
+    const { GROQ_API_KEY: API_KEY } = config;
+    const API_URL = "https://api.groq.com/openai/v1/chat/completions";
+
+    if (!API_KEY || API_KEY === '' || API_KEY === 'YOUR_GROQ_API_KEY') {
         const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
         const message = isLocal
-            ? "Please add GEMINI_API_KEY to your .env file and run 'node generate-config.js'."
-            : "Deployment Error: GEMINI_API_KEY is missing. Please add it to your deployment platform's Environment Variables (e.g., Vercel Dashboard).";
+            ? "Please add GROQ_API_KEY to your .env file and run 'npm run build'."
+            : "Deployment Error: GROQ_API_KEY is missing. Please add it to your deployment platform's Environment Variables.";
 
         return Promise.resolve(`
 [AI Assistant]: ${message}
-You can get a key from Google AI Studio.
+You can get a key from console.groq.com.
 `);
     }
 
@@ -30,39 +27,41 @@ You can get a key from Google AI Studio.
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
+                'Authorization': `Bearer ${API_KEY}`
             },
             body: JSON.stringify({
-                contents: [{
-                    parts: [{
-                        text: prompt
-                    }]
-                }]
+                model: "llama-3.3-70b-versatile",
+                messages: [
+                    {
+                        role: "user",
+                        content: prompt
+                    }
+                ],
+                temperature: 0.7,
+                max_tokens: 2048
             })
         });
 
         if (!response.ok) {
             const errorBody = await response.json();
-            console.error('Gemini API request failed:', errorBody);
-            throw new Error(`API request failed with status ${response.status}: ${errorBody.error.message}`);
+            console.error('Groq API request failed:', errorBody);
+            throw new Error(`API request failed with status ${response.status}: ${errorBody.error?.message || 'Unknown error'}`);
         }
 
         const data = await response.json();
 
-        if (data.candidates && data.candidates.length > 0 && data.candidates[0].content && data.candidates[0].content.parts && data.candidates[0].content.parts.length > 0) {
-            return data.candidates[0].content.parts[0].text;
+        if (data.choices && data.choices.length > 0 && data.choices[0].message) {
+            return data.choices[0].message.content;
         } else {
-            // Handle cases where the response structure is unexpected
-            console.warn("Gemini API response was successful, but no content was found.", data);
+            console.warn("Groq API response was successful, but no content was found.", data);
             return "I'm sorry, I couldn't generate a response. Please try again.";
         }
 
     } catch (error) {
-        console.error('Error calling Gemini API:', error);
-        // Provide a more user-friendly error message
+        console.error('Error calling Groq API:', error);
         return `
-[AI Assistant]: There was an error contacting the AI service.
+[AI Assistant]: There was an error contacting the Groq service.
 Please check the console for more details.
-Make sure your API key is correct and has the necessary permissions.
 Error: ${error.message}
         `;
     }
