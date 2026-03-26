@@ -67,15 +67,15 @@ class CodeWorkspace {
     }
 
     checkAPIKey() {
-        const apiKey = config.GEMINI_API_KEY;
-        if (!apiKey || apiKey === "YOUR_GEMINI_API_KEY" || apiKey.includes("YOUR")) {
+        const apiKey = config.GROQ_API_KEY;
+        if (!apiKey || apiKey === "YOUR_GROQ_API_KEY" || apiKey.includes("YOUR")) {
             document.getElementById('api-warning').classList.remove('hidden');
             ['ai-explain-btn', 'ai-docs-btn', 'ai-improve-btn', 'ai-chat-btn'].forEach(id => {
                 const btn = document.getElementById(id);
                 if (btn) {
                     btn.disabled = true;
                     btn.classList.add('is-locked');
-                    btn.title = "Add API key to enable AI features";
+                    btn.title = "Add Groq API key to enable AI features";
 
                     // Add a small lock badge
                     const badge = document.createElement('div');
