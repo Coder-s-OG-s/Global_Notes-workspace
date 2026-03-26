@@ -3416,3 +3416,78 @@ html.theme-transitioning *::after {
   transform: translateY(-1px) !important;
   box-shadow: var(--shadow) !important;
 }
+
+/* ═══════════════════════════════════════════
+   GLOBAL FOOTER (Status Bar Style)
+   ═══════════════════════════════════════════ */
+.global-footer {
+  height: 24px;
+  background: var(--surface-2);
+  border-top: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 12px;
+  font-size: 11px;
+  color: var(--text-muted);
+  z-index: 100;
+  flex-shrink: 0;
+  user-select: none;
+}
+
+.footer-left,
+.footer-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.footer-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  cursor: default;
+  transition: color 0.15s ease;
+}
+
+.footer-item:hover {
+  color: var(--text-dim);
+}
+
+.footer-item .icon {
+  width: 12px;
+  height: 12px;
+  stroke-width: 2.5px;
+}
+
+.footer-accent {
+  color: var(--primary);
+  font-weight: 600;
+  opacity: 0.9;
+}
+
+@media (max-width: 600px) {
+  .footer-right {
+    display: none;
+  }
+}
+
+@keyframes pulse-sync {
+  0% {
+    opacity: 0.6;
+    transform: scale(0.95);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+  100% {
+    opacity: 0.6;
+    transform: scale(0.95);
+  }
+}
+
+#sync-status .icon {
+  animation: pulse-sync 3s infinite ease-in-out;
+  color: var(--success);
+}
