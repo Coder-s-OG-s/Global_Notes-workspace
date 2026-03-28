@@ -1,22 +1,28 @@
-## 📝 Description
+### Description
 Explain what this PR does.
 
-## 🔗 Related Issue
+---
+
+### Related Issue
 Closes #
 
-## 🧪 Type of Change
+---
+
+### Type of Change
 - [ ] Bug fix
 - [ ] New feature
 - [ ] Enhancement
 - [ ] Documentation update
 
-## ✅ Checklist
+---
+
+### Checklist
 - [ ] Code follows project structure
 - [ ] Tested locally
 - [ ] No unnecessary files added
 
-## 📸 Screenshots (if applicable)
-
 ---
 
-Thank you for contributing 🚀
+## 📸 Screenshots (if applicable)
+
+
