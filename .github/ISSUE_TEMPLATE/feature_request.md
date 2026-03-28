@@ -5,10 +5,16 @@ title: "[FEATURE] "
 labels: enhancement
 ---
 
-## 🚀 Feature Description
+### Feature Description
 
-## 🎯 Problem it Solves
+---
 
-## 💡 Proposed Solution
+### Problem it Solves
 
-## 📌 Additional Context
+---
+
+### Proposed Solution
+
+---
+
+### Additional Context
