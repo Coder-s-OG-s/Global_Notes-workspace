@@ -126,61 +126,51 @@ export function wireFolderButtons(state, callbacks) {
         const newFolder = createNewFolder(state.activeUser, folderName.trim());
         state.folders.push(newFolder);
         callbacks.renderFolders();
+        callbacks.renderNotesDashboard(); // Ensure grid UI reflects folder addition
       }
     });
   }
 
-  if (foldersListEl) {
-    foldersListEl.addEventListener("click", (event) => {
-      const target = event.target;
-      if (!(target instanceof HTMLElement)) return;
+  document.addEventListener("delete-folder", async (event) => {
+    const folderId = event.detail.id;
+    if (!folderId) return;
 
-      if (!target.classList.contains("folder-delete-btn") && !target.classList.contains("folder-rename-btn")) {
-        return;
-      }
+    const confirmed = await showConfirm(
+      "Delete Folder",
+      `Are you sure you want to delete this folder? Notes inside will be moved back to "All Notes".`,
+      "Delete Folder"
+    );
+    if (!confirmed) return;
 
-      const folderItem = target.closest(".folder-item");
-      if (!folderItem) return;
-      const folderId = folderItem.dataset.id;
-      if (!folderId) return;
+    deleteFolder(state.activeUser, folderId, state.notes);
+    state.folders = state.folders.filter((f) => f.id !== folderId);
 
-      if (target.classList.contains("folder-delete-btn")) {
-        event.stopPropagation();
-        (async () => {
-          const confirmed = await showConfirm(
-            "Delete Folder",
-            `Are you sure you want to delete this folder? Notes inside will be moved back to "All Notes".`,
-            "Delete Folder"
-          );
-          if (!confirmed) return;
+    if (state.activeFolderId === folderId) {
+      callbacks.setActiveFolder(null); // This already calls renderNotesDashboard internally
+    } else {
+      callbacks.renderFolders();
+      callbacks.renderNotesList();
+      callbacks.renderNotesDashboard(); // Ensure grid UI reflects deletion
+    }
+  });
 
-          deleteFolder(state.activeUser, folderId, state.notes);
-          state.folders = state.folders.filter((f) => f.id !== folderId);
+  document.addEventListener("rename-folder", async (event) => {
+    const folderId = event.detail.id;
+    if (!folderId) return;
 
-          if (state.activeFolderId === folderId) {
-            callbacks.setActiveFolder(null);
-          } else {
-            callbacks.renderFolders();
-            callbacks.renderNotesList();
-          }
-        })();
-      } else if (target.classList.contains("folder-rename-btn")) {
-        event.stopPropagation();
-        (async () => {
-          const currentFolder = state.folders.find((f) => f.id === folderId);
-          const currentName = currentFolder ? currentFolder.name : "";
-          const newName = await showPrompt("Rename Folder", currentName, "Save");
-          if (!newName || !newName.trim()) return;
+    const currentFolder = state.folders.find((f) => f.id === folderId);
+    const currentName = currentFolder ? currentFolder.name : "";
+    const newName = await showPrompt("Rename Folder", currentName, "Save");
+    if (!newName || !newName.trim()) return;
 
-          renameFolder(state.activeUser, folderId, newName.trim());
-          if (currentFolder) {
-            currentFolder.name = newName.trim();
-          }
-          callbacks.renderFolders();
-        })();
-      }
-    });
-  }
+    renameFolder(state.activeUser, folderId, newName.trim());
+    if (currentFolder) {
+      currentFolder.name = newName.trim();
+    }
+    callbacks.renderFolders();
+    callbacks.renderNotesList(); // if it affects the active view title
+    callbacks.renderNotesDashboard(); // ensure grid reflects rename
+  });
 }
 
 // Moves a note to a specified folder and updates its timestamp

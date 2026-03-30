@@ -117,7 +117,7 @@ const callbacks = {
   // Renders the folders list in the sidebar
   renderFolders: () => renderFolders(state.folders, state.activeFolderId, callbacks.setActiveFolder),
   // Renders the Dashboard Grid
-  renderNotesDashboard: () => renderNotesDashboard(state.notes, state.activeFolderId, state.activeLibraryFilter, setActiveNote, {
+  renderNotesDashboard: () => renderNotesDashboard(state.notes, state.folders, state.activeFolderId, state.activeLibraryFilter, setActiveNote, {
     archiveNote: (id) => handleArchiveNote(state.notes, id, state.activeUser, callbacks),
     unarchiveNote: (id) => handleUnarchiveNote(state.notes, id, state.activeUser, callbacks),
     deleteNote: (id) => handleDeleteNote(state.notes, id, state.activeUser, callbacks)
@@ -204,6 +204,11 @@ async function initApp() {
   wireLibraryNav(state, callbacks); // Wire new Sidebar Library
   wireEditorQuickTools(); // Wire editor bar AI & Mail quick-tool popovers
   upgradeToolbarSelects(); // Transform native selects into polished dropdowns
+
+  // Wire Folder Navigation from Grid Cards
+  document.addEventListener("nav-folder", (e) => {
+    callbacks.setActiveFolder(e.detail.id);
+  });
 
   // Wire Back to Dashboard
   const backBtn = document.getElementById("back-to-dashboard");

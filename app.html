@@ -283,22 +283,8 @@
         </div>
       </div>
 
-      <!-- Folders -->
-      <div class="sidebar-section folders-section">
-        <div class="section-header">
-          <span class="section-title">Folders</span>
-          <button class="folder-create-btn" id="create-folder" title="New Folder" aria-label="New Folder">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-              stroke-linejoin="round" style="width:14px;height:14px;">
-              <line x1="12" y1="5" x2="12" y2="19"></line>
-              <line x1="5" y1="12" x2="19" y2="12"></line>
-            </svg>
-          </button>
-        </div>
-        <ul class="folders-list" id="folders-list"></ul>
-      </div>
-
-
+      <!-- Folders moved to Dashboard -->
+      
       <div class="sidebar-resizer" id="sidebar-resizer"></div>
     </aside>
 
@@ -309,7 +295,13 @@
         <div class="dashboard-header">
           <h2 class="dashboard-title">My Notes</h2>
           <div class="dashboard-header-right">
-            <div class="dashboard-stats" id="dashboard-stats">0 notes</div>
+            <button class="btn ghost icon-only dashboard-add-btn" id="create-folder" title="New Folder">
+              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <line x1="12" y1="5" x2="12" y2="19"></line>
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+              </svg>
+            </button>
+            <div class="dashboard-stats" id="dashboard-stats">0 items</div>
             <div class="dashboard-sort">
               <select id="sort" class="sort-select-dashboard" aria-label="Sort notes">
                 <option value="updated-desc">Newest</option>

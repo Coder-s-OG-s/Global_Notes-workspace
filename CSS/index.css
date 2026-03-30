@@ -1163,7 +1163,7 @@ html,
 }
 
 .sidebar-header {
-  padding: 24px 20px 12px;
+  padding: 16px 20px 8px;
   flex-shrink: 0;
 }
 
@@ -1187,7 +1187,7 @@ html,
 /* Sidebar Sections */
 .sidebar-section {
   padding: 0 12px;
-  margin-bottom: 20px;
+  margin-bottom: 12px;
   flex-shrink: 0;
 }
 
@@ -1195,7 +1195,7 @@ html,
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 8px 10px;
+  padding: 0 8px 6px;
 }
 
 .section-title {
@@ -1255,7 +1255,7 @@ html,
 .filters {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 6px;
 }
 
 .chip {
@@ -2213,10 +2213,11 @@ html,
   height: 32px;
   font-size: 13px;
   font-weight: 500;
-  background: var(--surface);
-  border-color: var(--accent);
-  color: #fff;
-  padding-right: 28px;
+  background: var(--surface-2);
+  border-color: var(--border);
+  color: var(--text);
+  padding-right: 32px;
+  min-width: 110px;
 }
 
 .custom-select-trigger .chevron {
@@ -2237,8 +2238,8 @@ html,
 }
 
 .custom-select-wrapper:has(.sort-select-dashboard) .custom-select-trigger.active {
-    border-color: var(--accent);
-    box-shadow: 0 0 0 3px rgba(229, 162, 53, 0.15);
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px var(--primary-glow);
 }
 
 .custom-select-trigger.active .chevron {
@@ -3624,4 +3625,370 @@ html.theme-transitioning *::after {
 #sync-status .icon {
   animation: pulse-sync 3s infinite ease-in-out;
   color: var(--success);
+}
+/* ════════════════════════════════════════
+   DASHBOARD FOLDERS BAR (INTEGRATED)
+   ════════════════════════════════════════ */
+
+.dashboard-folders-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 24px;
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+  /* Remove sticky if it causes overlapping or adjust context */
+}
+
+.folders-scroller {
+  flex: 1;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.folders-scroller::-webkit-scrollbar {
+  display: none;
+}
+
+.folders-horizontal-list {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  list-style: none;
+}
+
+.folder-pill-container {
+  flex-shrink: 0;
+}
+
+.folder-tab {
+  display: flex;
+  align-items: center;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 6px 12px;
+  cursor: pointer;
+  transition: all var(--transition-smooth);
+}
+
+.folder-tab:hover {
+  background: var(--surface-3);
+  border-color: var(--text-muted);
+}
+
+.folder-pill-container.active .folder-tab {
+  background: var(--surface-3);
+  border-color: var(--primary);
+  border-bottom: 2px solid var(--primary);
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.folder-tab-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.tab-icon {
+  display: flex;
+  align-items: center;
+  color: var(--text-dim);
+}
+
+.folder-pill-container.active .tab-icon {
+  color: var(--primary);
+}
+
+.tab-name {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-dim);
+  white-space: nowrap;
+}
+
+.folder-pill-container.active .tab-name {
+  color: var(--text);
+  font-weight: 600;
+}
+
+.tab-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: 8px;
+  opacity: 0;
+  transition: opacity var(--transition-fast);
+}
+
+.folder-tab:hover .tab-actions {
+  opacity: 1;
+}
+
+.tab-action-btn {
+  width: 20px;
+  height: 20px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+}
+
+.tab-action-btn:hover {
+  background: var(--surface-hover);
+  color: var(--text);
+}
+
+.folder-add-pill {
+  width: 28px !important;
+  height: 28px !important;
+  border: 1px dashed var(--border) !important;
+  border-radius: 4px !important;
+}
+
+
+/* ════════════════════════════════════════
+   FOLDER CARDS (GRID INTEGRATED)
+   ════════════════════════════════════════ */
+
+.folder-card {
+  display: flex !important;
+  align-items: center;
+  gap: 16px;
+  padding: 16px !important;
+  background: var(--surface-2) !important;
+  border: 1px solid var(--border) !important;
+  cursor: pointer;
+  transition: all var(--transition-smooth);
+  min-height: 80px;
+  justify-content: flex-start;
+  flex-direction: row !important;
+}
+
+.folder-card:hover {
+  background: var(--surface-3) !important;
+  border-color: var(--primary) !important;
+  transform: translateY(-2px);
+  box-shadow: var(--shadow);
+}
+
+.folder-card-icon {
+  width: 40px;
+  height: 40px;
+  background: var(--primary-glow);
+  color: var(--primary);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.folder-card-icon svg {
+  width: 22px;
+  height: 22px;
+}
+
+.folder-card-info {
+  flex: 1;
+  overflow: hidden;
+}
+
+.folder-card-title {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.folder-card-subtitle {
+  margin: 2px 0 0 0;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.folder-card-chevron {
+  color: var(--text-muted);
+  opacity: 0.5;
+  transition: transform 0.2s ease;
+}
+
+.folder-card:hover .folder-card-chevron {
+  opacity: 1;
+  transform: translateX(3px);
+  color: var(--primary);
+}
+
+/* Ensure the layout is clean */
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
+  padding: 24px;
+}
+
+
+/* ════════════════════════════════════════
+   DASHBOARD FOLDER ICONS (MINI-CHIPS)
+   ════════════════════════════════════════ */
+
+.dashboard-folders-icons-row {
+  grid-column: 1 / -1; /* Span all grid columns */
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 0 0 16px 0;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 12px;
+}
+
+.dashboard-folder-icon-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.dashboard-folder-icon-item:hover {
+  background: var(--surface-3);
+  border-color: var(--text-muted);
+  transform: translateY(-1px);
+}
+
+.folder-mini-icon {
+  display: flex;
+  align-items: center;
+  color: var(--primary);
+}
+
+.folder-mini-icon svg {
+  width: 16px;
+  height: 16px;
+}
+
+.folder-mini-name {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text);
+}
+
+/* Fix grid to ensure row is well placed */
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
+  padding: 24px;
+  align-content: flex-start;
+}
+
+
+/* ════════════════════════════════════════
+   FINAL POLISH FOR GRID FOLDERS
+   ════════════════════════════════════════ */
+
+.dashboard-folders-icons-row {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 8px 16px 20px 16px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 8px;
+  background: var(--bg);
+  position: relative;
+  z-index: 5;
+}
+
+.dashboard-folder-icon-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 16px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 100px;
+  cursor: pointer;
+  transition: all var(--transition-smooth);
+  color: var(--text-dim);
+  height: 40px;
+  position: relative;
+  overflow: hidden;
+}
+
+.folder-mini-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 100%;
+}
+
+.folder-mini-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  opacity: 0;
+  transform: translateX(10px);
+  transition: all var(--transition-smooth);
+  margin-left: 4px;
+}
+
+.dashboard-folder-icon-item:hover .folder-mini-actions {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.folder-mini-action {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  color: var(--text-muted);
+  transition: all var(--transition-fast);
+}
+
+.folder-mini-action:hover {
+  background: var(--surface-hover);
+  color: var(--text);
+}
+
+.folder-mini-action.delete:hover {
+  color: var(--danger);
+  background: rgba(229, 83, 75, 0.1);
+}
+
+.dashboard-folder-icon-item:hover {
+  background: var(--surface-hover);
+  border-color: var(--primary);
+  color: var(--text);
+  transform: translateY(-1px);
+}
+
+.dashboard-folder-icon-item .folder-mini-icon {
+  color: var(--primary);
+  opacity: 0.8;
+}
+
+.dashboard-folder-icon-item:hover .folder-mini-icon {
+  opacity: 1;
+}
+
+.dashboard-folder-icon-item .folder-mini-name {
+  font-size: 13.5px;
+  font-weight: 500;
+  user-select: none;
 }

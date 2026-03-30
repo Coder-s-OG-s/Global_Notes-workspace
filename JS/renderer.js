@@ -144,60 +144,59 @@ export function renderFolders(folders, activeFolderId, setActiveFolder) {
   if (!foldersEl) return;
   foldersEl.innerHTML = "";
 
-  // Helper to create row
-  const createFolderRow = (id, name, iconHtml, count, isCustom = false) => {
+  // Helper to create pill
+  const createFolderPill = (id, name, isCustom = false) => {
     const li = document.createElement("li");
-    li.className = "folder-item" + (id === activeFolderId ? " active" : "");
+    const isActive = (id === activeFolderId || (!id && !activeFolderId));
+    li.className = "folder-pill-container" + (isActive ? " active" : "");
     if (isCustom) {
       li.dataset.dragId = id;
-      li.dataset.id = id; // Required for eventHandlers.js delegation only
+      li.dataset.id = id;
     }
 
-    const row = document.createElement("div");
-    row.className = "folder-row";
-    row.addEventListener("click", () => setActiveFolder(id));
+    const pill = document.createElement("div");
+    pill.className = "folder-tab";
+    pill.addEventListener("click", () => setActiveFolder(id));
 
     // Name & Icon
     const btn = document.createElement("div");
-    btn.className = "folder-btn";
-    btn.innerHTML = `<span class="folder-icon-wrapper">${iconHtml}</span> <span class="folder-name-text">${escapeHtml(name)}</span>`;
+    btn.className = "folder-tab-btn";
+    const iconHtml = FOLDER_ICON;
+    btn.innerHTML = `<span class="tab-icon">${iconHtml}</span> <span class="tab-name">${escapeHtml(name)}</span>`;
 
-    // Actions
-    const actions = document.createElement("div");
-    actions.className = "folder-actions";
+    pill.appendChild(btn);
 
     if (isCustom) {
+      const actions = document.createElement("div");
+      actions.className = "tab-actions";
+
       // Rename
       const renameBtn = document.createElement("button");
-      renameBtn.className = "folder-action-btn folder-rename-btn";
-      renameBtn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>`;
+      renameBtn.className = "tab-action-btn rename";
+      renameBtn.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>`;
       renameBtn.title = "Rename";
-
+      
       // Delete
       const deleteBtn = document.createElement("button");
-      deleteBtn.className = "folder-action-btn folder-delete-btn";
-      deleteBtn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>`;
+      deleteBtn.className = "tab-action-btn delete";
+      deleteBtn.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>`;
       deleteBtn.title = "Delete";
 
       actions.appendChild(renameBtn);
       actions.appendChild(deleteBtn);
+      pill.appendChild(actions);
     }
 
-    row.appendChild(btn);
-    row.appendChild(actions);
-    li.appendChild(row);
+    li.appendChild(pill);
     return li;
   };
 
-  // 1. All Notes - Removed (Now in Library Section)
-  // foldersEl.appendChild(createFolderRow(null, "All Notes", ALL_NOTES_ICON, 0, false));
-
+  // 1. "All Notes" Pill removed as requested
+  
   // 2. Custom Folders
   folders.forEach((folder) => {
-    foldersEl.appendChild(createFolderRow(folder.id, folder.name, FOLDER_ICON, 0, true));
+    foldersEl.appendChild(createFolderPill(folder.id, folder.name, true));
   });
-
-  // Re-attach drag listeners if needed (handled in layoutManager or similar)
 }
 
 /**
@@ -217,11 +216,10 @@ export function updateSidebarSelection(activeFolderId, activeLibraryId) {
   });
 
   // 2. Handle Folders
-  const folderItems = document.querySelectorAll('.folder-item');
+  const folderItems = document.querySelectorAll('.folder-pill-container');
   folderItems.forEach(item => {
     // If we have a folder ID, highlight it. 
-    // If activeLibraryId is set, folders should NOT be highlighted (even if logic technically permits).
-    if (activeFolderId && !activeLibraryId && item.dataset.dragId === activeFolderId) { // Check dragId as we used it for ID
+    if (activeFolderId && !activeLibraryId && item.dataset.id === activeFolderId) {
       // Note: In renderFolders we used dataset.dragId for custom folders.
       // Let's rely on the fact renderFolders handles its own active state class assignment during render,
       // BUT we might need to clear it if a Library item is clicked without re-rendering?
@@ -262,24 +260,20 @@ export function updateToolbarMetadata(note, overrideContent) {
 }
 
 /**
- * Renders the Notes Dashboard (Gallery Grid)
- * @param {Array} notes - Notes to display
- * @param {string|null} activeFolderId - Currently selected folder ID
- * @param {string} activeLibraryFilter - Active library filter ('all', 'favorites', etc.)
- * @param {Function} setActiveNote - Callback to open a note
- * @param {Object} noteActions - Actions like deleteNote
+ * Renders the dashboard grid with notes and folders interleaved.
  */
-export function renderNotesDashboard(notes, activeFolderId, activeLibraryFilter, setActiveNote, noteActions) {
+export function renderNotesDashboard(notes, folders, activeFolderId, activeLibraryFilter, setActiveNote, callbacks) {
   const gridEl = $("#dashboard-grid");
-  const statsEl = $("#dashboard-stats");
   const titleEl = $(".dashboard-title");
-  if (!gridEl) return;
+  const statsEl = $("#dashboard-stats");
 
+  if (!gridEl) return;
   gridEl.innerHTML = "";
 
-  // 1. Initial Filtering based on Library/Folders
-  let filteredNotes = notes;
+  let filteredNotes = [];
+  let showFoldersInGrid = false;
 
+  // 1. Determine which notes and whether folders should be shown
   if (activeLibraryFilter === 'favorites') {
     filteredNotes = notes.filter(n => n.isFavorite && !n.isArchived);
     if (titleEl) titleEl.textContent = "Favorite Notes";
@@ -289,26 +283,86 @@ export function renderNotesDashboard(notes, activeFolderId, activeLibraryFilter,
   } else if (activeFolderId) {
     // Specific Folder Selected
     filteredNotes = notes.filter(n => n.folderId === activeFolderId && !n.isArchived);
-    if (titleEl) titleEl.textContent = "Folder Notes";
+    const folder = folders.find(f => f.id === activeFolderId);
+    if (titleEl) titleEl.textContent = folder ? `Folder: ${folder.name}` : "Folder Notes";
   } else {
-    // activeLibraryFilter === 'all' and no folder
-    // Show ONLY notes with NO folder (loose notes) as requested by user
+    // My Workspace / All Notes
+    // User wants folders integrated in this view
     filteredNotes = notes.filter(n => !n.folderId && !n.isArchived);
-    if (titleEl) titleEl.textContent = "My Notes (No Folder)";
+    if (titleEl) titleEl.textContent = "My Workspace";
+    showFoldersInGrid = true;
   }
 
-  // 2. Apply secondary filters (Search, Tag, Sort)
+  // 2. Apply Sort/Search to visible items
   const visibleNotes = applyFilterSearchAndSort(filteredNotes);
-
+  
   if (statsEl) {
-    statsEl.textContent = `${visibleNotes.length} notes`;
+    const totalItems = visibleNotes.length + (showFoldersInGrid ? folders.length : 0);
+    statsEl.textContent = `${totalItems} items`;
   }
 
-  if (!visibleNotes.length) {
-    gridEl.innerHTML = '<div class="note-card empty-dashboard"><p>No notes found in this section. Click "New note" to create one!</p></div>';
+  // 3. Render Folder Icons at Top (if applicable)
+  if (showFoldersInGrid && folders.length > 0) {
+    const foldersRow = document.createElement("div");
+    foldersRow.className = "dashboard-folders-icons-row";
+    
+    folders.forEach(folder => {
+      const folderItem = document.createElement("div");
+      folderItem.className = "dashboard-folder-icon-item";
+      folderItem.addEventListener("click", () => {
+        const navEvent = new CustomEvent('nav-folder', { detail: { id: folder.id } });
+        document.dispatchEvent(navEvent);
+      });
+
+      folderItem.innerHTML = `
+        <div class="folder-mini-info">
+          <div class="folder-mini-icon">${FOLDER_ICON}</div>
+          <span class="folder-mini-name">${escapeHtml(folder.name)}</span>
+        </div>
+        <div class="folder-mini-actions">
+          <button class="folder-mini-action rename" title="Rename Folder">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+          </button>
+          <button class="folder-mini-action delete" title="Delete Folder">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+          </button>
+        </div>
+      `;
+
+      // Set dataset id for event handlers
+      folderItem.dataset.id = folder.id;
+
+      // Navigate on clicking info area
+      folderItem.querySelector('.folder-mini-info').addEventListener('click', (e) => {
+        e.stopPropagation();
+        const navEvent = new CustomEvent('nav-folder', { detail: { id: folder.id } });
+        document.dispatchEvent(navEvent);
+      });
+
+      folderItem.querySelector('.folder-mini-action.rename').addEventListener('click', (e) => {
+        e.stopPropagation();
+        const renameEvent = new CustomEvent('rename-folder', { detail: { id: folder.id } });
+        document.dispatchEvent(renameEvent);
+      });
+
+      folderItem.querySelector('.folder-mini-action.delete').addEventListener('click', (e) => {
+        e.stopPropagation();
+        const deleteEvent = new CustomEvent('delete-folder', { detail: { id: folder.id } });
+        document.dispatchEvent(deleteEvent);
+      });
+
+      foldersRow.appendChild(folderItem);
+    });
+
+    gridEl.appendChild(foldersRow);
+  }
+
+  if (!visibleNotes.length && (!showFoldersInGrid || !folders.length)) {
+    gridEl.innerHTML = '<div class="note-card empty-dashboard"><p>No items found. Start by creating a note or folder!</p></div>';
     return;
   }
 
+  // 4. Render Notes
   visibleNotes.forEach(note => {
     const card = document.createElement("div");
     card.className = "note-card";
@@ -346,22 +400,22 @@ export function renderNotesDashboard(notes, activeFolderId, activeLibraryFilter,
     card.addEventListener("click", () => setActiveNote(note.id));
 
     const archiveBtn = card.querySelector(".note-card-archive");
-    if (archiveBtn && noteActions) {
+    if (archiveBtn && callbacks) {
       archiveBtn.addEventListener("click", (e) => {
         e.stopPropagation();
         if (note.isArchived) {
-          noteActions.unarchiveNote(note.id);
+          callbacks.unarchiveNote(note.id);
         } else {
-          noteActions.archiveNote(note.id);
+          callbacks.archiveNote(note.id);
         }
       });
     }
 
     const deleteBtn = card.querySelector(".note-card-delete");
-    if (deleteBtn && noteActions) {
+    if (deleteBtn && callbacks) {
       deleteBtn.addEventListener("click", (e) => {
         e.stopPropagation();
-        noteActions.deleteNote(note.id);
+        callbacks.deleteNote(note.id);
       });
     }
 
