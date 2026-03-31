@@ -8,7 +8,7 @@
     "start": "node server.js",
     "vercel-build": "node build.js",
     "build": "node build.js",
-    "deploy:cloudflare": "npm run build && wrangler pages deploy public"
+    "deploy:cloudflare": "npm run build && wrangler pages deploy public --project-name global-notes-workspace --branch main"
   },
   "keywords": [],
   "author": "",
