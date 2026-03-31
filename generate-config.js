@@ -15,8 +15,8 @@ if (fs.existsSync(envPath)) {
 
 const configContent = `const config = {
     APPWRITE_ENDPOINT: '${process.env.APPWRITE_ENDPOINT || "https://cloud.appwrite.io/v1"}',
-    APPWRITE_PROJECT_ID: '${process.env.APPWRITE_PROJECT_ID || "69c4c59f000adafed590"}',
-    APPWRITE_DATABASE_ID: '${process.env.APPWRITE_DATABASE_ID || "public"}',
+    APPWRITE_PROJECT_ID: '${process.env.APPWRITE_PROJECT_ID || ""}',
+    APPWRITE_DATABASE_ID: '${process.env.APPWRITE_DATABASE_ID || ""}',
     SUPABASE_URL: '${process.env.SUPABASE_URL || ""}',
     SUPABASE_ANON_KEY: '${process.env.SUPABASE_ANON_KEY || ""}',
     GROQ_API_KEY: '${process.env.GROQ_API_KEY || ""}'
