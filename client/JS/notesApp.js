@@ -21,7 +21,6 @@ import { wireShapeManager } from "./shapeManager.js";
 import { wireTagManager } from "./tagManager.js";
 import { wireAutoSave } from "./autoSave.js";
 import { getCurrentUser } from "./authService.js";
-import { account } from "./appwriteClient.js";
 import { wireEditorQuickTools } from "./editorQuickTools.js";
 import { upgradeToolbarSelects } from "./customSelect.js";
 
@@ -148,10 +147,24 @@ async function initApp() {
   // Apply theme immediately to prevent flickering or failures if auth hangs
   wireThemeToggle();
 
+  // Check if we are forcing guest mode (e.g. from continue as guest)
+  const urlParams = new URLSearchParams(window.location.search);
+  const forceGuest = urlParams.get('guest') === 'true';
+
+  if (forceGuest) {
+    try {
+      await fetch('/api/auth/logout', { method: 'POST' });
+      // Remove the query param to prevent repeat logouts on refresh
+      window.history.replaceState({}, document.title, window.location.pathname);
+    } catch (err) {
+      // No active session to delete, which is fine
+    }
+  }
+
   // Load user session
   const user = await getCurrentUser();
   if (user) {
-    const username = user.name || user.email;
+    const username = user.username || user.email || 'User';
     setActiveUser(username);
     state.activeUser = username;
 

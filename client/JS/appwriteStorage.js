@@ -3,10 +3,10 @@ import config from './config.js';
 
 const DB_ID = config.APPWRITE_DATABASE_ID;
 const COLLECTIONS = {
-    notes: 'notes',
-    folders: 'folders',
-    profiles: 'profiles',
-    shared_notes: 'shared_notes'
+    notes: config.APPWRITE_NOTES_COLLECTION_ID || 'notes',
+    folders: config.APPWRITE_FOLDERS_COLLECTION_ID || 'folders',
+    profiles: config.APPWRITE_PROFILES_COLLECTION_ID || 'profiles',
+    shared_notes: config.APPWRITE_SHARED_NOTES_COLLECTION_ID || 'shared_notes'
 };
 
 /**

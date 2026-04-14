@@ -1,6 +1,6 @@
 import { createNote, persistNotes } from "./noteManager.js";
 import { renderActiveNote, renderNotesList } from "./renderer.js";
-import { deleteNote as deleteNoteFromCloud } from "./supabaseStorage.js";
+import { deleteNote as deleteNoteFromCloud } from "./storage.js";
 import { showToast, showConfirm } from "./utilities.js";
 
 const $ = (selector) => document.querySelector(selector);
@@ -141,7 +141,7 @@ export async function handleDeleteNote(notes, noteId, activeUser, callbacks) {
     
     // Attempt cloud deletion but don't let it block local UI if it fails
     if (activeUser) {
-      deleteNoteFromCloud(noteId).catch(err => {
+      deleteNoteFromCloud(activeUser, noteToDelete._id || noteId).catch(err => {
         console.error("Cloud deletion failed", err);
       });
     }
