@@ -1,26 +1,9 @@
 {
   "version": 2,
-  "functions": {
-    "server/server.js": {
-      "includeFiles": "client/**"
-    }
-  },
-  "routes": [
-    {
-      "src": "/api/(.*)",
-      "dest": "server/server.js"
-    },
-    {
-      "src": "/(CSS|JS|HTML|assets)/(.*)",
-      "dest": "/client/$1/$2"
-    },
-    {
-      "src": "/(app.html|index.html|sw.js|manifest.json|robots.txt|sitemap.xml)",
-      "dest": "/client/$1"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "server/server.js"
-    }
+  "rewrites": [
+    { "source": "/api/(.*)", "destination": "/api/index.js" },
+    { "source": "/(CSS|JS|HTML|assets)/(.*)", "destination": "/client/$1/$2" },
+    { "source": "/(app.html|index.html|sw.js|manifest.json|robots.txt|sitemap.xml)", "destination": "/client/$1" },
+    { "source": "/(.*)", "destination": "/api/index.js" }
   ]
 }
