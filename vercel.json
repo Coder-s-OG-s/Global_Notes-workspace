@@ -1,32 +1,26 @@
 {
   "version": 2,
-  "builds": [
-    {
-      "src": "server/server.js",
-      "use": "@vercel/node"
-    },
-    {
-      "src": "build.js",
-      "use": "@vercel/static-build",
-      "config": { "distDir": "public" }
+  "functions": {
+    "server/server.js": {
+      "includeFiles": "client/**"
     }
-  ],
+  },
   "routes": [
     {
       "src": "/api/(.*)",
       "dest": "server/server.js"
     },
     {
-      "src": "/sw.js",
-      "dest": "/sw.js",
-      "headers": {
-        "Cache-Control": "public, max-age=0, must-revalidate",
-        "Service-Worker-Allowed": "/"
-      }
+      "src": "/(CSS|JS|HTML|assets)/(.*)",
+      "dest": "/client/$1/$2"
+    },
+    {
+      "src": "/(app.html|index.html|sw.js|manifest.json|robots.txt|sitemap.xml)",
+      "dest": "/client/$1"
     },
     {
       "src": "/(.*)",
-      "dest": "/$1"
+      "dest": "server/server.js"
     }
   ]
 }
