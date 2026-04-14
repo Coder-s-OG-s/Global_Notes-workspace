@@ -853,6 +853,111 @@ body.code-workspace-page {
     margin-left: 4px;
 }
 
+/* ════════════════════════════════════════
+   MOBILE RESPONSIVITY REFINEMENTS
+   ════════════════════════════════════════ */
+@media (max-width: 768px) {
+    .code-header {
+        padding: 0 10px;
+        height: auto;
+        min-height: 60px;
+        flex-wrap: wrap;
+        gap: 8px;
+        padding-top: env(safe-area-inset-top);
+        padding-bottom: 8px;
+    }
+
+    .mobile-sidebar-toggle {
+        display: none !important;
+    }
+
+    .header-brand {
+        display: none !important; /* Hide long brand name on mobile */
+    }
+
+    .header-center {
+        order: 3;
+        width: 100%;
+        margin-top: 4px;
+    }
+
+    .lang-select-wrapper {
+        width: 100%;
+    }
+
+    .lang-select-trigger {
+        width: 100%;
+        min-width: unset;
+    }
+
+    .header-right {
+        order: 2;
+        gap: 8px;
+        margin-left: auto;
+    }
+
+    .btn-text {
+        display: none; /* Hide labels like "Explain", "Docs" */
+    }
+
+    .ai-btn {
+        padding: 8px;
+        width: 40px;
+        height: 40px;
+        display: flex;
+        justify-content: center;
+    }
+
+    .code-sidebar {
+        display: none !important;
+    }
+
+    .sidebar-overlay-code {
+        display: none !important;
+    }
+
+    .lang-select-menu {
+        grid-template-columns: 1fr;
+        padding: 16px;
+        gap: 20px;
+        width: 90vw !important;
+        max-width: 320px;
+        left: 50% !important;
+        top: 50% !important;
+        transform: translate(-50%, -50%) !important;
+        max-height: 80vh;
+        overflow-y: auto;
+        border-radius: var(--radius-xl);
+    }
+
+    .lang-select-column {
+        min-width: unset;
+    }
+
+    .code-editor-container {
+        width: 100%;
+        height: 100%;
+    }
+
+    .ai-result-container.show {
+        height: 100dvh;
+        z-index: 2000;
+    }
+
+    .ai-chat-window {
+        width: calc(100vw - 40px);
+        right: 20px;
+        height: 70vh;
+    }
+}
+
+/* Specific fix for Samsung & Chinese Brand status bars */
+@supports (padding: env(safe-area-inset-top)) {
+    .code-header {
+        padding-top: env(safe-area-inset-top);
+    }
+}
+
 /* Responsive adjustments */
 @media (max-width: 900px) {
     .code-sidebar {

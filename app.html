@@ -3,7 +3,7 @@
 
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>Global Notes Workspace</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -35,8 +35,6 @@
 </head>
 
 <body>
-  <!-- Overlay for mobile sidebar -->
-  <div class="sidebar-overlay" id="sidebar-overlay"></div>
 
   <!-- ═══ HEADER ═══ -->
   <header class="app-header">
@@ -622,6 +620,9 @@
     </section>
   </main>
 
+  <!-- Overlay for mobile sidebar -->
+  <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
   <!-- ═══ MODALS ═══ -->
 
   <!-- Profile Modal -->
@@ -929,11 +930,12 @@
   <!-- SDKs -->
   <script src="https://cdn.jsdelivr.net/npm/appwrite@17.0.0"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
   <script type="text/javascript" src="JS/vendor/lz-string.min.js"></script>
   <script type="text/javascript" src="JS/vendor/qrcode.min.js"></script>
   <script type="module" src="JS/notesApp.js?v=3.1"></script>
   <script>
-    if ('ser' in navigator) {
+    if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('sw.js')
         .then(() => console.log('Service Worker Registered'))
         .catch((err) => console.log('SW Registration Failed', err));
