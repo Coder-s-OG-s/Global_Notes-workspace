@@ -23,11 +23,74 @@ export function wireFormattingToolbar() {
   const contentEl = $("#content");
   if (!contentEl) return;
 
+  let savedRange = null;
+
+  function isRangeInsideEditor(range) {
+    if (!range) return false;
+    const common = range.commonAncestorContainer;
+    return common === contentEl || contentEl.contains(common);
+  }
+
+  function saveSelection() {
+    const selection = window.getSelection();
+    if (!selection || selection.rangeCount === 0) return;
+    const range = selection.getRangeAt(0);
+    if (isRangeInsideEditor(range)) {
+      savedRange = range.cloneRange();
+    }
+  }
+
+  function restoreSelection() {
+    const selection = window.getSelection();
+    if (!selection || !savedRange) return false;
+    selection.removeAllRanges();
+    selection.addRange(savedRange);
+    return true;
+  }
+
+  function withRestoredSelection(runCommand) {
+    contentEl.focus({ preventScroll: true });
+    const restored = restoreSelection();
+    try {
+      runCommand();
+      saveSelection();
+      return restored;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  contentEl.addEventListener("mouseup", saveSelection);
+  contentEl.addEventListener("keyup", saveSelection);
+  contentEl.addEventListener("input", saveSelection);
+
+  // Custom select UI renders outside native <select>; capture selection before clicks.
+  document.addEventListener("mousedown", (event) => {
+    const target = event.target;
+    if (!(target instanceof Element)) return;
+    if (
+      target.closest(".custom-select-trigger") ||
+      target.closest(".custom-select-option")
+    ) {
+      saveSelection();
+    }
+  });
+
+  document.addEventListener("selectionchange", () => {
+    const selection = window.getSelection();
+    if (!selection || selection.rangeCount === 0) return;
+    const range = selection.getRangeAt(0);
+    if (isRangeInsideEditor(range)) {
+      savedRange = range.cloneRange();
+    }
+  });
+
   // Applies the specified formatting or edit command to the selected text
   function applyFormat(command) {
-    contentEl.focus();
     try {
-      document.execCommand(command, false, null);
+      withRestoredSelection(() => {
+        document.execCommand(command, false, null);
+      });
     } catch (e) {
       console.error("Command failed", command, e);
     }
@@ -36,6 +99,7 @@ export function wireFormattingToolbar() {
   // Format dropdown (Bold, Italic, Underline, Bullet List)
   const formatSelect = $("#format-action");
   if (formatSelect) {
+    formatSelect.addEventListener("mousedown", saveSelection);
     formatSelect.addEventListener("change", (e) => {
       const action = e.target.value;
       if (!action) return;
@@ -77,6 +141,7 @@ export function wireFormattingToolbar() {
   // Edit dropdown (Cut, Copy, Paste)
   const editSelect = $("#edit-action");
   if (editSelect) {
+    editSelect.addEventListener("mousedown", saveSelection);
     editSelect.addEventListener("change", (e) => {
       const action = e.target.value;
       if (!action) return;
@@ -171,18 +236,22 @@ export function wireFormattingToolbar() {
   // Text color control
   const textColorSelect = $("#text-color");
   if (textColorSelect) {
+    textColorSelect.addEventListener("mousedown", saveSelection);
     textColorSelect.addEventListener("change", (e) => {
       const color = e.target.value;
-      contentEl.focus();
       if (color) {
         try {
-          document.execCommand("foreColor", false, color);
+          withRestoredSelection(() => {
+            document.execCommand("foreColor", false, color);
+          });
         } catch (err) {
           console.error("Color command failed", err);
         }
       } else {
         try {
-          document.execCommand("removeFormat", false, null);
+          withRestoredSelection(() => {
+            document.execCommand("removeFormat", false, null);
+          });
         } catch (err) {
           console.error("Remove format failed", err);
         }
@@ -197,16 +266,14 @@ export function wireFormattingToolbar() {
   // Custom text color control
   const customColorInput = $("#custom-text-color");
   if (customColorInput) {
+    customColorInput.addEventListener("mousedown", saveSelection);
     customColorInput.addEventListener("input", (e) => {
       const color = e.target.value;
-      contentEl.focus();
       if (color) {
-        applyFormat("foreColor", color);
-        // Note: applyFormat currently only takes one arg. We need to handle the color arg.
-        // Wait, I can't modify applyFormat easily in this block without potentially breaking others or duplicating logic.
-        // I'll just use document.execCommand directly like the select handler does.
         try {
-          document.execCommand("foreColor", false, color);
+          withRestoredSelection(() => {
+            document.execCommand("foreColor", false, color);
+          });
         } catch (err) {
           console.error("Color command failed", err);
         }
@@ -216,10 +283,11 @@ export function wireFormattingToolbar() {
     // Also handle 'change' event to ensure final selection is applied
     customColorInput.addEventListener("change", (e) => {
       const color = e.target.value;
-      contentEl.focus();
       if (color) {
         try {
-          document.execCommand("foreColor", false, color);
+          withRestoredSelection(() => {
+            document.execCommand("foreColor", false, color);
+          });
         } catch (err) {
           console.error("Color command failed", err);
         }
@@ -231,19 +299,23 @@ export function wireFormattingToolbar() {
   const highlightColorSelect = $("#highlight-color");
   console.log("Highlight Element:", highlightColorSelect); // DEBUG
   if (highlightColorSelect) {
+    highlightColorSelect.addEventListener("mousedown", saveSelection);
     highlightColorSelect.addEventListener("change", (e) => {
       const color = e.target.value;
-      contentEl.focus();
       if (color) {
         try {
-          document.execCommand("hiliteColor", false, color);
+          withRestoredSelection(() => {
+            document.execCommand("hiliteColor", false, color);
+          });
         } catch (err) {
           console.error("Highlight command failed", err);
         }
       } else {
         try {
           // Remove highlight (transparent background)
-          document.execCommand("hiliteColor", false, "transparent");
+          withRestoredSelection(() => {
+            document.execCommand("hiliteColor", false, "transparent");
+          });
         } catch (err) {
           console.error("Remove highlight failed", err);
         }
