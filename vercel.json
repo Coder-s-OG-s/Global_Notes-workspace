@@ -2,15 +2,11 @@
   "version": 2,
   "builds": [
     {
-      "src": "package.json",
-      "use": "@vercel/static-build",
-      "config": {
-        "distDir": "public"
-      }
-    },
-    {
       "src": "server/server.js",
-      "use": "@vercel/node"
+      "use": "@vercel/node",
+      "config": {
+        "includeFiles": ["client/**"]
+      }
     }
   ],
   "routes": [
@@ -19,16 +15,16 @@
       "dest": "server/server.js"
     },
     {
-      "src": "/sw.js",
-      "dest": "/sw.js",
-      "headers": {
-        "Cache-Control": "public, max-age=0, must-revalidate",
-        "Service-Worker-Allowed": "/"
-      }
+      "src": "/(CSS|JS|HTML|assets)/(.*)",
+      "dest": "/client/$1/$2"
+    },
+    {
+      "src": "/(app.html|index.html|sw.js|manifest.json|robots.txt|sitemap.xml)",
+      "dest": "/client/$1"
     },
     {
       "src": "/(.*)",
-      "dest": "/$1"
+      "dest": "server/server.js"
     }
   ]
 }
