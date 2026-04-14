@@ -215,10 +215,7 @@ class CodeWorkspace {
         resizer.addEventListener('mousedown', (e) => this.startResizing(e));
 
         // AI Feature Buttons
-        document.getElementById('ai-explain-btn').addEventListener('click', () => this.handleAIRequest('explain'));
-        document.getElementById('ai-docs-btn').addEventListener('click', () => this.handleAIRequest('docs'));
         document.getElementById('ai-improve-btn').addEventListener('click', () => this.handleAIRequest('improve'));
-
     }
 
     setupCustomLanguageSelect() {
@@ -281,20 +278,26 @@ class CodeWorkspace {
             e.stopPropagation();
             const rect = trigger.getBoundingClientRect();
 
-            // Positioning directly under the trigger
-            menu.style.top = `${rect.bottom + 8}px`;
+            const isMobile = window.innerWidth <= 768;
 
-            // Center the mega-menu relative to the trigger
-            let left = rect.left + (rect.width / 2) - (menu.offsetWidth / 2);
+            if (isMobile) {
+                menu.style.top = '';
+                menu.style.left = '';
+            } else {
+                // Positioning directly under the trigger
+                menu.style.top = `${rect.bottom + 8}px`;
 
-            // Boundary checks (prevent going off-screen)
-            const padding = 20;
-            if (left < padding) left = padding;
-            if (left + menu.offsetWidth > window.innerWidth - padding) {
-                left = window.innerWidth - menu.offsetWidth - padding;
+                // Center the mega-menu relative to the trigger
+                let left = rect.left + (rect.width / 2) - (menu.offsetWidth / 2);
+
+                // Boundary checks (prevent going off-screen)
+                const padding = 20;
+                if (left < padding) left = padding;
+                if (left + menu.offsetWidth > window.innerWidth - padding) {
+                    left = window.innerWidth - menu.offsetWidth - padding;
+                }
+                menu.style.left = `${left}px`;
             }
-
-            menu.style.left = `${left}px`;
 
             const isShowing = menu.classList.contains('show');
             document.querySelectorAll('.lang-select-menu').forEach(m => m.classList.remove('show'));

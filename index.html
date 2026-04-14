@@ -4,22 +4,55 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Noted — Think clearly. Build better.</title>
+  <title>Global Notes Workspace — Think clearly. Build better.</title>
   <meta name="description"
-    content="The professional workspace for your notes, ideas, and code. Free forever, no credit card required.">
+    content="Global Notes Workspace: The professional, offline-capable workspace for your notes, ideas, and code. Features a rich markdown editor, integrated code workspace, and AI assistant.">
+  <meta name="keywords" content="notes app, code snippets editor, knowledge management, second brain, productivity workspace, markdown editor, AI writing assistant">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://global-notes.com">
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://global-notes.com">
+  <meta property="og:title" content="Global Notes Workspace — Your Secondary Brain">
+  <meta property="og:description" content="A refined workspace where your notes, code, and ideas live in perfect harmony. Free, offline-first, and professional.">
+  <meta property="og:image" content="https://global-notes.com/assets/images/logo_workspace.png">
+
+  <!-- Twitter -->
+  <meta property="twitter:card" content="summary_large_image">
+  <meta property="twitter:url" content="https://global-notes.com">
+  <meta property="twitter:title" content="Global Notes Workspace — Think clearly. Build better.">
+  <meta property="twitter:description" content="The professional workspace for your notes, ideas, and code. Built for students, developers, and writers.">
+  <meta property="twitter:image" content="https://global-notes.com/assets/images/logo_workspace.png">
+
+  <!-- JSON-LD Structured Data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "Global Notes Workspace",
+    "operatingSystem": "Web, Windows, macOS, Linux, Android, iOS",
+    "applicationCategory": "ProductivityApplication",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    },
+    "description": "A professional workspace for notes and code with AI assistance and offline support.",
+    "featureList": "Markdown Editor, Code Workspace, AI Writing Assistant, Smart Folders, Global Search"
+  }
+  </script>
 
   <!-- Typography -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link
-    href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300..500;1,9..40,300..500&family=Syne:wght@800&display=swap"
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Outfit:wght@500;700;800&display=swap"
     rel="stylesheet">
 
   <!-- Styles -->
   <link rel="stylesheet" href="CSS/landing.css">
   <link rel="icon" type="image/png" href="assets/images/logo_workspace.png" />
-
-  <!-- Animation Library (optional, but CSS is fine) -->
 </head>
 
 <body>
@@ -28,9 +61,7 @@
   <nav id="navbar" class="fixed-nav">
     <div class="container nav-content">
       <a href="#" class="brand">
-        <img src="assets/images/logo_workspace.png" alt="Noted Logo"
-          style="width: 34px; height: 34px; border-radius: 8px;">
-        <span class="brand-name">Noted</span>
+        <span class="brand-name">Global <span class="brand-accent">Notes</span> Workspace</span>
       </a>
       <div class="nav-links">
         <a href="#features">Features</a>
@@ -38,8 +69,7 @@
         <a href="#who-it-is-for">Who it's for</a>
       </div>
       <div class="nav-ctas">
-        <a href="HTML/signup.html" class="btn-ghost">Sign in</a>
-        <a href="HTML/signup.html" class="btn-pill-black">Start free &rarr;</a>
+        <a href="HTML/signup.html" class="btn-pill-black">Sign in</a>
       </div>
       <button class="menu-toggle" id="menu-toggle">
         <span></span>
@@ -48,12 +78,13 @@
     </div>
   </nav>
 
+  <main>
   <!-- Hero Section -->
   <header class="hero" id="top">
     <div class="container hero-content">
       <div class="badge-pill animate-up">
         <span class="pulse-dot"></span>
-        Free forever &middot; No credit card needed
+        Professional Workspace for Modern Builders
       </div>
       <h1 class="hero-headline animate-up">
         Think clearly.<br>
@@ -64,11 +95,11 @@
         Organize your knowledge, capture every spark, and build what matters.
       </p>
       <div class="hero-actions animate-up">
-        <a href="HTML/signup.html" class="btn-pill-black lg">Get started for free</a>
+        <a href="HTML/signup.html" class="btn-pill-black lg">Get Started</a>
         <a href="#how-it-works" class="btn-ghost lg">See how it works</a>
       </div>
       <p class="hero-meta animate-up">
-        100% free &middot; No sign-up friction &middot; Works in your browser
+        Instant Sync &middot; No sign-up friction &middot; Works in your browser
       </p>
     </div>
   </header>
@@ -78,11 +109,11 @@
     <div class="container">
       <div class="screenshots-grid">
         <div class="browser-frame left-frame hover-lift">
-          <img src="assets/images/notes_workspace_real.png" alt="Notes Workspace">
+          <img src="assets/images/notes_workspace_real.png" alt="Global Notes Workspace - Rich Markdown Note Editor Interface">
           <div class="caption">Notes Workspace</div>
         </div>
         <div class="browser-frame right-frame hover-lift">
-          <img src="assets/images/code_workspace_real.png" alt="Code + Notes Workspace">
+          <img src="assets/images/code_workspace_real.png" alt="Global Notes Workspace - Integrated Code Editor and Documentation View">
           <div class="caption">Code + Notes side by side</div>
         </div>
       </div>
@@ -98,33 +129,44 @@
       </div>
       <div class="features-grid">
         <div class="feature-card">
-          <div class="icon-box">✍️</div>
+          <div class="icon-box">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+          </div>
           <h3>Rich Note Editor</h3>
           <p>Full markdown support, slash commands, and an elegant writing experience that stays out of your way.</p>
         </div>
         <div class="feature-card">
-          <div class="icon-box">💻</div>
+          <div class="icon-box">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+          </div>
           <h3>Code Workspace</h3>
-          <p>Integrated code editor with syntax highlighting for 50+ languages, perfect for documentation and snippets.
-          </p>
+          <p>Integrated code editor with syntax highlighting for 50+ languages, perfect for documentation and snippets.</p>
         </div>
         <div class="feature-card">
-          <div class="icon-box">🔍</div>
+          <div class="icon-box">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          </div>
           <h3>Instant Search</h3>
           <p>Find anything across your entire workspace in milliseconds with our lightning-fast global search.</p>
         </div>
         <div class="feature-card">
-          <div class="icon-box">📁</div>
+          <div class="icon-box">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+          </div>
           <h3>Smart Organization</h3>
           <p>Nested folders, tags, and bi-directional linking to build your personal knowledge graph.</p>
         </div>
         <div class="feature-card">
-          <div class="icon-box">🤖</div>
+          <div class="icon-box">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/><path d="M5 3v4"/><path d="M19 17v4"/><path d="M3 5h4"/><path d="M17 19h4"/></svg>
+          </div>
           <h3>AI Writing Assistant</h3>
           <p>Draft, summarize, and refine your thoughts with integrated AI that understands your context.</p>
         </div>
         <div class="feature-card">
-          <div class="icon-box">🤝</div>
+          <div class="icon-box">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          </div>
           <h3>Share & Collaborate</h3>
           <p>Publish pages to the web or collaborate with your team in real-time with full version history.</p>
         </div>
@@ -142,7 +184,9 @@
       <div class="who-grid">
         <div class="who-card">
           <span class="who-number">01</span>
-          <div class="who-icon">🎓</div>
+          <div class="who-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c0 2 2 3 6 3s6-1 6-3v-5"/></svg>
+          </div>
           <h3>Students</h3>
           <p>Organize lecture notes, research citations, and study guides in one centralized academic hub.</p>
           <div class="tag-pills">
@@ -152,7 +196,9 @@
         </div>
         <div class="who-card">
           <span class="who-number">02</span>
-          <div class="who-icon">💻</div>
+          <div class="who-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="14" x="2" y="3" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+          </div>
           <h3>Developers</h3>
           <p>Maintain documentation, store re-usable code snippets, and plan your next big project.</p>
           <div class="tag-pills">
@@ -162,7 +208,9 @@
         </div>
         <div class="who-card">
           <span class="who-number">03</span>
-          <div class="who-icon">✍️</div>
+          <div class="who-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="m12 19-7-7 3.32-3.32a2 2 0 0 1 2.83 0l3.02 3.02a2 2 0 0 1 0 2.83L12 19Z"/><path d="m2 22 5-5"/><path d="M17 5l3-3"/><path d="m19 9 3-3"/><path d="m13 1 3 3"/><path d="m9 5 3-3"/></svg>
+          </div>
           <h3>Writers & Creatives</h3>
           <p>Draft your next masterpiece in a distraction-free environment that keeps your ideas organized.</p>
           <div class="tag-pills">
@@ -172,7 +220,9 @@
         </div>
         <div class="who-card">
           <span class="who-number">04</span>
-          <div class="who-icon">📊</div>
+          <div class="who-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="14" x="2" y="7" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+          </div>
           <h3>Professionals & Teams</h3>
           <p>Streamline meeting notes, project specs, and team knowledge without the overhead.</p>
           <div class="tag-pills">
@@ -212,10 +262,11 @@
     <div class="amber-glow"></div>
     <div class="container text-center">
       <h2 class="white lg">Your second brain starts here</h2>
-      <p class="cta-subtext">Free forever. No credit card. No catch. Just a better way to think.</p>
-      <a href="HTML/signup.html" class="btn-pill-white lg">Open the app &mdash; it's free</a>
+      <p class="cta-subtext">Join a global community of thinkers and builders. Start your journey today.</p>
+      <a href="HTML/signup.html" class="btn-pill-white lg">Open the Workspace</a>
     </div>
   </section>
+  </main>
 
   <!-- Footer -->
   <footer class="footer dark-bg">
@@ -223,9 +274,9 @@
       <div class="footer-grid">
         <div class="footer-col brand-col">
           <a href="#" class="brand">
-            <img src="assets/images/logo_workspace.png" alt="Noted Logo"
+            <img src="assets/images/logo_workspace.png" alt="Global Notes Logo"
               style="width: 34px; height: 34px; border-radius: 8px;">
-            <span class="brand-name white">Noted</span>
+            <span class="brand-name white">Global <span class="brand-accent">Notes</span> Workspace</span>
           </a>
           <p class="footer-desc">The refined workspace for thinkers and builders. Crafted with care for the modern web.
           </p>
@@ -244,8 +295,6 @@
           <ul>
             <li><a href="#">Documentation</a></li>
             <li><a href="#">Help Center</a></li>
-            <li><a href="#">Community</a></li>
-            <li><a href="#">Blog</a></li>
           </ul>
         </div>
         <div class="footer-col">
@@ -259,11 +308,22 @@
         </div>
       </div>
       <div class="footer-bottom">
-        <p>&copy; 2026 Noted. All rights reserved.</p>
-        <p>Made with ☕ for builders.</p>
+        <p>&copy; 2026 Global Notes Workspace. All rights reserved.</p>
       </div>
     </div>
   </footer>
+
+  <!-- Information Modal -->
+  <div id="info-modal" class="landing-modal">
+    <div class="modal-backdrop"></div>
+    <div class="modal-content-wrapper">
+      <button class="modal-close" id="modal-close">&times;</button>
+      <div class="modal-body">
+        <h2 id="modal-title" class="white"></h2>
+        <div id="modal-text" class="modal-text"></div>
+      </div>
+    </div>
+  </div>
 
   <script src="JS/landing.js"></script>
 </body>

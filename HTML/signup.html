@@ -17,6 +17,11 @@
 </head>
 
 <body>
+  <a href="../index.html" class="back-link">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+    <span>Back to Home</span>
+  </a>
+
   <div class="auth-container">
     <div class="main-card">
       <!-- Left Side: Branding/Image -->
@@ -87,12 +92,6 @@
 
 
 
-  <script>
-    // Force Redirect from 0.0.0.0 to localhost to ensure Secure Context
-    if (window.location.hostname === '0.0.0.0') {
-      window.location.hostname = 'localhost';
-    }
-  </script>
   <!-- Supabase UMD Script (Critical for Auth) -->
   <!-- SDKs -->
   <script src="https://cdn.jsdelivr.net/npm/appwrite@17.0.0"></script>

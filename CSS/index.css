@@ -3359,114 +3359,283 @@ html[data-theme="corporate-gray"] .custom-select-wrapper:has(#note-theme) {
 /* ════════════════════════════════════════
    RESPONSIVE
    ════════════════════════════════════════ */
+/* ════════════════════════════════════════
+   RESPONSIVE & MOBILE OPTIMIZATION
+   ════════════════════════════════════════ */
+
+/* Standard Mobile Support */
 @media (max-width: 768px) {
+  :root {
+    --sidebar-width: 280px;
+    --header-height: 56px;
+  }
+
   .mobile-toggle {
-    display: flex !important;
+    display: none !important;
   }
 
   .mobile-close {
-    display: flex !important;
+    display: none !important;
   }
 
-  .brand-name {
-    display: none;
-  }
-
+  .brand-name,
   .btn-text {
     display: none;
   }
 
   #new-note {
-    width: 36px;
+    width: 40px;
+    height: 40px;
     padding: 0;
+    border-radius: 50%;
   }
 
   .navbar-center {
-    max-width: none;
     flex: 1;
+    max-width: none;
+    margin: 0 4px;
+    order: 2;
+  }
+
+  .navbar-left {
+    gap: 4px;
+    order: 1;
+  }
+
+  .navbar-right {
+    gap: 4px;
+    order: 3;
+    flex-shrink: 0;
+  }
+
+  /* Make search input more compact on mobile */
+  .search-container {
+    max-width: 140px;
+  }
+  
+  .search-input:focus {
+    position: absolute;
+    left: -50px;
+    width: calc(100vw - 120px);
+    z-index: 10;
+  }
+
+  .app-header {
+    height: calc(var(--header-height) + env(safe-area-inset-top, 0px));
+    padding-top: env(safe-area-inset-top, 0px);
   }
 
   .layout {
     display: block;
     position: relative;
+    height: calc(100dvh - var(--header-height) - env(safe-area-inset-top, 0px));
   }
 
-  .app-sidebar {
-    position: fixed;
-    left: -280px;
-    top: var(--header-height);
-    width: 280px;
-    height: calc(100vh - var(--header-height));
-    height: calc(100dvh - var(--header-height));
-    z-index: 100;
-    background: var(--surface);
-    transition: left 0.25s ease;
-    border-right: 1px solid var(--border);
-    box-shadow: none;
-    overflow-y: auto;
-    /* Allow scrolling the whole sidebar on mobile if needed */
-  }
-
-  .layout.sidebar-visible .app-sidebar {
-    left: 0;
-    box-shadow: 4px 0 20px rgba(0, 0, 0, 0.25);
-  }
-
-  .layout.sidebar-visible~.sidebar-overlay,
-  .sidebar-overlay {
-    z-index: 90;
-  }
-
-  .layout.sidebar-visible+.sidebar-overlay {
-    display: block;
-  }
-
-  body:has(.layout.sidebar-visible) .sidebar-overlay {
-    display: block;
+  .app-sidebar,
+  .sidebar-overlay,
+  .mobile-toggle,
+  .mobile-close {
+    display: none !important;
   }
 
   .editor {
     width: 100%;
     height: 100%;
+    overflow-y: auto;
+    padding-bottom: env(safe-area-inset-bottom);
   }
-
 
   .editor-header {
-    padding: 12px 16px 0;
-  }
-
-  .editor-tags {
-    padding: 6px 16px;
-  }
-
-  .editor-toolbar {
-    padding: 6px 16px;
-  }
-
-  .editor-body {
-    padding: 12px 16px 24px;
-    -webkit-overflow-scrolling: touch;
+    padding: 8px 12px 0;
+    flex-wrap: wrap;
+    gap: 8px;
+    height: auto;
   }
 
   .title-input {
-    font-size: 20px;
+    flex: 1;
+    min-width: 150px;
+    font-size: 18px;
+    order: 2;
+  }
+
+  .back-to-dashboard {
+    order: 1;
+  }
+
+  .editor-header-actions {
+    order: 3;
+    gap: 4px;
+  }
+  
+  /* Compact dashboard header */
+  .dashboard-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 0 4px;
+  }
+
+  .dashboard-header-right {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .editor-toolbar {
+    padding: 8px 16px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    gap: 12px;
+    justify-content: flex-start !important;
+  }
+
+  .toolbar-controls {
+    flex-wrap: nowrap !important;
+    gap: 12px !important;
+  }
+
+  .editor-body {
+    padding: 16px 16px 40px;
+  }
+
+  .dashboard-view {
+    padding: 16px;
+  }
+
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+    padding-bottom: 80px;
+  }
+
+  .dashboard-grid .note-card {
+    height: auto;
+    min-height: 140px;
+  }
+
+  /* Modal Refinement for Mobile */
+  .modal[open] .modal-content {
+    width: 92% !important;
+    margin: env(safe-area-inset-top) auto;
+    max-height: calc(100vh - 60px);
+    border-radius: var(--radius-lg);
+  }
+
+  .editor-tool-popover {
+    position: fixed;
+    top: 50% !important;
+    left: 50% !important;
+    right: auto !important;
+    transform: translate(-50%, -50%);
+    width: 90vw;
+    max-width: 360px;
+    margin: 0;
+  }
+
+  .sidebar-resizer {
+    display: none;
+  }
+
+  .sidebar-header {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 8px;
   }
 }
 
+/* Small Screens (iPhone SE, etc.) */
 @media (max-width: 480px) {
   .navbar {
-    padding: 0 10px;
-    height: 48px;
+    padding: 0 8px;
+    height: 52px;
   }
 
-  .search-input {
-    height: 32px;
-    font-size: 12px;
+  .navbar-right {
+    gap: 2px;
   }
 
-  .calendar-icon-btn {
+  #preferences-toggle {
+    display: none; /* Hide less critical items on very small screens */
+  }
+
+  .search-container {
+    max-width: 100px;
+  }
+
+  .search-input:focus {
+    left: -80px;
+    width: calc(100vw - 40px);
+  }
+
+  .title-input {
+    font-size: 18px;
+    padding: 4px 0;
+  }
+
+  .editor-body {
+    font-size: 16px;
+    padding: 8px 8px 80px;
+  }
+
+  .editor-header-actions .btn {
     width: 32px;
     height: 32px;
+    padding: 0;
+  }
+
+  /* Specific handling for small device status bars */
+  body {
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+}
+
+/* ════════════════════════════════════════
+   BRAND SPECIFIC TWEAKS (Samsung, Oppo, etc.)
+   ════════════════════════════════════════ */
+@media screen and (max-device-width: 360px) {
+  .navbar-center { display: none; } /* Hide search on extremely tiny old phones */
+}
+
+/* Fix for blurry text on some Android high-res displays */
+* {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+  /* Footer adjustments */
+  .global-footer {
+    flex-direction: column;
+    height: auto;
+    padding: 12px;
+    gap: 8px;
+  }
+}
+
+/* Specific fix for Samsung / Oppo / Vivo browsers */
+@supports (-webkit-touch-callout: none) {
+  .app-sidebar, .layout {
+    height: -webkit-fill-available;
+  }
+}
+
+/* Landscape Optimization */
+@media (max-height: 500px) and (orientation: landscape) {
+  .app-sidebar {
+    width: 240px;
+  }
+  .layout.sidebar-visible .app-sidebar {
+    transform: translateX(0);
+  }
+  .dashboard-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* High-Density Touch Targets (Pro-Max / Modern Phones) */
+@media (pointer: coarse) {
+  .btn, .library-btn, .chip, .toolbar-btn, .dropdown-item {
+    min-height: 44px; /* Apple/Google recommended min touch target */
   }
 }
 
@@ -3991,4 +4160,53 @@ html.theme-transitioning *::after {
   font-size: 13.5px;
   font-weight: 500;
   user-select: none;
+}
+
+/* ════════════════════════════════════════
+   FINAL MOBILE UI REFINEMENTS
+   ════════════════════════════════════════ */
+@media (max-width: 768px) {
+  /* Overflow Menu Mobile Fix */
+  .overflow-menu {
+    right: 8px;
+    width: 200px;
+    padding: 8px;
+    font-size: 15px !important;
+    background: var(--surface) !important;
+    border: 1px solid var(--border) !important;
+    box-shadow: var(--shadow-xl) !important;
+    display: flex !important;
+    flex-direction: column !important;
+  }
+  
+  .overflow-menu.hidden {
+    display: none !important;
+  }
+  
+  .overflow-menu-item {
+    padding: 12px;
+    gap: 12px;
+    border-radius: var(--radius-sm);
+  }
+
+  /* Toolbar / Stepper Refinement */
+  .font-size-stepper {
+    height: 32px;
+    min-width: 90px;
+  }
+
+  .stepper-btn {
+    width: 32px;
+    font-size: 18px;
+  }
+
+  .stepper-input {
+    width: 40px;
+    font-size: 14px;
+  }
+  
+  /* Ensure toolbar controls don't overlap */
+  .toolbar-controls {
+    gap: 10px !important;
+  }
 }
