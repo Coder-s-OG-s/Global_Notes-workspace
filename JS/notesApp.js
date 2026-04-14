@@ -148,6 +148,20 @@ async function initApp() {
   // Apply theme immediately to prevent flickering or failures if auth hangs
   wireThemeToggle();
 
+  // Check if we are forcing guest mode (e.g. from continue as guest)
+  const urlParams = new URLSearchParams(window.location.search);
+  const forceGuest = urlParams.get('guest') === 'true';
+
+  if (forceGuest) {
+    try {
+      await account.deleteSession('current');
+      // Remove the query param to prevent repeat logouts on refresh
+      window.history.replaceState({}, document.title, window.location.pathname);
+    } catch (err) {
+      // No active session to delete, which is fine
+    }
+  }
+
   // Load user session
   const user = await getCurrentUser();
   if (user) {
