@@ -21,10 +21,10 @@ const appwrite = {
     dbID: config.APPWRITE_DATABASE_ID,
     // Helping with common collection IDs
     collections: {
-        notes: 'notes',
-        folders: 'folders',
-        profiles: 'profiles',
-        shared_notes: 'shared_notes'
+        notes: config.APPWRITE_NOTES_COLLECTION_ID || 'notes',
+        folders: config.APPWRITE_FOLDERS_COLLECTION_ID || 'folders',
+        profiles: config.APPWRITE_PROFILES_COLLECTION_ID || 'profiles',
+        shared_notes: config.APPWRITE_SHARED_NOTES_COLLECTION_ID || 'shared_notes'
     }
 };
 

@@ -21,7 +21,6 @@ import { wireShapeManager } from "./shapeManager.js";
 import { wireTagManager } from "./tagManager.js";
 import { wireAutoSave } from "./autoSave.js";
 import { getCurrentUser } from "./authService.js";
-import { account } from "./appwriteClient.js";
 import { wireEditorQuickTools } from "./editorQuickTools.js";
 import { upgradeToolbarSelects } from "./customSelect.js";
 
@@ -154,7 +153,7 @@ async function initApp() {
 
   if (forceGuest) {
     try {
-      await account.deleteSession('current');
+      await fetch('/api/auth/logout', { method: 'POST' });
       // Remove the query param to prevent repeat logouts on refresh
       window.history.replaceState({}, document.title, window.location.pathname);
     } catch (err) {
@@ -165,7 +164,7 @@ async function initApp() {
   // Load user session
   const user = await getCurrentUser();
   if (user) {
-    const username = user.name || user.email;
+    const username = user.username || user.email || 'User';
     setActiveUser(username);
     state.activeUser = username;
 

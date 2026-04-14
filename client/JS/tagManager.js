@@ -1,5 +1,4 @@
 
-import { getCustomTags, saveCustomTags } from "./storage.js";
 import { registerCustomTags, getTagColor } from "./utilities.js";
 import { addTagToActiveNote } from "./noteOperations.js";
 
@@ -8,6 +7,22 @@ const $all = (selector) => Array.from(document.querySelectorAll(selector));
 
 let stateRef = null;
 let callbacksRef = null;
+
+// Helper to get custom tags from localStorage for the session
+function getCustomTags(username) {
+    const key = `gnw.custom_tags.${username || 'guest'}`;
+    const raw = localStorage.getItem(key);
+    try {
+        return raw ? JSON.parse(raw) : [];
+    } catch (e) {
+        return [];
+    }
+}
+
+function saveCustomTags(username, tags) {
+    const key = `gnw.custom_tags.${username || 'guest'}`;
+    localStorage.setItem(key, JSON.stringify(tags));
+}
 
 // Predefined palette for the color picker
 const PALETTE = [
@@ -87,10 +102,6 @@ function renderTagMenuOptions(filterText = "") {
 
     listEl.innerHTML = "";
 
-    // Combine default tags (from utilities/constants knowledge) and custom tags
-    // For this implementation, we'll fetch known tags from the note set + predefined + custom
-
-    // 1. Collect all unique tags from: predefined list, custom tags, and existing notes
     const predefined = ["work", "personal", "ideas", "todo", "remote"];
     const customTags = getCustomTags(stateRef.activeUser).map(t => t.name);
     const noteTags = stateRef.notes.flatMap(n => n.tags || []);
@@ -98,11 +109,9 @@ function renderTagMenuOptions(filterText = "") {
     const allTags = new Set([...predefined, ...customTags, ...noteTags]);
     const sortedTags = Array.from(allTags).sort();
 
-    // 2. Filter
     const query = filterText.toLowerCase();
     const matchedTags = sortedTags.filter(t => t.toLowerCase().includes(query));
 
-    // 3. Render
     if (matchedTags.length === 0) {
         const emptyMsg = document.createElement("div");
         emptyMsg.className = "tag-menu-empty";
@@ -115,11 +124,8 @@ function renderTagMenuOptions(filterText = "") {
         const item = document.createElement("button");
         item.className = "tag-menu-item";
 
-        // Check if active note already has this tag
         const activeNote = stateRef.notes.find(n => n.id === stateRef.activeNoteId);
         const hasTag = activeNote?.tags?.includes(tag);
-
-        // Color dot
         const color = getTagColor(tag);
 
         item.innerHTML = `
@@ -130,20 +136,16 @@ function renderTagMenuOptions(filterText = "") {
 
         if (hasTag) {
             item.classList.add("selected");
-            // Optional: click to remove? For now, let's keep it add-only or toggle
             item.addEventListener("click", () => {
-                // Logic to remove tag (optional, or just do nothing/toggle)
-                // implementation_plan said "Add tag", so we'll focus on adding.
-                // But toggling is better UX.
                 removeTagFromNote(tag);
-                toggleTagMenu(); // Close menu
+                toggleTagMenu();
             });
         } else {
             item.addEventListener("click", () => {
                 addTagToActiveNote(stateRef.notes, stateRef.activeNoteId, tag, stateRef.activeUser, callbacksRef);
                 callbacksRef.renderActiveNote();
-                callbacksRef.renderNotesList(); // update sidebar chips
-                toggleTagMenu(); // Close menu
+                callbacksRef.renderNotesList();
+                toggleTagMenu();
             });
         }
 
@@ -152,11 +154,6 @@ function renderTagMenuOptions(filterText = "") {
 }
 
 function removeTagFromNote(tag) {
-    // We can reuse the renderer's remove logic logic or import it?
-    // actually noteOperations.js doesn't export removeTag.
-    // We'll implemented a quick helper or rely on renderer rendering chips with X
-    // For the menu, usually clicking a selected item removes it.
-
     const note = stateRef.notes.find(n => n.id === stateRef.activeNoteId);
     if (!note) return;
 
@@ -169,13 +166,10 @@ function removeTagFromNote(tag) {
     }
 }
 
-// --- Creation Modal Logic ---
-
 function openCreateTagModal() {
     const modal = $("#custom-tag-modal");
     if (!modal) return;
 
-    // Reset fields
     $("#new-tag-name").value = "";
     $("#new-tag-desc").value = "";
     $("#new-tag-color-picker").value = "#000000";
@@ -197,7 +191,6 @@ function wireCreateTagModal() {
 
     closeBtns.forEach(btn => btn.addEventListener("click", () => modal.close()));
 
-    // Live Preview Updates
     nameInput?.addEventListener("input", () => updatePreviewFromInputs());
     colorPicker?.addEventListener("input", (e) => {
         $("#new-tag-color-hex").textContent = e.target.value;
@@ -214,9 +207,7 @@ function wireCreateTagModal() {
             return;
         }
 
-        // 1. Save new custom tag
         const existingCustom = getCustomTags(stateRef.activeUser);
-        // Check duplicate name
         if (existingCustom.some(t => t.name.toLowerCase() === name.toLowerCase())) {
             alert("Label name already exists");
             return;
@@ -225,11 +216,7 @@ function wireCreateTagModal() {
         const newTag = { name, description: desc, color };
         const updatedCustom = [...existingCustom, newTag];
         saveCustomTags(stateRef.activeUser, updatedCustom);
-
-        // 2. Register globally
         registerCustomTags([newTag]);
-
-        // 3. Add to current note immediately
         addTagToActiveNote(stateRef.notes, stateRef.activeNoteId, name, stateRef.activeUser, callbacksRef);
 
         callbacksRef.renderActiveNote();
@@ -269,7 +256,4 @@ function updatePreview(text, color) {
 
     preview.textContent = text;
     preview.style.setProperty("--tag-color", color);
-
-    // Adjust background mix dynamically simply by relying on CSS var
-    // .tag class uses --tag-color to mix background
 }
