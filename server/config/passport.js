@@ -16,11 +16,11 @@ module.exports = function(passport) {
     }
   });
 
-  // Google Strategy
   passport.use(new GoogleStrategy({
     clientID: process.env.GOOGLE_CLIENT_ID,
     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    callbackURL: '/api/auth/google/callback'
+    callbackURL: '/api/auth/google/callback',
+    proxy: true
   }, async (accessToken, refreshToken, profile, done) => {
     try {
       let user = await User.findOne({ googleId: profile.id });
@@ -40,11 +40,11 @@ module.exports = function(passport) {
     }
   }));
 
-  // GitHub Strategy
   passport.use(new GitHubStrategy({
     clientID: process.env.GITHUB_CLIENT_ID,
     clientSecret: process.env.GITHUB_CLIENT_SECRET,
-    callbackURL: '/api/auth/github/callback'
+    callbackURL: '/api/auth/github/callback',
+    proxy: true
   }, async (accessToken, refreshToken, profile, done) => {
     try {
       let user = await User.findOne({ githubId: profile.id });
