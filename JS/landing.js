@@ -112,9 +112,9 @@ document.addEventListener('DOMContentLoaded', () => {
     // 6. Footer Information Modal Logic
     const footerData = {
         'Security': {
-            title: 'Security at Noted',
+            title: 'Security at Global Notes Workspace',
             content: `
-                <p>We take your data security seriously. Noted is built with a focus on privacy and reliability.</p>
+                <p>We take your data security seriously. Global Notes Workspace is built with a focus on privacy and reliability.</p>
                 <h3>End-to-End Principles</h3>
                 <p>Your notes are your business. We implement industry-standard encryption practices to ensure your data is secure both at rest and in transit.</p>
                 <ul>
@@ -174,9 +174,9 @@ document.addEventListener('DOMContentLoaded', () => {
             `
         },
         'About': {
-            title: 'About Noted',
+            title: 'About Global Notes Workspace',
             content: `
-                <p>Noted was born from a simple desire: to create a workspace that is as fast as your thoughts and as elegant as your ideas.</p>
+                <p>Global Notes Workspace was born from a simple desire: to create a workspace that is as fast as your thoughts and as elegant as your ideas.</p>
                 <p>We are a small team of engineers and designers dedicated to building the best tool for thinking. We believe that software should be beautiful, functional, and respect your focus.</p>
                 <p>Founded in 2026, we're building a sustainable company that puts users first.</p>
             `
@@ -198,7 +198,7 @@ document.addEventListener('DOMContentLoaded', () => {
         'Terms': {
             title: 'Terms of Service',
             content: `
-                <p>By using Noted, you agree to treat the service and its community with respect.</p>
+                <p>By using Global Notes Workspace, you agree to treat the service and its community with respect.</p>
                 <ul>
                     <li>You own your content.</li>
                     <li>Do not use the service for illegal activities.</li>

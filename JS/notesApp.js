@@ -249,10 +249,6 @@ async function initApp() {
 
 }
 
-// Redirect 0.0.0.0 to localhost to avoid "Not Secure" warning on desktop
-if (window.location.hostname === '0.0.0.0') {
-  window.location.hostname = 'localhost';
-}
 
 // Initial App Trigger
 if (document.readyState === "loading") {
