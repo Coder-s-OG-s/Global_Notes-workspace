@@ -20,6 +20,40 @@ export function insertHtmlAtCursor(html) {
 
 // Sets up all formatting toolbar buttons and their corresponding actions
 export function wireFormattingToolbar() {
+
+function applyFontSizeToSelection(size) {
+  const selection = window.getSelection();
+
+  if (!selection || selection.rangeCount === 0) {
+    return;
+  }
+
+  const range = selection.getRangeAt(0);
+
+  if (range.collapsed) {
+    return;
+  }
+
+  const span = document.createElement("span");
+  span.style.fontSize = `${size}px`;
+
+  const extracted = range.extractContents();
+
+  span.appendChild(extracted);
+
+  range.insertNode(span);
+
+  selection.removeAllRanges();
+
+  const newRange = document.createRange();
+
+  newRange.selectNodeContents(span);
+
+  selection.addRange(newRange);
+
+  saveSelection();
+}
+
   const contentEl = $("#content");
   if (!contentEl) return;
 
@@ -188,49 +222,39 @@ export function wireFormattingToolbar() {
   const decreaseBtn = $("#decrease-font-size");
   const increaseBtn = $("#increase-font-size");
 
-  if (fontSizeInput && decreaseBtn && increaseBtn) {
-    const updateFontSize = (newSize) => {
-      // Keep size within bounds
-      const size = Math.min(100, Math.max(1, parseInt(newSize) || 15));
-      fontSizeInput.value = size;
+if (fontSizeInput && decreaseBtn && increaseBtn) {
 
-      if (contentEl) {
-        contentEl.style.setProperty("--editor-font-size", `${size}px`);
-        contentEl.style.fontSize = `${size}px`;
-        // Force layout recalculation
-        contentEl.offsetHeight;
-      }
+  increaseBtn.addEventListener("click", () => {
+    const size = parseInt(fontSizeInput.value || 15) + 1;
 
-      try {
-        localStorage.setItem("notesWorkspace.textSize", size);
-      } catch (err) {
-        console.warn("Failed to save font size preference:", err);
-      }
-    };
+    fontSizeInput.value = size;
 
-    // Load saved size preference from localStorage
-    const savedSize = localStorage.getItem("notesWorkspace.textSize") || "15";
-    updateFontSize(savedSize);
-
-    // Increase button click
-    increaseBtn.addEventListener("click", () => {
-      updateFontSize(parseInt(fontSizeInput.value) + 1);
+    withRestoredSelection(() => {
+      applyFontSizeToSelection(size);
     });
+  });
 
-    // Decrease button click
-    decreaseBtn.addEventListener("click", () => {
-      updateFontSize(parseInt(fontSizeInput.value) - 1);
+  decreaseBtn.addEventListener("click", () => {
+    const size = Math.max(
+      1,
+      parseInt(fontSizeInput.value || 15) - 1
+    );
+
+    fontSizeInput.value = size;
+
+    withRestoredSelection(() => {
+      applyFontSizeToSelection(size);
     });
+  });
 
-    // Direct input change
-    fontSizeInput.addEventListener("input", (e) => {
-      updateFontSize(e.target.value);
+  fontSizeInput.addEventListener("change", () => {
+    const size = parseInt(fontSizeInput.value || 15);
+
+    withRestoredSelection(() => {
+      applyFontSizeToSelection(size);
     });
-
-    console.log("Font size stepper initialized");
-  } else {
-    console.warn("Font size stepper elements not found");
-  }
+  });
+}
 
 
   // Text color control
