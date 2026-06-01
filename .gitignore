@@ -1,7 +1,7 @@
 .vercel
 .env*.local
 .env
-JS/config.js
+client/JS/config.js
 node_modules
 dist
 public

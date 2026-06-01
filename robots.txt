@@ -1,3 +1,0 @@
-User-agent: *
-Allow: /
-Sitemap: https://jai-ramdev-timber-and-plywood.vercel.app/sitemap.xml

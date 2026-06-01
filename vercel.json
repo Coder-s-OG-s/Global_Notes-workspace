@@ -1,56 +1,9 @@
 {
-    "outputDirectory": "public",
-    "cleanUrls": true,
-    "trailingSlash": false,
-    "headers": [
-        {
-            "source": "/(.*)",
-            "headers": [
-                {
-                    "key": "X-Content-Type-Options",
-                    "value": "nosniff"
-                },
-                {
-                    "key": "X-Frame-Options",
-                    "value": "DENY"
-                },
-                {
-                    "key": "X-XSS-Protection",
-                    "value": "1; mode=block"
-                }
-            ]
-        },
-        {
-            "source": "/(.*).html",
-            "headers": [
-                {
-                    "key": "Cache-Control",
-                    "value": "public, max-age=0, must-revalidate"
-                }
-            ]
-        },
-        {
-            "source": "/sw.js",
-            "headers": [
-                {
-                    "key": "Cache-Control",
-                    "value": "public, max-age=0, must-revalidate"
-                },
-                {
-                    "key": "Service-Worker-Allowed",
-                    "value": "/"
-                }
-            ]
-        }
-    ],
-    "rewrites": [
-        {
-            "source": "/signup",
-            "destination": "/HTML/signup.html"
-        },
-        {
-            "source": "/code-workspace",
-            "destination": "/HTML/code-workspace.html"
-        }
-    ]
+  "version": 2,
+  "rewrites": [
+    { "source": "/api/(.*)", "destination": "/api/index.js" },
+    { "source": "/(CSS|JS|HTML|assets)/(.*)", "destination": "/client/$1/$2" },
+    { "source": "/(app.html|index.html|sw.js|manifest.json|robots.txt|sitemap.xml)", "destination": "/client/$1" },
+    { "source": "/(.*)", "destination": "/api/index.js" }
+  ]
 }

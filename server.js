@@ -84,18 +84,17 @@ function getAllLocalIPs() {
 server.listen(PORT, HOST, () => {
     const ips = getAllLocalIPs();
     console.log(`\n=======================================================`);
-    console.log(`✅ Server running at http://${HOST}:${PORT}/`);
-    console.log(`\n📱 Available Network Addresses (Use one of these):`);
-
+    console.log(`✅ Server is listening on all interfaces (${HOST})`);
+    console.log(`\n👉 Access it locally at: http://localhost:${PORT}/`);
+    
     if (ips.length > 0) {
+        console.log(`\n📱 On other devices, use your network IP:`);
         ips.forEach(ip => {
             console.log(`   - ${ip.name}: http://${ip.address}:${PORT}`);
         });
-        console.log(`\n👉 Enter one of the IPs above in the "Server IP" box.`);
-    } else {
-        console.log(`   (No external network interfaces found. You may be offline.)`);
     }
 
-    console.log(`\n⚠️  Keep this terminal open while sharing.`);
+    console.log(`\n⚠️  Note: "0.0.0.0" is for listening only. Do not type`);
+    console.log(`   it in your browser. Use "localhost" instead.`);
     console.log(`=======================================================\n`);
 });

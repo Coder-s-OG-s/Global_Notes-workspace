@@ -40,15 +40,21 @@ if (fs.existsSync(envPath)) {
     });
 }
 
-// 3. Copy Static Assets
-const itemsToCopy = ['index.html', 'app.html', 'sw.js', 'manifest.json', 'sitemap.xml', 'robots.txt', 'CSS', 'JS', 'HTML', 'assets', 'vercel.json', 'assets/images/app-mockup.png'];
+// 3. Copy Static Assets (from client directory)
+const itemsToCopy = ['index.html', 'app.html', 'sw.js', 'manifest.json', 'sitemap.xml', 'robots.txt', 'CSS', 'JS', 'HTML', 'assets', 'vercel.json'];
 itemsToCopy.forEach(item => {
-    const src = path.join(__dirname, item);
+    const src = path.join(__dirname, 'client', item);
     const dest = path.join(distDir, item);
     if (fs.existsSync(src)) {
         copyRecursiveSync(src, dest);
     } else {
-        console.warn(`Warning: source file/dir not found: ${src}`);
+        // Fallback for files that might still be in root (like vercel.json)
+        const rootSrc = path.join(__dirname, item);
+        if (fs.existsSync(rootSrc)) {
+            copyRecursiveSync(rootSrc, dest);
+        } else {
+            console.warn(`Warning: source file/dir not found: ${src}`);
+        }
     }
 });
 
@@ -58,6 +64,10 @@ const configContent = `const config = {
     APPWRITE_ENDPOINT: '${process.env.APPWRITE_ENDPOINT || "https://cloud.appwrite.io/v1"}',
     APPWRITE_PROJECT_ID: '${process.env.APPWRITE_PROJECT_ID || ""}',
     APPWRITE_DATABASE_ID: '${process.env.APPWRITE_DATABASE_ID || ""}',
+    APPWRITE_NOTES_COLLECTION_ID: '${process.env.APPWRITE_NOTES_COLLECTION_ID || "notes"}',
+    APPWRITE_FOLDERS_COLLECTION_ID: '${process.env.APPWRITE_FOLDERS_COLLECTION_ID || "folders"}',
+    APPWRITE_PROFILES_COLLECTION_ID: '${process.env.APPWRITE_PROFILES_COLLECTION_ID || "profiles"}',
+    APPWRITE_SHARED_NOTES_COLLECTION_ID: '${process.env.APPWRITE_SHARED_NOTES_COLLECTION_ID || "shared_notes"}',
     SUPABASE_URL: '${process.env.SUPABASE_URL || ""}',
     SUPABASE_ANON_KEY: '${process.env.SUPABASE_ANON_KEY || ""}',
     GROQ_API_KEY: '${process.env.GROQ_API_KEY || ""}'
