@@ -98,14 +98,113 @@ export function handleUnarchiveNote(notes, noteId, activeUser, callbacks) {
   }
 }
 
-// Creates a new note with optional initial tags and folder assignment
-export function handleNewNote(notes, activeUser, getActiveFilter, getSelectedDate, callbacks, activeFolderId) {
+/**
+ * Prompts the user to enter a title and select a theme color for the new note.
+ * @returns {Promise<{title: string, theme: string}|null>}
+ */
+export function promptCreateNote() {
+  return new Promise((resolve) => {
+    const dialog = document.getElementById('create-note-modal');
+    const titleInput = document.getElementById('new-note-title-input');
+    const themeInput = document.getElementById('new-note-theme-input');
+    const confirmBtn = document.getElementById('create-note-confirm');
+    const cancelBtn = document.getElementById('create-note-cancel');
+    const closeBtn = document.getElementById('close-create-note-modal');
+    const colorPlates = dialog ? dialog.querySelectorAll('.color-plate') : [];
+
+    if (!dialog || !confirmBtn || !cancelBtn || !titleInput || !themeInput) {
+      // Fallback in case dialog doesn't exist
+      const title = prompt("Enter Note Title:");
+      if (title === null) {
+        resolve(null);
+      } else {
+        resolve({ title: title.trim() || "Untitled note", theme: 'classic-blue' });
+      }
+      return;
+    }
+
+    // Reset inputs
+    titleInput.value = '';
+    themeInput.value = 'classic-blue';
+    colorPlates.forEach(plate => {
+      if (plate.getAttribute('data-color') === 'classic-blue') {
+        plate.classList.add('selected');
+      } else {
+        plate.classList.remove('selected');
+      }
+    });
+
+    const onColorPlateClick = (e) => {
+      const clickedPlate = e.currentTarget;
+      colorPlates.forEach(plate => plate.classList.remove('selected'));
+      clickedPlate.classList.add('selected');
+      themeInput.value = clickedPlate.getAttribute('data-color');
+    };
+
+    const onCancel = () => {
+      cleanup();
+      resolve(null);
+    };
+
+    const onConfirm = (e) => {
+      if (e) e.preventDefault();
+      const title = titleInput.value.trim() || "Untitled note";
+      const theme = themeInput.value;
+      cleanup();
+      resolve({ title, theme });
+    };
+
+    const onClose = () => {
+      cleanup();
+      resolve(null);
+    };
+
+    const onKeyDown = (e) => {
+      if (e.key === 'Enter') {
+        onConfirm();
+      } else if (e.key === 'Escape') {
+        onCancel();
+      }
+    };
+
+    const cleanup = () => {
+      cancelBtn.removeEventListener('click', onCancel);
+      if (closeBtn) closeBtn.removeEventListener('click', onCancel);
+      confirmBtn.removeEventListener('click', onConfirm);
+      dialog.removeEventListener('close', onClose);
+      titleInput.removeEventListener('keydown', onKeyDown);
+      colorPlates.forEach(plate => plate.removeEventListener('click', onColorPlateClick));
+      if (dialog.open) dialog.close();
+    };
+
+    cancelBtn.addEventListener('click', onCancel);
+    if (closeBtn) closeBtn.addEventListener('click', onCancel);
+    confirmBtn.addEventListener('click', onConfirm);
+    dialog.addEventListener('close', onClose);
+    titleInput.addEventListener('keydown', onKeyDown);
+    colorPlates.forEach(plate => plate.addEventListener('click', onColorPlateClick));
+
+    dialog.showModal();
+    // Auto-focus title input
+    setTimeout(() => {
+      titleInput.focus();
+    }, 50);
+  });
+}
+
+// Creates a new note with optional initial tags and folder assignment after requesting title and theme
+export async function handleNewNote(notes, activeUser, getActiveFilter, getSelectedDate, callbacks, activeFolderId) {
+  const noteDetails = await promptCreateNote();
+  if (!noteDetails) return; // User cancelled
+
   const activeFilter = getActiveFilter();
   const initialTags = activeFilter && activeFilter !== "all" ? [activeFilter] : [];
   const selectedDate = getSelectedDate();
   const nowIso = new Date().toISOString();
   const createdIso = selectedDate ? `${selectedDate}T00:00:00.000Z` : nowIso;
   const newNote = createNote({
+    title: noteDetails.title,
+    theme: noteDetails.theme,
     tags: initialTags,
     createdAt: createdIso,
     updatedAt: createdIso,

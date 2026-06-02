@@ -1,4 +1,34 @@
 require('dotenv').config();
+const path = require('path');
+const fs = require('fs');
+
+// Dynamically generate client/JS/config.js on startup to ensure front-end parity with local .env keys
+try {
+  const configContent = `const config = {
+    APPWRITE_ENDPOINT: '${process.env.APPWRITE_ENDPOINT || "https://cloud.appwrite.io/v1"}',
+    APPWRITE_PROJECT_ID: '${process.env.APPWRITE_PROJECT_ID || ""}',
+    APPWRITE_DATABASE_ID: '${process.env.APPWRITE_DATABASE_ID || ""}',
+    APPWRITE_NOTES_COLLECTION_ID: '${process.env.APPWRITE_NOTES_COLLECTION_ID || "notes"}',
+    APPWRITE_FOLDERS_COLLECTION_ID: '${process.env.APPWRITE_FOLDERS_COLLECTION_ID || "folders"}',
+    APPWRITE_PROFILES_COLLECTION_ID: '${process.env.APPWRITE_PROFILES_COLLECTION_ID || "profiles"}',
+    APPWRITE_SHARED_NOTES_COLLECTION_ID: '${process.env.APPWRITE_SHARED_NOTES_COLLECTION_ID || "shared_notes"}',
+    SUPABASE_URL: '${process.env.SUPABASE_URL || ""}',
+    SUPABASE_ANON_KEY: '${process.env.SUPABASE_ANON_KEY || ""}',
+    GROQ_API_KEY: '${process.env.GROQ_API_KEY || ""}'
+};
+
+export default config;`;
+
+  const clientJsDir = path.join(__dirname, '../client/JS');
+  if (!fs.existsSync(clientJsDir)) {
+    fs.mkdirSync(clientJsDir, { recursive: true });
+  }
+  fs.writeFileSync(path.join(clientJsDir, 'config.js'), configContent);
+  console.log('Successfully generated client/JS/config.js on server startup.');
+} catch (err) {
+  console.error('Failed to generate client/JS/config.js on server startup:', err.message);
+}
+
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
@@ -7,9 +37,9 @@ const morgan = require('morgan');
 const session = require('express-session');
 const MongoStore = require('connect-mongo');
 const passport = require('passport');
-const path = require('path');
 
 const app = express();
+app.enable('trust proxy');
 const PORT = process.env.PORT || 3000;
 
 // Connect to MongoDB Atlas

@@ -83,9 +83,20 @@ if (!fs.existsSync(distJsDir)) {
 }
 
 const configPath = path.join(distJsDir, 'config.js');
+const clientConfigPath = path.join(__dirname, 'client', 'JS', 'config.js');
+
 try {
     fs.writeFileSync(configPath, configContent);
     console.log('Successfully generated dist/JS/config.js');
+    
+    // Also write to client/JS/config.js for local development parity
+    const clientJsDir = path.dirname(clientConfigPath);
+    if (!fs.existsSync(clientJsDir)) {
+        fs.mkdirSync(clientJsDir, { recursive: true });
+    }
+    fs.writeFileSync(clientConfigPath, configContent);
+    console.log('Successfully generated client/JS/config.js');
+
     console.log('Build Complete.');
 } catch (error) {
     console.error('Error generating configuration:', error);
