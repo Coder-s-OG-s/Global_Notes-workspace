@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="description" content="AI Student Hub - Generate interactive flashcards and exam prep revision schedules.">
+    <title>Student Hub - Global Notes Workspace</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="../CSS/index.css">
+    <link rel="stylesheet" href="../CSS/student-hub.css">
+    <link rel="icon" type="image/png" href="../assets/images/logo_workspace.png" />
+    
+    <!-- PDF.js CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+</head>
+<body class="student-hub-page">
+    <!-- API Key Warning Banner -->
+    <div id="api-warning" class="api-warning-banner hidden">
+        ⚠ AI features disabled. Ensure your Groq API key is set in JS/config.js.
+    </div>
+
+    <!-- Header -->
+    <header class="hub-header">
+        <div class="header-left">
+            <a href="../app.html" class="btn ghost icon-only back-btn" title="Back to Home">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                    <polyline points="15 18 9 12 15 6"></polyline>
+                </svg>
+            </a>
+            <div class="header-brand">
+                <img src="../assets/images/logo_workspace.png" alt="Logo" width="28" height="28">
+                <h1 class="brand-h1">Student <span class="brand-accent">Hub</span></h1>
+            </div>
+        </div>
+
+        <div class="header-center">
+            <div class="tabs-navigation">
+                <button class="tab-btn active" id="tab-flashcards">Flashcards</button>
+                <button class="tab-btn" id="tab-schedule">Exam Prep Schedule</button>
+                <button class="tab-btn" id="tab-flowcharts">Flowcharts</button>
+            </div>
+        </div>
+
+        <div class="header-right">
+            <!-- Dynamic Contextual History Dropdown -->
+            <div class="history-dropdown-container">
+                <button class="btn ghost" id="btn-history-toggle" title="View History">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" style="width:14px;height:14px;margin-right:4px;">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <polyline points="12 6 12 12 16 14"></polyline>
+                    </svg>
+                    <span>History</span>
+                </button>
+                
+                <div class="history-dropdown hidden" id="history-dropdown">
+                    <div class="dropdown-header" id="history-dropdown-header">Saved Decks</div>
+                    <div class="dropdown-list" id="history-dropdown-list">
+                        <p class="decks-empty">No saved records yet.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Theme Toggle -->
+            <button class="btn ghost icon-only" id="theme-quick-toggle" title="Toggle Light/Dark Mode">
+                <svg class="icon theme-icon-sun hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                    <circle cx="12" cy="12" r="5"></circle>
+                    <line x1="12" y1="1" x2="12" y2="3"></line>
+                    <line x1="12" y1="21" x2="12" y2="23"></line>
+                    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                    <line x1="1" y1="12" x2="3" y2="12"></line>
+                    <line x1="21" y1="12" x2="23" y2="12"></line>
+                    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                </svg>
+                <svg class="icon theme-icon-moon hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                </svg>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Workspace -->
+    <main class="hub-main-content">
+        <!-- 1. FLASHCARDS SECTION -->
+        <section class="hub-view active" id="view-flashcards">
+            <div class="split-layout">
+                <!-- Inputs panel -->
+                <aside class="options-panel">
+                    <h2 class="panel-heading">Generate Study Flashcards</h2>
+                    <p class="panel-subtext">Learn concepts faster. Generate interactive cards from notes or by typing a topic.</p>
+
+                    <div class="form-group">
+                        <label for="flashcards-topic-input">Study Topic / Description</label>
+                        <textarea id="flashcards-topic-input" class="form-textarea" placeholder="E.g., Photosynthesis steps, JavaScript closures, Newton's laws of motion..."></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Or Upload Document (.txt, .md, .pdf)</label>
+                        <div class="upload-dropzone" id="flashcards-dropzone">
+                            <svg class="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                <polyline points="17 8 12 3 7 8"></polyline>
+                                <line x1="12" y1="3" x2="12" y2="15"></line>
+                            </svg>
+                            <span class="upload-text">Click to browse or drag & drop files</span>
+                            <span class="upload-filename" id="flashcards-filename"></span>
+                            <input type="file" id="flashcards-file-input" class="file-input" accept=".txt,.md,.pdf">
+                        </div>
+                    </div>
+
+                    <button class="btn primary full-width" id="btn-generate-flashcards">
+                        <span>✦ Generate Flashcards</span>
+                    </button>
+                </aside>
+
+                <!-- Output Workspace -->
+                <div class="output-workspace">
+                    <!-- Study Progress Bar -->
+                    <div class="workspace-header hidden" id="flashcards-header">
+                        <div class="progress-info">
+                            <span class="progress-title">Study Progress</span>
+                            <span class="progress-value" id="flashcards-progress-text">0% Mastered (0/0 cards)</span>
+                        </div>
+                        <div class="progress-track">
+                            <div class="progress-fill" id="flashcards-progress-fill" style="width: 0%"></div>
+                        </div>
+                    </div>
+
+                    <div class="workspace-placeholder" id="flashcards-placeholder">
+                        <div class="placeholder-icon">🃏</div>
+                        <h3>Your Flashcards Space</h3>
+                        <p>Generate study flashcards to start your interactive self-testing session.</p>
+                    </div>
+
+                    <div class="flashcards-grid hidden" id="flashcards-grid">
+                        <!-- Flashcards will be injected here -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. STUDY SCHEDULE SECTION -->
+        <section class="hub-view" id="view-schedule">
+            <div class="split-layout">
+                <!-- Inputs panel -->
+                <aside class="options-panel">
+                    <h2 class="panel-heading">Create Revision Schedule</h2>
+                    <p class="panel-subtext">Plan your study prep dynamically. Enter your syllabus and specify the exam date to receive a customized timeline.</p>
+
+                    <div class="form-group">
+                        <label for="schedule-syllabus-input">Syllabus / Revision Topics</label>
+                        <textarea id="schedule-syllabus-input" class="form-textarea" placeholder="E.g., Math: Algebra, Calculus, Statistics. Chemistry: Organic, Inorganic, Acids..."></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Or Upload Syllabus File (.txt, .md, .pdf)</label>
+                        <div class="upload-dropzone" id="schedule-dropzone">
+                            <svg class="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                <polyline points="17 8 12 3 7 8"></polyline>
+                                <line x1="12" y1="3" x2="12" y2="15"></line>
+                            </svg>
+                            <span class="upload-text">Click to browse or drag & drop files</span>
+                            <span class="upload-filename" id="schedule-filename"></span>
+                            <input type="file" id="schedule-file-input" class="file-input" accept=".txt,.md,.pdf">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="exam-date-input">Exam Date</label>
+                        <div class="date-input-container">
+                            <svg class="calendar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                <line x1="16" y1="2" x2="16" y2="6"></line>
+                                <line x1="8" y1="2" x2="8" y2="6"></line>
+                                <line x1="3" y1="10" x2="21" y2="10"></line>
+                            </svg>
+                            <input type="date" id="exam-date-input" class="form-input">
+                        </div>
+                    </div>
+
+                    <button class="btn primary full-width" id="btn-generate-schedule">
+                        <span>✦ Generate Revision Plan</span>
+                    </button>
+                </aside>
+
+                <!-- Output Workspace -->
+                <div class="output-workspace">
+                    <div class="workspace-placeholder" id="schedule-placeholder">
+                        <div class="placeholder-icon">📅</div>
+                        <h3>Your Exam Prep Timeline</h3>
+                        <p>Enter your exam date and syllabus to generate a complete day-by-day revision schedule.</p>
+                    </div>
+
+                    <div class="schedule-timeline hidden" id="schedule-timeline">
+                        <!-- Schedule timeline cards will be injected here -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. FLOWCHARTS SECTION -->
+        <section class="hub-view" id="view-flowcharts">
+            <div class="split-layout">
+                <!-- Inputs panel -->
+                <aside class="options-panel">
+                    <h2 class="panel-heading">Flowchart Maker</h2>
+                    <p class="panel-subtext">Design process diagrams. Use AI to auto-generate beautiful layout flows, then customize them below.</p>
+
+                    <!-- AI Flowchart Generator -->
+                    <div class="form-group">
+                        <label for="flowchart-ai-prompt">AI Flowchart Generator</label>
+                        <textarea id="flowchart-ai-prompt" class="form-textarea" placeholder="E.g., User registration steps, binary search algorithm, HTTP request cycle..."></textarea>
+                    </div>
+
+                    <button class="btn primary full-width" id="btn-generate-flowchart-ai">
+                        <span>✦ AI Generate Flowchart</span>
+                    </button>
+                </aside>
+
+                <!-- Output Workspace -->
+                <div class="output-workspace">
+                    <!-- Top Toolbar for Shapes and Controls -->
+                    <div class="canvas-toolbar">
+                        <div class="toolbar-btn-container dropdown-trigger-wrapper">
+                            <button class="toolbar-btn" id="btn-shapes-dropdown" title="Insert Shapes">
+                                <svg class="toolbar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M12 8v8M8 12h8"></path></svg>
+                                <span>Shapes</span>
+                                <svg class="chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                            </button>
+                            <!-- Floating Shapes Dropdown Panel -->
+                            <div class="shapes-dropdown-panel hidden" id="shapes-dropdown-panel">
+
+                                <!-- 1. Lines -->
+                                <div class="shapes-dropdown-section">
+                                    <div class="shapes-section-title">Lines</div>
+                                    <div class="shapes-grid">
+                                        <button class="shape-btn" data-shape="line" title="Line"><svg viewBox="0 0 24 24"><line x1="2" y1="2" x2="22" y2="22" stroke="currentColor" stroke-width="1.5"/></svg></button>
+                                        <button class="shape-btn" data-shape="line-up" title="Line Up"><svg viewBox="0 0 24 24"><line x1="2" y1="22" x2="22" y2="2" stroke="currentColor" stroke-width="1.5"/></svg></button>
+                                        <button class="shape-btn" data-shape="arrow" title="Arrow"><svg viewBox="0 0 24 24"><defs><marker id="pa" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0 0L10 5L0 10z" fill="currentColor"/></marker></defs><line x1="2" y1="2" x2="20" y2="20" stroke="currentColor" stroke-width="1.5" marker-end="url(#pa)"/></svg></button>
+                                        <button class="shape-btn" data-shape="arrow-up" title="Arrow Up"><svg viewBox="0 0 24 24"><line x1="2" y1="20" x2="20" y2="2" stroke="currentColor" stroke-width="1.5" marker-end="url(#pa)"/></svg></button>
+                                        <button class="shape-btn" data-shape="double-arrow" title="Double Arrow"><svg viewBox="0 0 24 24"><defs><marker id="pas" viewBox="0 0 10 10" refX="4" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M10 0L0 5L10 10z" fill="currentColor"/></marker></defs><line x1="4" y1="4" x2="20" y2="20" stroke="currentColor" stroke-width="1.5" marker-start="url(#pas)" marker-end="url(#pa)"/></svg></button>
+                                        <button class="shape-btn" data-shape="elbow" title="Elbow Connector"><svg viewBox="0 0 24 24"><path d="M2 2L12 2L12 22L22 22" fill="none" stroke="currentColor" stroke-width="1.5" marker-end="url(#pa)"/></svg></button>
+                                        <button class="shape-btn" data-shape="line-h" title="Horizontal Line"><svg viewBox="0 0 24 24"><line x1="2" y1="12" x2="22" y2="12" stroke="currentColor" stroke-width="1.5"/></svg></button>
+                                        <button class="shape-btn" data-shape="line-v" title="Vertical Line"><svg viewBox="0 0 24 24"><line x1="12" y1="2" x2="12" y2="22" stroke="currentColor" stroke-width="1.5"/></svg></button>
+                                        <button class="shape-btn" data-shape="curve" title="Curve"><svg viewBox="0 0 24 24"><path d="M2 20Q12 2 22 20" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></button>
+                                    </div>
+                                </div>
+
+                                <!-- 2. Rectangles -->
+                                <div class="shapes-dropdown-section">
+                                    <div class="shapes-section-title">Rectangles</div>
+                                    <div class="shapes-grid">
+                                        <button class="shape-btn" data-shape="rectangle" title="Rectangle"><svg viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></button>
+                                        <button class="shape-btn" data-shape="rounded-rect" title="Rounded Rectangle"><svg viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" fill="none" stroke="currentColor" stroke-width="1.5" rx="4"/></svg></button>
+                                        <button class="shape-btn" data-shape="snipped-rect" title="Snipped Corner"><svg viewBox="0 0 24 24"><polygon points="6,4 22,4 22,20 2,20 2,8" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></button>
+                                        <button class="shape-btn" data-shape="snipped-rect-both" title="Snipped Both Corners"><svg viewBox="0 0 24 24"><polygon points="6,4 18,4 22,8 22,20 2,20 2,8" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></button>
+                                        <button class="shape-btn" data-shape="single-round-rect" title="One Round Corner"><svg viewBox="0 0 24 24"><path d="M2,4 L18,4 Q22,4 22,8 L22,20 L2,20 Z" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></button>
+                                        <button class="shape-btn" data-shape="round-diag-rect" title="Diagonal Rounded"><svg viewBox="0 0 24 24"><path d="M2,8 Q2,4 6,4 L18,4 L22,4 L22,16 Q22,20 18,20 L6,20 L2,20 Z" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></button>
+                                    </div>
+                                </div>
+
+                                <!-- 3. Basic Shapes -->
+                                <div class="shapes-dropdown-section">
+                                    <div class="shapes-section-title">Basic Shapes</div>
+                                    <div class="shapes-grid">
+                                        <button class="shape-btn" data-shape="oval" title="Oval"><svg viewBox="0 0 24 24"><ellipse cx="12" cy="12" rx="10" ry="7" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></button>
+                                        <button class="shape-btn" data-shape="triangle" title="Triangle"><svg viewBox="0 0 24 24"><polygon points="12,2 22,22 2,22" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></button>
+                                        <button class="shape-btn" data-shape="right-triangle" title="Right Triangle"><svg viewBox="0 0 24 24"><polygon points="2,2 22,22 2,22" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></button>
+                                        <button class="shape-btn" data-shape="parallelogram" title="Parallelogram"><svg viewBox="0 0 24 24"><polygon points="7,4 22,4 17,20 2,20" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></button>
+                                        <button class="shape-btn" data-shape="trapezoid" title="Trapezoid"><svg viewBox="0 0 24 24"><polygon points="6,4 18,4 22,20 2,20" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></button>
+                                        <button class="shape-btn" data-shape="diamond" title="Diamond"><svg viewBox="0 0 24 24"><polygon points="12,2 22,12 12,22 2,12" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></button>
+                                        <button class="shape-btn" data-shape="pentagon" title="Pentagon"><svg viewBox="0 0 24 24"><polygon points="12,2 22,10 18,22 6,22 2,10" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></button>
+                                        <button class="shape-btn" data-shape="hexagon" title="Hexagon"><svg viewBox="0 0 24 24"><polygon points="7,2 17,2 22,12 17,22 7,22 2,12" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></button>
+                                        <button class="shape-btn" data-shape="octagon" title="Octagon"><svg viewBox="0 0 24 24"><polygon points="8,2 16,2 22,8 22,16 16,22 8,22 2,16 2,8" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></button>
+                                        <button class="shape-btn" data-shape="cross" title="Cross"><svg viewBox="0 0 24 24"><polygon points="9,2 15,2 15,9 22,9 22,15 15,15 15,22 9,22 9,15 2,15 2,9 9,9" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></button>
+                                        <button class="shape-btn" data-shape="cylinder" title="Cylinder"><svg viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="8" ry="3" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M4,5 L4,19 A8,3 0 0,0 20,19 L20,5" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></button>
+                                        <button class="shape-btn" data-shape="cube" title="Cube"><svg viewBox="0 0 24 24"><rect x="2" y="8" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5"/><polyline points="2,8 8,2 22,2 22,16 16,22" fill="none" stroke="currentColor" stroke-width="1.5"/><line x1="16" y1="8" x2="22" y2="2" stroke="currentColor" stroke-width="1.5"/></svg></button>
+                                        <button class="shape-btn" data-shape="l-shape" title="L Shape"><svg viewBox="0 0 24 24"><polygon points="2,2 8,2 8,16 22,16 22,22 2,22" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></button>
+                                        <button class="shape-btn" data-shape="smiley" title="Smiley"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="1.5"/><circle cx="8" cy="9" r="1.2" fill="currentColor"/><circle cx="16" cy="9" r="1.2" fill="currentColor"/><path d="M7,14 Q12,19 17,14" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></button>
+                                        <button class="shape-btn" data-shape="heart" title="Heart"><svg viewBox="0 0 24 24"><path d="M12,21 l-1.4,-1.3 C5.4,15.4 2,12.3 2,8.5 C2,5.4 4.4,3 7.5,3 c1.7,0 3.4,0.8 4.5,2.1 C13.1,3.8 14.8,3 16.5,3 C19.6,3 22,5.4 22,8.5 c0,3.8 -3.4,6.9 -8.6,11.5 L12,21Z" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></button>
+                                        <button class="shape-btn" data-shape="lightning" title="Lightning"><svg viewBox="0 0 24 24"><polygon points="13,2 22,2 10,12 15,12 4,22 8,12 6,12" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></button>
+                                        <button class="shape-btn" data-shape="sun" title="Sun"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="5" fill="none" stroke="currentColor" stroke-width="1.5"/><line x1="12" y1="1" x2="12" y2="3" stroke="currentColor" stroke-width="1.5"/><line x1="12" y1="21" x2="12" y2="23" stroke="currentColor" stroke-width="1.5"/><line x1="4.2" y1="4.2" x2="5.6" y2="5.6" stroke="currentColor" stroke-width="1.5"/><line x1="18.4" y1="18.4" x2="19.8" y2="19.8" stroke="currentColor" stroke-width="1.5"/><line x1="1" y1="12" x2="3" y2="12" stroke="currentColor" stroke-width="1.5"/><line x1="21" y1="12" x2="23" y2="12" stroke="currentColor" stroke-width="1.5"/><line x1="4.2" y1="19.8" x2="5.6" y2="18.4" stroke="currentColor" stroke-width="1.5"/><line x1="18.4" y1="5.6" x2="19.8" y2="4.2" stroke="currentColor" stroke-width="1.5"/></svg></button>
+                                        <button class="shape-btn" data-shape="moon" title="Moon"><svg viewBox="0 0 24 24"><path d="M12 3A9 9 0 1 0 12 21A7 7 0 0 1 12 3" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></button>
+                                        <button class="shape-btn" data-shape="cloud" title="Cloud"><svg viewBox="0 0 24 24"><path d="M18,10 A4,4 0 0,0 14,7 A6,6 0 0,0 4,11 A5,5 0 0,0 5,20 L18,20 A4.5,4.5 0 0,0 18,10Z" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></button>
+                                        <button class="shape-btn" data-shape="frame" title="Frame"><svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5"/><rect x="5" y="5" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></button>
+                                    </div>
+                                </div>
+
+                                <!-- 4. Block Arrows -->
+                                <div class="shapes-dropdown-section">
+                                    <div class="shapes-section-title">Block Arrows</div>
+                                    <div class="shapes-grid">
+                                        <button class="shape-btn" data-shape="block-right" title="Right"><svg viewBox="0 0 24 24"><polygon points="2,8 14,8 14,3 22,12 14,21 14,16 2,16" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></button>
+                                        <button class="shape-btn" data-shape="block-left" title="Left"><svg viewBox="0 0 24 24"><polygon points="22,8 10,8 10,3 2,12 10,21 10,16 22,16" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></button>
+                                        <button class="shape-btn" data-shape="block-up" title="Up"><svg viewBox="0 0 24 24"><polygon points="8,22 8,10 3,10 12,2 21,10 16,10 16,22" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></button>
+                                        <button class="shape-btn" data-shape="block-down" title="Down"><svg viewBox="0 0 24 24"><polygon points="8,2 8,14 3,14 12,22 21,14 16,14 16,2" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></button>
+                                        <button class="shape-btn" data-shape="block-left-right" title="Left-Right"><svg viewBox="0 0 24 24"><polygon points="2,12 7,7 7,10 17,10 17,7 22,12 17,17 17,14 7,14 7,17" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></button>
+                                        <button class="shape-btn" data-shape="block-up-down" title="Up-Down"><svg viewBox="0 0 24 24"><polygon points="12,2 17,7 14,7 14,17 17,17 12,22 7,17 10,17 10,7 7,7" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></button>
+                                        <button class="shape-btn" data-shape="block-4way" title="4-Way"><svg viewBox="0 0 24 24"><path d="M12 2L9 5H11V9H5V7L2 10L5 13V11H9V15H7L10 18H14L17 15H15V11H19V13L22 10L19 7V9H15V5H17Z" fill="none" stroke="currentColor" stroke-width="1.2" transform="translate(0,2)"/></svg></button>
+                                        <button class="shape-btn" data-shape="bent-arrow" title="Bent Arrow"><svg viewBox="0 0 24 24"><path d="M20,4 L20,14 L10,14 L10,10 L4,16 L10,22 L10,18 L22,18 L22,4 Z" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></button>
+                                        <button class="shape-btn" data-shape="u-turn-arrow" title="U-Turn Arrow"><svg viewBox="0 0 24 24"><path d="M6,22 L6,8 A6,6 0 0,1 18,8 L18,14 L14,14 L14,8 A2,2 0 0,0 10,8 L10,18 L14,18 L8,22 L2,18 L6,18 Z" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></button>
+                                        <button class="shape-btn" data-shape="chevron" title="Chevron"><svg viewBox="0 0 24 24"><polygon points="2,4 16,4 22,12 16,20 2,20 8,12" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></button>
+                                        <button class="shape-btn" data-shape="notched-right" title="Notched Arrow"><svg viewBox="0 0 24 24"><polygon points="2,4 18,4 22,12 18,20 2,20 6,12" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></button>
+                                        <button class="shape-btn" data-shape="striped-right" title="Striped Arrow"><svg viewBox="0 0 24 24"><polygon points="8,6 14,6 14,3 22,12 14,21 14,18 8,18" fill="none" stroke="currentColor" stroke-width="1.5"/><line x1="4" y1="6" x2="4" y2="18" stroke="currentColor" stroke-width="1.5"/><line x1="6" y1="6" x2="6" y2="18" stroke="currentColor" stroke-width="1.5"/></svg></button>
+                                    </div>
+                                </div>
+
+                                <!-- 5. Equation Shapes -->
+                                <div class="shapes-dropdown-section">
+                                    <div class="shapes-section-title">Equation Shapes</div>
+                                    <div class="shapes-grid">
+                                        <button class="shape-btn" data-shape="eq-plus" title="Plus"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="1.5"/><line x1="7" y1="12" x2="17" y2="12" stroke="currentColor" stroke-width="2"/><line x1="12" y1="7" x2="12" y2="17" stroke="currentColor" stroke-width="2"/></svg></button>
+                                        <button class="shape-btn" data-shape="eq-minus" title="Minus"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="1.5"/><line x1="7" y1="12" x2="17" y2="12" stroke="currentColor" stroke-width="2"/></svg></button>
+                                        <button class="shape-btn" data-shape="eq-multiply" title="Multiply"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="1.5"/><line x1="8" y1="8" x2="16" y2="16" stroke="currentColor" stroke-width="2"/><line x1="16" y1="8" x2="8" y2="16" stroke="currentColor" stroke-width="2"/></svg></button>
+                                        <button class="shape-btn" data-shape="eq-divide" title="Divide"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="1.5"/><line x1="7" y1="12" x2="17" y2="12" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="8" r="1.5" fill="currentColor"/><circle cx="12" cy="16" r="1.5" fill="currentColor"/></svg></button>
+                                        <button class="shape-btn" data-shape="eq-equal" title="Equal"><svg viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="3" fill="none" stroke="currentColor" stroke-width="1.5"/><line x1="6" y1="10" x2="18" y2="10" stroke="currentColor" stroke-width="2"/><line x1="6" y1="14" x2="18" y2="14" stroke="currentColor" stroke-width="2"/></svg></button>
+                                        <button class="shape-btn" data-shape="eq-notequal" title="Not Equal"><svg viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="3" fill="none" stroke="currentColor" stroke-width="1.5"/><line x1="6" y1="10" x2="18" y2="10" stroke="currentColor" stroke-width="2"/><line x1="6" y1="14" x2="18" y2="14" stroke="currentColor" stroke-width="2"/><line x1="15" y1="6" x2="9" y2="18" stroke="currentColor" stroke-width="2"/></svg></button>
+                                    </div>
+                                </div>
+
+                                <!-- 6. Flowchart -->
+                                <div class="shapes-dropdown-section">
+                                    <div class="shapes-section-title">Flowchart</div>
+                                    <div class="shapes-grid">
+                                        <button class="shape-btn" data-shape="fc-process" title="Process"><svg viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></button>
+                                        <button class="shape-btn" data-shape="fc-alt-process" title="Alternate Process"><svg viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="5" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></button>
+                                        <button class="shape-btn" data-shape="fc-decision" title="Decision"><svg viewBox="0 0 24 24"><polygon points="12,2 22,12 12,22 2,12" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></button>
+                                        <button class="shape-btn" data-shape="fc-data" title="Data"><svg viewBox="0 0 24 24"><polygon points="6,4 22,4 18,20 2,20" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></button>
+                                        <button class="shape-btn" data-shape="fc-predef-process" title="Predefined Process"><svg viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" fill="none" stroke="currentColor" stroke-width="1.5"/><line x1="5" y1="4" x2="5" y2="20" stroke="currentColor" stroke-width="1.5"/><line x1="19" y1="4" x2="19" y2="20" stroke="currentColor" stroke-width="1.5"/></svg></button>
+                                        <button class="shape-btn" data-shape="fc-internal-storage" title="Internal Storage"><svg viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" fill="none" stroke="currentColor" stroke-width="1.5"/><line x1="6" y1="4" x2="6" y2="20" stroke="currentColor" stroke-width="1.5"/><line x1="2" y1="8" x2="22" y2="8" stroke="currentColor" stroke-width="1.5"/></svg></button>
+                                        <button class="shape-btn" data-shape="fc-document" title="Document"><svg viewBox="0 0 24 24"><path d="M2,4 L22,4 L22,18 Q12,14 2,18 Z" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></button>
+                                        <button class="shape-btn" data-shape="fc-multi-document" title="Multi-Document"><svg viewBox="0 0 24 24"><path d="M6,2 L22,2 L22,16 Q14,12 6,16 Z" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M4,4 L4,18 Q12,14 20,18" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M2,6 L2,20 Q10,16 18,20" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></button>
+                                        <button class="shape-btn" data-shape="fc-terminator" title="Terminator"><svg viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="12" rx="6" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></button>
+                                        <button class="shape-btn" data-shape="fc-preparation" title="Preparation"><svg viewBox="0 0 24 24"><polygon points="6,2 18,2 22,12 18,22 6,22 2,12" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></button>
+                                        <button class="shape-btn" data-shape="fc-manual-input" title="Manual Input"><svg viewBox="0 0 24 24"><polygon points="2,6 22,2 22,22 2,22" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></button>
+                                        <button class="shape-btn" data-shape="fc-manual-op" title="Manual Operation"><svg viewBox="0 0 24 24"><polygon points="2,4 22,4 18,20 6,20" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></button>
+                                        <button class="shape-btn" data-shape="fc-connector" title="Connector"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></button>
+                                        <button class="shape-btn" data-shape="fc-off-page" title="Off-Page"><svg viewBox="0 0 24 24"><polygon points="2,2 22,2 22,16 12,22 2,16" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></button>
+                                        <button class="shape-btn" data-shape="fc-card" title="Card"><svg viewBox="0 0 24 24"><polygon points="6,2 22,2 22,22 2,22 2,6" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></button>
+                                        <button class="shape-btn" data-shape="fc-tape" title="Punched Tape"><svg viewBox="0 0 24 24"><path d="M2,6 Q7,2 12,6 Q17,10 22,6 L22,18 Q17,22 12,18 Q7,14 2,18 Z" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></button>
+                                        <button class="shape-btn" data-shape="fc-display" title="Display"><svg viewBox="0 0 24 24"><path d="M6,4 L18,4 Q22,12 18,20 L6,20 Q2,12 6,4" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></button>
+                                        <button class="shape-btn" data-shape="fc-delay" title="Delay"><svg viewBox="0 0 24 24"><path d="M2,4 L14,4 A8,8 0 0,1 14,20 L2,20 Z" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></button>
+                                    </div>
+                                </div>
+
+                                <!-- 7. Stars & Banners -->
+                                <div class="shapes-dropdown-section">
+                                    <div class="shapes-section-title">Stars &amp; Banners</div>
+                                    <div class="shapes-grid">
+                                        <button class="shape-btn" data-shape="star-4" title="4-Point Star"><svg viewBox="0 0 24 24"><polygon points="12,1 14,9 22,9 16,14 18,22 12,17 6,22 8,14 2,9 10,9" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></button>
+                                        <button class="shape-btn" data-shape="star-5" title="5-Point Star"><svg viewBox="0 0 24 24"><polygon points="12,2 15,9 22,9 16,14 18,22 12,18 6,22 8,14 2,9 9,9" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></button>
+                                        <button class="shape-btn" data-shape="star-6" title="6-Point Star"><svg viewBox="0 0 24 24"><polygon points="12,2 14,8 20,4 17,10 22,12 17,14 20,20 14,16 12,22 10,16 4,20 7,14 2,12 7,10 4,4 10,8" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></button>
+                                        <button class="shape-btn" data-shape="star-8" title="8-Point Star"><svg viewBox="0 0 24 24"><polygon points="12,1 14,8 20,3 16,9 23,12 16,15 20,21 14,16 12,23 10,16 4,21 8,15 1,12 8,9 4,3 10,8" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></button>
+                                        <button class="shape-btn" data-shape="explosion-1" title="Explosion 1"><svg viewBox="0 0 24 24"><polygon points="12,1 14,7 19,3 16,8 23,8 18,11 22,16 17,14 18,21 12,17 6,21 7,14 2,16 6,11 1,8 8,8 5,3 10,7" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></button>
+                                        <button class="shape-btn" data-shape="banner-h" title="Horizontal Scroll"><svg viewBox="0 0 24 24"><path d="M4,4 L20,4 Q22,4 22,6 L22,18 Q22,20 20,20 L4,20 Q2,20 2,18 L2,6 Q2,4 4,4" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M4,4 Q6,6 4,8" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M20,16 Q18,18 20,20" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></button>
+                                        <button class="shape-btn" data-shape="banner-v" title="Vertical Scroll"><svg viewBox="0 0 24 24"><rect x="4" y="2" width="16" height="20" rx="2" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M4,4 Q2,4 2,6 Q2,8 4,8" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M20,16 Q22,16 22,18 Q22,20 20,20" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></button>
+                                        <button class="shape-btn" data-shape="ribbon" title="Ribbon"><svg viewBox="0 0 24 24"><path d="M2,6 L6,6 L6,4 L18,4 L18,6 L22,6 L20,10 L22,14 L18,14 L18,20 L12,16 L6,20 L6,14 L2,14 L4,10 Z" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></button>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+
+                        <button class="toolbar-btn danger" id="btn-clear-canvas" title="Clear Canvas">
+                            <svg class="toolbar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-14m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                            <span>Clear</span>
+                        </button>
+                    </div>
+
+                    <div class="flowchart-canvas-container">
+                        <div class="flowchart-canvas" id="flowchart-canvas">
+                            <!-- Arrow Marker Definitions SVG (keep hidden at 0px) -->
+                            <svg width="0" height="0" style="position:absolute;">
+                                <defs>
+                                    <marker id="arrow" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                                        <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--primary)" />
+                                    </marker>
+                                    <marker id="arrow-start" viewBox="0 0 10 10" refX="4" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                                        <path d="M 10 0 L 0 5 L 10 10 z" fill="var(--primary)" />
+                                    </marker>
+                                </defs>
+                            </svg>
+                            <!-- Dynamic shape nodes will be injected here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Toast Container for floating messages -->
+    <div class="toast-container" id="toast-container"></div>
+
+    <!-- Application Script -->
+    <script type="module" src="../JS/studentHub.js"></script>
+</body>
+</html>

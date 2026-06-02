@@ -25,7 +25,7 @@ const configContent = `const config = {
 export default config;
 `;
 
-const jsDir = path.join(__dirname, 'JS');
+const jsDir = path.join(__dirname, 'client', 'JS');
 if (!fs.existsSync(jsDir)) {
     fs.mkdirSync(jsDir, { recursive: true });
 }
@@ -33,7 +33,7 @@ const configPath = path.join(jsDir, 'config.js');
 
 try {
     fs.writeFileSync(configPath, configContent);
-    console.log('Successfully generated JS/config.js');
+    console.log('Successfully generated client/JS/config.js');
 } catch (error) {
     console.error('Error generating configuration:', error);
     process.exit(1);

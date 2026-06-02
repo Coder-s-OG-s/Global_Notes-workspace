@@ -16,10 +16,18 @@ module.exports = function(passport) {
     }
   });
 
+  const callbackURLGoogle = process.env.BASE_URL 
+    ? `${process.env.BASE_URL.replace(/\/$/, '')}/api/auth/google/callback`
+    : '/api/auth/google/callback';
+
+  const callbackURLGitHub = process.env.BASE_URL 
+    ? `${process.env.BASE_URL.replace(/\/$/, '')}/api/auth/github/callback`
+    : '/api/auth/github/callback';
+
   passport.use(new GoogleStrategy({
     clientID: process.env.GOOGLE_CLIENT_ID,
     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    callbackURL: 'https://global-notes.com/api/auth/google/callback',
+    callbackURL: callbackURLGoogle,
     proxy: true
   }, async (accessToken, refreshToken, profile, done) => {
     try {
@@ -43,7 +51,7 @@ module.exports = function(passport) {
   passport.use(new GitHubStrategy({
     clientID: process.env.GITHUB_CLIENT_ID,
     clientSecret: process.env.GITHUB_CLIENT_SECRET,
-    callbackURL: 'https://global-notes.com/api/auth/github/callback',
+    callbackURL: callbackURLGitHub,
     proxy: true
   }, async (accessToken, refreshToken, profile, done) => {
     try {

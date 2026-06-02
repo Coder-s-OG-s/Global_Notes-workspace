@@ -422,3 +422,70 @@ export function renderNotesDashboard(notes, folders, activeFolderId, activeLibra
     gridEl.appendChild(card);
   });
 }
+
+/**
+ * Renders skeletal loaders in the dashboard grid while fetching notes/folders.
+ * @param {string|null} activeFolderId - The active folder ID.
+ * @param {string} activeLibraryFilter - The active library filter.
+ */
+export function renderDashboardSkeletons(activeFolderId, activeLibraryFilter) {
+  const gridEl = $("#dashboard-grid");
+  if (!gridEl) return;
+  gridEl.innerHTML = "";
+
+  const titleEl = $(".dashboard-title");
+  const statsEl = $("#dashboard-stats");
+
+  if (statsEl) {
+    statsEl.textContent = "Loading...";
+  }
+
+  // 1. Set title based on current filter/folder
+  if (activeLibraryFilter === 'favorites') {
+    if (titleEl) titleEl.textContent = "Favorite Notes";
+  } else if (activeLibraryFilter === 'archived') {
+    if (titleEl) titleEl.textContent = "Archived Notes";
+  } else if (activeFolderId) {
+    if (titleEl) titleEl.textContent = "Folder Notes";
+  } else {
+    if (titleEl) titleEl.textContent = "My Workspace";
+  }
+
+  // 2. Render Folder Skeletons (only if in All Notes / My Workspace view)
+  const showFolders = !activeFolderId && activeLibraryFilter !== 'favorites' && activeLibraryFilter !== 'archived';
+  if (showFolders) {
+    const foldersRow = document.createElement("div");
+    foldersRow.className = "dashboard-folders-icons-row skeleton-folders-row";
+    
+    // Render 3 folder skeletons
+    for (let i = 0; i < 3; i++) {
+      const folderItem = document.createElement("div");
+      folderItem.className = "dashboard-folder-icon-item skeleton-folder-loader";
+      folderItem.innerHTML = `
+        <div class="folder-mini-info">
+          <div class="skeleton-icon skeleton"></div>
+          <div class="skeleton-text skeleton" style="width: ${60 + (i * 10)}px;"></div>
+        </div>
+      `;
+      foldersRow.appendChild(folderItem);
+    }
+    gridEl.appendChild(foldersRow);
+  }
+
+  // 3. Render 6 Note Skeletons
+  for (let i = 0; i < 6; i++) {
+    const card = document.createElement("div");
+    card.className = "note-card skeleton-note-loader";
+    card.innerHTML = `
+      <div class="skeleton-title skeleton"></div>
+      <div class="skeleton-line skeleton" style="width: 90%;"></div>
+      <div class="skeleton-line skeleton" style="width: 80%;"></div>
+      <div class="skeleton-line skeleton" style="width: 50%;"></div>
+      <div class="skeleton-footer-loader">
+        <div class="skeleton-footer skeleton"></div>
+      </div>
+    `;
+    gridEl.appendChild(card);
+  }
+}
+

@@ -70,7 +70,7 @@ class CodeWorkspace {
         const apiKey = config.GROQ_API_KEY;
         if (!apiKey || apiKey === "YOUR_GROQ_API_KEY" || apiKey.includes("YOUR")) {
             document.getElementById('api-warning').classList.remove('hidden');
-            ['ai-explain-btn', 'ai-docs-btn', 'ai-improve-btn', 'ai-chat-btn'].forEach(id => {
+            ['ai-explain-btn', 'ai-docs-btn', 'ai-improve-btn', 'ai-analyze-btn', 'ai-debug-btn', 'ai-visualize-flowchart-btn', 'ai-chat-btn'].forEach(id => {
                 const btn = document.getElementById(id);
                 if (btn) {
                     btn.disabled = true;
@@ -78,10 +78,12 @@ class CodeWorkspace {
                     btn.title = "Add Groq API key to enable AI features";
 
                     // Add a small lock badge
-                    const badge = document.createElement('div');
-                    badge.className = 'lock-badge';
-                    badge.innerHTML = '🔒';
-                    btn.appendChild(badge);
+                    if (!btn.querySelector('.lock-badge')) {
+                        const badge = document.createElement('div');
+                        badge.className = 'lock-badge';
+                        badge.innerHTML = '🔒';
+                        btn.appendChild(badge);
+                    }
                 }
             });
         }
@@ -109,14 +111,48 @@ class CodeWorkspace {
             "Tab": (cm) => {
                 if (cm.somethingSelected()) {
                     cm.indentSelection("add");
+                    return;
+                }
+                const cur = cm.getCursor();
+                const lineText = cm.getLine(cur.line);
+                const aiMatch = lineText.match(/^\s*(\/\/|#)\s*AI:\s*(.+)$/i);
+                if (aiMatch) {
+                    const commentPrefix = aiMatch[1];
+                    const prompt = aiMatch[2].trim();
+                    const lineStart = { line: cur.line, ch: 0 };
+                    const lineEnd = { line: cur.line, ch: lineText.length };
+                    
+                    const tempText = `${commentPrefix} AI: ${prompt} (Generating...)`;
+                    cm.replaceRange(tempText, lineStart, lineEnd);
+                    
+                    const langSelect = document.getElementById('language-selector');
+                    const lang = langSelect ? languageMap[langSelect.value]?.name || 'JavaScript' : 'JavaScript';
+                    
+                    generateTextWithGemini(
+                        `You are an expert programming assistant. Generate a clean code snippet in ${lang} based on this prompt: "${prompt}".
+Provide ONLY the code. Do NOT wrap it in markdown codeblocks (no \`\`\`), do NOT include explanations, comments, or conversational text. Return the raw code ready to execute.`
+                    ).then((aiCode) => {
+                        const currentLineText = cm.getLine(cur.line);
+                        if (currentLineText && currentLineText.includes("(Generating...)")) {
+                            cm.replaceRange(aiCode, { line: cur.line, ch: 0 }, { line: cur.line, ch: currentLineText.length });
+                        } else {
+                            cm.replaceRange(aiCode, { line: cur.line, ch: 0 }, { line: cur.line, ch: (cm.getLine(cur.line) || '').length });
+                        }
+                    }).catch((err) => {
+                        console.error(err);
+                        const errText = `${commentPrefix} AI: ${prompt} (Error generating code)`;
+                        const currLine = cm.getLine(cur.line);
+                        cm.replaceRange(errText, { line: cur.line, ch: 0 }, { line: cur.line, ch: (currLine || '').length });
+                    });
+                    
+                    return;
+                }
+                if (cm.getOption("indentWithTabs")) {
+                    cm.replaceSelection("\t");
                 } else {
-                    if (cm.getOption("indentWithTabs")) {
-                        cm.replaceSelection("\t");
-                    } else {
-                        const n = cm.getOption("indentUnit");
-                        const spaces = Array(n + 1).join(" ");
-                        cm.replaceSelection(spaces);
-                    }
+                    const n = cm.getOption("indentUnit");
+                    const spaces = Array(n + 1).join(" ");
+                    cm.replaceSelection(spaces);
                 }
             },
             "Shift-Tab": (cm) => cm.indentSelection("subtract"),
@@ -215,7 +251,23 @@ class CodeWorkspace {
         resizer.addEventListener('mousedown', (e) => this.startResizing(e));
 
         // AI Feature Buttons
-        document.getElementById('ai-improve-btn').addEventListener('click', () => this.handleAIRequest('improve'));
+        const explainBtn = document.getElementById('ai-explain-btn');
+        if (explainBtn) explainBtn.addEventListener('click', () => this.handleAIRequest('explain'));
+        
+        const docsBtn = document.getElementById('ai-docs-btn');
+        if (docsBtn) docsBtn.addEventListener('click', () => this.handleAIRequest('docs'));
+        
+        const improveBtn = document.getElementById('ai-improve-btn');
+        if (improveBtn) improveBtn.addEventListener('click', () => this.handleAIRequest('improve'));
+
+        const analyzeBtn = document.getElementById('ai-analyze-btn');
+        if (analyzeBtn) analyzeBtn.addEventListener('click', () => this.handleAIRequest('analyze'));
+
+        const debugBtn = document.getElementById('ai-debug-btn');
+        if (debugBtn) debugBtn.addEventListener('click', () => this.handleAIRequest('debug'));
+
+        const visualizeBtn = document.getElementById('ai-visualize-flowchart-btn');
+        if (visualizeBtn) visualizeBtn.addEventListener('click', () => this.handleFlowchartRequest());
     }
 
     setupCustomLanguageSelect() {
@@ -363,6 +415,18 @@ class CodeWorkspace {
                     `Language: ${lang}\n\nCode:\n${code}`
                 );
                 this.renderAIResult("Code Improvements", response, true);
+            } else if (type === 'analyze') {
+                response = await this.callAI(
+                    "You are an expert computer science professor and algorithm optimizer. Analyze the time and space complexity of the provided code using Big-O notation. Provide a clear breakdown of the analysis and suggest code optimizations to improve efficiency. Response must contain these exact sections:\n**Time Complexity:** [e.g. O(N^2) - explanation]\n**Space Complexity:** [e.g. O(1) - explanation]\n**Complexity Breakdown:** [detailed breakdown]\n**Suggestions for Optimization:** [ideas to improve runtime or space efficiency]\n**Optimized Code:**\n[the optimized version of the code in a markdown code block]",
+                    `Language: ${lang}\n\nCode:\n${code}`
+                );
+                this.renderAIResult("Complexity & Optimization", response, true);
+            } else if (type === 'debug') {
+                response = await this.callAI(
+                    "You are an expert debugger and QA engineer. Scan the provided code for syntax or logical bugs. Explain the bugs and provide the corrected code. Response must contain these exact sections:\n**Identified Bugs:**\n[numbered list explaining what bugs were found, why they happened, and how to fix them]\n**Corrected Code:**\n[the fully corrected and bug-free code inside a markdown code block]",
+                    `Language: ${lang}\n\nCode:\n${code}`
+                );
+                this.renderAIResult("Code Debugging", response, true);
             }
         } catch (err) {
             this.renderAIError(err.message);
@@ -371,16 +435,146 @@ class CodeWorkspace {
         }
     }
 
+    async handleFlowchartRequest() {
+        const code = this.editor.getValue();
+        if (!code.trim()) {
+            this.showToast("No code to visualize.");
+            return;
+        }
+
+        this.togglePanel(true, "Generating flowchart layout...");
+        this.setAIButtonsLoading(true);
+
+        try {
+            const langSelect = document.getElementById('language-selector');
+            const lang = langSelect ? languageMap[langSelect.value]?.name || 'JavaScript' : 'JavaScript';
+            
+            const systemPrompt = `You are an expert systems flow diagram designer. Convert the user's code execution path into a highly detailed, clear, step-by-step flowchart layout.
+You MUST break down the algorithm into EACH individual step (e.g. Start, Input reading, Variable Initialization, Loop/Condition check, Loop Body statements, Pointers update, Return/Output, and End). Do NOT skip intermediate steps or simplify the algorithm to a single node.
+
+LAYOUT RULES (Strictly enforce to prevent overlap and messy layouts):
+1. Canvas bounds: x = [50 to 950], y = [50 to 950].
+2. Coordinate Grid: Align all nodes and directional arrows on a clean grid layout.
+3. Node Sizes: Default size for process/decision/terminator boxes: width = 150, height = 70.
+4. Directional Arrows (Use types "block-down", "block-right", "block-left", "block-up"):
+   - Default size for block arrows: width = 80, height = 50 (or width = 50, height = 80 depending on orientation).
+   - Place arrows exactly in the empty space between the nodes they connect.
+   - Make sure arrows NEVER overlap any process boxes or other arrows.
+5. Branching logic alignment:
+   - For a decision diamond at x = C, y = H:
+     - Branch True (Right): Place a "block-right" arrow at x = C + 160, y = H + 10, and the target shape at x = C + 260, y = H.
+     - Branch False (Left): Place a "block-left" arrow at x = C - 100, y = H + 10, and the target shape at x = C - 270, y = H.
+     - Branch Down (Next Step): Place a "block-down" arrow at x = C + 35, y = H + 80, and the next shape at x = C, y = H + 150.
+6. Cascade logic vertically: If moving to the next sequence, drop Y coordinates by at least 140px.
+
+Return ONLY a JSON array of shape objects. Each element must be a shape node:
+- "id": string (unique ID, e.g. "n1", "n2", "a1", "a2")
+- "type": string — one of: "rectangle" (process), "rounded-rect" (start/end terminators), "diamond" (decision point), "oval", "parallelogram" (input/output), "block-right", "block-down", "block-left", "block-up"
+- "label": string (short concise label, 1-4 words, e.g. "Start", "Initialize Pointers", "left < right?", "Increment left", "End")
+- "x": number (horizontal coordinate)
+- "y": number (vertical coordinate)
+- "width": number
+- "height": number
+
+Example for a clean vertical process:
+[
+  { "id": "n1", "type": "rounded-rect", "label": "Start", "x": 350, "y": 50, "width": 150, "height": 70 },
+  { "id": "a1", "type": "block-down", "label": "", "x": 385, "y": 130, "width": 80, "height": 50 },
+  { "id": "n2", "type": "rectangle", "label": "Read Input Str", "x": 350, "y": 190, "width": 150, "height": 70 }
+]`;
+
+            const response = await this.callAI(systemPrompt, `Language: ${lang}\n\nCode:\n${code}`);
+            
+            const cleanText = response.trim();
+            let data;
+            
+            // 1. Try parsing directly
+            try {
+                data = JSON.parse(cleanText);
+            } catch (e) {
+                // Ignore
+            }
+
+            // 2. Try parsing after removing outer ```json or ``` wrapper if it matches perfectly
+            if (!data && cleanText.startsWith('```') && cleanText.endsWith('```')) {
+                const matches = cleanText.match(/^```(?:json)?\s*([\s\S]*?)\s*```$/i);
+                if (matches && matches[1]) {
+                    try {
+                        data = JSON.parse(matches[1].trim());
+                    } catch (e) {
+                        // Ignore
+                    }
+                }
+            }
+
+            // 3. Substring extraction fallback
+            if (!data) {
+                let startIdx = -1;
+                while ((startIdx = cleanText.indexOf('[', startIdx + 1)) !== -1) {
+                    let endIdx = cleanText.length;
+                    while ((endIdx = cleanText.lastIndexOf(']', endIdx - 1)) !== -1 && endIdx > startIdx) {
+                        const candidate = cleanText.substring(startIdx, endIdx + 1);
+                        try {
+                            const parsed = JSON.parse(candidate);
+                            if (Array.isArray(parsed)) {
+                                data = parsed;
+                                break;
+                            }
+                        } catch (err) {
+                            // Ignore
+                        }
+                    }
+                    if (data) break;
+                }
+            }
+
+            if (!data) {
+                throw new Error("AI did not return a valid JSON array.");
+            }
+
+
+            if (!Array.isArray(data)) {
+                throw new Error("Flowchart layout must be an array of nodes.");
+            }
+
+            const shapes = data.map(n => ({
+                id: n.id || ('shape_ai_' + Math.random().toString(36).substr(2, 5)),
+                type: n.type || 'rectangle',
+                text: n.label || '',
+                x: Number(n.x) || 100,
+                y: Number(n.y) || 100,
+                width: Number(n.width) || 140,
+                height: Number(n.height) || 70
+            }));
+
+            localStorage.setItem('global_notes_hub_flowchart_shapes', JSON.stringify(shapes));
+            
+            this.showToast('Flowchart generated! Redirecting...');
+            setTimeout(() => {
+                window.location.href = 'student-hub.html#flowcharts';
+            }, 1000);
+
+        } catch (err) {
+            this.showToast(err.message || 'Flowchart generation failed.');
+            this.renderAIError(err.message);
+        } finally {
+            this.setAIButtonsLoading(false);
+            this.togglePanel(false);
+        }
+    }
+
     setAIButtonsLoading(isLoading) {
-        const btnIds = ['ai-explain-btn', 'ai-docs-btn', 'ai-improve-btn'];
+        const btnIds = ['ai-explain-btn', 'ai-docs-btn', 'ai-improve-btn', 'ai-analyze-btn', 'ai-debug-btn', 'ai-visualize-flowchart-btn'];
         btnIds.forEach(id => {
             const btn = document.getElementById(id);
-            btn.disabled = isLoading;
-            if (isLoading) {
-                btn.dataset.original = btn.innerHTML;
-                btn.innerHTML = '<span class="ai-spinner"></span>';
-            } else if (btn.dataset.original) {
-                btn.innerHTML = btn.dataset.original;
+            if (btn) {
+                btn.disabled = isLoading;
+                if (isLoading) {
+                    btn.dataset.original = btn.innerHTML;
+                    btn.innerHTML = '<span class="ai-spinner"></span>';
+                } else if (btn.dataset.original) {
+                    btn.innerHTML = btn.dataset.original;
+                }
             }
         });
     }

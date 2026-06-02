@@ -1,0 +1,1972 @@
+import config from './config.js';
+import { generateTextWithGemini } from './geminiAPI.js';
+import { THEME_KEY } from './constants.js';
+import { setThemeStorageKey, wireThemeToggle, getStoredTheme } from './themeManager.js';
+import { showToast } from './utilities.js';
+
+// --- Local Storage Keys ---
+const STORAGE_DECKS_KEY = 'global_notes_hub_decks';
+const STORAGE_ACTIVE_DECK_ID_KEY = 'global_notes_hub_active_deck_id';
+const STORAGE_SCHEDULES_KEY = 'global_notes_hub_schedules';
+const STORAGE_ACTIVE_SCHEDULE_ID_KEY = 'global_notes_hub_active_schedule_id';
+
+// --- Card Colorful Gradients ---
+const CARD_THEMES = [
+    { color: '#13b5b1', gradient: 'linear-gradient(135deg, rgba(19, 181, 177, 0.15), rgba(2, 128, 144, 0.15)), linear-gradient(135deg, #13b5b1, #028090)' }, // Aurora Teal
+    { color: '#ff6b6b', gradient: 'linear-gradient(135deg, rgba(255, 107, 107, 0.15), rgba(255, 142, 83, 0.15)), linear-gradient(135deg, #ff6b6b, #ff8e53)' }, // Sunset Rose
+    { color: '#7f00ff', gradient: 'linear-gradient(135deg, rgba(127, 0, 255, 0.15), rgba(225, 0, 255, 0.15)), linear-gradient(135deg, #7f00ff, #e100ff)' }, // Electric Violet
+    { color: '#00c6ff', gradient: 'linear-gradient(135deg, rgba(0, 198, 255, 0.15), rgba(0, 114, 255, 0.15)), linear-gradient(135deg, #00c6ff, #0072ff)' }, // Ocean Blue
+    { color: '#11998e', gradient: 'linear-gradient(135deg, rgba(17, 153, 142, 0.15), rgba(56, 239, 125, 0.15)), linear-gradient(135deg, #11998e, #38ef7d)' }, // Mystic Green
+    { color: '#f857a6', gradient: 'linear-gradient(135deg, rgba(248, 87, 166, 0.15), rgba(255, 88, 88, 0.15)), linear-gradient(135deg, #f857a6, #ff5858)' }  // Amber Glow
+];
+
+const STORAGE_FLOWCHART_SHAPES_KEY = 'global_notes_hub_flowchart_shapes';
+const STORAGE_FLOWCHARTS_LIST_KEY = 'global_notes_hub_flowcharts_list';
+const STORAGE_ACTIVE_FLOWCHART_ID_KEY = 'global_notes_hub_active_flowchart_id';
+
+// --- State Variables ---
+let flashcardFileText = '';
+let scheduleFileText = '';
+let savedDecks = [];
+let activeDeckId = null;
+let savedSchedules = [];
+let activeScheduleId = null;
+let savedFlowcharts = [];
+let activeFlowchartId = null;
+let activeTab = 'flashcards'; // 'flashcards', 'schedule', or 'flowcharts'
+
+// Flowchart State
+let shapes = [];
+let selectedShapeId = null;
+
+// Drag and Resize State
+let activeDragShapeId = null;
+let activeResizeShapeId = null;
+let resizeDirection = ''; // 'tl', 'tr', 'bl', 'br'
+let dragStartX = 0;
+let dragStartY = 0;
+let shapeStartX = 0;
+let shapeStartY = 0;
+let shapeStartWidth = 0;
+let shapeStartHeight = 0;
+
+document.addEventListener('DOMContentLoaded', () => {
+    initHub();
+});
+
+function initHub() {
+    // 1. Sync Theme
+    setThemeStorageKey(THEME_KEY);
+    wireThemeToggle();
+
+    // 2. Tab Navigation Setup
+    initTabs();
+
+    // 3. API Key Check
+    checkAPIKey();
+
+    // 4. File Upload Drag and Drop Setup
+    setupUploadDropzone('flashcards-dropzone', 'flashcards-file-input', 'flashcards-filename', (text) => {
+        flashcardFileText = text;
+        showToast('Flashcard notes uploaded successfully.', 'success');
+    });
+
+    setupUploadDropzone('schedule-dropzone', 'schedule-file-input', 'schedule-filename', (text) => {
+        scheduleFileText = text;
+        showToast('Syllabus file uploaded successfully.', 'success');
+    });
+
+    // 5. Button Action Listeners
+    document.getElementById('btn-generate-flashcards').addEventListener('click', handleGenerateFlashcards);
+    document.getElementById('btn-generate-schedule').addEventListener('click', handleGenerateSchedule);
+    
+    // Flowchart Shapes Dropdown and Controls
+    const btnShapesDropdown = document.getElementById('btn-shapes-dropdown');
+    const shapesDropdownPanel = document.getElementById('shapes-dropdown-panel');
+    if (btnShapesDropdown && shapesDropdownPanel) {
+        btnShapesDropdown.addEventListener('click', (e) => {
+            e.stopPropagation();
+            shapesDropdownPanel.classList.toggle('hidden');
+        });
+        
+        document.addEventListener('click', (e) => {
+            if (!shapesDropdownPanel.classList.contains('hidden') && !e.target.closest('.dropdown-trigger-wrapper')) {
+                shapesDropdownPanel.classList.add('hidden');
+            }
+        });
+    }
+
+    const shapeBtns = document.querySelectorAll('.shape-btn');
+    shapeBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const shapeType = btn.dataset.shape;
+            addShape(shapeType);
+            if (shapesDropdownPanel) shapesDropdownPanel.classList.add('hidden');
+        });
+    });
+
+    const btnTextbox = document.getElementById('btn-textbox');
+    if (btnTextbox) {
+        btnTextbox.addEventListener('click', () => {
+            addShape('textbox');
+        });
+    }
+
+    const btnPicture = document.getElementById('btn-picture');
+    const imageShapeInput = document.getElementById('image-shape-input');
+    if (btnPicture && imageShapeInput) {
+        btnPicture.addEventListener('click', () => {
+            imageShapeInput.click();
+        });
+
+        imageShapeInput.addEventListener('change', (e) => {
+            if (e.target.files.length) {
+                const file = e.target.files[0];
+                const reader = new FileReader();
+                reader.onload = (evt) => {
+                    addShape('picture', evt.target.result);
+                };
+                reader.readAsDataURL(file);
+                // Reset value so same image can be reselected
+                imageShapeInput.value = '';
+            }
+        });
+    }
+
+    const btnClearCanvas = document.getElementById('btn-clear-canvas');
+    if (btnClearCanvas) {
+        btnClearCanvas.addEventListener('click', clearFlowchartCanvas);
+    }
+
+    const btnGenerateFlowchartAI = document.getElementById('btn-generate-flowchart-ai');
+    if (btnGenerateFlowchartAI) {
+        btnGenerateFlowchartAI.addEventListener('click', handleGenerateFlowchartAI);
+    }
+
+    // Canvas click event to deselect active shape
+    const canvas = document.getElementById('flowchart-canvas');
+    if (canvas) {
+        canvas.addEventListener('pointerdown', (e) => {
+            if (e.target === canvas) {
+                selectedShapeId = null;
+                renderFlowchart();
+            }
+        });
+    }
+
+    // Keydown handler for Delete/Backspace key to delete selected shape
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Delete' || e.key === 'Backspace') {
+            const activeTag = document.activeElement ? document.activeElement.tagName.toLowerCase() : '';
+            if (activeTag !== 'input' && activeTag !== 'textarea') {
+                selectedShapeId && deleteSelectedShape();
+            }
+        }
+    });
+
+    // 6. History Dropdown Trigger
+    setupHistoryDropdown();
+
+    // 7. Load Saved State
+    loadSavedState();
+}
+
+// Check API Key status
+function checkAPIKey() {
+    const apiKey = config.GROQ_API_KEY;
+    if (!apiKey || apiKey === 'YOUR_GROQ_API_KEY' || apiKey.includes('YOUR')) {
+        document.getElementById('api-warning').classList.remove('hidden');
+    }
+}
+
+// Tab Toggling logic
+function initTabs() {
+    const btnFlashcards = document.getElementById('tab-flashcards');
+    const btnSchedule = document.getElementById('tab-schedule');
+    const btnFlowcharts = document.getElementById('tab-flowcharts');
+    const viewFlashcards = document.getElementById('view-flashcards');
+    const viewSchedule = document.getElementById('view-schedule');
+    const viewFlowcharts = document.getElementById('view-flowcharts');
+
+    const switchTab = (tab) => {
+        activeTab = tab;
+        closeDropdown();
+
+        // Toggle buttons active state
+        btnFlashcards.classList.toggle('active', tab === 'flashcards');
+        btnSchedule.classList.toggle('active', tab === 'schedule');
+        btnFlowcharts.classList.toggle('active', tab === 'flowcharts');
+
+        // Toggle views active state
+        viewFlashcards.classList.toggle('active', tab === 'flashcards');
+        viewSchedule.classList.toggle('active', tab === 'schedule');
+        viewFlowcharts.classList.toggle('active', tab === 'flowcharts');
+
+        // Ensure history button container is always visible
+        const historyContainer = document.querySelector('.history-dropdown-container');
+        if (historyContainer) {
+            historyContainer.classList.remove('hidden');
+        }
+
+        if (tab === 'flowcharts') {
+            renderFlowchart();
+        }
+    };
+
+    btnFlashcards.addEventListener('click', () => switchTab('flashcards'));
+    btnSchedule.addEventListener('click', () => switchTab('schedule'));
+    btnFlowcharts.addEventListener('click', () => switchTab('flowcharts'));
+
+    // Check location hash for tab routing on load
+    if (window.location.hash) {
+        const hash = window.location.hash.substring(1);
+        if (hash === 'flowcharts' || hash === 'flashcards' || hash === 'schedule') {
+            switchTab(hash);
+        }
+    }
+
+    // Dynamic hashchange listener for active transitions
+    window.addEventListener('hashchange', () => {
+        const hash = window.location.hash.substring(1);
+        if (hash === 'flowcharts' || hash === 'flashcards' || hash === 'schedule') {
+            switchTab(hash);
+        }
+    });
+}
+
+// History Dropdown Toggle
+function setupHistoryDropdown() {
+    const btnToggle = document.getElementById('btn-history-toggle');
+    const dropdown = document.getElementById('history-dropdown');
+
+    btnToggle.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const isHidden = dropdown.classList.contains('hidden');
+        if (isHidden) {
+            renderHistoryList();
+            dropdown.classList.remove('hidden');
+        } else {
+            dropdown.classList.add('hidden');
+        }
+    });
+
+    document.addEventListener('click', (e) => {
+        if (!dropdown.classList.contains('hidden') && !e.target.closest('.history-dropdown-container')) {
+            dropdown.classList.add('hidden');
+        }
+    });
+}
+
+function closeDropdown() {
+    const dropdown = document.getElementById('history-dropdown');
+    if (dropdown) dropdown.classList.add('hidden');
+}
+
+// PDF text extractor helper using PDF.js
+async function extractTextFromPDF(arrayBuffer) {
+    if (!window.pdfjsLib) {
+        throw new Error("PDF.js library not loaded. Please reload the page.");
+    }
+    
+    // Configure worker source path matching CDN version
+    window.pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+    
+    try {
+        const loadingTask = window.pdfjsLib.getDocument({ data: arrayBuffer });
+        const pdf = await loadingTask.promise;
+        let fullText = '';
+        
+        for (let i = 1; i <= pdf.numPages; i++) {
+            const page = await pdf.getPage(i);
+            const textContent = await page.getTextContent();
+            const pageText = textContent.items.map(item => item.str).join(' ');
+            fullText += pageText + '\n';
+        }
+        
+        if (!fullText.trim()) {
+            throw new Error("This PDF appears to be scanned or image-only (no selectable text found). Please upload a text-based document.");
+        }
+        
+        return fullText;
+    } catch (err) {
+        console.error("PDF Parsing error:", err);
+        throw new Error(err.message || "Failed to parse PDF content.");
+    }
+}
+
+// Drag & Drop / Input file reader
+function setupUploadDropzone(dropzoneId, inputId, filenameId, onLoaded) {
+    const dropzone = document.getElementById(dropzoneId);
+    const fileInput = document.getElementById(inputId);
+    const filenameLabel = document.getElementById(filenameId);
+    const dropzoneText = dropzone.querySelector('.upload-text');
+
+    dropzone.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        dropzone.classList.add('dragover');
+    });
+
+    dropzone.addEventListener('dragleave', () => {
+        dropzone.classList.remove('dragover');
+    });
+
+    dropzone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        dropzone.classList.remove('dragover');
+        if (e.dataTransfer.files.length) {
+            fileInput.files = e.dataTransfer.files;
+            handleFileSelect(fileInput.files[0]);
+        }
+    });
+
+    fileInput.addEventListener('change', () => {
+        if (fileInput.files.length) {
+            handleFileSelect(fileInput.files[0]);
+        }
+    });
+
+    function handleFileSelect(file) {
+        if (!file) return;
+        filenameLabel.textContent = file.name;
+        if (dropzoneText) dropzoneText.classList.add('hidden');
+
+        if (file.name.toLowerCase().endsWith('.pdf')) {
+            const reader = new FileReader();
+            reader.onload = async (e) => {
+                try {
+                    const text = await extractTextFromPDF(e.target.result);
+                    onLoaded(text);
+                } catch (err) {
+                    showToast(err.message || 'Failed to parse PDF.', 'error');
+                    filenameLabel.textContent = '';
+                    if (dropzoneText) dropzoneText.classList.remove('hidden');
+                }
+            };
+            reader.readAsArrayBuffer(file);
+        } else {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                onLoaded(e.target.result);
+            };
+            reader.readAsText(file);
+        }
+    }
+}
+
+// Parse AI response safely as JSON
+function parseJsonArray(text) {
+    let cleanText = text.trim();
+    
+    // 1. Try parsing the whole text directly
+    try {
+        return JSON.parse(cleanText);
+    } catch (e) {
+        // Ignore and proceed
+    }
+
+    // 2. Try parsing after removing outer ```json or ``` wrapper if it matches perfectly
+    if (cleanText.startsWith('```') && cleanText.endsWith('```')) {
+        const matches = cleanText.match(/^```(?:json)?\s*([\s\S]*?)\s*```$/i);
+        if (matches && matches[1]) {
+            try {
+                return JSON.parse(matches[1].trim());
+            } catch (e) {
+                // Ignore and proceed
+            }
+        }
+    }
+
+    // 3. Robust substring extraction fallback
+    const extracted = extractJsonSubstrings(cleanText);
+    if (extracted) {
+        return extracted;
+    }
+
+    throw new Error("Unable to parse AI response as JSON. Please try again.");
+}
+
+function extractJsonSubstrings(cleanText) {
+    // Try to find a valid JSON array first
+    let startIdx = -1;
+    while ((startIdx = cleanText.indexOf('[', startIdx + 1)) !== -1) {
+        let endIdx = cleanText.length;
+        while ((endIdx = cleanText.lastIndexOf(']', endIdx - 1)) !== -1 && endIdx > startIdx) {
+            const candidate = cleanText.substring(startIdx, endIdx + 1);
+            try {
+                const parsed = JSON.parse(candidate);
+                if (Array.isArray(parsed)) {
+                    return parsed;
+                }
+            } catch (err) {
+                // Ignore parse errors, try next endIdx
+            }
+        }
+    }
+
+    // Try to find a valid JSON object
+    startIdx = -1;
+    while ((startIdx = cleanText.indexOf('{', startIdx + 1)) !== -1) {
+        let endIdx = cleanText.length;
+        while ((endIdx = cleanText.lastIndexOf('}', endIdx - 1)) !== -1 && endIdx > startIdx) {
+            const candidate = cleanText.substring(startIdx, endIdx + 1);
+            try {
+                const parsed = JSON.parse(candidate);
+                if (parsed && typeof parsed === 'object') {
+                    return parsed;
+                }
+            } catch (err) {
+                // Ignore parse errors, try next endIdx
+            }
+        }
+    }
+    return null;
+}
+
+
+
+// ─── DYNAMIC HISTORY DROPDOWN RENDERER ───
+function renderHistoryList() {
+    const header = document.getElementById('history-dropdown-header');
+    const container = document.getElementById('history-dropdown-list');
+    if (!container || !header) return;
+    container.innerHTML = '';
+
+    if (activeTab === 'flashcards') {
+        header.textContent = 'Saved Study Decks';
+        if (savedDecks.length === 0) {
+            container.innerHTML = '<p class="decks-empty">No saved decks yet.</p>';
+            return;
+        }
+
+        savedDecks.forEach(deck => {
+            const item = document.createElement('div');
+            item.className = `deck-item ${deck.id === activeDeckId ? 'active' : ''}`;
+            
+            const dateStr = new Date(deck.timestamp).toLocaleDateString(undefined, {
+                month: 'short',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+
+            item.innerHTML = `
+                <div class="deck-info">
+                    <span class="deck-icon">📚</span>
+                    <div class="deck-details">
+                        <span class="deck-name">${escapeHtml(deck.name)}</span>
+                        <span class="deck-meta">${dateStr} • ${deck.cards.length} cards</span>
+                    </div>
+                </div>
+                <button class="deck-delete-btn" title="Delete Deck">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="3 6 5 6 21 6"></polyline>
+                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-14m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                    </svg>
+                </button>
+            `;
+
+            item.addEventListener('click', (e) => {
+                if (e.target.closest('.deck-delete-btn')) return;
+                selectDeck(deck.id);
+                closeDropdown();
+            });
+
+            const deleteBtn = item.querySelector('.deck-delete-btn');
+            deleteBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                deleteDeck(deck.id);
+            });
+
+            container.appendChild(item);
+        });
+    } else if (activeTab === 'schedule') {
+        header.textContent = 'Saved Revision Plans';
+        if (savedSchedules.length === 0) {
+            container.innerHTML = '<p class="decks-empty">No saved schedules yet.</p>';
+            return;
+        }
+
+        savedSchedules.forEach(sched => {
+            const item = document.createElement('div');
+            item.className = `deck-item ${sched.id === activeScheduleId ? 'active' : ''}`;
+            
+            const dateStr = new Date(sched.timestamp).toLocaleDateString(undefined, {
+                month: 'short',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+
+            item.innerHTML = `
+                <div class="deck-info">
+                    <span class="deck-icon">📅</span>
+                    <div class="deck-details">
+                        <span class="deck-name">${escapeHtml(sched.name)}</span>
+                        <span class="deck-meta">${dateStr} • ${sched.items.length} days</span>
+                    </div>
+                </div>
+                <button class="deck-delete-btn" title="Delete Schedule">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="3 6 5 6 21 6"></polyline>
+                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-14m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                    </svg>
+                </button>
+            `;
+
+            item.addEventListener('click', (e) => {
+                if (e.target.closest('.deck-delete-btn')) return;
+                selectSchedule(sched.id);
+                closeDropdown();
+            });
+
+            const deleteBtn = item.querySelector('.deck-delete-btn');
+            deleteBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                deleteScheduleRecord(sched.id);
+            });
+
+            container.appendChild(item);
+        });
+    } else if (activeTab === 'flowcharts') {
+        header.textContent = 'Saved Flowcharts';
+        if (savedFlowcharts.length === 0) {
+            container.innerHTML = '<p class="decks-empty">No saved flowcharts yet.</p>';
+            return;
+        }
+
+        savedFlowcharts.forEach(flow => {
+            const item = document.createElement('div');
+            item.className = `deck-item ${flow.id === activeFlowchartId ? 'active' : ''}`;
+            
+            const dateStr = new Date(flow.timestamp).toLocaleDateString(undefined, {
+                month: 'short',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+
+            item.innerHTML = `
+                <div class="deck-info">
+                    <span class="deck-icon">📊</span>
+                    <div class="deck-details">
+                        <span class="deck-name">${escapeHtml(flow.name)}</span>
+                        <span class="deck-meta">${dateStr} • ${flow.shapes.length} steps</span>
+                    </div>
+                </div>
+                <button class="deck-delete-btn" title="Delete Flowchart">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="3 6 5 6 21 6"></polyline>
+                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-14m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                    </svg>
+                </button>
+            `;
+
+            item.addEventListener('click', (e) => {
+                if (e.target.closest('.deck-delete-btn')) return;
+                selectFlowchart(flow.id);
+                closeDropdown();
+            });
+
+            const deleteBtn = item.querySelector('.deck-delete-btn');
+            deleteBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                deleteFlowchart(flow.id);
+            });
+
+            container.appendChild(item);
+        });
+    }
+}
+
+// ─── FLASHCARDS HANDLERS ───
+async function handleGenerateFlashcards() {
+    const topicInputEl = document.getElementById('flashcards-topic-input');
+    const topicText = topicInputEl.value.trim();
+    const sourceText = (topicText + '\n' + flashcardFileText).trim();
+
+    if (!sourceText) {
+        showToast('Please type a topic/concept or upload a notes file.', 'error');
+        return;
+    }
+
+    const btn = document.getElementById('btn-generate-flashcards');
+    const originalHtml = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = '<span class="ai-spinner"></span> Generating...';
+
+    try {
+        const prompt = `You are an expert tutor who designs highly memorable flashcards using active recall, spaced repetition, visual associations, and mnemonics.
+Analyze the following topic or notes text and generate a list of 8 highly engaging, colorful study flashcards.
+
+IMPORTANT: If the topic or notes contain programming, coding, or computer science concepts, generate "Code Comprehension Cards" containing short, clear code snippets inside markdown code blocks (using \`\`\`language ... \`\`\`). These cards should test the student's ability to:
+1. Predict the output of a code snippet
+2. Identify and debug a logical or syntax bug in a snippet
+3. Complete or fill in a missing line of code to achieve a goal
+
+Each flashcard must be returned in a JSON array of objects. You must return only a valid JSON array of objects (optionally wrapped in a \`\`\`json ... \`\`\` codeblock).
+Inside the JSON string values (for "question", "answer", and "mnemonic"), you MUST wrap all programming code snippets in markdown code blocks using \`\`\`language ... \`\`\` (e.g. \`\`\`js ... \`\`\`) or inline backticks (\`code\`) so they render with correct syntax highlighting. Do not use raw unformatted code in strings.
+
+Each object must have the following fields:
+- "question": string (concise, clear query starting with a relevant descriptive emoji, e.g. "🌱 What is photosynthesis?", or for code cards, a snippet and a question like "💻 Predict the output of this JavaScript function:\\n\`\`\`js\\nfunction greet() {\\n  return (() => 'Hello')();\\n}\\nconsole.log(greet());\\n\`\`\`")
+- "answer": string (concise explanation highlighting key terms inside <strong> tags for visual emphasis. For code cards, provide the corrected code or the output inside a code block, plus an explanation, e.g. "It outputs <strong>'Hello'</strong> because the immediately invoked arrow function is returned, which returns the string.")
+- "mnemonic": string (a short, memorable analogy, trick, memory aid, or acronym to help the student retain this information easily, e.g. "💡 Memory Aid: Remember **P**lants **N**eed **C**arbon **W**ater (**PNCW**).")
+- "category": string (a short 1-2 word classification tag, e.g., "Biology", "Web Dev", "Physics")
+
+Example format:
+[
+  {
+    "question": "🌱 What is photosynthesis?",
+    "answer": "The process by which green plants use <strong>sunlight</strong> to synthesize nutrients from <strong>carbon dioxide</strong> and <strong>water</strong>.",
+    "mnemonic": "💡 Remember: **P**lants **N**eed **C**arbon **W**ater (**PNCW**).",
+    "category": "Biology"
+  }
+]
+
+Syllabus / Notes / Topic Input:
+${sourceText}`;
+
+        const aiResponse = await generateTextWithGemini(prompt);
+        if (aiResponse.includes("Error:") || aiResponse.includes("Deployment Error")) {
+            throw new Error(aiResponse);
+        }
+
+        const cards = parseJsonArray(aiResponse);
+        if (!Array.isArray(cards)) {
+            throw new Error("AI did not return a valid list of flashcards.");
+        }
+
+        // Determine Deck Title
+        let deckName = '';
+        if (topicText) {
+            deckName = topicText.split('\n')[0].substring(0, 26).trim();
+            if (topicText.length > 26) deckName += '...';
+        } else {
+            const fileLabel = document.getElementById('flashcards-filename').textContent;
+            deckName = fileLabel ? fileLabel.substring(0, 26).trim() : 'Study Session';
+            if (fileLabel && fileLabel.length > 26) deckName += '...';
+        }
+
+        // Create new Deck record
+        const newDeck = {
+            id: Date.now().toString(),
+            name: deckName,
+            timestamp: Date.now(),
+            cards: cards.map((card, index) => ({
+                ...card,
+                mastered: false,
+                themeIdx: index % CARD_THEMES.length
+            }))
+        };
+
+        // Save to decks list
+        savedDecks.unshift(newDeck);
+        activeDeckId = newDeck.id;
+        
+        localStorage.setItem(STORAGE_DECKS_KEY, JSON.stringify(savedDecks));
+        localStorage.setItem(STORAGE_ACTIVE_DECK_ID_KEY, activeDeckId);
+
+        renderFlashcards(newDeck.cards);
+        
+        // Reset Inputs
+        topicInputEl.value = '';
+        flashcardFileText = '';
+        const filenameLabel = document.getElementById('flashcards-filename');
+        if (filenameLabel) filenameLabel.textContent = '';
+        const dropzoneText = document.querySelector('#flashcards-dropzone .upload-text');
+        if (dropzoneText) dropzoneText.classList.remove('hidden');
+
+        showToast('Flashcards generated successfully.', 'success');
+
+    } catch (err) {
+        console.error(err);
+        showToast(err.message || 'Generation failed.', 'error');
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = originalHtml;
+    }
+}
+
+function selectDeck(deckId) {
+    activeDeckId = deckId;
+    localStorage.setItem(STORAGE_ACTIVE_DECK_ID_KEY, activeDeckId);
+    
+    const activeDeck = savedDecks.find(d => d.id === activeDeckId);
+    if (activeDeck) {
+        renderFlashcards(activeDeck.cards);
+    }
+}
+
+function deleteDeck(deckId) {
+    savedDecks = savedDecks.filter(d => d.id !== deckId);
+    localStorage.setItem(STORAGE_DECKS_KEY, JSON.stringify(savedDecks));
+
+    if (activeDeckId === deckId) {
+        activeDeckId = savedDecks.length > 0 ? savedDecks[0].id : null;
+        if (activeDeckId) {
+            localStorage.setItem(STORAGE_ACTIVE_DECK_ID_KEY, activeDeckId);
+            const activeDeck = savedDecks.find(d => d.id === activeDeckId);
+            renderFlashcards(activeDeck ? activeDeck.cards : []);
+        } else {
+            localStorage.removeItem(STORAGE_ACTIVE_DECK_ID_KEY);
+            renderFlashcards([]);
+        }
+    }
+    renderHistoryList();
+    showToast('Deck deleted.', 'success');
+}
+
+function toggleCardMastery(cardIndex) {
+    const activeDeck = savedDecks.find(d => d.id === activeDeckId);
+    if (!activeDeck) return;
+
+    activeDeck.cards[cardIndex].mastered = !activeDeck.cards[cardIndex].mastered;
+    localStorage.setItem(STORAGE_DECKS_KEY, JSON.stringify(savedDecks));
+    
+    renderFlashcards(activeDeck.cards);
+}
+
+function updateProgressBar(cards) {
+    const textEl = document.getElementById('flashcards-progress-text');
+    const fillEl = document.getElementById('flashcards-progress-fill');
+    if (!textEl || !fillEl) return;
+
+    const total = cards.length;
+    const masteredCount = cards.filter(c => c.mastered).length;
+    const percentage = total > 0 ? Math.round((masteredCount / total) * 100) : 0;
+
+    textEl.textContent = `${percentage}% Mastered (${masteredCount}/${total} cards)`;
+    fillEl.style.width = `${percentage}%`;
+}
+
+function renderFlashcards(cards) {
+    const placeholder = document.getElementById('flashcards-placeholder');
+    const grid = document.getElementById('flashcards-grid');
+    const header = document.getElementById('flashcards-header');
+
+    grid.innerHTML = '';
+    
+    if (!cards || cards.length === 0) {
+        placeholder.classList.remove('hidden');
+        grid.classList.add('hidden');
+        header.classList.add('hidden');
+        return;
+    }
+
+    placeholder.classList.add('hidden');
+    grid.classList.remove('hidden');
+    header.classList.remove('hidden');
+
+    cards.forEach((card, idx) => {
+        const themeIdx = card.themeIdx !== undefined ? card.themeIdx : (idx % CARD_THEMES.length);
+        const theme = CARD_THEMES[themeIdx] || CARD_THEMES[0];
+
+        const cardEl = document.createElement('div');
+        cardEl.className = `flashcard flashcard-appear ${card.mastered ? 'mastered' : ''}`;
+        cardEl.style.animationDelay = `${idx * 0.05}s`;
+        cardEl.style.setProperty('--card-color', theme.color);
+        cardEl.style.setProperty('--card-gradient', theme.gradient);
+
+        // Build mnemonic markup if it exists
+        const mnemonicHtml = card.mnemonic ? `
+            <div class="card-mnemonic-box">
+                ${renderSafeHtml(card.mnemonic)}
+            </div>
+        ` : '';
+
+        cardEl.innerHTML = `
+            <div class="flashcard-inner">
+                <div class="flashcard-front">
+                    <span class="flashcard-category-badge">${escapeHtml(card.category || 'General')}</span>
+                    <span class="flashcard-index-label">${idx + 1} / ${cards.length}</span>
+                    ${card.mastered ? `
+                        <div class="flashcard-mastered-badge">
+                            ✓ Got It
+                        </div>
+                    ` : ''}
+                    <p>${renderSafeHtml(card.question)}</p>
+                </div>
+                <div class="flashcard-back">
+                    <div class="flashcard-back-content">
+                        <p class="flashcard-back-answer">${renderSafeHtml(card.answer)}</p>
+                        ${mnemonicHtml}
+                    </div>
+                    <button class="card-mastery-btn ${card.mastered ? 'active' : ''}" title="Mark as Mastered">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:12px;height:12px;margin-right:2px;">
+                            <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                        <span>${card.mastered ? 'Mastered' : 'Got it!'}</span>
+                    </button>
+                </div>
+            </div>
+        `;
+
+        cardEl.addEventListener('click', (e) => {
+            if (e.target.closest('.card-mastery-btn') || e.target.closest('.flashcard-back-content')) return;
+            cardEl.classList.toggle('flipped');
+        });
+
+        // Double-click back content to flip back as helper
+        const backContent = cardEl.querySelector('.flashcard-back-content');
+        backContent.addEventListener('click', (e) => {
+            if (e.target.closest('.card-mastery-btn')) return;
+            cardEl.classList.toggle('flipped');
+        });
+
+        const masteryBtn = cardEl.querySelector('.card-mastery-btn');
+        masteryBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            toggleCardMastery(idx);
+        });
+
+        grid.appendChild(cardEl);
+    });
+
+    updateProgressBar(cards);
+}
+
+// ─── REVISION SCHEDULE HANDLERS ───
+async function handleGenerateSchedule() {
+    const syllabusInputEl = document.getElementById('schedule-syllabus-input');
+    const syllabusText = syllabusInputEl.value.trim();
+    const dateInput = document.getElementById('exam-date-input').value;
+    const sourceSyllabus = (syllabusText + '\n' + scheduleFileText).trim();
+
+    if (!sourceSyllabus) {
+        showToast('Please enter your syllabus details or upload a syllabus file.', 'error');
+        return;
+    }
+
+    if (!dateInput) {
+        showToast('Please select your exam date first.', 'error');
+        return;
+    }
+
+    const examDate = new Date(dateInput);
+    const today = new Date();
+    examDate.setHours(12, 0, 0, 0);
+    today.setHours(12, 0, 0, 0);
+
+    const diffTime = examDate.getTime() - today.getTime();
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+    if (diffDays < 0) {
+        showToast('Exam date must be today or in the future.', 'error');
+        return;
+    }
+
+    const btn = document.getElementById('btn-generate-schedule');
+    const originalHtml = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = '<span class="ai-spinner"></span> Generating Plan...';
+
+    try {
+         const prompt = `You are an expert study planner. We have an exam or interview coming up in ${diffDays} days (Date: ${dateInput}).
+The student's syllabus/topics are provided below. Create a complete, professional day-by-day study and revision schedule distributing the topics logically leading up to the target date.
+
+IMPORTANT: If the syllabus/topics contain programming, coding prep, data structures and algorithms (DSA), or LeetCode, restructure the daily plan to act as a coding prep pathway. For each day, include:
+1. Specific DSA topics to master (e.g. "Sliding Window", "Binary Search", "Graphs/DFS").
+2. 2-3 specific target LeetCode practice problem names (e.g. "Two Sum", "Merge Intervals", "Longest Substring Without Repeating Characters", "Valid Parentheses").
+3. A coding tip or active-recall exercise on syntax, implementation detail, or time/space complexity.
+
+Each daily revision plan must be returned as a JSON array of objects. You must return only a valid JSON array of objects (optionally wrapped in a \`\`\`json ... \`\`\` codeblock).
+Each object must have the following properties:
+- "day": string (e.g., "Day 1")
+- "date": string (formatted date)
+- "focus": string (the main topic focus for the day, e.g. "State vs. Props & Hooks basics" or "DSA: Sliding Window Technique")
+- "duration": string (recommended study duration, e.g. "2 hours" or "1.5 hours")
+- "topics": string (a newline-separated list of concrete, checkable tasks to complete today, including specific LeetCode problem titles to solve)
+- "examPrepTip": string (a specific active-recall tip or test advice for today's topics, e.g., "💡 Practice: Explain the Time and Space complexity of the Sliding Window approach in Big-O.")
+- "urgent": boolean (set to true if this day falls within 3 days of the target date, or is a mock test / revision review day)
+
+Example format:
+[
+  {
+    "day": "Day 1",
+    "date": "June 1, 2026",
+    "focus": "React State Management",
+    "duration": "2 hours",
+    "topics": "- Review useState and useEffect hooks\\n- Refactor class components to functional",
+    "examPrepTip": "💡 Prep Tip: Build a search filter input without looking at docs.",
+    "urgent": false
+  }
+]
+
+Syllabus Details:
+${sourceSyllabus}`;
+
+        const aiResponse = await generateTextWithGemini(prompt);
+        if (aiResponse.includes("Error:") || aiResponse.includes("Deployment Error")) {
+            throw new Error(aiResponse);
+        }
+
+        const schedule = parseJsonArray(aiResponse);
+        if (!Array.isArray(schedule)) {
+            throw new Error("AI did not return a valid study schedule.");
+        }
+
+        // Initialize empty checklist states
+        schedule.forEach(item => {
+            item.checkedTasks = [];
+        });
+
+        // Determine Schedule Title
+        let scheduleName = '';
+        if (syllabusText) {
+            scheduleName = syllabusText.split('\n')[0].substring(0, 26).trim();
+            if (syllabusText.length > 26) scheduleName += '...';
+        } else {
+            const fileLabel = document.getElementById('schedule-filename').textContent;
+            scheduleName = fileLabel ? fileLabel.substring(0, 26).trim() : 'Study Plan';
+            if (fileLabel && fileLabel.length > 26) scheduleName += '...';
+        }
+        scheduleName += ` (${diffDays} days)`;
+
+        // Create new Schedule record
+        const newSchedule = {
+            id: Date.now().toString(),
+            name: scheduleName,
+            timestamp: Date.now(),
+            examDate: dateInput,
+            items: schedule
+        };
+
+        // Save to schedules list
+        savedSchedules.unshift(newSchedule);
+        activeScheduleId = newSchedule.id;
+
+        localStorage.setItem(STORAGE_SCHEDULES_KEY, JSON.stringify(savedSchedules));
+        localStorage.setItem(STORAGE_ACTIVE_SCHEDULE_ID_KEY, activeScheduleId);
+
+        renderSchedule(newSchedule.items);
+        
+        // Reset Inputs
+        syllabusInputEl.value = '';
+        scheduleFileText = '';
+        document.getElementById('exam-date-input').value = '';
+        const filenameLabel = document.getElementById('schedule-filename');
+        if (filenameLabel) filenameLabel.textContent = '';
+        const dropzoneText = document.querySelector('#schedule-dropzone .upload-text');
+        if (dropzoneText) dropzoneText.classList.remove('hidden');
+
+        showToast('Exam preparation schedule generated successfully.', 'success');
+
+    } catch (err) {
+        console.error(err);
+        showToast(err.message || 'Timeline generation failed.', 'error');
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = originalHtml;
+    }
+}
+
+function selectSchedule(schedId) {
+    activeScheduleId = schedId;
+    localStorage.setItem(STORAGE_ACTIVE_SCHEDULE_ID_KEY, activeScheduleId);
+    
+    const activeSched = savedSchedules.find(s => s.id === activeScheduleId);
+    if (activeSched) {
+        renderSchedule(activeSched.items);
+    }
+}
+
+function deleteScheduleRecord(schedId) {
+    savedSchedules = savedSchedules.filter(s => s.id !== schedId);
+    localStorage.setItem(STORAGE_SCHEDULES_KEY, JSON.stringify(savedSchedules));
+
+    if (activeScheduleId === schedId) {
+        activeScheduleId = savedSchedules.length > 0 ? savedSchedules[0].id : null;
+        if (activeScheduleId) {
+            localStorage.setItem(STORAGE_ACTIVE_SCHEDULE_ID_KEY, activeScheduleId);
+            const activeSched = savedSchedules.find(s => s.id === activeScheduleId);
+            renderSchedule(activeSched ? activeSched.items : []);
+        } else {
+            localStorage.removeItem(STORAGE_ACTIVE_SCHEDULE_ID_KEY);
+            renderSchedule([]);
+        }
+    }
+    renderHistoryList();
+    showToast('Schedule deleted.', 'success');
+}
+
+function selectFlowchart(flowId) {
+    activeFlowchartId = flowId;
+    localStorage.setItem(STORAGE_ACTIVE_FLOWCHART_ID_KEY, activeFlowchartId);
+    
+    const activeFlow = savedFlowcharts.find(f => f.id === activeFlowchartId);
+    if (activeFlow) {
+        shapes = activeFlow.shapes || [];
+        localStorage.setItem(STORAGE_FLOWCHART_SHAPES_KEY, JSON.stringify(shapes));
+        renderFlowchart();
+    }
+}
+
+function deleteFlowchart(flowId) {
+    savedFlowcharts = savedFlowcharts.filter(f => f.id !== flowId);
+    localStorage.setItem(STORAGE_FLOWCHARTS_LIST_KEY, JSON.stringify(savedFlowcharts));
+
+    if (activeFlowchartId === flowId) {
+        activeFlowchartId = savedFlowcharts.length > 0 ? savedFlowcharts[0].id : null;
+        localStorage.setItem(STORAGE_ACTIVE_FLOWCHART_ID_KEY, activeFlowchartId || '');
+        
+        if (activeFlowchartId) {
+            const activeFlow = savedFlowcharts.find(f => f.id === activeFlowchartId);
+            shapes = activeFlow ? activeFlow.shapes : [];
+        } else {
+            shapes = [];
+        }
+        localStorage.setItem(STORAGE_FLOWCHART_SHAPES_KEY, JSON.stringify(shapes));
+        renderFlowchart();
+    }
+    
+    renderHistoryList();
+    showToast('Flowchart deleted.', 'success');
+}
+
+function renderSchedule(schedule) {
+    const placeholder = document.getElementById('schedule-placeholder');
+    const timeline = document.getElementById('schedule-timeline');
+
+    timeline.innerHTML = '';
+    
+    if (!schedule || schedule.length === 0) {
+        placeholder.classList.remove('hidden');
+        timeline.classList.add('hidden');
+        return;
+    }
+
+    placeholder.classList.add('hidden');
+    timeline.classList.remove('hidden');
+
+    schedule.forEach((item, itemIdx) => {
+        const itemEl = document.createElement('div');
+        let cardClass = 'timeline-card';
+        if (item.urgent) {
+            cardClass += ' urgent';
+        }
+        itemEl.className = cardClass;
+
+        // Parse list lines dynamically to build checklist
+        const topicsStr = item.topics || '';
+        const lines = topicsStr.split('\n')
+            .map(line => line.trim())
+            .filter(line => line.length > 0);
+
+        let listHtml = '';
+        if (lines.length > 0) {
+            listHtml = `<ul class="timeline-task-list">`;
+            lines.forEach((lineText, lineIdx) => {
+                const cleanedText = lineText.replace(/^([-*•\d\.\s]+)/, '');
+                const isChecked = item.checkedTasks && item.checkedTasks[lineIdx] ? true : false;
+                
+                listHtml += `
+                    <li class="timeline-task-item">
+                        <label class="task-checkbox-label">
+                            <input type="checkbox" class="task-checkbox" data-item-idx="${itemIdx}" data-line-idx="${lineIdx}" ${isChecked ? 'checked' : ''}>
+                            <span class="task-checkbox-custom"></span>
+                            <span class="task-text">${escapeHtml(cleanedText)}</span>
+                        </label>
+                    </li>
+                `;
+            });
+            listHtml += `</ul>`;
+        } else {
+            listHtml = `<p class="timeline-topics">${escapeHtml(item.topics || '')}</p>`;
+        }
+
+        // Build Daily Focus & Prep Tips blocks
+        const focusHtml = `
+            <div class="timeline-focus-box">
+                <span class="focus-label">Daily Focus:</span>
+                <span class="focus-text">${escapeHtml(item.focus || 'General Review')}</span>
+            </div>
+        `;
+
+        const tipHtml = item.examPrepTip ? `
+            <div class="timeline-tip-box">
+                <span class="tip-icon">💡</span>
+                <p class="tip-text">${renderSafeHtml(item.examPrepTip)}</p>
+            </div>
+        ` : '';
+
+        itemEl.innerHTML = `
+            <div class="timeline-header">
+                <span class="timeline-day">${escapeHtml(item.day)}</span>
+                <div class="timeline-meta-header">
+                    <span class="timeline-duration">⏱ ${escapeHtml(item.duration || '2 hours')}</span>
+                    <span class="timeline-date">${escapeHtml(item.date)}</span>
+                </div>
+            </div>
+            ${focusHtml}
+            ${listHtml}
+            ${tipHtml}
+        `;
+
+        // Checkbox state toggle
+        const checkboxes = itemEl.querySelectorAll('.task-checkbox');
+        checkboxes.forEach(cb => {
+            cb.addEventListener('change', (e) => {
+                const iIdx = parseInt(e.target.dataset.itemIdx, 10);
+                const lIdx = parseInt(e.target.dataset.lineIdx, 10);
+                toggleScheduleTask(iIdx, lIdx, e.target.checked);
+            });
+        });
+
+        timeline.appendChild(itemEl);
+    });
+}
+
+function toggleScheduleTask(itemIdx, lineIdx, isChecked) {
+    if (activeScheduleId) {
+        const activeSched = savedSchedules.find(s => s.id === activeScheduleId);
+        if (activeSched && activeSched.items[itemIdx]) {
+            if (!activeSched.items[itemIdx].checkedTasks) {
+                activeSched.items[itemIdx].checkedTasks = [];
+            }
+            activeSched.items[itemIdx].checkedTasks[lineIdx] = isChecked;
+            localStorage.setItem(STORAGE_SCHEDULES_KEY, JSON.stringify(savedSchedules));
+        }
+    } else {
+        // Fallback for unsaved/legacy items
+        const stored = localStorage.getItem(STORAGE_SCHEDULE_KEY);
+        if (!stored) return;
+        try {
+            const schedule = JSON.parse(stored);
+            if (!schedule[itemIdx]) return;
+            
+            if (!schedule[itemIdx].checkedTasks) {
+                schedule[itemIdx].checkedTasks = [];
+            }
+            schedule[itemIdx].checkedTasks[lineIdx] = isChecked;
+
+            localStorage.setItem(STORAGE_SCHEDULE_KEY, JSON.stringify(schedule));
+        } catch (e) {
+            console.error(e);
+        }
+    }
+}
+
+// ─── LOCAL STORAGE LOADER ───
+function loadSavedState() {
+    // 1. Load Decks
+    try {
+        console.log("Loading flashcard decks from localStorage...");
+        const storedDecks = localStorage.getItem(STORAGE_DECKS_KEY);
+        if (storedDecks) {
+            savedDecks = JSON.parse(storedDecks);
+        }
+        
+        const storedActiveId = localStorage.getItem(STORAGE_ACTIVE_DECK_ID_KEY);
+        if (storedActiveId) {
+            activeDeckId = storedActiveId;
+        } else if (savedDecks.length > 0) {
+            activeDeckId = savedDecks[0].id;
+        }
+        
+        if (activeDeckId) {
+            const activeDeck = savedDecks.find(d => d.id === activeDeckId);
+            if (activeDeck) {
+                renderFlashcards(activeDeck.cards);
+            }
+        } else {
+            renderFlashcards([]);
+        }
+    } catch (e) {
+        console.error("Failed to load flashcard decks from localStorage:", e);
+    }
+
+    // 2. Load Schedules
+    try {
+        console.log("Loading study schedules from localStorage...");
+        const storedSchedules = localStorage.getItem(STORAGE_SCHEDULES_KEY);
+        if (storedSchedules) {
+            savedSchedules = JSON.parse(storedSchedules);
+        }
+        
+        const storedActiveScheduleId = localStorage.getItem(STORAGE_ACTIVE_SCHEDULE_ID_KEY);
+        if (storedActiveScheduleId) {
+            activeScheduleId = storedActiveScheduleId;
+        } else if (savedSchedules.length > 0) {
+            activeScheduleId = savedSchedules[0].id;
+        }
+        
+        if (activeScheduleId) {
+            const activeSched = savedSchedules.find(s => s.id === activeScheduleId);
+            if (activeSched) {
+                renderSchedule(activeSched.items);
+            }
+        } else {
+            // Check legacy key
+            const savedSchedule = localStorage.getItem(STORAGE_SCHEDULE_KEY);
+            if (savedSchedule) {
+                const schedule = JSON.parse(savedSchedule);
+                if (Array.isArray(schedule) && schedule.length) {
+                    renderSchedule(schedule);
+                }
+            } else {
+                renderSchedule([]);
+            }
+        }
+    } catch (e) {
+        console.error("Failed to load schedules from localStorage:", e);
+    }
+
+    // 3. Load Flowcharts
+    try {
+        console.log("Loading flowchart state from localStorage...");
+        const storedFlowcharts = localStorage.getItem(STORAGE_FLOWCHARTS_LIST_KEY);
+        if (storedFlowcharts) {
+            savedFlowcharts = JSON.parse(storedFlowcharts);
+        }
+        
+        const storedActiveFlowchartId = localStorage.getItem(STORAGE_ACTIVE_FLOWCHART_ID_KEY);
+        if (storedActiveFlowchartId) {
+            activeFlowchartId = storedActiveFlowchartId;
+        } else if (savedFlowcharts.length > 0) {
+            activeFlowchartId = savedFlowcharts[0].id;
+        }
+
+        // Check for new/unsaved visualizations from code workspace
+        const rawStored = localStorage.getItem(STORAGE_FLOWCHART_SHAPES_KEY);
+        if (rawStored) {
+            const rawShapes = JSON.parse(rawStored);
+            if (rawShapes && rawShapes.length > 0) {
+                const isAlreadySaved = savedFlowcharts.some(f => JSON.stringify(f.shapes) === rawStored);
+                if (!isAlreadySaved) {
+                    const newFlow = {
+                        id: 'vis_' + Date.now().toString(),
+                        name: 'Visualized Code',
+                        timestamp: Date.now(),
+                        shapes: rawShapes
+                    };
+                    savedFlowcharts.unshift(newFlow);
+                    activeFlowchartId = newFlow.id;
+                    localStorage.setItem(STORAGE_FLOWCHARTS_LIST_KEY, JSON.stringify(savedFlowcharts));
+                    localStorage.setItem(STORAGE_ACTIVE_FLOWCHART_ID_KEY, activeFlowchartId);
+                }
+            }
+        }
+
+        if (activeFlowchartId) {
+            const activeFlow = savedFlowcharts.find(f => f.id === activeFlowchartId);
+            if (activeFlow) {
+                shapes = activeFlow.shapes || [];
+                localStorage.setItem(STORAGE_FLOWCHART_SHAPES_KEY, JSON.stringify(shapes));
+            }
+        } else {
+            loadFlowchartState();
+        }
+
+        if (activeTab === 'flowcharts') {
+            renderFlowchart();
+        }
+    } catch (e) {
+        console.error("Failed to load flowchart state from localStorage:", e);
+    }
+}
+
+// ─── HELPERS ───
+function escapeHtml(str) {
+    if (!str) return '';
+    return str
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+}
+
+function renderSafeHtml(str) {
+    if (!str) return '';
+    let escaped = escapeHtml(str);
+    
+    // Parse markdown multi-line code blocks (e.g. ```javascript ... ```)
+    escaped = escaped.replace(/```(?:[a-zA-Z0-9+#]+)?\n?([\s\S]*?)```/g, (match, code) => {
+        return `<pre class="code-block-flashcard"><code>${code.trim()}</code></pre>`;
+    });
+
+    // Parse inline code (e.g. `code`)
+    escaped = escaped.replace(/`([^`]+)`/g, '<code class="inline-code-flashcard">$1</code>');
+
+    escaped = escaped
+        .replace(/&lt;strong&gt;/g, '<strong>')
+        .replace(/&lt;\/strong&gt;/g, '</strong>')
+        .replace(/&lt;b&gt;/g, '<b>')
+        .replace(/&lt;\/b&gt;/g, '</b>')
+        .replace(/&lt;em&gt;/g, '<em>')
+        .replace(/&lt;\/em&gt;/g, '</em>')
+        .replace(/\*\*([\s\S]*?)\*\*/g, '<strong>$1</strong>'); // Parse bold markdown fallbacks
+    return escaped;
+}
+
+// ─── FLOWCHART MAKER FUNCTIONS ───
+
+function saveFlowchartState() {
+    localStorage.setItem(STORAGE_FLOWCHART_SHAPES_KEY, JSON.stringify(shapes));
+    if (activeFlowchartId) {
+        const idx = savedFlowcharts.findIndex(f => f.id === activeFlowchartId);
+        if (idx !== -1) {
+            savedFlowcharts[idx].shapes = shapes;
+            localStorage.setItem(STORAGE_FLOWCHARTS_LIST_KEY, JSON.stringify(savedFlowcharts));
+        }
+    }
+}
+
+function loadFlowchartState() {
+    try {
+        const storedShapes = localStorage.getItem(STORAGE_FLOWCHART_SHAPES_KEY);
+        shapes = storedShapes ? JSON.parse(storedShapes) : [];
+    } catch (e) {
+        console.error("Failed to load flowchart state:", e);
+        shapes = [];
+    }
+}
+
+// ─── SVG Geometry Builders ───
+// Returns the inner SVG markup for each supported shape type
+function getSvgContentForType(type) {
+    switch (type) {
+        // ── Lines & Arrows ──
+        case 'line':
+            return `<line x1="2" y1="2" x2="98" y2="98" vector-effect="non-scaling-stroke" />`;
+        case 'line-up':
+            return `<line x1="2" y1="98" x2="98" y2="2" vector-effect="non-scaling-stroke" />`;
+        case 'line-h':
+            return `<line x1="2" y1="50" x2="98" y2="50" vector-effect="non-scaling-stroke" />`;
+        case 'line-v':
+            return `<line x1="50" y1="2" x2="50" y2="98" vector-effect="non-scaling-stroke" />`;
+        case 'curve':
+            return `<path d="M2 90 Q50 2 98 90" fill="none" vector-effect="non-scaling-stroke" />`;
+        case 'arrow':
+            return `<defs><marker id="fc-arrow" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="var(--primary)" /></marker></defs>
+                    <line x1="2" y1="2" x2="92" y2="92" vector-effect="non-scaling-stroke" marker-end="url(#fc-arrow)" />`;
+        case 'arrow-up':
+            return `<defs><marker id="fc-arrow-up" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="var(--primary)" /></marker></defs>
+                    <line x1="2" y1="92" x2="92" y2="2" vector-effect="non-scaling-stroke" marker-end="url(#fc-arrow-up)" />`;
+        case 'double-arrow':
+            return `<defs>
+                      <marker id="fc-da-end" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="var(--primary)" /></marker>
+                      <marker id="fc-da-start" viewBox="0 0 10 10" refX="4" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 10 0 L 0 5 L 10 10 z" fill="var(--primary)" /></marker>
+                    </defs>
+                    <line x1="8" y1="8" x2="92" y2="92" vector-effect="non-scaling-stroke" marker-start="url(#fc-da-start)" marker-end="url(#fc-da-end)" />`;
+        case 'elbow':
+            return `<defs><marker id="fc-elbow-arrow" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="var(--primary)" /></marker></defs>
+                    <path d="M 5 5 L 50 5 L 50 95 L 95 95" fill="none" vector-effect="non-scaling-stroke" marker-end="url(#fc-elbow-arrow)" />`;
+
+        // ── Rectangles ──
+        case 'rectangle':
+        case 'process':
+        case 'fc-process':
+            return `<rect x="2" y="2" width="96" height="96" rx="2" vector-effect="non-scaling-stroke" />`;
+        case 'rounded-rect':
+        case 'terminator':
+        case 'fc-alt-process':
+            return `<rect x="2" y="2" width="96" height="96" rx="20" vector-effect="non-scaling-stroke" />`;
+        case 'snipped-rect':
+            return `<polygon points="18,2 98,2 98,98 2,98 2,18" vector-effect="non-scaling-stroke" />`;
+        case 'snipped-rect-both':
+            return `<polygon points="18,2 82,2 98,18 98,98 2,98 2,18" vector-effect="non-scaling-stroke" />`;
+        case 'single-round-rect':
+            return `<path d="M2,2 L80,2 Q98,2 98,20 L98,98 L2,98 Z" vector-effect="non-scaling-stroke" />`;
+        case 'round-diag-rect':
+            return `<path d="M2,20 Q2,2 20,2 L80,2 L98,2 L98,80 Q98,98 80,98 L20,98 L2,98 Z" vector-effect="non-scaling-stroke" />`;
+
+        // ── Basic Shapes ──
+        case 'oval':
+        case 'circle':
+            return `<ellipse cx="50" cy="50" rx="48" ry="48" vector-effect="non-scaling-stroke" />`;
+        case 'triangle':
+            return `<polygon points="50,2 98,98 2,98" vector-effect="non-scaling-stroke" />`;
+        case 'right-triangle':
+            return `<polygon points="2,2 98,98 2,98" vector-effect="non-scaling-stroke" />`;
+        case 'parallelogram':
+        case 'fc-data':
+            return `<polygon points="25,2 98,2 75,98 2,98" vector-effect="non-scaling-stroke" />`;
+        case 'trapezoid':
+        case 'fc-manual-op':
+            return `<polygon points="20,2 80,2 98,98 2,98" vector-effect="non-scaling-stroke" />`;
+        case 'diamond':
+        case 'decision':
+        case 'fc-decision':
+            return `<polygon points="50,2 98,50 50,98 2,50" vector-effect="non-scaling-stroke" />`;
+        case 'pentagon':
+            return `<polygon points="50,2 98,38 80,98 20,98 2,38" vector-effect="non-scaling-stroke" />`;
+        case 'hexagon':
+        case 'fc-preparation':
+            return `<polygon points="20,2 80,2 98,50 80,98 20,98 2,50" vector-effect="non-scaling-stroke" />`;
+        case 'octagon':
+            return `<polygon points="30,2 70,2 98,30 98,70 70,98 30,98 2,70 2,30" vector-effect="non-scaling-stroke" />`;
+        case 'cylinder':
+            return `<ellipse cx="50" cy="15" rx="46" ry="13" vector-effect="non-scaling-stroke" />
+                    <path d="M 4,15 L 4,85 A 46,13 0 0 0 96,85 L 96,15" fill="none" vector-effect="non-scaling-stroke" />`;
+        case 'cube':
+            return `<rect x="2" y="20" width="68" height="68" vector-effect="non-scaling-stroke" />
+                    <rect x="30" y="2" width="68" height="68" vector-effect="non-scaling-stroke" />
+                    <line x1="2" y1="20" x2="30" y2="2" vector-effect="non-scaling-stroke" />
+                    <line x1="70" y1="20" x2="98" y2="2" vector-effect="non-scaling-stroke" />
+                    <line x1="70" y1="88" x2="98" y2="70" vector-effect="non-scaling-stroke" />`;
+        case 'cross':
+            return `<polygon points="35,2 65,2 65,35 98,35 98,65 65,65 65,98 35,98 35,65 2,65 2,35 35,35" vector-effect="non-scaling-stroke" />`;
+        case 'l-shape':
+            return `<polygon points="2,2 30,2 30,65 98,65 98,98 2,98" vector-effect="non-scaling-stroke" />`;
+        case 'smiley':
+            return `<circle cx="50" cy="50" r="46" vector-effect="non-scaling-stroke" />
+                    <circle cx="35" cy="38" r="4" fill="var(--primary)" />
+                    <circle cx="65" cy="38" r="4" fill="var(--primary)" />
+                    <path d="M 30,62 Q 50,78 70,62" fill="none" vector-effect="non-scaling-stroke" />`;
+        case 'heart':
+            return `<path d="M 50,90 l -6,-5.5 C 20,64 5,52 5,37 C 5,22 17,12 30,12 c 8,0 15,4 20,9 C 55,16 62,12 70,12 c 13,0 25,10 25,25 c 0,15 -15,27 -39,47.5 L 50,90 Z" vector-effect="non-scaling-stroke" />`;
+        case 'lightning':
+            return `<polygon points="55,2 95,2 40,50 60,50 5,98 30,50 20,50" vector-effect="non-scaling-stroke" />`;
+        case 'sun':
+            return `<circle cx="50" cy="50" r="20" vector-effect="non-scaling-stroke" />
+                    <line x1="50" y1="5" x2="50" y2="15" vector-effect="non-scaling-stroke" />
+                    <line x1="50" y1="85" x2="50" y2="95" vector-effect="non-scaling-stroke" />
+                    <line x1="5" y1="50" x2="15" y2="50" vector-effect="non-scaling-stroke" />
+                    <line x1="85" y1="50" x2="95" y2="50" vector-effect="non-scaling-stroke" />
+                    <line x1="18" y1="18" x2="25" y2="25" vector-effect="non-scaling-stroke" />
+                    <line x1="75" y1="75" x2="82" y2="82" vector-effect="non-scaling-stroke" />
+                    <line x1="82" y1="18" x2="75" y2="25" vector-effect="non-scaling-stroke" />
+                    <line x1="25" y1="75" x2="18" y2="82" vector-effect="non-scaling-stroke" />`;
+        case 'moon':
+            return `<path d="M 50 5 A 45 45 0 1 0 50 95 A 35 35 0 0 1 50 5" vector-effect="non-scaling-stroke" />`;
+        case 'cloud':
+            return `<path d="M 76,40 A 18,18 0 0,0 58,26 A 26,26 0 0,0 14,44 A 22,22 0 0,0 18,82 L 76,82 A 20,20 0 0,0 76,40 Z" vector-effect="non-scaling-stroke" />`;
+        case 'frame':
+            return `<rect x="2" y="2" width="96" height="96" vector-effect="non-scaling-stroke" />
+                    <rect x="14" y="14" width="72" height="72" vector-effect="non-scaling-stroke" />`;
+
+        // ── Block Arrows ──
+        case 'block-right':
+            return `<polygon points="2,30 60,30 60,8 98,50 60,92 60,70 2,70" vector-effect="non-scaling-stroke" />`;
+        case 'block-left':
+            return `<polygon points="98,30 40,30 40,8 2,50 40,92 40,70 98,70" vector-effect="non-scaling-stroke" />`;
+        case 'block-up':
+            return `<polygon points="30,98 30,40 8,40 50,2 92,40 70,40 70,98" vector-effect="non-scaling-stroke" />`;
+        case 'block-down':
+            return `<polygon points="30,2 30,60 8,60 50,98 92,60 70,60 70,2" vector-effect="non-scaling-stroke" />`;
+        case 'block-left-right':
+            return `<polygon points="2,50 20,25 20,40 80,40 80,25 98,50 80,75 80,60 20,60 20,75" vector-effect="non-scaling-stroke" />`;
+        case 'block-up-down':
+            return `<polygon points="50,2 75,20 60,20 60,80 75,80 50,98 25,80 40,80 40,20 25,20" vector-effect="non-scaling-stroke" />`;
+        case 'block-4way':
+            return `<path d="M 50 2 L 38 18 L 45 18 L 45 38 L 25 38 L 25 32 L 8 44 L 25 56 L 25 50 L 45 50 L 45 70 L 38 70 L 50 86 L 62 70 L 55 70 L 55 50 L 75 50 L 75 56 L 92 44 L 75 32 L 75 38 L 55 38 L 55 18 L 62 18 Z" vector-effect="non-scaling-stroke" />`;
+        case 'bent-arrow':
+            return `<path d="M85,5 L85,55 L40,55 L40,40 L5,65 L40,90 L40,75 L95,75 L95,5 Z" vector-effect="non-scaling-stroke" />`;
+        case 'u-turn-arrow':
+            return `<path d="M20,98 L20,30 A30,30 0 0,1 80,30 L80,55 L65,55 L65,30 A15,15 0 0,0 35,30 L35,80 L55,80 L30,98 L5,80 L20,80 Z" vector-effect="non-scaling-stroke" />`;
+        case 'chevron':
+            return `<polygon points="2,10 65,10 98,50 65,90 2,90 35,50" vector-effect="non-scaling-stroke" />`;
+        case 'notched-right':
+            return `<polygon points="2,10 75,10 98,50 75,90 2,90 22,50" vector-effect="non-scaling-stroke" />`;
+        case 'striped-right':
+            return `<polygon points="30,25 60,25 60,8 95,50 60,92 60,75 30,75" vector-effect="non-scaling-stroke" />
+                    <line x1="12" y1="25" x2="12" y2="75" vector-effect="non-scaling-stroke" />
+                    <line x1="20" y1="25" x2="20" y2="75" vector-effect="non-scaling-stroke" />`;
+
+        // ── Equation Shapes ──
+        case 'eq-plus':
+            return `<circle cx="50" cy="50" r="46" vector-effect="non-scaling-stroke" />
+                    <line x1="25" y1="50" x2="75" y2="50" vector-effect="non-scaling-stroke" />
+                    <line x1="50" y1="25" x2="50" y2="75" vector-effect="non-scaling-stroke" />`;
+        case 'eq-minus':
+            return `<circle cx="50" cy="50" r="46" vector-effect="non-scaling-stroke" />
+                    <line x1="25" y1="50" x2="75" y2="50" vector-effect="non-scaling-stroke" />`;
+        case 'eq-multiply':
+            return `<circle cx="50" cy="50" r="46" vector-effect="non-scaling-stroke" />
+                    <line x1="30" y1="30" x2="70" y2="70" vector-effect="non-scaling-stroke" />
+                    <line x1="70" y1="30" x2="30" y2="70" vector-effect="non-scaling-stroke" />`;
+        case 'eq-divide':
+            return `<circle cx="50" cy="50" r="46" vector-effect="non-scaling-stroke" />
+                    <line x1="25" y1="50" x2="75" y2="50" vector-effect="non-scaling-stroke" />
+                    <circle cx="50" cy="32" r="5" fill="var(--primary)" />
+                    <circle cx="50" cy="68" r="5" fill="var(--primary)" />`;
+        case 'eq-equal':
+            return `<rect x="2" y="10" width="96" height="80" rx="10" vector-effect="non-scaling-stroke" />
+                    <line x1="20" y1="40" x2="80" y2="40" vector-effect="non-scaling-stroke" />
+                    <line x1="20" y1="60" x2="80" y2="60" vector-effect="non-scaling-stroke" />`;
+        case 'eq-notequal':
+            return `<rect x="2" y="10" width="96" height="80" rx="10" vector-effect="non-scaling-stroke" />
+                    <line x1="20" y1="40" x2="80" y2="40" vector-effect="non-scaling-stroke" />
+                    <line x1="20" y1="60" x2="80" y2="60" vector-effect="non-scaling-stroke" />
+                    <line x1="65" y1="18" x2="35" y2="82" vector-effect="non-scaling-stroke" />`;
+
+        // ── Flowchart Shapes ──
+        case 'fc-predef-process':
+            return `<rect x="2" y="2" width="96" height="96" vector-effect="non-scaling-stroke" />
+                    <line x1="14" y1="2" x2="14" y2="98" vector-effect="non-scaling-stroke" />
+                    <line x1="86" y1="2" x2="86" y2="98" vector-effect="non-scaling-stroke" />`;
+        case 'fc-internal-storage':
+            return `<rect x="2" y="2" width="96" height="96" vector-effect="non-scaling-stroke" />
+                    <line x1="18" y1="2" x2="18" y2="98" vector-effect="non-scaling-stroke" />
+                    <line x1="2" y1="18" x2="98" y2="18" vector-effect="non-scaling-stroke" />`;
+        case 'fc-document':
+            return `<path d="M2,5 L98,5 L98,80 Q50,65 2,80 Z" vector-effect="non-scaling-stroke" />`;
+        case 'fc-multi-document':
+            return `<path d="M12,2 L98,2 L98,70 Q55,55 12,70 Z" vector-effect="non-scaling-stroke" />
+                    <path d="M7,10 L7,78 Q50,63 93,78" fill="none" vector-effect="non-scaling-stroke" />
+                    <path d="M2,18 L2,86 Q45,71 88,86" fill="none" vector-effect="non-scaling-stroke" />`;
+        case 'fc-terminator':
+            return `<rect x="2" y="15" width="96" height="70" rx="35" vector-effect="non-scaling-stroke" />`;
+        case 'fc-manual-input':
+            return `<polygon points="2,20 98,2 98,98 2,98" vector-effect="non-scaling-stroke" />`;
+        case 'fc-connector':
+        case 'connector':
+            return `<circle cx="50" cy="50" r="38" vector-effect="non-scaling-stroke" />`;
+        case 'fc-off-page':
+            return `<polygon points="2,2 98,2 98,70 50,98 2,70" vector-effect="non-scaling-stroke" />`;
+        case 'fc-card':
+            return `<polygon points="22,2 98,2 98,98 2,98 2,22" vector-effect="non-scaling-stroke" />`;
+        case 'fc-tape':
+            return `<path d="M2,20 Q26,2 50,20 Q74,38 98,20 L98,80 Q74,98 50,80 Q26,62 2,80 Z" vector-effect="non-scaling-stroke" />`;
+        case 'fc-display':
+            return `<path d="M20,5 L80,5 Q98,50 80,95 L20,95 Q2,50 20,5" vector-effect="non-scaling-stroke" />`;
+        case 'fc-delay':
+            return `<path d="M2,5 L60,5 A40,45 0 0,1 60,95 L2,95 Z" vector-effect="non-scaling-stroke" />`;
+
+        // ── Stars & Banners ──
+        case 'star-4':
+            return `<polygon points="50,2 58,38 95,38 65,58 78,95 50,72 22,95 35,58 5,38 42,38" vector-effect="non-scaling-stroke" />`;
+        case 'star-5':
+            return `<polygon points="50,2 62,38 98,38 68,58 78,95 50,75 22,95 32,58 2,38 38,38" vector-effect="non-scaling-stroke" />`;
+        case 'star-6':
+            return `<polygon points="50,2 58,28 85,10 72,38 98,50 72,62 85,90 58,72 50,98 42,72 15,90 28,62 2,50 28,38 15,10 42,28" vector-effect="non-scaling-stroke" />`;
+        case 'star-8':
+            return `<polygon points="50,2 58,28 82,8 68,32 98,50 68,68 82,92 58,72 50,98 42,72 18,92 32,68 2,50 32,32 18,8 42,28" vector-effect="non-scaling-stroke" />`;
+        case 'explosion-1':
+            return `<polygon points="50,2 58,25 80,8 68,30 98,30 78,45 95,65 72,58 78,90 50,70 22,90 28,58 5,65 22,45 2,30 32,30 20,8 42,25" vector-effect="non-scaling-stroke" />`;
+        case 'banner-h':
+            return `<path d="M12,5 L88,5 Q96,5 96,15 L96,85 Q96,95 88,95 L12,95 Q4,95 4,85 L4,15 Q4,5 12,5" vector-effect="non-scaling-stroke" />
+                    <path d="M12,5 Q20,15 12,25" fill="none" vector-effect="non-scaling-stroke" />
+                    <path d="M88,75 Q80,85 88,95" fill="none" vector-effect="non-scaling-stroke" />`;
+        case 'banner-v':
+            return `<rect x="12" y="2" width="76" height="96" rx="6" vector-effect="non-scaling-stroke" />
+                    <path d="M12,12 Q2,12 2,22 Q2,32 12,32" fill="none" vector-effect="non-scaling-stroke" />
+                    <path d="M88,68 Q98,68 98,78 Q98,88 88,88" fill="none" vector-effect="non-scaling-stroke" />`;
+        case 'ribbon':
+            return `<path d="M5,22 L22,22 L22,10 L78,10 L78,22 L95,22 L85,40 L95,58 L78,58 L78,90 L50,70 L22,90 L22,58 L5,58 L15,40 Z" vector-effect="non-scaling-stroke" />`;
+
+        default:
+            return `<rect x="2" y="2" width="96" height="96" rx="4" vector-effect="non-scaling-stroke" />`;
+    }
+}
+
+// Determine whether a shape type is a "line" type (rendered without a text container)
+function isLineType(type) {
+    return ['line', 'line-up', 'line-h', 'line-v', 'curve', 'arrow', 'arrow-up', 'double-arrow', 'elbow'].includes(type);
+}
+
+function renderFlowchart() {
+    const canvas = document.getElementById('flowchart-canvas');
+    if (!canvas) {
+        console.warn("Flowchart canvas element not found!");
+        return;
+    }
+    console.log("Rendering flowchart shapes on canvas. Count:", shapes.length);
+
+    // Remove existing shape elements (keep defs SVG)
+    const existingShapes = canvas.querySelectorAll('.flowchart-shape');
+    existingShapes.forEach(el => el.remove());
+
+    // Render each shape
+    shapes.forEach(shape => {
+        const shapeEl = document.createElement('div');
+        const lineShape = isLineType(shape.type);
+        shapeEl.className = `flowchart-shape shape-${shape.type}${lineShape ? ' line-shape' : ''}`;
+        if (shape.id === selectedShapeId) shapeEl.classList.add('selected');
+
+        shapeEl.style.left = `${shape.x}px`;
+        shapeEl.style.top = `${shape.y}px`;
+        shapeEl.style.width = `${shape.width}px`;
+        shapeEl.style.height = `${shape.height}px`;
+        shapeEl.dataset.id = shape.id;
+
+        // Build inner content based on type
+        if (shape.type === 'textbox') {
+            // Pure text container (no SVG background)
+            shapeEl.innerHTML = `
+                <div class="shape-text-container textbox-container">
+                    <span class="shape-label-span">${escapeHtml(shape.text)}</span>
+                </div>
+                <div class="resize-handle tl" data-handle="tl"></div>
+                <div class="resize-handle tr" data-handle="tr"></div>
+                <div class="resize-handle bl" data-handle="bl"></div>
+                <div class="resize-handle br" data-handle="br"></div>
+            `;
+        } else if (shape.type === 'picture') {
+            // Image container
+            shapeEl.innerHTML = `
+                <img src="${shape.imageSrc || ''}" class="shape-picture-img" alt="Inserted picture" draggable="false" />
+                <div class="resize-handle tl" data-handle="tl"></div>
+                <div class="resize-handle tr" data-handle="tr"></div>
+                <div class="resize-handle bl" data-handle="bl"></div>
+                <div class="resize-handle br" data-handle="br"></div>
+            `;
+        } else {
+            // SVG-based shape with optional text overlay
+            const svgContent = getSvgContentForType(shape.type);
+            const textHtml = lineShape ? '' : `
+                <div class="shape-text-container">
+                    <span class="shape-label-span">${escapeHtml(shape.text)}</span>
+                </div>
+            `;
+
+            shapeEl.innerHTML = `
+                <svg viewBox="0 0 100 100" preserveAspectRatio="none">
+                    ${svgContent}
+                </svg>
+                ${textHtml}
+                <div class="resize-handle tl" data-handle="tl"></div>
+                <div class="resize-handle tr" data-handle="tr"></div>
+                <div class="resize-handle bl" data-handle="bl"></div>
+                <div class="resize-handle br" data-handle="br"></div>
+            `;
+        }
+
+        // Event Listeners
+        shapeEl.addEventListener('pointerdown', (e) => handleShapePointerDown(e, shape.id));
+        if (!lineShape && shape.type !== 'picture') {
+            shapeEl.addEventListener('dblclick', (e) => handleShapeDoubleClick(e, shape.id));
+        }
+
+        canvas.appendChild(shapeEl);
+    });
+}
+
+function addShape(type, imageSrc) {
+    const canvas = document.getElementById('flowchart-canvas');
+    if (!canvas) return;
+
+    const canvasContainer = canvas.parentElement;
+    const scrollLeft = canvasContainer.scrollLeft;
+    const scrollTop = canvasContainer.scrollTop;
+    const containerWidth = canvasContainer.clientWidth;
+    const containerHeight = canvasContainer.clientHeight;
+
+    // Determine default dimensions based on shape type
+    let defaultWidth, defaultHeight;
+    if (isLineType(type)) {
+        if (type === 'line-h') {
+            defaultWidth = 180;
+            defaultHeight = 8;
+        } else if (type === 'line-v') {
+            defaultWidth = 8;
+            defaultHeight = 180;
+        } else if (type === 'curve') {
+            defaultWidth = 160;
+            defaultHeight = 80;
+        } else if (type === 'elbow') {
+            defaultWidth = 150;
+            defaultHeight = 120;
+        } else {
+            // Diagonal lines/arrows
+            defaultWidth = 150;
+            defaultHeight = 100;
+        }
+    } else if (type === 'textbox') {
+        defaultWidth = 160;
+        defaultHeight = 60;
+    } else if (type === 'picture') {
+        defaultWidth = 180;
+        defaultHeight = 140;
+    } else if (['oval', 'circle', 'connector'].includes(type)) {
+        defaultWidth = 100;
+        defaultHeight = 80;
+    } else {
+        defaultWidth = 140;
+        defaultHeight = 80;
+    }
+
+    const x = Math.max(50, Math.round(scrollLeft + containerWidth / 2 - defaultWidth / 2));
+    const y = Math.max(50, Math.round(scrollTop + containerHeight / 2 - defaultHeight / 2));
+
+    // Determine default label
+    let defaultText = '';
+    if (type === 'textbox') {
+        defaultText = 'Text';
+    } else if (type === 'picture') {
+        defaultText = '';
+    } else if (!isLineType(type)) {
+        // Humanize the type name for the label
+        defaultText = type.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+    }
+
+    const newShape = {
+        id: 'shape_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5),
+        type: type,
+        text: defaultText,
+        x: x,
+        y: y,
+        width: defaultWidth,
+        height: defaultHeight
+    };
+
+    // Attach image data for picture shapes
+    if (type === 'picture' && imageSrc) {
+        newShape.imageSrc = imageSrc;
+    }
+
+    shapes.push(newShape);
+    selectedShapeId = newShape.id;
+    saveFlowchartState();
+    renderFlowchart();
+}
+
+function handleShapePointerDown(e, shapeId) {
+    const handleEl = e.target.closest('.resize-handle');
+    const shape = shapes.find(s => s.id === shapeId);
+    if (!shape) return;
+
+    e.stopPropagation();
+
+    // Select the shape
+    selectedShapeId = shapeId;
+    renderFlowchart();
+
+    if (handleEl) {
+        // Resize mode
+        activeResizeShapeId = shapeId;
+        resizeDirection = handleEl.dataset.handle;
+        dragStartX = e.clientX;
+        dragStartY = e.clientY;
+        shapeStartX = shape.x;
+        shapeStartY = shape.y;
+        shapeStartWidth = shape.width;
+        shapeStartHeight = shape.height;
+        document.addEventListener('pointermove', handlePointerMove);
+        document.addEventListener('pointerup', handlePointerUp);
+    } else {
+        // Drag mode
+        activeDragShapeId = shapeId;
+        dragStartX = e.clientX;
+        dragStartY = e.clientY;
+        shapeStartX = shape.x;
+        shapeStartY = shape.y;
+        document.addEventListener('pointermove', handlePointerMove);
+        document.addEventListener('pointerup', handlePointerUp);
+    }
+}
+
+function handlePointerMove(e) {
+    const dx = e.clientX - dragStartX;
+    const dy = e.clientY - dragStartY;
+
+    if (activeDragShapeId) {
+        const shape = shapes.find(s => s.id === activeDragShapeId);
+        if (shape) {
+            shape.x = Math.max(0, Math.min(2000 - shape.width, shapeStartX + dx));
+            shape.y = Math.max(0, Math.min(2000 - shape.height, shapeStartY + dy));
+
+            const el = document.querySelector(`.flowchart-shape[data-id="${activeDragShapeId}"]`);
+            if (el) {
+                el.style.left = `${shape.x}px`;
+                el.style.top = `${shape.y}px`;
+            }
+        }
+    } else if (activeResizeShapeId) {
+        const shape = shapes.find(s => s.id === activeResizeShapeId);
+        if (shape) {
+            const minWidth = 40;
+            const minHeight = 20;
+
+            if (resizeDirection === 'br') {
+                shape.width = Math.max(minWidth, shapeStartWidth + dx);
+                shape.height = Math.max(minHeight, shapeStartHeight + dy);
+            } else if (resizeDirection === 'bl') {
+                const newWidth = Math.max(minWidth, shapeStartWidth - dx);
+                if (newWidth > minWidth) {
+                    shape.x = shapeStartX + dx;
+                    shape.width = newWidth;
+                }
+                shape.height = Math.max(minHeight, shapeStartHeight + dy);
+            } else if (resizeDirection === 'tr') {
+                shape.width = Math.max(minWidth, shapeStartWidth + dx);
+                const newHeight = Math.max(minHeight, shapeStartHeight - dy);
+                if (newHeight > minHeight) {
+                    shape.y = shapeStartY + dy;
+                    shape.height = newHeight;
+                }
+            } else if (resizeDirection === 'tl') {
+                const newWidth = Math.max(minWidth, shapeStartWidth - dx);
+                if (newWidth > minWidth) {
+                    shape.x = shapeStartX + dx;
+                    shape.width = newWidth;
+                }
+                const newHeight = Math.max(minHeight, shapeStartHeight - dy);
+                if (newHeight > minHeight) {
+                    shape.y = shapeStartY + dy;
+                    shape.height = newHeight;
+                }
+            }
+
+            const el = document.querySelector(`.flowchart-shape[data-id="${activeResizeShapeId}"]`);
+            if (el) {
+                el.style.left = `${shape.x}px`;
+                el.style.top = `${shape.y}px`;
+                el.style.width = `${shape.width}px`;
+                el.style.height = `${shape.height}px`;
+            }
+        }
+    }
+}
+
+function handlePointerUp() {
+    if (activeDragShapeId || activeResizeShapeId) {
+        saveFlowchartState();
+        renderFlowchart();
+    }
+    activeDragShapeId = null;
+    activeResizeShapeId = null;
+    document.removeEventListener('pointermove', handlePointerMove);
+    document.removeEventListener('pointerup', handlePointerUp);
+}
+
+function handleShapeDoubleClick(e, shapeId) {
+    const shape = shapes.find(s => s.id === shapeId);
+    if (!shape) return;
+
+    e.stopPropagation();
+
+    const shapeEl = document.querySelector(`.flowchart-shape[data-id="${shapeId}"]`);
+    if (!shapeEl) return;
+
+    const textContainer = shapeEl.querySelector('.shape-text-container');
+    if (!textContainer) return;
+
+    textContainer.innerHTML = `<input type="text" class="shape-text-input" value="${escapeHtml(shape.text)}" />`;
+    const input = textContainer.querySelector('.shape-text-input');
+
+    input.focus();
+    input.select();
+
+    const finishEditing = () => {
+        const val = input.value.trim();
+        if (val) {
+            shape.text = val;
+            saveFlowchartState();
+        }
+        renderFlowchart();
+    };
+
+    input.addEventListener('keydown', (evt) => {
+        if (evt.key === 'Enter') {
+            finishEditing();
+        }
+    });
+
+    input.addEventListener('blur', finishEditing);
+}
+
+function deleteSelectedShape() {
+    if (!selectedShapeId) return;
+
+    shapes = shapes.filter(s => s.id !== selectedShapeId);
+    selectedShapeId = null;
+    saveFlowchartState();
+    renderFlowchart();
+    showToast('Shape deleted.', 'success');
+}
+
+function clearFlowchartCanvas() {
+    if (confirm("Are you sure you want to clear the entire canvas?")) {
+        shapes = [];
+        selectedShapeId = null;
+        saveFlowchartState();
+        renderFlowchart();
+        showToast('Canvas cleared.', 'success');
+    }
+}
+
+async function handleGenerateFlowchartAI() {
+    const promptInputEl = document.getElementById('flowchart-ai-prompt');
+    const promptText = promptInputEl.value.trim();
+
+    if (!promptText) {
+        showToast('Please describe the flowchart process you want to generate.', 'error');
+        return;
+    }
+
+    const btn = document.getElementById('btn-generate-flowchart-ai');
+    const originalHtml = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = '<span class="ai-spinner"></span> Generating Flow...';
+
+    try {
+        const prompt = `You are an expert systems flow diagram designer. Generate a logical, clear step-by-step flowchart layout for the following process: "${promptText}".
+Distribute shapes horizontally and vertically in a neat grid or cascade so they flow logically and do not overlap.
+Shapes coordinates (x, y) should lie within the canvas coordinate space of x = [50 to 900] and y = [50 to 800].
+
+Return ONLY a JSON array representing the shape nodes. You must return only a valid JSON array of objects (optionally wrapped in a \`\`\`json ... \`\`\` codeblock). Each element represents a shape node:
+- "id": string (unique ID, e.g. "node1", "node2")
+- "type": string — one of: "rectangle", "rounded-rect", "diamond", "oval", "parallelogram", "hexagon", "triangle", "block-right", "block-down"
+  Use "rounded-rect" for start/end terminators, "rectangle" for process steps, "diamond" for decision points,
+  "parallelogram" for input/output, and "block-right" or "block-down" as directional arrow separators between steps.
+- "label": string (short concise label, 1-4 words, e.g. "Start", "Check Input", "End")
+- "x": number (horizontal coordinate)
+- "y": number (vertical coordinate)
+- "width": number (default 130-150 for boxes, 80-100 for arrows)
+- "height": number (default 60-80 for boxes, 50-70 for arrows)
+
+IMPORTANT: Include block-arrow shapes (type "block-right" or "block-down") between connected nodes to indicate the flow direction instead of using connection lines.
+
+Example:
+[
+  { "id": "n1", "type": "rounded-rect", "label": "Start", "x": 350, "y": 50, "width": 140, "height": 60 },
+  { "id": "a1", "type": "block-down", "label": "", "x": 380, "y": 120, "width": 80, "height": 50 },
+  { "id": "n2", "type": "rectangle", "label": "Process", "x": 350, "y": 180, "width": 140, "height": 70 }
+]
+
+Input Process Description:
+${promptText}`;
+
+        const aiResponse = await generateTextWithGemini(prompt);
+        if (aiResponse.includes("Error:") || aiResponse.includes("Deployment Error")) {
+            throw new Error(aiResponse);
+        }
+
+        const data = parseJsonArray(aiResponse);
+        if (!Array.isArray(data)) {
+            throw new Error("AI did not return a valid flowchart layout.");
+        }
+
+        // Map AI nodes to our shapes format
+        shapes = data.map(n => ({
+            id: n.id || ('shape_ai_' + Math.random().toString(36).substr(2, 5)),
+            type: n.type || 'rectangle',
+            text: n.label || '',
+            x: Number(n.x) || 100,
+            y: Number(n.y) || 100,
+            width: Number(n.width) || 140,
+            height: Number(n.height) || 70
+        }));
+
+        // Create new Flowchart record
+        const flowchartName = promptText.substring(0, 26).trim() || 'AI Flowchart';
+        const newFlowchart = {
+            id: Date.now().toString(),
+            name: flowchartName,
+            timestamp: Date.now(),
+            shapes: shapes
+        };
+        savedFlowcharts.unshift(newFlowchart);
+        activeFlowchartId = newFlowchart.id;
+        localStorage.setItem(STORAGE_FLOWCHARTS_LIST_KEY, JSON.stringify(savedFlowcharts));
+        localStorage.setItem(STORAGE_ACTIVE_FLOWCHART_ID_KEY, activeFlowchartId);
+
+        selectedShapeId = null;
+        saveFlowchartState();
+        renderFlowchart();
+
+        // Reset AI input
+        promptInputEl.value = '';
+
+        showToast('AI Flowchart generated successfully.', 'success');
+
+    } catch (err) {
+        console.error(err);
+        showToast(err.message || 'AI Flowchart generation failed.', 'error');
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = originalHtml;
+    }
+}
+

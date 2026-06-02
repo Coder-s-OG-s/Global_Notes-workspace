@@ -1,7 +1,7 @@
 import { getActiveUser, setActiveUser, mergeGuestNotes } from "./storage.js";
 import { loadNotesForCurrentUser, ensureAtLeastOneNote, persistNotes } from "./noteManager.js";
 import { getFolders, saveFolders, syncFoldersFromCloud } from "./folderManager.js";
-import { renderNotesList, renderActiveNote, updateUserDisplay, renderFolders, updateToolbarMetadata, renderNotesDashboard } from "./renderer.js";
+import { renderNotesList, renderActiveNote, updateUserDisplay, renderFolders, updateToolbarMetadata, renderNotesDashboard, renderDashboardSkeletons } from "./renderer.js";
 import { wireFiltersAndSearch, wireSort, wireTagInput, wireCrudButtons, wireFolderButtons, wireThemeSelector, syncThemeSelector, wireEditorPatternSelector, syncEditorPatternSelector, wireDropdowns, wireLibraryNav } from "./eventHandlers.js";
 import { wireFormattingToolbar } from "./formattingToolbar.js";
 import { wireUploadButtons } from "./mediaManager.js";
@@ -23,6 +23,7 @@ import { wireAutoSave } from "./autoSave.js";
 import { getCurrentUser } from "./authService.js";
 import { wireEditorQuickTools } from "./editorQuickTools.js";
 import { upgradeToolbarSelects } from "./customSelect.js";
+import { generateTextWithGemini } from "./geminiAPI.js";
 
 
 // Global state
@@ -132,10 +133,21 @@ const callbacks = {
     state.calendarWidget?.render(); // Update calendar indicators
   },
   getActiveNoteId: () => state.activeNoteId,
+  renderDashboardSkeletons: () => renderDashboardSkeletons(state.activeFolderId, state.activeLibraryFilter),
   // Loads notes and folders for the current user, ensuring at least one note exists
   loadNotesForCurrentUser: async () => {
+    callbacks.renderDashboardSkeletons();
+    
+    // Add artificial delay to make the loading animation visible and prevent flicker
+    const start = Date.now();
     state.notes = await loadNotesForCurrentUser(state.activeUser);
     state.folders = await syncFoldersFromCloud(state.activeUser);
+    
+    const elapsed = Date.now() - start;
+    if (elapsed < 800) {
+      await new Promise(resolve => setTimeout(resolve, 800 - elapsed));
+    }
+    
     await ensureAtLeastOneNote(state.notes, state.activeUser);
     // Start with Dashboard (no active note) as requested
     state.activeNoteId = null;
@@ -146,6 +158,9 @@ const callbacks = {
 async function initApp() {
   // Apply theme immediately to prevent flickering or failures if auth hangs
   wireThemeToggle();
+
+  // Render skeletal loaders immediately while fetching user session and notes
+  renderDashboardSkeletons(null, 'all');
 
   // Check if we are forcing guest mode (e.g. from continue as guest)
   const urlParams = new URLSearchParams(window.location.search);
@@ -237,6 +252,97 @@ async function initApp() {
   // Live Metadata Update
   const contentInput = document.getElementById("content");
   if (contentInput) {
+    // Tab trigger for inline AI code completion
+    contentInput.addEventListener("keydown", (e) => {
+      if (e.key === "Tab") {
+        const selection = window.getSelection();
+        if (!selection.rangeCount) return;
+        const range = selection.getRangeAt(0);
+        const containerNode = range.startContainer;
+        
+        if (containerNode.nodeType === Node.TEXT_NODE) {
+          const textBeforeCursor = containerNode.textContent.substring(0, range.startOffset);
+          const aiMatch = textBeforeCursor.match(/(?:\/\/|#)\s*AI:\s*([^\n\r]+)$/i);
+          
+          if (aiMatch) {
+            e.preventDefault();
+            const promptStr = aiMatch[1].trim();
+            const matchIndex = textBeforeCursor.lastIndexOf(aiMatch[0]);
+            
+            const originalText = containerNode.textContent;
+            const prefix = originalText.substring(0, matchIndex);
+            const suffix = originalText.substring(range.startOffset);
+            const tempText = `${aiMatch[0]} (Generating...)`;
+            
+            containerNode.textContent = prefix + tempText + suffix;
+            
+            const newOffset = prefix.length + tempText.length;
+            const newRange = document.createRange();
+            newRange.setStart(containerNode, newOffset);
+            newRange.setEnd(containerNode, newOffset);
+            selection.removeAllRanges();
+            selection.addRange(newRange);
+            
+            generateTextWithGemini(
+              `You are an expert programming assistant. Generate a clean code snippet based on this prompt: "${promptStr}".
+Provide ONLY the code. Do NOT wrap it in markdown codeblocks (no \`\`\`), do NOT include explanations or conversational text. Return the raw code ready to insert.`
+            ).then((aiCode) => {
+              const currentText = containerNode.textContent;
+              const genText = `${aiMatch[0]} (Generating...)`;
+              const genIndex = currentText.indexOf(genText);
+              
+              if (genIndex !== -1) {
+                const finalRange = document.createRange();
+                finalRange.setStart(containerNode, genIndex);
+                finalRange.setEnd(containerNode, genIndex + genText.length);
+                finalRange.deleteContents();
+                
+                const pre = document.createElement('pre');
+                pre.className = 'code-block-flashcard';
+                pre.style.backgroundColor = '#1a1a24';
+                pre.style.color = '#38bdf8';
+                pre.style.padding = '12px';
+                pre.style.borderRadius = '6px';
+                pre.style.margin = '8px 0';
+                pre.style.overflowX = 'auto';
+                pre.style.fontFamily = 'monospace';
+                
+                const codeEl = document.createElement('code');
+                codeEl.textContent = aiCode;
+                pre.appendChild(codeEl);
+                
+                finalRange.insertNode(pre);
+                
+                const br = document.createElement('br');
+                pre.parentNode.insertBefore(br, pre.nextSibling);
+                
+                const postRange = document.createRange();
+                postRange.setStartAfter(pre.nextSibling);
+                postRange.collapse(true);
+                selection.removeAllRanges();
+                selection.addRange(postRange);
+                
+                contentInput.dispatchEvent(new Event('input'));
+              }
+            }).catch((err) => {
+              console.error(err);
+              const currentText = containerNode.textContent;
+              const genText = `${aiMatch[0]} (Generating...)`;
+              const genIndex = currentText.indexOf(genText);
+              if (genIndex !== -1) {
+                const finalRange = document.createRange();
+                finalRange.setStart(containerNode, genIndex);
+                finalRange.setEnd(containerNode, genIndex + genText.length);
+                finalRange.deleteContents();
+                const errTextNode = document.createTextNode(`${aiMatch[0]} (Error generating code)`);
+                finalRange.insertNode(errTextNode);
+              }
+            });
+          }
+        }
+      }
+    });
+
     // Utility for debouncing inside this scope
     let metadataTimeout;
     contentInput.addEventListener("input", () => {
