@@ -336,6 +336,11 @@
           </button>
           <input type="text" class="title-input" id="title" placeholder="Untitled note" aria-label="Note title" />
           <div class="editor-header-actions">
+            <button class="btn ghost icon-only" id="toggle-study-assistant" aria-label="Toggle study assistant" title="Study Assistant">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+              </svg>
+            </button>
             <button class="btn ghost icon-only" id="toggle-favorite" aria-label="Toggle favorite" title="Favorite">
               <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                 stroke-linecap="round" stroke-linejoin="round">
@@ -582,10 +587,75 @@
           </button>
         </div>
 
-        <!-- Editor Body -->
-        <div class="editor-body">
-          <div id="content" class="editor-content content-input" contenteditable="true" role="textbox"
-            aria-label="Note content" aria-multiline="true" data-pattern="plain"></div>
+        <!-- Editor Workspace wrapper -->
+        <div class="editor-workspace-wrapper">
+          <!-- Editor Body -->
+          <div class="editor-body">
+            <div id="content" class="editor-content content-input" contenteditable="true" role="textbox"
+              aria-label="Note content" aria-multiline="true" data-pattern="plain"></div>
+          </div>
+
+          <!-- Study Assistant Sidebar -->
+          <aside class="study-assistant-sidebar collapsed" id="study-assistant-sidebar">
+            <div class="study-assistant-header">
+              <button class="assistant-tab active" data-tab="glossary" id="tab-glossary">Glossary</button>
+              <button class="assistant-tab" data-tab="smart-links" id="tab-smart-links">Smart Links</button>
+            </div>
+            
+            <div class="study-assistant-content">
+              <!-- Glossary Tab Panel -->
+              <div class="assistant-panel active" id="panel-glossary">
+                <!-- Recording Section -->
+                <div class="assistant-section">
+                  <h3 class="assistant-section-title">Lecture Transcription</h3>
+                  <div class="recorder-container">
+                    <div class="recorder-visualizer" id="recorder-visualizer">
+                      <div class="bar"></div>
+                      <div class="bar"></div>
+                      <div class="bar"></div>
+                      <div class="bar"></div>
+                      <div class="bar"></div>
+                    </div>
+                    <div class="recorder-status" id="recorder-status">Ready to record lecture</div>
+                    <div class="recorder-controls">
+                      <button class="btn primary" id="btn-record-lecture">Record</button>
+                      <button class="btn danger" id="btn-stop-lecture" disabled>Stop</button>
+                    </div>
+                  </div>
+                  <textarea class="transcript-textarea" id="lecture-transcript" readonly placeholder="Speech transcript will appear here in real time..."></textarea>
+                  <button class="btn primary full-width" id="btn-extract-glossary" disabled>Extract Glossary</button>
+                </div>
+
+                <!-- Glossary Terms Section -->
+                <div class="assistant-section">
+                  <h3 class="assistant-section-title">Glossary Sidebar</h3>
+                  <div class="glossary-list" id="glossary-list">
+                    <div class="glossary-empty">No terms extracted yet. Record a lecture and click extract, or type note contents.</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Smart Links Tab Panel -->
+              <div class="assistant-panel" id="panel-smart-links">
+                <button class="btn primary full-width" id="btn-scan-note-ai" style="margin-bottom: 12px;">Scan Note with AI</button>
+                <!-- Coding Notes section -->
+                <div class="assistant-section">
+                  <h3 class="assistant-section-title">Coding Notes Suggestions</h3>
+                  <div class="suggestions-list" id="code-suggestions-list">
+                    <div class="suggestions-empty">No technical concepts detected.</div>
+                  </div>
+                </div>
+
+                <!-- Study Calendar section -->
+                <div class="assistant-section">
+                  <h3 class="assistant-section-title">Study Plan Suggestions</h3>
+                  <div class="suggestions-list" id="calendar-suggestions-list">
+                    <div class="suggestions-empty">No deadlines detected. Try typing: "exam on [date]...".</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </aside>
         </div>
 
         <!-- AI Popover (positioned relative to editor) -->

@@ -24,6 +24,7 @@ import { getCurrentUser } from "./authService.js";
 import { wireEditorQuickTools } from "./editorQuickTools.js";
 import { upgradeToolbarSelects } from "./customSelect.js";
 import { generateTextWithGemini } from "./geminiAPI.js";
+import { initStudyAssistant, onActiveNoteChanged } from "./studyAssistant.js";
 
 
 // Global state
@@ -45,6 +46,7 @@ function setActiveNote(noteId) {
   callbacks.renderActiveNote();
   syncThemeSelector(note);
   syncEditorPatternSelector(note);
+  onActiveNoteChanged(note);
 
   // If we're entering Dashboard mode (noteId is null), refresh the dashboard grid
   if (!noteId) {
@@ -365,6 +367,9 @@ Provide ONLY the code. Do NOT wrap it in markdown codeblocks (no \`\`\`), do NOT
 
   // Check for shared URL params LAST (User's preferred flow)
   checkSharedUrl();
+
+  // Initialize Study Assistant
+  initStudyAssistant(state, callbacks);
 
 }
 
