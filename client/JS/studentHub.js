@@ -82,7 +82,6 @@ function initHub() {
     
     // 6. Populate Coding Note Snippet Dropdowns
     populateSnippetSelects();
-    
     // Flowchart Shapes Dropdown and Controls
     const btnShapesDropdown = document.getElementById('btn-shapes-dropdown');
     const shapesDropdownPanel = document.getElementById('shapes-dropdown-panel');
@@ -821,7 +820,6 @@ function renderFlashcards(cards) {
                 </div>
             </div>
         ` : '';
-
         cardEl.innerHTML = `
             <div class="flashcard-inner">
                 <div class="flashcard-front">
@@ -955,7 +953,7 @@ IMPORTANT:
   1. Specific DSA topics to master (e.g. "Sliding Window", "Binary Search", "Graphs/DFS").
   2. 2-3 specific target LeetCode practice problem names (e.g. "Two Sum", "Merge Intervals", "Longest Substring Without Repeating Characters", "Valid Parentheses").
   3. A coding tip or active-recall exercise on syntax, implementation detail, or time/space complexity.
-- For all other subjects (including standard programming languages, web development like HTML/CSS/JS, history, science, math, etc. that do not explicitly mention DSA or LeetCode), generate a standard study plan tailored directly and exclusively to the provided syllabus topics. Do NOT inject DSA topics or LeetCode problems into non-DSA subjects. The daily topics and prep tips must be relevant to the subject.
+- For all other subjects (including standard programming languages, web development like HTML/CSS/JS, history, science, math, etc. that do not explicitly mention DSA or LeetCode), generate a standard study plan tailored directly and exclusively to the provided syllabus topics. Do NOT inject DSA topics or LeetCode problems into non-DSA subjects. The daily topics and prep tips must be relevant to the subject.`;
 
 Each daily revision plan must be returned as a JSON array of objects. You must return only a valid JSON array of objects (optionally wrapped in a \`\`\`json ... \`\`\` codeblock).
 Each object must have the following properties:
@@ -1208,7 +1206,6 @@ function renderSchedule(schedule) {
                 </div>
             `;
         }
-
         itemEl.innerHTML = `
             <div class="timeline-header">
                 <span class="timeline-day">${escapeHtml(item.day)}</span>
@@ -1242,7 +1239,6 @@ function renderSchedule(schedule) {
                 toggleLeetCodeTask(iIdx, pIdx, e.target.checked);
             });
         });
-
         timeline.appendChild(itemEl);
     });
 }
@@ -1305,8 +1301,6 @@ function toggleLeetCodeTask(itemIdx, problemIdx, isChecked) {
         }
     }
 }
-
-
 // ─── LOCAL STORAGE LOADER ───
 function loadSavedState() {
     // 1. Load Decks
@@ -2185,5 +2179,3 @@ function populateSnippetSelects() {
         });
     }
 }
-
-
