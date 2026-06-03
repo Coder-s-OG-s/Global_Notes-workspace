@@ -1582,6 +1582,7 @@ html,
   background: var(--surface);
   position: relative;
   transition: all var(--transition-smooth);
+  min-width: 0; /* Allow grid child to shrink below content width */
 }
 
 /* ── Dashboard View ── */
@@ -2306,6 +2307,7 @@ html[data-theme="corporate-gray"] .custom-select-menu {
 /* Editor Body */
 .editor-body {
   flex: 1;
+  min-width: 0; /* Allow flex child to shrink below content width */
   overflow-y: auto;
   overflow-x: hidden;
   padding: 16px 24px 32px;
@@ -2323,6 +2325,9 @@ html[data-theme="corporate-gray"] .custom-select-menu {
   padding: 16px;
   border-radius: var(--radius);
   background: var(--surface);
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 
 /* Editor Patterns */
@@ -4367,4 +4372,249 @@ html.theme-transitioning *::after {
   font-size: 13px;
   color: #fb7185; /* light rose color */
   font-weight: 500;
+}
+
+/* ════════════════════════════════════════
+   STUDY ASSISTANT SIDEBAR
+   ════════════════════════════════════════ */
+.editor-workspace-wrapper {
+  display: flex;
+  flex-direction: row;
+  flex: 1;
+  min-width: 0; /* Prevent flex children from overflowing the grid cell */
+  overflow: hidden;
+  position: relative;
+  width: 100%;
+}
+
+.study-assistant-sidebar {
+  width: 320px;
+  background: var(--surface-2);
+  border-left: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  transition: width 0.3s ease, border-left-color 0.3s ease;
+  overflow: hidden;
+  flex-shrink: 0;
+  height: 100%;
+}
+
+.study-assistant-sidebar.collapsed {
+  width: 0;
+  border-left: none;
+}
+
+.study-assistant-header {
+  display: flex;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface-3);
+}
+
+.assistant-tab {
+  flex: 1;
+  height: 40px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-dim);
+  border-bottom: 2px solid transparent;
+  transition: all var(--transition-fast);
+}
+
+.assistant-tab:hover {
+  color: var(--text);
+  background: var(--surface-hover);
+}
+
+.assistant-tab.active {
+  color: var(--primary);
+  border-bottom-color: var(--primary);
+  background: var(--surface-2);
+}
+
+.study-assistant-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.assistant-panel {
+  display: none;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.assistant-panel.active {
+  display: flex;
+}
+
+.assistant-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.assistant-section-title {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+  margin-bottom: 4px;
+}
+
+/* Recorder Card Styling */
+.recorder-container {
+  background: var(--surface-3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.recorder-visualizer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  height: 32px;
+  width: 100%;
+}
+
+.recorder-visualizer .bar {
+  width: 4px;
+  height: 6px;
+  background: var(--text-muted);
+  border-radius: 2px;
+  transition: height 0.1s ease;
+}
+
+.recorder-visualizer.recording .bar {
+  background: var(--danger);
+  animation: soundWave 1.2s infinite ease-in-out;
+}
+
+.recorder-visualizer.recording .bar:nth-child(1) { animation-delay: 0.1s; }
+.recorder-visualizer.recording .bar:nth-child(2) { animation-delay: 0.3s; }
+.recorder-visualizer.recording .bar:nth-child(3) { animation-delay: 0.5s; }
+.recorder-visualizer.recording .bar:nth-child(4) { animation-delay: 0.2s; }
+.recorder-visualizer.recording .bar:nth-child(5) { animation-delay: 0.4s; }
+
+@keyframes soundWave {
+  0%, 100% { height: 6px; }
+  50% { height: 28px; }
+}
+
+.recorder-status {
+  font-size: 12px;
+  color: var(--text-dim);
+  text-align: center;
+}
+
+.recorder-controls {
+  display: flex;
+  gap: 8px;
+  width: 100%;
+}
+
+.recorder-controls button {
+  flex: 1;
+}
+
+.transcript-textarea {
+  width: 100%;
+  height: 100px;
+  background: var(--surface-3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 8px 12px;
+  font-size: 13px;
+  color: var(--text);
+  resize: none;
+  line-height: 1.4;
+  outline: none;
+}
+
+.transcript-textarea:focus {
+  border-color: var(--primary);
+}
+
+/* Glossary List and Suggestion Cards */
+.glossary-list,
+.suggestions-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.glossary-empty,
+.suggestions-empty {
+  font-size: 12px;
+  color: var(--text-muted);
+  text-align: center;
+  padding: 20px 0;
+  line-height: 1.5;
+}
+
+.glossary-card,
+.suggestion-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  transition: transform var(--transition-fast), border-color var(--transition-fast);
+}
+
+.glossary-card:hover,
+.suggestion-card:hover {
+  border-color: var(--primary-light);
+}
+
+.card-term,
+.card-title-text {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.card-definition,
+.card-desc {
+  font-size: 12px;
+  color: var(--text-dim);
+  line-height: 1.5;
+}
+
+.card-actions {
+  display: flex;
+  gap: 6px;
+  justify-content: flex-end;
+  margin-top: 4px;
+}
+
+.card-action-btn {
+  font-size: 11px;
+  height: 24px;
+  padding: 0 8px;
+  border-radius: var(--radius-sm);
+  background: var(--surface-3);
+  color: var(--text-dim);
+  border: 1px solid var(--border);
+  transition: all var(--transition-fast);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.card-action-btn:hover {
+  background: var(--primary);
+  color: #000;
+  border-color: var(--primary);
 }

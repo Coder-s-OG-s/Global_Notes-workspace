@@ -35,6 +35,22 @@ const NoteSchema = new mongoose.Schema({
     type: Boolean,
     default: false
   },
+  lectureTranscript: {
+    type: String,
+    default: ''
+  },
+  glossaryTerms: {
+    type: Array,
+    default: []
+  },
+  aiConcepts: {
+    type: Array,
+    default: []
+  },
+  aiDeadlines: {
+    type: Array,
+    default: []
+  },
   createdAt: {
     type: Date,
     default: Date.now

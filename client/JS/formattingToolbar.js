@@ -15,7 +15,17 @@ export function insertHtmlAtCursor(html) {
   const range = selection.getRangeAt(0);
   range.deleteContents();
   const fragment = range.createContextualFragment(html);
+  const lastChild = fragment.lastChild;
+  
   range.insertNode(fragment);
+
+  if (lastChild) {
+    const newRange = range.cloneRange();
+    newRange.setStartAfter(lastChild);
+    newRange.collapse(true);
+    selection.removeAllRanges();
+    selection.addRange(newRange);
+  }
 }
 
 // Sets up all formatting toolbar buttons and their corresponding actions

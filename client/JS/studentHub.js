@@ -80,6 +80,9 @@ function initHub() {
     document.getElementById('btn-generate-flashcards').addEventListener('click', handleGenerateFlashcards);
     document.getElementById('btn-generate-schedule').addEventListener('click', handleGenerateSchedule);
     
+    // 6. Populate Coding Note Snippet Dropdowns
+    populateSnippetSelects();
+    
     // Flowchart Shapes Dropdown and Controls
     const btnShapesDropdown = document.getElementById('btn-shapes-dropdown');
     const shapesDropdownPanel = document.getElementById('shapes-dropdown-panel');
@@ -169,6 +172,39 @@ function initHub() {
 
     // 7. Load Saved State
     loadSavedState();
+
+    // Check URL parameters for pre-populating deadlines
+    const urlParams = new URLSearchParams(window.location.search);
+    const deadlineName = urlParams.get('addDeadline');
+    const deadlineDate = urlParams.get('date');
+    if (deadlineName) {
+        const btnSchedule = document.getElementById('tab-schedule');
+        const viewFlashcards = document.getElementById('view-flashcards');
+        const viewSchedule = document.getElementById('view-schedule');
+        const viewFlowcharts = document.getElementById('view-flowcharts');
+        const btnFlashcards = document.getElementById('tab-flashcards');
+        const btnFlowcharts = document.getElementById('tab-flowcharts');
+
+        if (btnSchedule) {
+            activeTab = 'schedule';
+            if (btnFlashcards) btnFlashcards.classList.remove('active');
+            btnSchedule.classList.add('active');
+            if (btnFlowcharts) btnFlowcharts.classList.remove('active');
+
+            if (viewFlashcards) viewFlashcards.classList.remove('active');
+            if (viewSchedule) viewSchedule.classList.add('active');
+            if (viewFlowcharts) viewFlowcharts.classList.remove('active');
+        }
+
+        const syllabusInputEl = document.getElementById('schedule-syllabus-input');
+        if (syllabusInputEl) {
+            syllabusInputEl.value = `Prepare for ${decodeURIComponent(deadlineName)}`;
+        }
+        const examDateInput = document.getElementById('exam-date-input');
+        if (examDateInput && deadlineDate) {
+            examDateInput.value = deadlineDate;
+        }
+    }
 }
 
 // Check API Key status
@@ -608,6 +644,7 @@ Inside the JSON string values (for "question", "answer", and "mnemonic"), you MU
 
 Each object must have the following fields:
 - "question": string (concise, clear query starting with a relevant descriptive emoji, e.g. "🌱 What is photosynthesis?", or for code cards, a snippet and a question like "💻 Predict the output of this JavaScript function:\\n\`\`\`js\\nfunction greet() {\\n  return (() => 'Hello')();\\n}\\nconsole.log(greet());\\n\`\`\`")
+- "expectedAnswer": string (Only for code comprehension cards where a student has to fill in a missing line of code, fix a bug, or predict the output. This must contain the exact code statement, syntax, or output string that the student needs to type in an input field to pass the test. Do not include markdown code block syntax in this field, just the raw text/code to match. If it's a general non-code card, set this field to null.)
 - "answer": string (concise explanation highlighting key terms inside <strong> tags for visual emphasis. For code cards, provide the corrected code or the output inside a code block, plus an explanation, e.g. "It outputs <strong>'Hello'</strong> because the immediately invoked arrow function is returned, which returns the string.")
 - "mnemonic": string (a short, memorable analogy, trick, memory aid, or acronym to help the student retain this information easily, e.g. "💡 Memory Aid: Remember **P**lants **N**eed **C**arbon **W**ater (**PNCW**).")
 - "category": string (a short 1-2 word classification tag, e.g., "Biology", "Web Dev", "Physics")
@@ -615,10 +652,11 @@ Each object must have the following fields:
 Example format:
 [
   {
-    "question": "🌱 What is photosynthesis?",
-    "answer": "The process by which green plants use <strong>sunlight</strong> to synthesize nutrients from <strong>carbon dioxide</strong> and <strong>water</strong>.",
-    "mnemonic": "💡 Remember: **P**lants **N**eed **C**arbon **W**ater (**PNCW**).",
-    "category": "Biology"
+    "question": "💻 Fill in the missing line to return the sum of two numbers:\\n\`\`\`js\\nfunction add(a, b) {\\n  // missing line\\n}\\n\`\`\`",
+    "expectedAnswer": "return a + b",
+    "answer": "The missing line is <strong>return a + b</strong> to return the sum of the inputs.",
+    "mnemonic": "Remember input goes in, output comes out via return.",
+    "category": "JavaScript"
   }
 ]
 
@@ -760,8 +798,9 @@ function renderFlashcards(cards) {
         const themeIdx = card.themeIdx !== undefined ? card.themeIdx : (idx % CARD_THEMES.length);
         const theme = CARD_THEMES[themeIdx] || CARD_THEMES[0];
 
+        const hasRecall = !!(card.expectedAnswer && card.expectedAnswer.trim());
         const cardEl = document.createElement('div');
-        cardEl.className = `flashcard flashcard-appear ${card.mastered ? 'mastered' : ''}`;
+        cardEl.className = `flashcard flashcard-appear ${card.mastered ? 'mastered' : ''} ${hasRecall ? 'has-recall' : ''}`;
         cardEl.style.animationDelay = `${idx * 0.05}s`;
         cardEl.style.setProperty('--card-color', theme.color);
         cardEl.style.setProperty('--card-gradient', theme.gradient);
@@ -770,6 +809,16 @@ function renderFlashcards(cards) {
         const mnemonicHtml = card.mnemonic ? `
             <div class="card-mnemonic-box">
                 ${renderSafeHtml(card.mnemonic)}
+            </div>
+        ` : '';
+
+        const recallHtml = (card.expectedAnswer && card.expectedAnswer.trim()) ? `
+            <div class="card-recall-container" style="margin-top: 12px; display: flex; flex-direction: column; gap: 8px;">
+                <input type="text" class="card-recall-input" placeholder="Type the correct syntax / output..." style="padding: 6px 10px; border-radius: 4px; border: 1px solid var(--card-color, #ccc); background: rgba(255,255,255,0.9); color: #333; font-family: monospace; font-size: 13px; outline: none; width: 100%; box-sizing: border-box;">
+                <div style="display: flex; justify-content: space-between; align-items: center; gap: 8px;">
+                    <button class="card-recall-check-btn" style="padding: 4px 12px; background: var(--card-color); color: #fff; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">Check Answer</button>
+                    <span class="card-recall-feedback" style="font-size: 12px; font-weight: 600; min-height: 18px;"></span>
+                </div>
             </div>
         ` : '';
 
@@ -783,7 +832,8 @@ function renderFlashcards(cards) {
                             ✓ Got It
                         </div>
                     ` : ''}
-                    <p>${renderSafeHtml(card.question)}</p>
+                    <div class="flashcard-question-text">${renderSafeHtml(card.question)}</div>
+                    ${recallHtml}
                 </div>
                 <div class="flashcard-back">
                     <div class="flashcard-back-content">
@@ -801,7 +851,7 @@ function renderFlashcards(cards) {
         `;
 
         cardEl.addEventListener('click', (e) => {
-            if (e.target.closest('.card-mastery-btn') || e.target.closest('.flashcard-back-content')) return;
+            if (e.target.closest('.card-mastery-btn') || e.target.closest('.flashcard-back-content') || e.target.closest('.card-recall-container')) return;
             cardEl.classList.toggle('flipped');
         });
 
@@ -811,6 +861,43 @@ function renderFlashcards(cards) {
             if (e.target.closest('.card-mastery-btn')) return;
             cardEl.classList.toggle('flipped');
         });
+
+        // Stop propagation and handle validation inside recall container
+        const recallContainer = cardEl.querySelector('.card-recall-container');
+        if (recallContainer) {
+            recallContainer.addEventListener('click', (e) => {
+                e.stopPropagation();
+            });
+
+            const checkBtn = cardEl.querySelector('.card-recall-check-btn');
+            const recallInput = cardEl.querySelector('.card-recall-input');
+            const feedbackEl = cardEl.querySelector('.card-recall-feedback');
+
+            if (checkBtn && recallInput && feedbackEl) {
+                checkBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const userInput = recallInput.value.trim();
+                    const expected = card.expectedAnswer.trim();
+                    
+                    const normalize = (str) => str.replace(/\s+/g, '').replace(/;$/, '').replace(/['"]/g, '"');
+                    
+                    if (normalize(userInput) === normalize(expected)) {
+                        feedbackEl.style.color = '#2e7d32';
+                        feedbackEl.textContent = 'Correct!';
+                        
+                        setTimeout(() => {
+                            if (!card.mastered) {
+                                toggleCardMastery(idx);
+                            }
+                            cardEl.classList.add('flipped');
+                        }, 800);
+                    } else {
+                        feedbackEl.style.color = '#c62828';
+                        feedbackEl.textContent = 'Incorrect. Try again!';
+                    }
+                });
+            }
+        }
 
         const masteryBtn = cardEl.querySelector('.card-mastery-btn');
         masteryBtn.addEventListener('click', (e) => {
@@ -860,22 +947,25 @@ async function handleGenerateSchedule() {
     btn.innerHTML = '<span class="ai-spinner"></span> Generating Plan...';
 
     try {
-         const prompt = `You are an expert study planner. We have an exam or interview coming up in ${diffDays} days (Date: ${dateInput}).
+        const prompt = `You are an expert study planner. We have an exam or interview coming up in ${diffDays} days (Date: ${dateInput}).
 The student's syllabus/topics are provided below. Create a complete, professional day-by-day study and revision schedule distributing the topics logically leading up to the target date.
 
-IMPORTANT: If the syllabus/topics contain programming, coding prep, data structures and algorithms (DSA), or LeetCode, restructure the daily plan to act as a coding prep pathway. For each day, include:
-1. Specific DSA topics to master (e.g. "Sliding Window", "Binary Search", "Graphs/DFS").
-2. 2-3 specific target LeetCode practice problem names (e.g. "Two Sum", "Merge Intervals", "Longest Substring Without Repeating Characters", "Valid Parentheses").
-3. A coding tip or active-recall exercise on syntax, implementation detail, or time/space complexity.
+IMPORTANT: 
+- If the syllabus/topics explicitly mention "data structures", "algorithms", "dsa", or "leetcode", restructure the daily plan to act as a coding prep pathway. For each day, include:
+  1. Specific DSA topics to master (e.g. "Sliding Window", "Binary Search", "Graphs/DFS").
+  2. 2-3 specific target LeetCode practice problem names (e.g. "Two Sum", "Merge Intervals", "Longest Substring Without Repeating Characters", "Valid Parentheses").
+  3. A coding tip or active-recall exercise on syntax, implementation detail, or time/space complexity.
+- For all other subjects (including standard programming languages, web development like HTML/CSS/JS, history, science, math, etc. that do not explicitly mention DSA or LeetCode), generate a standard study plan tailored directly and exclusively to the provided syllabus topics. Do NOT inject DSA topics or LeetCode problems into non-DSA subjects. The daily topics and prep tips must be relevant to the subject.
 
 Each daily revision plan must be returned as a JSON array of objects. You must return only a valid JSON array of objects (optionally wrapped in a \`\`\`json ... \`\`\` codeblock).
 Each object must have the following properties:
 - "day": string (e.g., "Day 1")
 - "date": string (formatted date)
-- "focus": string (the main topic focus for the day, e.g. "State vs. Props & Hooks basics" or "DSA: Sliding Window Technique")
+- "focus": string (the main topic focus for the day, e.g. "HTML Basics & Semantic Tags", "World War II Causes", or "DSA: Sliding Window Technique")
 - "duration": string (recommended study duration, e.g. "2 hours" or "1.5 hours")
-- "topics": string (a newline-separated list of concrete, checkable tasks to complete today, including specific LeetCode problem titles to solve)
-- "examPrepTip": string (a specific active-recall tip or test advice for today's topics, e.g., "💡 Practice: Explain the Time and Space complexity of the Sliding Window approach in Big-O.")
+- "topics": string (a newline-separated list of concrete, checkable tasks to complete today. For non-DSA subjects, this should be detailed sub-topics or readings from the syllabus. For DSA/LeetCode subjects, include specific checklist tasks)
+- "leetcodeProblems": array of strings (For DSA/LeetCode subjects, include 2-3 specific LeetCode problem titles to solve today, e.g. ["Two Sum", "Merge Intervals"]. For non-DSA subjects, return an empty array [])
+- "examPrepTip": string (a specific active-recall tip or test advice for today's topics, e.g., "Explain the difference between absolute and relative positioning in CSS.")
 - "urgent": boolean (set to true if this day falls within 3 days of the target date, or is a mock test / revision review day)
 
 Example format:
@@ -886,7 +976,8 @@ Example format:
     "focus": "React State Management",
     "duration": "2 hours",
     "topics": "- Review useState and useEffect hooks\\n- Refactor class components to functional",
-    "examPrepTip": "💡 Prep Tip: Build a search filter input without looking at docs.",
+    "leetcodeProblems": [],
+    "examPrepTip": "Prep Tip: Build a search filter input without looking at docs.",
     "urgent": false
   }
 ]
@@ -907,6 +998,7 @@ ${sourceSyllabus}`;
         // Initialize empty checklist states
         schedule.forEach(item => {
             item.checkedTasks = [];
+            item.checkedLeetCode = [];
         });
 
         // Determine Schedule Title
@@ -1088,6 +1180,35 @@ function renderSchedule(schedule) {
             </div>
         ` : '';
 
+        let leetcodeHtml = '';
+        if (item.leetcodeProblems && Array.isArray(item.leetcodeProblems) && item.leetcodeProblems.length > 0) {
+            leetcodeHtml = `
+                <div class="timeline-leetcode-box" style="margin-top: 10px; padding-top: 8px; border-top: 1px dashed var(--border-color, #e0e0e0);">
+                    <span class="leetcode-label" style="font-size: 12px; font-weight: 700; color: #1a73e8; display: block; margin-bottom: 6px;">LeetCode Challenges:</span>
+                    <ul class="timeline-task-list" style="margin: 0; padding-left: 0; list-style: none;">
+            `;
+            item.leetcodeProblems.forEach((problem, pIdx) => {
+                const slug = problem.toLowerCase().replace(/[^a-z0-9\s-]/g, '').replace(/\s+/g, '-');
+                const leetcodeUrl = `https://leetcode.com/problems/${slug}/`;
+                const isChecked = item.checkedLeetCode && item.checkedLeetCode[pIdx] ? true : false;
+                
+                leetcodeHtml += `
+                    <li class="timeline-task-item" style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
+                        <label class="task-checkbox-label" style="flex: 1; display: flex; align-items: center; gap: 8px;">
+                            <input type="checkbox" class="leetcode-checkbox" data-item-idx="${itemIdx}" data-problem-idx="${pIdx}" ${isChecked ? 'checked' : ''}>
+                            <span class="task-checkbox-custom"></span>
+                            <span class="task-text" style="${isChecked ? 'text-decoration: line-through; color: var(--text-muted);' : ''}">${escapeHtml(problem)}</span>
+                        </label>
+                        <a href="${leetcodeUrl}" target="_blank" class="leetcode-link" style="font-size: 11px; color: #e67e22; font-weight: 600; text-decoration: none; padding: 2px 6px; border: 1px solid #e67e22; border-radius: 4px; display: inline-flex; align-items: center;" onclick="event.stopPropagation();">Solve ↗</a>
+                    </li>
+                `;
+            });
+            leetcodeHtml += `
+                    </ul>
+                </div>
+            `;
+        }
+
         itemEl.innerHTML = `
             <div class="timeline-header">
                 <span class="timeline-day">${escapeHtml(item.day)}</span>
@@ -1098,6 +1219,7 @@ function renderSchedule(schedule) {
             </div>
             ${focusHtml}
             ${listHtml}
+            ${leetcodeHtml}
             ${tipHtml}
         `;
 
@@ -1108,6 +1230,16 @@ function renderSchedule(schedule) {
                 const iIdx = parseInt(e.target.dataset.itemIdx, 10);
                 const lIdx = parseInt(e.target.dataset.lineIdx, 10);
                 toggleScheduleTask(iIdx, lIdx, e.target.checked);
+            });
+        });
+
+        // Leetcode checkbox state toggle
+        const leetcodeCheckboxes = itemEl.querySelectorAll('.leetcode-checkbox');
+        leetcodeCheckboxes.forEach(cb => {
+            cb.addEventListener('change', (e) => {
+                const iIdx = parseInt(e.target.dataset.itemIdx, 10);
+                const pIdx = parseInt(e.target.dataset.problemIdx, 10);
+                toggleLeetCodeTask(iIdx, pIdx, e.target.checked);
             });
         });
 
@@ -1144,6 +1276,36 @@ function toggleScheduleTask(itemIdx, lineIdx, isChecked) {
         }
     }
 }
+
+function toggleLeetCodeTask(itemIdx, problemIdx, isChecked) {
+    if (activeScheduleId) {
+        const activeSched = savedSchedules.find(s => s.id === activeScheduleId);
+        if (activeSched && activeSched.items[itemIdx]) {
+            if (!activeSched.items[itemIdx].checkedLeetCode) {
+                activeSched.items[itemIdx].checkedLeetCode = [];
+            }
+            activeSched.items[itemIdx].checkedLeetCode[problemIdx] = isChecked;
+            localStorage.setItem(STORAGE_SCHEDULES_KEY, JSON.stringify(savedSchedules));
+        }
+    } else {
+        const stored = localStorage.getItem(STORAGE_SCHEDULE_KEY);
+        if (!stored) return;
+        try {
+            const schedule = JSON.parse(stored);
+            if (!schedule[itemIdx]) return;
+            
+            if (!schedule[itemIdx].checkedLeetCode) {
+                schedule[itemIdx].checkedLeetCode = [];
+            }
+            schedule[itemIdx].checkedLeetCode[problemIdx] = isChecked;
+
+            localStorage.setItem(STORAGE_SCHEDULE_KEY, JSON.stringify(schedule));
+        } catch (e) {
+            console.error(e);
+        }
+    }
+}
+
 
 // ─── LOCAL STORAGE LOADER ───
 function loadSavedState() {
@@ -1969,4 +2131,59 @@ ${promptText}`;
         btn.innerHTML = originalHtml;
     }
 }
+
+function populateSnippetSelects() {
+    const flashcardsSelect = document.getElementById('flashcards-snippet-select');
+    const flowchartSelect = document.getElementById('flowchart-snippet-select');
+
+    const storedRaw = localStorage.getItem('antigravity_snippets');
+    const snippets = storedRaw ? JSON.parse(storedRaw) : [];
+
+    if (flashcardsSelect) {
+        flashcardsSelect.innerHTML = '<option value="">-- Select a Snippet --</option>';
+        snippets.forEach((s, idx) => {
+            const opt = document.createElement('option');
+            opt.value = idx;
+            opt.textContent = `${s.title} (${s.language || 'Plain'})`;
+            flashcardsSelect.appendChild(opt);
+        });
+
+        flashcardsSelect.addEventListener('change', () => {
+            const idx = flashcardsSelect.value;
+            if (idx !== '') {
+                const s = snippets[idx];
+                if (s) {
+                    const topicInputEl = document.getElementById('flashcards-topic-input');
+                    if (topicInputEl) {
+                        topicInputEl.value = `Coding Note: ${s.title}\n\nCode:\n\`\`\`${s.language || ''}\n${s.code}\n\`\`\``;
+                    }
+                }
+            }
+        });
+    }
+
+    if (flowchartSelect) {
+        flowchartSelect.innerHTML = '<option value="">-- Select a Snippet --</option>';
+        snippets.forEach((s, idx) => {
+            const opt = document.createElement('option');
+            opt.value = idx;
+            opt.textContent = `${s.title} (${s.language || 'Plain'})`;
+            flowchartSelect.appendChild(opt);
+        });
+
+        flowchartSelect.addEventListener('change', () => {
+            const idx = flowchartSelect.value;
+            if (idx !== '') {
+                const s = snippets[idx];
+                if (s) {
+                    const promptInputEl = document.getElementById('flowchart-ai-prompt');
+                    if (promptInputEl) {
+                        promptInputEl.value = `Analyze code structure of algorithm:\nTitle: ${s.title}\nLanguage: ${s.language || 'Plain Text'}\n\nCode:\n${s.code}`;
+                    }
+                }
+            }
+        });
+    }
+}
+
 

@@ -64,6 +64,45 @@ class CodeWorkspace {
         this.initChat();
         this.checkAPIKey();
         this.createNewSnippet();
+
+        // Handle auto-creation of snippet via URL parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        const autoCreateTitle = urlParams.get('createSnippet');
+        if (autoCreateTitle) {
+            const decodedTitle = decodeURIComponent(autoCreateTitle);
+            const existing = this.snippets.find(s => s.title.toLowerCase() === decodedTitle.toLowerCase());
+            if (existing) {
+                this.activeSnippetId = existing.id;
+                this.editor.setValue(existing.code);
+                const selector = document.getElementById('language-selector');
+                if (selector) {
+                    selector.value = existing.language || 'javascript';
+                    selector.dispatchEvent(new Event('change'));
+                }
+                this.updateEditorSettings(existing.language || 'javascript');
+                this.renderSnippetList();
+            } else {
+                const newId = Date.now().toString();
+                const newSnippet = {
+                    id: newId,
+                    title: decodedTitle,
+                    code: `// Coding notes for ${decodedTitle}\n\n`,
+                    language: 'javascript',
+                    updatedAt: new Date().toISOString()
+                };
+                this.snippets.unshift(newSnippet);
+                this.activeSnippetId = newId;
+                this.editor.setValue(newSnippet.code);
+                const selector = document.getElementById('language-selector');
+                if (selector) {
+                    selector.value = 'javascript';
+                    selector.dispatchEvent(new Event('change'));
+                }
+                this.updateEditorSettings('javascript');
+                this.saveToStorage();
+                this.renderSnippetList();
+            }
+        }
     }
 
     checkAPIKey() {
@@ -104,7 +143,8 @@ class CodeWorkspace {
             autoCloseTags: true,
             matchBrackets: true,
             styleActiveLine: true,
-            viewportMargin: Infinity
+            viewportMargin: Infinity,
+            lineWrapping: true
         });
 
         this.editor.setOption("extraKeys", {
@@ -242,6 +282,21 @@ Provide ONLY the code. Do NOT wrap it in markdown codeblocks (no \`\`\`), do NOT
         document.getElementById('new-snippet-btn').addEventListener('click', () => this.createNewSnippet());
         document.getElementById('copy-code-btn').addEventListener('click', () => this.copyToClipboard());
         document.getElementById('snippet-search').addEventListener('input', (e) => this.renderSnippetList(e.target.value));
+
+        const toggleSidebarBtn = document.getElementById('toggle-sidebar-btn');
+        if (toggleSidebarBtn) {
+            toggleSidebarBtn.addEventListener('click', () => {
+                const sidebar = document.querySelector('.code-sidebar');
+                if (sidebar) {
+                    sidebar.classList.toggle('collapsed');
+                    if (this.editor) {
+                        setTimeout(() => {
+                            this.editor.refresh();
+                        }, 350);
+                    }
+                }
+            });
+        }
 
         document.getElementById('close-panel-btn').addEventListener('click', () => this.togglePanel(false));
         document.getElementById('expand-panel-btn').addEventListener('click', () => this.toggleExpand());
@@ -394,7 +449,8 @@ Provide ONLY the code. Do NOT wrap it in markdown codeblocks (no \`\`\`), do NOT
         this.setAIButtonsLoading(true);
 
         try {
-            const lang = languageMap[document.getElementById('language-selector').value].name;
+            const langSelectVal = document.getElementById('language-selector').value;
+            const lang = (languageMap[langSelectVal] || { name: langSelectVal || 'Plain Text' }).name;
             let response = '';
 
             if (type === 'explain') {
@@ -823,19 +879,49 @@ Example for a clean vertical process:
         win.className = 'ai-chat-window';
         win.innerHTML = `
         <div class="chat-header">
-          <div style="font-size: 14px; font-weight:600; color:#fff;">✦ AI Assistant</div>
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <div class="ai-status-dot"></div>
+            <div style="font-size: 14px; font-weight:700; color:#fff; letter-spacing: 0.5px;">Global AI Copilot</div>
+          </div>
           <div style="display:flex; gap:8px;">
-            <button class="panel-close-btn" style="font-size:16px;">−</button>
+            <button class="panel-close-btn" id="minimize-chat" style="font-size:16px;">−</button>
             <button class="panel-close-btn" id="close-chat">×</button>
           </div>
         </div>
         <div class="chat-messages" id="chat-messages">
-          <div class="message assistant">
-            Welcome! Ask me anything about your code or programming.
-            <div class="suggested-chips">
-              <span class="prompt-chip" data-prompt="Explain my current code">💡 Explain current code</span>
-              <span class="prompt-chip" data-prompt="How do I optimize this?">⚡ Optimize code</span>
-              <span class="prompt-chip" data-prompt="Convert to Python">🐍 Convert to Python</span>
+          <div class="message assistant welcome-card">
+            <div class="welcome-title">✦ Intelligent Code Assistant</div>
+            <div class="welcome-desc">Ask questions, analyze logic, or optimize your code workspace in real-time.</div>
+            
+            <div class="quick-actions-grid">
+              <div class="quick-action-card prompt-chip" data-prompt="Explain my current code">
+                <div class="action-icon">💡</div>
+                <div class="action-details">
+                  <div class="action-title">Explain Code</div>
+                  <div class="action-desc">Walkthrough execution logic</div>
+                </div>
+              </div>
+              <div class="quick-action-card prompt-chip" data-prompt="How do I optimize my current code for time and space complexity?">
+                <div class="action-icon">⚡</div>
+                <div class="action-details">
+                  <div class="action-title">Optimize Performance</div>
+                  <div class="action-desc">Refine time & space Big-O</div>
+                </div>
+              </div>
+              <div class="quick-action-card prompt-chip" data-prompt="Scan my current code for bugs, logic errors, or edge cases.">
+                <div class="action-icon">🔍</div>
+                <div class="action-details">
+                  <div class="action-title">Find & Fix Bugs</div>
+                  <div class="action-desc">Identify errors & leaks</div>
+                </div>
+              </div>
+              <div class="quick-action-card prompt-chip" data-prompt="Write comprehensive unit tests for my current code.">
+                <div class="action-icon">🧪</div>
+                <div class="action-details">
+                  <div class="action-title">Generate Tests</div>
+                  <div class="action-desc">Write robust test cases</div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -844,9 +930,16 @@ Example for a clean vertical process:
           <button id="send-chat" class="btn primary" style="padding: 0 12px; height: 35px;">▶</button>
         </div>
       `;
-        document.body.appendChild(win);
+        const codeLayout = document.querySelector('.code-layout');
+        if (codeLayout) {
+            codeLayout.appendChild(win);
+        } else {
+            document.body.appendChild(win);
+        }
 
         document.getElementById('close-chat').onclick = () => this.toggleChat(false);
+        const minimizeBtn = document.getElementById('minimize-chat');
+        if (minimizeBtn) minimizeBtn.onclick = () => this.toggleChat(false);
         document.getElementById('send-chat').onclick = () => this.sendChatMessage();
         document.getElementById('chat-input').onkeydown = (e) => {
             if (e.key === 'Enter') this.sendChatMessage();
@@ -854,8 +947,9 @@ Example for a clean vertical process:
 
         // Chips listener
         win.addEventListener('click', (e) => {
-            if (e.target.classList.contains('prompt-chip')) {
-                let prompt = e.target.dataset.prompt;
+            const chip = e.target.closest('.prompt-chip');
+            if (chip) {
+                let prompt = chip.dataset.prompt;
                 if (prompt.includes("code") || prompt.includes("this")) {
                     prompt += `\n\nCode context:\n${this.editor.getValue()}`;
                 }
@@ -875,6 +969,12 @@ Example for a clean vertical process:
         } else {
             win.classList.remove('open');
         }
+
+        if (this.editor) {
+            setTimeout(() => {
+                this.editor.refresh();
+            }, 350);
+        }
     }
 
     async sendChatMessage(overrideMsg = null) {
@@ -888,7 +988,7 @@ Example for a clean vertical process:
         this.chatHistory.push({ role: "user", content: message });
 
         const loadingId = 'loading-' + Date.now();
-        this.addMessageToChat('assistant', '<span class="ai-spinner"></span>', loadingId);
+        this.addMessageToChat('assistant', '<div class="ai-typing-indicator"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>', loadingId);
 
         try {
             // Build the prompt with clear role distinction and context
@@ -947,7 +1047,11 @@ Example for a clean vertical process:
         };
         this.activeSnippetId = newId;
         this.editor.setValue('');
-        document.getElementById('language-selector').value = 'javascript';
+        const selector = document.getElementById('language-selector');
+        if (selector) {
+            selector.value = 'javascript';
+            selector.dispatchEvent(new Event('change'));
+        }
         this.editor.setOption('mode', 'javascript');
         this.renderSnippetList();
     }
@@ -994,7 +1098,11 @@ Example for a clean vertical process:
         if (!snippet) return;
         this.activeSnippetId = id;
         this.editor.setValue(snippet.code);
-        document.getElementById('language-selector').value = snippet.language;
+        const selector = document.getElementById('language-selector');
+        if (selector) {
+            selector.value = snippet.language;
+            selector.dispatchEvent(new Event('change'));
+        }
         this.updateEditorSettings(snippet.language);
         this.renderSnippetList();
     }
@@ -1029,7 +1137,7 @@ Example for a clean vertical process:
             const li = document.createElement('li');
             li.className = `snippet-card ${snippet.id === this.activeSnippetId ? 'active' : ''}`;
             li.onclick = () => this.selectSnippet(snippet.id);
-            const langInfo = languageMap[snippet.language];
+            const langInfo = languageMap[snippet.language] || { name: snippet.language || 'Plain Text' };
             li.innerHTML = `
                 <div class="snippet-header">
                   <span class="lang-badge badge-${snippet.language}">${langInfo.name}</span>
