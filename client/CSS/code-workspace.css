@@ -53,7 +53,9 @@ body.code-workspace-page {
 }
 
 .header-left,
-.header-right {
+.header-right,
+.header-right-ai,
+.header-right-utils {
     display: flex;
     align-items: center;
     gap: 16px;
@@ -990,6 +992,7 @@ body:has(#ai-chat-window.open) .ai-chat-trigger {
 /* ════════════════════════════════════════
    MOBILE RESPONSIVITY REFINEMENTS
    ════════════════════════════════════════ */
+/* Responsive adjustments for Tablets (900px and under) */
 @media (max-width: 768px) {
     .code-header {
         padding: 0 10px;
@@ -1122,5 +1125,179 @@ body:has(#ai-chat-window.open) .ai-chat-trigger {
         position: absolute;
         top: 5px;
         right: 5px;
+    }
+}
+
+/* Responsive adjustments for Mobiles (768px and under) */
+@media (max-width: 768px) {
+    .code-header {
+        padding: 8px 10px !important;
+        height: auto !important;
+        min-height: 60px !important;
+        flex-wrap: wrap !important;
+        gap: 8px !important;
+        padding-top: env(safe-area-inset-top) !important;
+        padding-bottom: 8px !important;
+    }
+
+    .mobile-sidebar-toggle {
+        display: none !important;
+    }
+
+    .header-brand {
+        display: none !important; /* Hide long brand name on mobile */
+    }
+
+    .header-right-utils {
+        order: 2 !important;
+        gap: 8px !important;
+        margin-left: auto !important;
+        display: flex !important;
+        align-items: center !important;
+    }
+
+    .header-right-ai {
+        order: 3 !important;
+        width: 100% !important;
+        justify-content: center !important;
+        gap: 8px !important;
+        margin-top: 4px !important;
+        display: flex !important;
+        align-items: center !important;
+    }
+
+    .header-center {
+        order: 4 !important;
+        width: 100% !important;
+        margin-top: 4px !important;
+    }
+
+    .lang-select-wrapper {
+        width: 100% !important;
+    }
+
+    .lang-select-trigger {
+        width: 100% !important;
+        min-width: unset !important;
+    }
+
+    .btn-text {
+        display: none !important; /* Hide labels like "Explain", "Docs" */
+    }
+
+    .ai-btn {
+        padding: 8px !important;
+        width: 40px !important;
+        height: 40px !important;
+        display: inline-flex !important;
+        justify-content: center !important;
+        align-items: center !important;
+    }
+
+    /* Mobile Drawer Sidebar overlay */
+    .code-sidebar {
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        bottom: 0 !important;
+        z-index: 1000 !important;
+        width: 280px !important;
+        background: var(--surface-2) !important;
+        box-shadow: var(--shadow-lg) !important;
+        transform: translateX(-100%) !important;
+        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        display: flex !important; /* Override display: none */
+    }
+
+    /* Show all sidebar top controls and titles in mobile drawer */
+    .snippet-title,
+    .snippet-preview,
+    .sidebar-top .search-wrapper,
+    .sidebar-top .btn {
+        display: block !important;
+    }
+    
+    .sidebar-top .btn {
+        display: inline-flex !important;
+    }
+
+    .code-sidebar:not(.collapsed) {
+        transform: translateX(0) !important;
+    }
+
+    .sidebar-overlay-code {
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        bottom: 0 !important;
+        background: rgba(0, 0, 0, 0.5) !important;
+        backdrop-filter: blur(4px) !important;
+        -webkit-backdrop-filter: blur(4px) !important;
+        z-index: 999 !important;
+        opacity: 0 !important;
+        pointer-events: none !important;
+        transition: opacity 0.3s ease !important;
+        display: block !important;
+    }
+
+    .code-sidebar:not(.collapsed) ~ .sidebar-overlay-code {
+        opacity: 1 !important;
+        pointer-events: auto !important;
+    }
+
+    .lang-select-menu {
+        grid-template-columns: 1fr !important;
+        padding: 16px !important;
+        gap: 20px !important;
+        width: 90vw !important;
+        max-width: 320px !important;
+        left: 50% !important;
+        top: 50% !important;
+        transform: translate(-50%, -50%) !important;
+        max-height: 80vh !important;
+        overflow-y: auto !important;
+        border-radius: var(--radius-xl) !important;
+    }
+
+    .lang-select-column {
+        min-width: unset !important;
+    }
+
+    .code-editor-container {
+        width: 100% !important;
+        height: 100% !important;
+    }
+
+    .ai-result-container.show {
+        height: 100dvh !important;
+        z-index: 2000 !important;
+    }
+
+    .ai-chat-window {
+        position: fixed !important;
+        bottom: 20px !important;
+        right: 20px !important;
+        width: calc(100vw - 40px) !important;
+        height: 70vh !important;
+        border: 1px solid rgba(255, 255, 255, 0.1) !important;
+        border-radius: var(--radius-xl) !important;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5) !important;
+        transform: translateY(20px) !important;
+        opacity: 0 !important;
+        z-index: 2000 !important;
+    }
+    
+    .ai-chat-window.open {
+        transform: translateY(0) !important;
+        opacity: 1 !important;
+        width: calc(100vw - 40px) !important;
+    }
+}
+
+/* Specific fix for Samsung & Chinese Brand status bars */
+@supports (padding: env(safe-area-inset-top)) {
+    .code-header {
+        padding-top: env(safe-area-inset-top) !important;
     }
 }

@@ -103,6 +103,10 @@ class CodeWorkspace {
                 this.renderSnippetList();
             }
         }
+        if (window.innerWidth <= 768) {
+            const sidebar = document.querySelector('.code-sidebar');
+            if (sidebar) sidebar.classList.add('collapsed');
+        }
     }
 
     checkAPIKey() {
@@ -144,7 +148,7 @@ class CodeWorkspace {
             matchBrackets: true,
             styleActiveLine: true,
             viewportMargin: Infinity,
-            lineWrapping: true
+            lineWrapping: false
         });
 
         this.editor.setOption("extraKeys", {
@@ -323,6 +327,22 @@ Provide ONLY the code. Do NOT wrap it in markdown codeblocks (no \`\`\`), do NOT
 
         const visualizeBtn = document.getElementById('ai-visualize-flowchart-btn');
         if (visualizeBtn) visualizeBtn.addEventListener('click', () => this.handleFlowchartRequest());
+
+        // Overlay Click Listener to close sidebar
+        const overlay = document.getElementById('sidebar-overlay-code');
+        if (overlay) {
+            overlay.addEventListener('click', () => {
+                const sidebar = document.querySelector('.code-sidebar');
+                if (sidebar) {
+                    sidebar.classList.add('collapsed');
+                    if (this.editor) {
+                        setTimeout(() => {
+                            this.editor.refresh();
+                        }, 350);
+                    }
+                }
+            });
+        }
     }
 
     setupCustomLanguageSelect() {

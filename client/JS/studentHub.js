@@ -9,6 +9,7 @@ const STORAGE_DECKS_KEY = 'global_notes_hub_decks';
 const STORAGE_ACTIVE_DECK_ID_KEY = 'global_notes_hub_active_deck_id';
 const STORAGE_SCHEDULES_KEY = 'global_notes_hub_schedules';
 const STORAGE_ACTIVE_SCHEDULE_ID_KEY = 'global_notes_hub_active_schedule_id';
+const STORAGE_SCHEDULE_KEY = 'global_notes_hub_schedule';
 
 // --- Card Colorful Gradients ---
 const CARD_THEMES = [
@@ -953,7 +954,7 @@ IMPORTANT:
   1. Specific DSA topics to master (e.g. "Sliding Window", "Binary Search", "Graphs/DFS").
   2. 2-3 specific target LeetCode practice problem names (e.g. "Two Sum", "Merge Intervals", "Longest Substring Without Repeating Characters", "Valid Parentheses").
   3. A coding tip or active-recall exercise on syntax, implementation detail, or time/space complexity.
-- For all other subjects (including standard programming languages, web development like HTML/CSS/JS, history, science, math, etc. that do not explicitly mention DSA or LeetCode), generate a standard study plan tailored directly and exclusively to the provided syllabus topics. Do NOT inject DSA topics or LeetCode problems into non-DSA subjects. The daily topics and prep tips must be relevant to the subject.`;
+- For all other subjects (including standard programming languages, web development like HTML/CSS/JS, history, science, math, etc. that do not explicitly mention DSA or LeetCode), generate a standard study plan tailored directly and exclusively to the provided syllabus topics. Do NOT inject DSA topics or LeetCode problems into non-DSA subjects. The daily topics and prep tips must be relevant to the subject.
 
 Each daily revision plan must be returned as a JSON array of objects. You must return only a valid JSON array of objects (optionally wrapped in a \`\`\`json ... \`\`\` codeblock).
 Each object must have the following properties:
@@ -1354,9 +1355,33 @@ function loadSavedState() {
             // Check legacy key
             const savedSchedule = localStorage.getItem(STORAGE_SCHEDULE_KEY);
             if (savedSchedule) {
-                const schedule = JSON.parse(savedSchedule);
-                if (Array.isArray(schedule) && schedule.length) {
-                    renderSchedule(schedule);
+                try {
+                    const schedule = JSON.parse(savedSchedule);
+                    if (Array.isArray(schedule) && schedule.length) {
+                        renderSchedule(schedule);
+                        
+                        // Migrate legacy schedule to new multi-schedule structure
+                        const migratedId = "legacy_" + Date.now().toString();
+                        const migratedSchedule = {
+                            id: migratedId,
+                            name: "Legacy Study Plan",
+                            timestamp: Date.now(),
+                            examDate: "",
+                            items: schedule
+                        };
+                        
+                        savedSchedules.push(migratedSchedule);
+                        activeScheduleId = migratedId;
+                        
+                        localStorage.setItem(STORAGE_SCHEDULES_KEY, JSON.stringify(savedSchedules));
+                        localStorage.setItem(STORAGE_ACTIVE_SCHEDULE_ID_KEY, activeScheduleId);
+                        
+                        // Clean up legacy key to prevent repeating migration
+                        localStorage.removeItem(STORAGE_SCHEDULE_KEY);
+                    }
+                } catch (e) {
+                    console.error("Failed to parse legacy schedule:", e);
+                    renderSchedule([]);
                 }
             } else {
                 renderSchedule([]);

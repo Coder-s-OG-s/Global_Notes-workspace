@@ -1,4 +1,4 @@
-import { getActiveUser, setActiveUser, mergeGuestNotes } from "./storage.js";
+import { getActiveUser, setActiveUser, clearActiveUser, mergeGuestNotes } from "./storage.js";
 import { loadNotesForCurrentUser, ensureAtLeastOneNote, persistNotes } from "./noteManager.js";
 import { getFolders, saveFolders, syncFoldersFromCloud } from "./folderManager.js";
 import { renderNotesList, renderActiveNote, updateUserDisplay, renderFolders, updateToolbarMetadata, renderNotesDashboard, renderDashboardSkeletons } from "./renderer.js";
@@ -170,7 +170,8 @@ async function initApp() {
 
   if (forceGuest) {
     try {
-      await fetch('/api/auth/logout', { method: 'POST' });
+      clearActiveUser();
+      await fetch('/api/auth/logout', { method: 'GET' });
       // Remove the query param to prevent repeat logouts on refresh
       window.history.replaceState({}, document.title, window.location.pathname);
     } catch (err) {
