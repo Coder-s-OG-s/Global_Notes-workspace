@@ -103,7 +103,6 @@ class CodeWorkspace {
                 this.renderSnippetList();
             }
         }
-
         if (window.innerWidth <= 768) {
             const sidebar = document.querySelector('.code-sidebar');
             if (sidebar) sidebar.classList.add('collapsed');
