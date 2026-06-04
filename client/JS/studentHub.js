@@ -56,6 +56,17 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function initHub() {
+    // Save current page state
+    localStorage.setItem('lastPage', 'student-hub');
+
+    // Handle back button click to clear state
+    const backBtn = document.querySelector('.back-btn');
+    if (backBtn) {
+        backBtn.addEventListener('click', () => {
+            localStorage.setItem('lastPage', 'dashboard');
+        });
+    }
+
     // 1. Sync Theme
     setThemeStorageKey(THEME_KEY);
     wireThemeToggle();

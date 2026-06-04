@@ -55,6 +55,17 @@ class CodeWorkspace {
     }
 
     init() {
+        // Save current page state
+        localStorage.setItem('lastPage', 'code-workspace');
+
+        // Handle back button click to clear state
+        const backBtn = document.querySelector('.back-btn');
+        if (backBtn) {
+            backBtn.addEventListener('click', () => {
+                localStorage.setItem('lastPage', 'dashboard');
+            });
+        }
+
         setThemeStorageKey(CODE_THEME_KEY);
         wireThemeToggle();
         this.initEditor();
