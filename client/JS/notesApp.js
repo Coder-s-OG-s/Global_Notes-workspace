@@ -41,6 +41,13 @@ const state = {
 // Sets the currently active note and updates the UI to reflect the change
 function setActiveNote(noteId) {
   state.activeNoteId = noteId;
+  if (noteId) {
+    localStorage.setItem('lastPage', 'note');
+    localStorage.setItem('activeNoteId', noteId);
+  } else {
+    localStorage.setItem('lastPage', 'dashboard');
+    localStorage.removeItem('activeNoteId');
+  }
   const note = state.notes.find((n) => n.id === noteId);
   callbacks.renderNotesList();
   callbacks.renderActiveNote();
@@ -61,21 +68,15 @@ const callbacks = {
   setActiveLibraryFilter: (filterType) => {
     state.activeLibraryFilter = filterType;
     state.activeFolderId = null; // Clear folder if library item selected
-    state.activeNoteId = null; // Enter dashboard mode on navigation
-    callbacks.renderNotesList();
-    callbacks.renderActiveNote();
-    callbacks.renderNotesDashboard();
+    setActiveNote(null); // Enter dashboard mode on navigation
   },
 
   setActiveFolder: (folderId, targetLibraryId = null) => {
     state.activeFolderId = folderId;
     if (folderId) state.activeLibraryFilter = 'all'; // Reset library filter if folder selected
-    state.activeNoteId = null; // Enter dashboard mode on navigation
 
     callbacks.renderFolders();
-    callbacks.renderNotesList();
-    callbacks.renderActiveNote();
-    callbacks.renderNotesDashboard();
+    setActiveNote(null); // Enter dashboard mode on navigation
 
     if (folderId) {
       import("./renderer.js").then(module => {
@@ -151,8 +152,7 @@ const callbacks = {
     }
     
     await ensureAtLeastOneNote(state.notes, state.activeUser);
-    // Start with Dashboard (no active note) as requested
-    state.activeNoteId = null;
+    // Don't override activeNoteId here, let the caller handle it.
   },
 };
 
@@ -161,12 +161,24 @@ async function initApp() {
   // Apply theme immediately to prevent flickering or failures if auth hangs
   wireThemeToggle();
 
-  // Render skeletal loaders immediately while fetching user session and notes
-  renderDashboardSkeletons(null, 'all');
-
   // Check if we are forcing guest mode (e.g. from continue as guest)
   const urlParams = new URLSearchParams(window.location.search);
   const forceGuest = urlParams.get('guest') === 'true';
+
+  // Redirect check to restore last visited page on reload/refresh
+  if (!forceGuest) {
+    const lastPage = localStorage.getItem('lastPage');
+    if (lastPage === 'code-workspace') {
+      window.location.replace('HTML/code-workspace.html');
+      return;
+    } else if (lastPage === 'student-hub') {
+      window.location.replace('HTML/student-hub.html');
+      return;
+    }
+  }
+
+  // Render skeletal loaders immediately while fetching user session and notes
+  renderDashboardSkeletons(null, 'all');
 
   if (forceGuest) {
     try {
@@ -204,8 +216,14 @@ async function initApp() {
     await callbacks.loadNotesForCurrentUser();
   }
 
-  // Set initial active note
-  state.activeNoteId = null;
+  // Restore last active note if it exists, otherwise default to null
+  const lastPage = localStorage.getItem('lastPage');
+  const lastActiveNoteId = localStorage.getItem('activeNoteId');
+  if (lastPage === 'note' && lastActiveNoteId && state.notes.some(n => n.id === lastActiveNoteId)) {
+    setActiveNote(lastActiveNoteId);
+  } else {
+    setActiveNote(null);
+  }
 
   // Wire up all event handlers
   wireFiltersAndSearch(callbacks);
