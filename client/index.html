@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Global Notes Workspace — Think clearly. Build better.</title>
+  <title>Global Notes Workspace — Persistent Knowledge Base</title>
   <meta name="description"
     content="Global Notes Workspace: The professional, offline-capable workspace for your notes, ideas, and code. Features a rich markdown editor, integrated code workspace, and AI assistant.">
   <meta name="keywords" content="notes app, code snippets editor, knowledge management, second brain, productivity workspace, markdown editor, AI writing assistant">
@@ -14,14 +14,14 @@
   <!-- Open Graph / Facebook -->
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://global-notes.com">
-  <meta property="og:title" content="Global Notes Workspace — Your Secondary Brain">
+  <meta property="og:title" content="Global Notes Workspace — Persistent Knowledge Base">
   <meta property="og:description" content="A refined workspace where your notes, code, and ideas live in perfect harmony. Free, offline-first, and professional.">
   <meta property="og:image" content="https://global-notes.com/assets/images/logo_workspace.png">
 
   <!-- Twitter -->
   <meta property="twitter:card" content="summary_large_image">
   <meta property="twitter:url" content="https://global-notes.com">
-  <meta property="twitter:title" content="Global Notes Workspace — Think clearly. Build better.">
+  <meta property="twitter:title" content="Global Notes Workspace — Persistent Knowledge Base">
   <meta property="twitter:description" content="The professional workspace for your notes, ideas, and code. Built for students, developers, and writers.">
   <meta property="twitter:image" content="https://global-notes.com/assets/images/logo_workspace.png">
 
@@ -47,7 +47,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link
-    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Outfit:wght@500;700;800&display=swap"
+    href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Instrument+Serif:ital,wght@0,400;0,700;1,400;1,700&family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;700;800;900&display=swap"
     rel="stylesheet">
 
   <!-- Styles -->
@@ -57,21 +57,36 @@
 
 <body>
 
+  <!-- Dot Matrix Grid Overlay -->
+  <div class="dot-grid-overlay"></div>
+
+  <!-- Subtle Ambient Glow -->
+  <div class="radial-glow glow-1"></div>
+  <div class="radial-glow glow-2"></div>
+
   <!-- Sticky Navbar -->
   <nav id="navbar" class="fixed-nav">
     <div class="container nav-content">
       <a href="#" class="brand">
-        <span class="brand-name">Global <span class="brand-accent">Notes</span> Workspace</span>
+        <img src="assets/images/logo_workspace.png" alt="Global Notes Logo" class="nav-logo">
+        <span class="brand-name">Global <span class="brand-accent">Notes</span></span>
       </a>
+      
+      <!-- Nav Links -->
       <div class="nav-links">
         <a href="#features">Features</a>
-        <a href="#how-it-works">How it works</a>
-        <a href="#who-it-is-for">Who it's for</a>
+        <a href="#workspaces">Workspaces</a>
+        <a href="#code-spotlight">Code IDE</a>
+        <a href="#student-spotlight">Student Hub</a>
       </div>
+
       <div class="nav-ctas">
-        <a href="HTML/signup.html" class="btn-pill-black">Sign in</a>
+        <a href="HTML/signup.html" class="btn-pill-secondary">Sign In</a>
+        <a href="app.html?guest=true" class="btn-pill-primary">Open Workspace</a>
       </div>
-      <button class="menu-toggle" id="menu-toggle">
+
+      <button class="menu-toggle" id="menu-toggle" aria-label="Toggle Menu">
+        <span></span>
         <span></span>
         <span></span>
       </button>
@@ -79,236 +94,524 @@
   </nav>
 
   <main>
-  <!-- Hero Section -->
-  <header class="hero" id="top">
-    <div class="container hero-content">
-      <div class="badge-pill animate-up">
-        <span class="pulse-dot"></span>
-        Professional Workspace for Modern Builders
+    <!-- Hero Section -->
+    <section class="hero" id="top">
+      <div class="container hero-content">
+        <div class="badge-pill">
+          <span class="pulse-dot"></span>
+          <span>PRODUCTION v3.0</span>
+        </div>
+        
+        <!-- Engine Toggle Switcher in Hero -->
+        <div class="engine-toggle-container">
+          <button class="engine-toggle-btn active" data-engine="developer">
+            <span class="btn-indicator"></span>
+            <span>Developer Mode</span>
+          </button>
+          <button class="engine-toggle-btn" data-engine="student">
+            <span class="btn-indicator"></span>
+            <span>Student Mode</span>
+          </button>
+        </div>
+        
+        <h1 class="hero-headline">
+          Notes & Code.<br>
+          In Perfect <span class="highlight-wrapper"><span id="hero-interactive-title" class="engine-gradient serif-italic">Synergy.</span><svg class="hand-drawn-circle" viewBox="0 0 240 80" fill="none" stroke="currentColor"><path d="M 10,40 C 30,15 150,10 220,30 C 240,45 220,65 140,72 C 60,78 20,65 10,45 C 5,35 70,18 130,15" /></svg></span>
+        </h1>
+        
+        <p class="hero-subtext" id="hero-interactive-desc">
+          An offline-first, client-side workstation integrating compressed markdown document storage, an AI-powered coding snippet notebook, and a student study hub.
+        </p>
+        
+        <div class="hero-actions" id="hero-interactive-actions">
+          <a href="app.html?guest=true" class="btn-pill-primary lg" id="hero-primary-cta">
+            <span>Open Notes Workspace</span>
+            <svg class="btn-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+          </a>
+          <a href="HTML/code-workspace.html" class="btn-pill-secondary lg" id="hero-secondary-cta">
+            <span>Launch Code Workspace</span>
+          </a>
+        </div>
+        
+        <div class="hero-meta">
+          <span>Offline Storage Cache</span>
+          <span class="meta-dot"></span>
+          <span>Encrypted Local Sandbox</span>
+          <span class="meta-dot"></span>
+          <span>Cloud Database Sync</span>
+        </div>
       </div>
-      <h1 class="hero-headline animate-up">
-        Think clearly.<br>
-        <span class="muted-gray">Build</span> better.
-      </h1>
-      <p class="hero-subtext animate-up">
-        A refined workspace where your notes, code, and ideas live in perfect harmony.
-        Organize your knowledge, capture every spark, and build what matters.
-      </p>
-      <div class="hero-actions animate-up">
-        <a href="HTML/signup.html" class="btn-pill-black lg">Get Started</a>
-        <a href="#how-it-works" class="btn-ghost lg">See how it works</a>
-      </div>
-      <p class="hero-meta animate-up">
-        Instant Sync &middot; No sign-up friction &middot; Works in your browser
-      </p>
-    </div>
-  </header>
+    </section>
 
-  <!-- App Screenshots Section -->
-  <section class="screenshots">
-    <div class="container">
-      <div class="screenshots-grid">
-        <div class="browser-frame left-frame hover-lift">
-          <img src="assets/images/notes_workspace_real.png" alt="Global Notes Workspace - Rich Markdown Note Editor Interface">
-          <div class="caption">Notes Workspace</div>
+    <!-- Interactive Workspace Preview Widget -->
+    <section class="preview-section" id="workspaces">
+      <div class="container">
+        <div class="section-header text-center">
+          <span class="eyebrow">Interactive Hubs</span>
+          <h2>One Workspace, Three Powerful Engines</h2>
+          <p class="section-desc text-center">Toggle below to preview how notes, code execution, and student metrics integrate seamlessly.</p>
         </div>
-        <div class="browser-frame right-frame hover-lift">
-          <img src="assets/images/code_workspace_real.png" alt="Global Notes Workspace - Integrated Code Editor and Documentation View">
-          <div class="caption">Code + Notes side by side</div>
-        </div>
-      </div>
-    </div>
-  </section>
 
-  <!-- Features Section -->
-  <section id="features" class="features">
-    <div class="container">
-      <div class="section-header">
-        <span class="eyebrow">Features</span>
-        <h2>Everything your brain needs to stay productive</h2>
-      </div>
-      <div class="features-grid">
-        <div class="feature-card">
-          <div class="icon-box">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+        <!-- Tab Controls -->
+        <div class="tab-controls-container">
+          <div class="tab-controls">
+            <button class="tab-btn active" data-tab="notes">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+              <span>Notes Workspace</span>
+            </button>
+            <button class="tab-btn" data-tab="code">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>
+              <span>Code Workspace</span>
+            </button>
+            <button class="tab-btn" data-tab="student">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"></path><path d="M6 12v5c0 2 2 3 6 3s6-1 6-3v-5"></path></svg>
+              <span>Student Hub</span>
+            </button>
           </div>
-          <h3>Rich Note Editor</h3>
-          <p>Full markdown support, slash commands, and an elegant writing experience that stays out of your way.</p>
         </div>
-        <div class="feature-card">
-          <div class="icon-box">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
-          </div>
-          <h3>Code Workspace</h3>
-          <p>Integrated code editor with syntax highlighting for 50+ languages, perfect for documentation and snippets.</p>
-        </div>
-        <div class="feature-card">
-          <div class="icon-box">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-          </div>
-          <h3>Instant Search</h3>
-          <p>Find anything across your entire workspace in milliseconds with our lightning-fast global search.</p>
-        </div>
-        <div class="feature-card">
-          <div class="icon-box">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
-          </div>
-          <h3>Smart Organization</h3>
-          <p>Nested folders, tags, and bi-directional linking to build your personal knowledge graph.</p>
-        </div>
-        <div class="feature-card">
-          <div class="icon-box">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/><path d="M5 3v4"/><path d="M19 17v4"/><path d="M3 5h4"/><path d="M17 19h4"/></svg>
-          </div>
-          <h3>AI Writing Assistant</h3>
-          <p>Draft, summarize, and refine your thoughts with integrated AI that understands your context.</p>
-        </div>
-        <div class="feature-card">
-          <div class="icon-box">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-          </div>
-          <h3>Share & Collaborate</h3>
-          <p>Publish pages to the web or collaborate with your team in real-time with full version history.</p>
-        </div>
-      </div>
-    </div>
-  </section>
 
-  <!-- Who It's For Section -->
-  <section id="who-it-is-for" class="who-it-is-for dark-bg">
-    <div class="container">
-      <div class="section-header">
-        <span class="eyebrow amber">Who it's for</span>
-        <h2 class="white">Built for everyone who works with information</h2>
-      </div>
-      <div class="who-grid">
-        <div class="who-card">
-          <span class="who-number">01</span>
-          <div class="who-icon">
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c0 2 2 3 6 3s6-1 6-3v-5"/></svg>
+        <!-- Interactive Frame Wrapper -->
+        <div class="interactive-preview-frame" id="interactive-preview-frame">
+          <div class="frame-header">
+            <div class="window-buttons">
+              <span class="win-btn win-close"></span>
+              <span class="win-btn win-minimize"></span>
+              <span class="win-btn win-expand"></span>
+            </div>
+            <div class="address-bar">
+              <span class="address-lock">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+              </span>
+              <span class="address-text" id="preview-address-text">global-notes://workspace/notes</span>
+            </div>
+            <div class="window-actions">
+              <span class="status-indicator-pill">Online</span>
+            </div>
           </div>
-          <h3>Students</h3>
-          <p>Organize lecture notes, research citations, and study guides in one centralized academic hub.</p>
-          <div class="tag-pills">
-            <span>Lecture Notes</span>
-            <span>Study Guides</span>
-          </div>
-        </div>
-        <div class="who-card">
-          <span class="who-number">02</span>
-          <div class="who-icon">
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="14" x="2" y="3" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
-          </div>
-          <h3>Developers</h3>
-          <p>Maintain documentation, store re-usable code snippets, and plan your next big project.</p>
-          <div class="tag-pills">
-            <span>Code Snippets</span>
-            <span>Docs</span>
-          </div>
-        </div>
-        <div class="who-card">
-          <span class="who-number">03</span>
-          <div class="who-icon">
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="m12 19-7-7 3.32-3.32a2 2 0 0 1 2.83 0l3.02 3.02a2 2 0 0 1 0 2.83L12 19Z"/><path d="m2 22 5-5"/><path d="M17 5l3-3"/><path d="m19 9 3-3"/><path d="m13 1 3 3"/><path d="m9 5 3-3"/></svg>
-          </div>
-          <h3>Writers & Creatives</h3>
-          <p>Draft your next masterpiece in a distraction-free environment that keeps your ideas organized.</p>
-          <div class="tag-pills">
-            <span>Drafts</span>
-            <span>World Building</span>
-          </div>
-        </div>
-        <div class="who-card">
-          <span class="who-number">04</span>
-          <div class="who-icon">
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="14" x="2" y="7" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
-          </div>
-          <h3>Professionals & Teams</h3>
-          <p>Streamline meeting notes, project specs, and team knowledge without the overhead.</p>
-          <div class="tag-pills">
-            <span>Meeting Notes</span>
-            <span>Wiki</span>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
 
-  <!-- How It Works Section -->
-  <section id="how-it-works" class="how-it-works off-white-bg">
-    <div class="container">
-      <div class="how-grid">
-        <div class="how-step">
-          <span class="step-num">01</span>
-          <h3>Capture anything instantly</h3>
-          <p>Quickly jot down ideas, paste code snippets, or upload files from any device.</p>
-        </div>
-        <div class="how-step">
-          <span class="step-num">02</span>
-          <h3>Organize with smart folders</h3>
-          <p>Use our intuitive hierarchy and tagging system to keep your workspace clutter-free.</p>
-        </div>
-        <div class="how-step">
-          <span class="step-num">03</span>
-          <h3>Share & get to work</h3>
-          <p>Invite collaborators or publish your notes to the world with a single click.</p>
+          <!-- Preview Content Screens -->
+          <div class="frame-body">
+            
+            <!-- NOTES TAB PREVIEW -->
+            <div class="tab-panel active" id="panel-notes">
+              <div class="mock-workspace">
+                <aside class="mock-sidebar">
+                  <div class="sidebar-sec">
+                    <span class="sec-title">Folders</span>
+                    <ul class="sidebar-list">
+                      <li class="active">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="sidebar-icon"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
+                        <span>Lecture Notes</span>
+                        <span class="badge">12</span>
+                      </li>
+                      <li>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="sidebar-icon"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
+                        <span>Projects</span>
+                        <span class="badge">4</span>
+                      </li>
+                      <li>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="sidebar-icon"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
+                        <span>Ideas</span>
+                        <span class="badge">8</span>
+                      </li>
+                    </ul>
+                  </div>
+                  <div class="sidebar-sec">
+                    <span class="sec-title">Search Tags</span>
+                    <div class="sidebar-tags">
+                      <span class="mock-tag">#final-exam</span>
+                      <span class="mock-tag">#javascript</span>
+                      <span class="mock-tag">#ai</span>
+                      <span class="mock-tag">#design</span>
+                    </div>
+                  </div>
+                </aside>
+                <div class="mock-editor">
+                  <div class="editor-header">
+                    <h2>Advanced Algorithms Study Guide</h2>
+                    <div class="editor-meta">Last synced 2 minutes ago &bull; #computer-science</div>
+                  </div>
+                  <div class="editor-content">
+                    <p class="lead-text"><span class="highlight-cyan"># Dijkstra's Algorithm Summary</span></p>
+                    <p>Dijkstra's algorithm finds the shortest path from a source node to all other nodes in a weighted graph. Works on directed and undirected graphs with <strong>non-negative</strong> weights.</p>
+                    
+                    <div class="mock-quote">
+                      <strong>AI Smart Summary:</strong> Keep a priority queue of vertices ordered by distance. Extract min, relax edges, and update distances dynamically. Time complexity is O((V + E) log V).
+                    </div>
+                    
+                    <div class="mock-sketch-preview">
+                      <div class="sketch-dot s-1">A</div>
+                      <div class="sketch-dot s-2">B</div>
+                      <div class="sketch-dot s-3">C</div>
+                      <svg class="sketch-connector" viewBox="0 0 100 100">
+                        <line x1="20" y1="50" x2="80" y2="20" stroke="rgba(255,255,255,0.2)" stroke-width="2" stroke-dasharray="4"/>
+                        <line x1="80" y1="20" x2="50" y2="80" stroke="var(--theme-color-1)" stroke-width="2"/>
+                      </svg>
+                      <span class="sketch-label">Interactive Canvas Diagram</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- CODE TAB PREVIEW (WITH AI ASSISTANT PANEL) -->
+            <div class="tab-panel" id="panel-code">
+              <div class="mock-code-workspace">
+                <div class="code-sidebar">
+                  <button class="btn-new-snippet-mock" disabled>+ New Snippet</button>
+                  <div class="search-wrapper-mock">
+                    <input type="text" class="search-input-mock" placeholder="Search snippets..." disabled>
+                  </div>
+                  <div class="sidebar-sec">
+                    <span class="sec-title">My Snippets</span>
+                    <ul class="sidebar-list">
+                      <li class="active">📄 main.js</li>
+                      <li>📄 utils.py</li>
+                      <li>📄 styles.css</li>
+                    </ul>
+                  </div>
+                </div>
+                <div class="code-editor-pane">
+                  <div class="editor-tabs">
+                    <div class="editor-tab active">main.js</div>
+                    <div class="editor-tab">utils.py</div>
+                  </div>
+                  <div class="code-body-split">
+                    <div class="code-container">
+                      <pre><code class="language-js"><span class="token keyword">import</span> <span class="token text-cyan">GeminiHelper</span> <span class="token keyword">from</span> <span class="token string">'./ai'</span>;
+
+<span class="token comment">// Indented coding and notes editor</span>
+<span class="token keyword">async function</span> <span class="token function">optimizeBrain</span>(notes) {
+  <span class="token keyword">const</span> assistant = <span class="token keyword">new</span> <span class="token function">GeminiHelper</span>();
+  <span class="token keyword">const</span> summary = <span class="token keyword">await</span> assistant.summarize(notes);
+  
+  <span class="token keyword">return</span> {
+    status: <span class="token string">'optimized'</span>,
+    length: summary.words
+  };
+}</code></pre>
+                    </div>
+                    <div class="mock-ai-panel">
+                      <div class="ai-panel-header">
+                        <span>AI Assistant</span>
+                        <button class="btn-terminal-run" id="btn-run-code">✦ Explain Code</button>
+                      </div>
+                      <div class="ai-panel-content" id="terminal-output">
+                        <div class="log-line">Select code and click "Explain Code" to see Gemini's explanation report.</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- STUDENT TAB PREVIEW (FLASHCARDS & REVISION PLANS) -->
+            <div class="tab-panel" id="panel-student">
+              <div class="mock-student-hub">
+                <div class="hub-header-widgets">
+                  <div class="hub-widget bg-glass">
+                    <span class="widget-label">Study Deck</span>
+                    <span class="widget-value text-gradient-purple">Algorithms v1</span>
+                    <span class="widget-meta">15 Cards Generated</span>
+                  </div>
+                  <div class="hub-widget bg-glass">
+                    <span class="widget-label">Exam Prep Plan</span>
+                    <span class="widget-value text-gradient-pink">Final Schedule</span>
+                    <span class="widget-meta">8 Days to Revision</span>
+                  </div>
+                  <div class="hub-widget bg-glass">
+                    <span class="widget-label">Flowchart Maker</span>
+                    <span class="widget-value text-gradient-gold">Active Diagram</span>
+                    <span class="widget-meta">Vector canvas ready</span>
+                  </div>
+                </div>
+                
+                <div class="hub-grid-layout">
+                  <!-- Left side: Interactive Flashcard Flip Widget -->
+                  <div class="hub-block student-widget-block">
+                    <h3>Interactive Flashcard Simulator</h3>
+                    <div class="mock-flashcard-container" id="mock-flashcard">
+                      <div class="mock-flashcard-inner">
+                        <div class="mock-flashcard-front">
+                          <div class="card-tag">Topic: Computer Science</div>
+                          <p class="card-question">What is the time complexity of building a heap with Floyd's heap construction method?</p>
+                          <span class="click-hint">Click Card to Flip</span>
+                        </div>
+                        <div class="mock-flashcard-back">
+                          <div class="card-tag">Answer</div>
+                          <p class="card-answer">The time complexity is O(N) linear time, because the work decreases exponentially at higher levels.</p>
+                          <span class="click-hint">Click Card to Flip</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <!-- Right side: Revision Plan Scheduler list -->
+                  <div class="hub-block schedule-block">
+                    <h3>Exam Revision Schedule</h3>
+                    <div class="mock-timeline-list">
+                      <div class="timeline-item active">
+                        <span class="timeline-day">Day 1</span>
+                        <div class="timeline-info">
+                          <strong>Binary Search Trees</strong>
+                          <p>Review insertion, deletion, and balancing rotations</p>
+                        </div>
+                      </div>
+                      <div class="timeline-item">
+                        <span class="timeline-day">Day 2</span>
+                        <div class="timeline-info">
+                          <strong>Dijkstra's Algorithm</strong>
+                          <p>Shortest path proofs and priority queue runs</p>
+                        </div>
+                      </div>
+                      <div class="timeline-item">
+                        <span class="timeline-day">Day 3</span>
+                        <div class="timeline-info">
+                          <strong>Dynamic Programming</strong>
+                          <p>Solve memoization knapsack and edit distance</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
         </div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- CTA Section -->
-  <section class="cta-banner dark-bg">
-    <div class="amber-glow"></div>
-    <div class="container text-center">
-      <h2 class="white lg">Your second brain starts here</h2>
-      <p class="cta-subtext">Join a global community of thinkers and builders. Start your journey today.</p>
-      <a href="HTML/signup.html" class="btn-pill-white lg">Open the Workspace</a>
-    </div>
-  </section>
+    <!-- Core Features Grid Section -->
+    <section id="features" class="features">
+      <div class="container">
+        <div class="section-header text-center">
+          <span class="eyebrow">Suite Features</span>
+          <h2>Engineered for productivity without the overhead</h2>
+          <p class="section-desc text-center">A high-performance offline database coupled with dedicated client runtimes.</p>
+        </div>
+
+        <div class="features-grid">
+          <!-- Feature 1: Persistent Notes Editor -->
+          <div class="feature-card bento-wide glass-panel" style="--card-index: 1;">
+            <div class="bento-content">
+              <div class="icon-box icon-accent">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+              </div>
+              <h3>Persistent Notes Editor</h3>
+              <p>Write using fully compliant markdown formatting. Organize files with folders, tags, and quick search. Stored offline instantly.</p>
+            </div>
+            <div class="bento-visual notes-visual">
+              <div class="mini-note-item active">
+                <span class="note-dot"></span>
+                <div class="note-text">
+                  <div class="note-title">Dijkstra's Optimization</div>
+                  <div class="note-preview">Priority queue implementation details...</div>
+                </div>
+              </div>
+              <div class="mini-note-item">
+                <span class="note-dot"></span>
+                <div class="note-text">
+                  <div class="note-title">UI Design Checklist</div>
+                  <div class="note-preview">Aesthetic components, cards, bento...</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Feature 2: Syntax IDE Workspace -->
+          <div class="feature-card glass-panel" style="--card-index: 2;">
+            <div class="icon-box icon-accent">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>
+            </div>
+            <h3>Syntax IDE Workspace</h3>
+            <p>An integrated editor with syntax highlighting for multiple languages. Code alongside documentation with split-view layout panels.</p>
+          </div>
+
+          <!-- Feature 3: AI Revision Scheduler -->
+          <div class="feature-card glass-panel" style="--card-index: 3;">
+            <div class="icon-box icon-accent">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+            </div>
+            <h3>AI Revision Scheduler</h3>
+            <p>Generate day-by-day study calendars and review schedules dynamically by supplying your course syllabus and target exam date.</p>
+          </div>
+
+          <!-- Feature 4: AI Flashcard Generator -->
+          <div class="feature-card glass-panel" style="--card-index: 4;">
+            <div class="icon-box icon-accent">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"></path></svg>
+            </div>
+            <h3>AI Flashcard Generator</h3>
+            <p>Generate study decks from text descriptions or uploaded documents to test your recall during study sessions.</p>
+          </div>
+
+          <!-- Feature 5: Freeform Sketch Canvas -->
+          <div class="feature-card glass-panel" style="--card-index: 5;">
+            <div class="icon-box icon-accent">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z"></path><path d="M12 8V16"></path><path d="M8 12H16"></path></svg>
+            </div>
+            <h3>Freeform Sketch Canvas</h3>
+            <p>Insert vector blocks, flowchart nodes, and custom shapes into notes to visualize abstract logic and complex concepts.</p>
+          </div>
+
+          <!-- Feature 6: Integrated Audio Recorder -->
+          <div class="feature-card bento-wide glass-panel" style="--card-index: 6;">
+            <div class="bento-content">
+              <div class="icon-box icon-accent">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line><line x1="8" y1="23" x2="16" y2="23"></line></svg>
+              </div>
+              <h3>Integrated Audio Recorder</h3>
+              <p>Record classes, discussions, or dictate voice logs. Attach recorded audio directly inside the note metadata with built-in playback.</p>
+            </div>
+            <div class="bento-visual audio-visual">
+              <div class="waveform">
+                <span class="bar bar-1"></span>
+                <span class="bar bar-2"></span>
+                <span class="bar bar-3"></span>
+                <span class="bar bar-4"></span>
+                <span class="bar bar-5"></span>
+                <span class="bar bar-6"></span>
+                <span class="bar bar-7"></span>
+                <span class="bar bar-8"></span>
+                <span class="bar bar-9"></span>
+              </div>
+              <div class="audio-timer">01:42</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Code Workspace Spotlight Section -->
+    <section class="spotlight-section" id="code-spotlight">
+      <div class="container grid-50-50">
+        <div class="spotlight-text scroll-reveal-left">
+          <span class="eyebrow">Developer IDE</span>
+          <h2>A full development sandbox, built right in</h2>
+          <p>Develop, debug, and document in perfect harmony. Global Code Workspace provides a dedicated editor panel for organizing code snippets with integrated AI code assistance.</p>
+          <ul class="check-list">
+            <li>Syntax highlighting for JavaScript, Python, C++, HTML, and more</li>
+            <li>Gemini AI snippet commands: Explain, Improve, and Debug code</li>
+            <li>Flowchart Visualizer to diagram complex program logic</li>
+            <li>Personalized snippets sidebar search and local organization</li>
+          </ul>
+          <a href="HTML/code-workspace.html" class="btn-pill-primary">
+            <span>Launch Code IDE</span>
+            <svg class="btn-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+          </a>
+        </div>
+        <div class="spotlight-visual scroll-reveal-right">
+          <div class="glowing-wrapper">
+            <div class="browser-mockup-wrapper">
+              <div class="browser-mockup-header">
+                <div class="browser-mockup-dots">
+                  <span class="dot close"></span>
+                  <span class="dot minimize"></span>
+                  <span class="dot expand"></span>
+                </div>
+                <div class="browser-mockup-address">global-notes://workspace/code-ide</div>
+              </div>
+              <img src="assets/images/code_workspace_real.png" alt="Code Workspace Mockup" class="glow-image">
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Student Hub Spotlight Section -->
+    <section class="spotlight-section dark-spotlight" id="student-spotlight">
+      <div class="container grid-50-50 reverse-layout">
+        <div class="spotlight-visual scroll-reveal-left">
+          <div class="glowing-wrapper">
+            <div class="browser-mockup-wrapper">
+              <div class="browser-mockup-header">
+                <div class="browser-mockup-dots">
+                  <span class="dot close"></span>
+                  <span class="dot minimize"></span>
+                  <span class="dot expand"></span>
+                </div>
+                <div class="browser-mockup-address">global-notes://workspace/student-hub</div>
+              </div>
+              <img src="assets/images/notes_workspace_real.png" alt="Student Hub Interface" class="glow-image">
+            </div>
+          </div>
+        </div>
+        <div class="spotlight-text scroll-reveal-right">
+          <span class="eyebrow">Academic Center</span>
+          <h2>Master academics in Student Mode</h2>
+          <p>Activate Student Mode to streamline your academic workflow. Generate interactive revision cards, plan day-by-day exam schedules, and build diagram outlines using the built-in AI Study Hub.</p>
+          <ul class="check-list">
+            <li>Generate custom flashcards from topics or text documents (.txt, .md, .pdf)</li>
+            <li>Plan day-by-day revision timelines by entering a syllabus and exam date</li>
+            <li>Design flowchart diagrams with draggable shape nodes on a vector canvas</li>
+          </ul>
+          <a href="HTML/student-hub.html" class="btn-pill-primary">
+            <span>Launch Student Hub</span>
+            <svg class="btn-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Futuristic CTA Banner -->
+    <section class="cta-banner">
+      <div class="container text-center">
+        <h2 class="cta-title">Upgrade Your Workspace Today</h2>
+        <p class="cta-desc text-center">Enter your workspace securely via cloud authorization or start instantly as a guest in offline mode. Absolutely no setup friction.</p>
+        <div class="cta-actions text-center">
+          <a href="HTML/signup.html" class="btn-pill-primary lg">
+            <span>Open Workspace</span>
+            <svg class="btn-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+          </a>
+          <a href="app.html?guest=true" class="btn-pill-secondary lg">
+            <span>Start Guest Session</span>
+          </a>
+        </div>
+      </div>
+    </section>
   </main>
 
   <!-- Footer -->
-  <footer class="footer dark-bg">
+  <footer class="footer">
     <div class="container">
       <div class="footer-grid">
         <div class="footer-col brand-col">
           <a href="#" class="brand">
-            <img src="assets/images/logo_workspace.png" alt="Global Notes Logo"
-              style="width: 34px; height: 34px; border-radius: 8px;">
-            <span class="brand-name white">Global <span class="brand-accent">Notes</span> Workspace</span>
+            <img src="assets/images/logo_workspace.png" alt="Global Notes Logo" class="footer-logo">
+            <span class="brand-name white">Global <span class="brand-accent">Notes</span></span>
           </a>
-          <p class="footer-desc">The refined workspace for thinkers and builders. Crafted with care for the modern web.
-          </p>
+          <p class="footer-desc">The high-performance workspace for thinkers and builders. Storing notes and code offline, securely, and elegantly.</p>
         </div>
         <div class="footer-col">
-          <h4>Product</h4>
+          <h4>Features</h4>
           <ul>
-            <li><a href="#features">Features</a></li>
-            <li><a href="#how-it-works">How it works</a></li>
-            <li><a href="#">Security</a></li>
-            <li><a href="#">Roadmap</a></li>
+            <li><a href="#features">Smart Editor</a></li>
+            <li><a href="#code-spotlight">Code Workspace</a></li>
+            <li><a href="#student-spotlight">Student Hub</a></li>
           </ul>
         </div>
         <div class="footer-col">
           <h4>Resources</h4>
           <ul>
-            <li><a href="#">Documentation</a></li>
-            <li><a href="#">Help Center</a></li>
+            <li><a href="#" class="modal-link" data-modal="Documentation">Documentation</a></li>
+            <li><a href="#" class="modal-link" data-modal="Help Center">Help Center</a></li>
           </ul>
         </div>
         <div class="footer-col">
-          <h4>Company</h4>
+          <h4>Legal & Security</h4>
           <ul>
-            <li><a href="#">About</a></li>
-            <li><a href="#">Privacy</a></li>
-            <li><a href="#">Terms</a></li>
-            <li><a href="#">Contact</a></li>
+            <li><a href="#" class="modal-link" data-modal="Security">Security</a></li>
+            <li><a href="#" class="modal-link" data-modal="Privacy">Privacy Policy</a></li>
+            <li><a href="#" class="modal-link" data-modal="Terms">Terms of Service</a></li>
+            <li><a href="#" class="modal-link" data-modal="Roadmap">Roadmap</a></li>
+            <li><a href="#" class="modal-link" data-modal="Contact">Contact</a></li>
           </ul>
         </div>
       </div>
       <div class="footer-bottom">
         <p>&copy; 2026 Global Notes Workspace. All rights reserved.</p>
+        <a href="#top" class="back-to-top">Back to top ↑</a>
       </div>
     </div>
   </footer>
@@ -317,7 +620,7 @@
   <div id="info-modal" class="landing-modal">
     <div class="modal-backdrop"></div>
     <div class="modal-content-wrapper">
-      <button class="modal-close" id="modal-close">&times;</button>
+      <button class="modal-close" id="modal-close" aria-label="Close Modal">&times;</button>
       <div class="modal-body">
         <h2 id="modal-title" class="white"></h2>
         <div id="modal-text" class="modal-text"></div>
