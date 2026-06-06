@@ -13,8 +13,7 @@ try {
     APPWRITE_PROFILES_COLLECTION_ID: '${process.env.APPWRITE_PROFILES_COLLECTION_ID || "profiles"}',
     APPWRITE_SHARED_NOTES_COLLECTION_ID: '${process.env.APPWRITE_SHARED_NOTES_COLLECTION_ID || "shared_notes"}',
     SUPABASE_URL: '${process.env.SUPABASE_URL || ""}',
-    SUPABASE_ANON_KEY: '${process.env.SUPABASE_ANON_KEY || ""}',
-    GROQ_API_KEY: '${process.env.GROQ_API_KEY || ""}'
+    SUPABASE_ANON_KEY: '${process.env.SUPABASE_ANON_KEY || ""}'
 };
 
 export default config;`;
