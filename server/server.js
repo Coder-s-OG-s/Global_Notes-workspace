@@ -80,6 +80,7 @@ require('./config/passport')(passport);
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/notes', require('./routes/notes'));
 app.use('/api/folders', require('./routes/folders'));
+app.use('/api/ai', require('./routes/ai'));
 
 // Serve Static Frontend Assets
 app.use(express.static(path.join(__dirname, '../client')));
