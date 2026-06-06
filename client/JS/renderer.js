@@ -88,7 +88,7 @@ export function renderActiveNote(note, removeTagFromActiveNote) {
 
   if (tagsContainer) {
     tagsContainer.innerHTML = "";
-    (note.tags || []).forEach((tag) => {
+    (Array.isArray(note.tags) ? note.tags : []).forEach((tag) => {
       const chip = document.createElement("button");
       chip.className = "chip small tag-chip";
       chip.textContent = tag;
@@ -381,7 +381,7 @@ export function renderNotesDashboard(notes, folders, activeFolderId, activeLibra
       ? `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10V6a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v4M3 14v6a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-6M8 12h8"/></svg>`
       : `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="21 8 21 21 3 21 3 8"></polyline><rect x="1" y="3" width="22" height="5"></rect><line x1="10" y1="12" x2="14" y2="12"></line></svg>`;
 
-    const tagsHtml = (note.tags && note.tags.length > 0)
+    const tagsHtml = (Array.isArray(note.tags) && note.tags.length > 0)
       ? `<div class="note-card-tags">${note.tags.map(tag => `<span class="chip small tag-chip" style="--tag-color:${getTagColor(tag)}">${escapeHtml(tag)}</span>`).join('')}</div>`
       : '';
 

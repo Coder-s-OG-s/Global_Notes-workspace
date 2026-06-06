@@ -18,7 +18,7 @@ export function addTagToActiveNote(notes, activeNoteId, tag, activeUser) {
   if (!trimmed) return;
   const note = notes.find((n) => n.id === activeNoteId);
   if (!note) return;
-  note.tags = note.tags || [];
+  note.tags = Array.isArray(note.tags) ? note.tags : [];
   if (!note.tags.includes(trimmed)) {
     note.tags.push(trimmed);
     note.updatedAt = new Date().toISOString();
@@ -31,7 +31,7 @@ export function addTagToActiveNote(notes, activeNoteId, tag, activeUser) {
 // Removes a specific tag from the currently active note
 export function removeTagFromActiveNote(notes, activeNoteId, tag, activeUser, callbacks) {
   const note = notes.find((n) => n.id === activeNoteId);
-  if (!note || !note.tags) return;
+  if (!note || !Array.isArray(note.tags)) return;
   note.tags = note.tags.filter((t) => t !== tag);
   note.updatedAt = new Date().toISOString();
   persistNotes(activeUser, notes);
@@ -275,7 +275,7 @@ export function handleDuplicateNote(notes, activeNoteId, activeUser, callbacks) 
   const copy = createNote({
     title: note.title ? `${note.title} (Copy)` : "Untitled note (Copy)",
     content: note.content,
-    tags: [...(note.tags || [])],
+    tags: [...(Array.isArray(note.tags) ? note.tags : [])],
   });
   notes.unshift(copy);
   persistNotes(activeUser, notes);
