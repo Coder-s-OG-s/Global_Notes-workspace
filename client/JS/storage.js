@@ -1,6 +1,12 @@
 import { NOTES_STORAGE_PREFIX, ACTIVE_USER_KEY } from "./constants.js";
 import { showToast } from "./utilities.js";
 
+// M2 SECURITY NOTE: The username stored in localStorage is used ONLY for keying
+// local note storage and display purposes. It is NOT a security boundary.
+// All actual access control is enforced server-side via Passport.js session auth.
+// A user changing their localStorage username can only affect their own local cache,
+// never other users' data on the server.
+
 export function storageKeyForUser(user) {
   return `${NOTES_STORAGE_PREFIX}.${user || "guest"}`;
 }
