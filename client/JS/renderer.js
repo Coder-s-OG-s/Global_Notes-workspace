@@ -47,7 +47,12 @@ export function renderActiveNote(note, removeTagFromActiveNote) {
 
   if (titleInput) titleInput.value = note.title || "";
   if (contentInput) {
-    contentInput.innerHTML = note.content || "";
+    // H6: Sanitize HTML content before inserting into the DOM to prevent stored XSS.
+    // DOMPurify is loaded globally in app.html before this module runs.
+    const sanitize = (html) => (typeof DOMPurify !== 'undefined')
+      ? DOMPurify.sanitize(html, { USE_PROFILES: { html: true } })
+      : html;
+    contentInput.innerHTML = sanitize(note.content || "");
     // Apply editor pattern
     contentInput.setAttribute("data-pattern", note.editorPattern || "plain");
   }
