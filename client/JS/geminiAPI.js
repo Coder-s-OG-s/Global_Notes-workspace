@@ -10,29 +10,28 @@
  * @returns {Promise<string>} The generated text.
  */
 export async function generateTextWithGemini(prompt) {
-    try {
-        const response = await fetch('/api/ai/generate', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ prompt })
-        });
+    const response = await fetch('/api/ai/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompt })
+    });
 
-        if (response.status === 401) {
-            return '[AI Assistant]: You need to be logged in to use the AI assistant.';
-        }
-
-        if (!response.ok) {
-            const errData = await response.json().catch(() => ({}));
-            const message = errData.error || `Server error (${response.status})`;
-            console.error('[geminiAPI] Proxy error:', message);
-            return `[AI Assistant]: ${message}`;
-        }
-
-        const data = await response.json();
-        return data.text ?? '[AI Assistant]: No response received.';
-
-    } catch (error) {
-        console.error('[geminiAPI] Network error:', error.message);
-        return '[AI Assistant]: Could not connect to the AI service. Please check your connection.';
+    if (response.status === 401) {
+        throw new Error('You need to be logged in to use AI features.');
     }
+
+    if (!response.ok) {
+        const errData = await response.json().catch(() => ({}));
+        const message = errData.error || `AI service error (${response.status})`;
+        console.error('[geminiAPI] Proxy error:', message);
+        throw new Error(message);
+    }
+
+    const data = await response.json().catch(() => {
+        throw new Error('Invalid response from AI service.');
+    });
+
+    const text = data.text;
+    if (!text) throw new Error('AI returned an empty response. Please try again.');
+    return text;
 }

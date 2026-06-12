@@ -1,4 +1,4 @@
-import config from './config.js';
+// config.js removed - AI key is now server-side in .env
 import { generateTextWithGemini } from './geminiAPI.js';
 import { wireThemeToggle, setThemeStorageKey } from './themeManager.js';
 import { CODE_THEME_KEY } from './constants.js';
@@ -120,26 +120,38 @@ class CodeWorkspace {
         }
     }
 
-    checkAPIKey() {
-        const apiKey = config.GROQ_API_KEY;
-        if (!apiKey || apiKey === "YOUR_GROQ_API_KEY" || apiKey.includes("YOUR")) {
-            document.getElementById('api-warning').classList.remove('hidden');
-            ['ai-explain-btn', 'ai-docs-btn', 'ai-improve-btn', 'ai-analyze-btn', 'ai-debug-btn', 'ai-visualize-flowchart-btn', 'ai-chat-btn'].forEach(id => {
-                const btn = document.getElementById(id);
-                if (btn) {
-                    btn.disabled = true;
-                    btn.classList.add('is-locked');
-                    btn.title = "Add Groq API key to enable AI features";
-
-                    // Add a small lock badge
-                    if (!btn.querySelector('.lock-badge')) {
-                        const badge = document.createElement('div');
-                        badge.className = 'lock-badge';
-                        badge.innerHTML = '🔒';
-                        btn.appendChild(badge);
-                    }
-                }
+    async checkAPIKey() {
+        try {
+            const res = await fetch('/api/ai/generate', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ prompt: 'ping' })
             });
+            // 200 = works, 401 = auth needed (key exists), 429 = rate limited (key exists)
+            if (res.ok || res.status === 401 || res.status === 429) {
+                return; // AI is available
+            }
+            const data = await res.json().catch(() => ({}));
+            const msg = (data.error || '').toLowerCase();
+            if (msg.includes('api key') || msg.includes('groq') || res.status === 503) {
+                document.getElementById('api-warning').classList.remove('hidden');
+                ['ai-explain-btn', 'ai-docs-btn', 'ai-improve-btn', 'ai-analyze-btn', 'ai-debug-btn', 'ai-visualize-flowchart-btn', 'ai-chat-btn'].forEach(id => {
+                    const btn = document.getElementById(id);
+                    if (btn) {
+                        btn.disabled = true;
+                        btn.classList.add('is-locked');
+                        btn.title = "AI proxy key not configured on server";
+                        if (!btn.querySelector('.lock-badge')) {
+                            const badge = document.createElement('div');
+                            badge.className = 'lock-badge';
+                            badge.innerHTML = '🔒';
+                            btn.appendChild(badge);
+                        }
+                    }
+                });
+            }
+        } catch (e) {
+            console.warn('[codeWorkspace] Could not reach AI proxy:', e.message);
         }
     }
 
