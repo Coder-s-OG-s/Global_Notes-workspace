@@ -2,7 +2,7 @@ import config from './config.js';
 import { generateTextWithGemini } from './geminiAPI.js';
 import { THEME_KEY } from './constants.js';
 import { setThemeStorageKey, wireThemeToggle, getStoredTheme } from './themeManager.js';
-import { showToast } from './utilities.js';
+import { showToast, showConfirm } from './utilities.js';
 
 // --- Local Storage Keys ---
 const STORAGE_DECKS_KEY = 'global_notes_hub_decks';
@@ -2058,8 +2058,8 @@ function deleteSelectedShape() {
     showToast('Shape deleted.', 'success');
 }
 
-function clearFlowchartCanvas() {
-    if (confirm("Are you sure you want to clear the entire canvas?")) {
+async function clearFlowchartCanvas() {
+    if (await showConfirm("Clear Canvas", "Are you sure you want to clear the entire canvas?", "Clear")) {
         shapes = [];
         selectedShapeId = null;
         saveFlowchartState();

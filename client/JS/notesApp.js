@@ -10,8 +10,6 @@ import { wireImportExport } from "./exportImport.js";
 // wireAIAssistant is superseded by wireEditorQuickTools for the AI popover
 import { wireThemeToggle } from "./themeManager.js";
 import { getActiveFilter, getSelectedDate } from "./filterSearchSort.js";
-import { wireSidebarToggle, wireToolbarToggle, wireSidebarResize, wireToolTabs } from "./layoutManager.js";
-import { initSmartCalendar } from "./smartCalendar.js";
 import { wireProfileManager, updateHeaderAvatar } from "./profileManager.js";
 import { wireSlashCommands } from "./slashCommands.js";
 import { handleArchiveNote, handleUnarchiveNote, removeTagFromActiveNote, handleDeleteNote } from "./noteOperations.js";
@@ -25,6 +23,10 @@ import { wireEditorQuickTools } from "./editorQuickTools.js";
 import { upgradeToolbarSelects } from "./customSelect.js";
 import { generateTextWithGemini } from "./geminiAPI.js";
 import { initStudyAssistant, onActiveNoteChanged } from "./studyAssistant.js";
+import { initSearchDropdown } from "./searchDropdown.js";
+import { stripHtml } from "./utilities.js";
+import { wireSidebarToggle, wireToolbarToggle, wireSidebarResize, wireToolTabs } from "./layoutManager.js";
+
 
 
 // Global state
@@ -34,8 +36,7 @@ const state = {
   activeUser: null,
   folders: [],
   activeFolderId: null, // null means "All Notes"
-  activeLibraryFilter: 'all', // 'all', 'recent', 'favorites', 'trash'
-  calendarWidget: null
+  activeLibraryFilter: 'all' // 'all', 'recent', 'favorites', 'trash'
 };
 
 // Sets the currently active note and updates the UI to reflect the change
@@ -110,7 +111,6 @@ const callbacks = {
       deleteNote: (id) => handleDeleteNote(state.notes, id, state.activeUser, callbacks)
     });
     callbacks.renderNotesDashboard();
-    state.calendarWidget?.render();
   },
   // Renders the currently active note in the main editor
   renderActiveNote: () => renderActiveNote(
@@ -133,7 +133,6 @@ const callbacks = {
   // Saves all notes to storage
   persistNotes: async () => {
     await persistNotes(state.activeUser, state.notes);
-    state.calendarWidget?.render(); // Update calendar indicators
   },
   getActiveNoteId: () => state.activeNoteId,
   renderDashboardSkeletons: () => renderDashboardSkeletons(state.activeFolderId, state.activeLibraryFilter),
@@ -267,9 +266,6 @@ async function initApp() {
     });
   }
 
-  // Initialize Smart Calendar
-  state.calendarWidget = initSmartCalendar(state, callbacks);
-
   // Live Metadata Update
   const contentInput = document.getElementById("content");
   if (contentInput) {
@@ -390,6 +386,49 @@ Provide ONLY the code. Do NOT wrap it in markdown codeblocks (no \`\`\`), do NOT
   // Initialize Study Assistant
   initStudyAssistant(state, callbacks);
 
+  // Initialize Search Dropdown
+  const NOTE_THEME_COLORS = {
+    'classic-blue': '#5b5bd6',
+    'elegant-purple': '#9333ea',
+    'forest-green': '#10b981',
+    'sunset-orange': '#f59e0b',
+    'ocean-teal': '#13b5b1',
+    'rose-gold': '#f857a6',
+    'slate-gray': '#64748b',
+    'crimson-red': '#ef4444'
+  };
+
+  const getNoteEmoji = (note) => {
+    if (note.isFavorite) return '⭐';
+    if (note.isArchived) return '📦';
+    if (note.content && (note.content.includes('<pre') || note.content.includes('<code>'))) return '💻';
+    return '📄';
+  };
+
+  initSearchDropdown({
+    inputId: 'search',
+    dropdownId: 'search-dropdown',
+    clearBtnId: 'search-clear',
+    getItems: () => {
+      return state.notes.map(note => {
+        const textContent = note.content ? stripHtml(note.content) : '';
+        const snippet = textContent.replace(/\s+/g, ' ').trim().substring(0, 50);
+        const folder = state.folders.find(f => f.id === note.folderId);
+        const folderName = folder ? folder.name : (note.isArchived ? 'Archived' : 'All Notes');
+        
+        return {
+          id: note.id,
+          title: note.title || 'Untitled note',
+          subtitle: `${folderName}${snippet ? ' – ' + snippet + '...' : ''}`,
+          themeColor: NOTE_THEME_COLORS[note.theme] || 'var(--primary)',
+          emoji: getNoteEmoji(note)
+        };
+      });
+    },
+    onSelect: (noteId) => {
+      setActiveNote(noteId);
+    }
+  });
 }
 
 

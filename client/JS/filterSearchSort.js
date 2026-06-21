@@ -20,10 +20,9 @@ export function getSortMode() {
   return select ? select.value : "updated-desc";
 }
 
-// Retrieves the selected date from the date filter input
+// Retrieves the selected date from the date filter input (always empty)
 export function getSelectedDate() {
-  const input = $("#date-filter");
-  return input && input.value ? input.value : "";
+  return "";
 }
 
 // Applies all active filters, searches, and sorting to the notes list
@@ -31,7 +30,6 @@ export function applyFilterSearchAndSort(baseNotes) {
   const filter = getActiveFilter();
   const query = getSearchQuery();
   const sortMode = getSortMode();
-  const selectedDate = getSelectedDate();
 
   let result = [...baseNotes];
 
@@ -48,15 +46,7 @@ export function applyFilterSearchAndSort(baseNotes) {
     });
   }
 
-  if (selectedDate) {
-    result = result.filter((note) => {
-      const source = note.createdAt || note.updatedAt;
-      if (!source) return false;
-      const iso = typeof source === "string" ? source : String(source);
-      const datePart = iso.split("T")[0];
-      return datePart === selectedDate;
-    });
-  }
+
 
   result.sort((a, b) => {
     switch (sortMode) {

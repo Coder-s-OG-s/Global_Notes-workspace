@@ -34,7 +34,6 @@ const urlsToCache = [
   '/JS/shapeManager.js',
   '/JS/sketchPad.js',
   '/JS/slashCommands.js',
-  '/JS/smartCalendar.js',
   '/JS/storage.js',
   '/JS/themeManager.js',
   '/JS/themePresets.js',

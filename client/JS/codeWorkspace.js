@@ -3,6 +3,7 @@ import { generateTextWithGemini } from './geminiAPI.js';
 import { wireThemeToggle, setThemeStorageKey } from './themeManager.js';
 import { CODE_THEME_KEY } from './constants.js';
 import { showConfirm, showPrompt } from './utilities.js';
+import { initSearchDropdown } from './searchDropdown.js';
 
 const STORAGE_KEY = 'antigravity_snippets';
 
@@ -297,6 +298,27 @@ Provide ONLY the code. Do NOT wrap it in markdown codeblocks (no \`\`\`), do NOT
         document.getElementById('new-snippet-btn').addEventListener('click', () => this.createNewSnippet());
         document.getElementById('copy-code-btn').addEventListener('click', () => this.copyToClipboard());
         document.getElementById('snippet-search').addEventListener('input', (e) => this.renderSnippetList(e.target.value));
+
+        initSearchDropdown({
+            inputId: 'snippet-search',
+            dropdownId: 'snippet-search-dropdown',
+            clearBtnId: 'snippet-search-clear',
+            getItems: () => {
+                return this.snippets.map(s => {
+                    const langObj = languageMap[s.language] || { name: s.language || 'Plain Text' };
+                    return {
+                        id: s.id,
+                        title: s.title || 'Untitled snippet',
+                        subtitle: `${langObj.name}`,
+                        themeColor: 'var(--primary)',
+                        emoji: '💻'
+                    };
+                });
+            },
+            onSelect: (id) => {
+                this.selectSnippet(id);
+            }
+        });
 
         const toggleSidebarBtn = document.getElementById('toggle-sidebar-btn');
         if (toggleSidebarBtn) {
