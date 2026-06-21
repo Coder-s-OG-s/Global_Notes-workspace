@@ -128,6 +128,7 @@ export function showConfirm(title, message, confirmLabel = 'Delete') {
     const messageEl = document.getElementById('confirm-message');
     const okBtn = document.getElementById('confirm-ok');
     const cancelBtn = document.getElementById('confirm-cancel');
+    const closeBtn = dialog ? dialog.querySelector('.confirm-close') : null;
 
     if (!dialog || !okBtn || !cancelBtn) { 
       resolve(confirm(message)); 
@@ -157,12 +158,14 @@ export function showConfirm(title, message, confirmLabel = 'Delete') {
       cancelBtn.removeEventListener('click', onCancel);
       okBtn.removeEventListener('click', onOk);
       dialog.removeEventListener('close', onClose);
+      if (closeBtn) closeBtn.removeEventListener('click', onCancel);
       if (dialog.open) dialog.close();
     };
 
     cancelBtn.addEventListener('click', onCancel);
     okBtn.addEventListener('click', onOk);
     dialog.addEventListener('close', onClose);
+    if (closeBtn) closeBtn.addEventListener('click', onCancel);
 
     dialog.showModal();
   });
@@ -182,6 +185,7 @@ export function showPrompt(title, defaultValue = '', confirmLabel = 'OK') {
     const inputEl = document.getElementById('prompt-input');
     const okBtn = document.getElementById('prompt-ok');
     const cancelBtn = document.getElementById('prompt-cancel');
+    const closeBtn = dialog ? dialog.querySelector('.confirm-close') : null;
 
     if (!dialog || !okBtn || !cancelBtn || !inputEl) {
       resolve(prompt(title, defaultValue));
@@ -222,6 +226,7 @@ export function showPrompt(title, defaultValue = '', confirmLabel = 'OK') {
       okBtn.removeEventListener('click', onOk);
       dialog.removeEventListener('close', onClose);
       inputEl.removeEventListener('keydown', onKeyDown);
+      if (closeBtn) closeBtn.removeEventListener('click', onCancel);
       if (dialog.open) dialog.close();
     };
 
@@ -229,6 +234,7 @@ export function showPrompt(title, defaultValue = '', confirmLabel = 'OK') {
     okBtn.addEventListener('click', onOk);
     dialog.addEventListener('close', onClose);
     inputEl.addEventListener('keydown', onKeyDown);
+    if (closeBtn) closeBtn.addEventListener('click', onCancel);
 
     dialog.showModal();
     // Auto-focus and select text
@@ -261,4 +267,72 @@ export function stripHtml(html) {
     .replace(/&#39;/g, "'")
     .replace(/\n{3,}/g, '\n\n')
     .trim();
+}
+
+/**
+ * Shows a custom alert dialog. Returns a promise that resolves when closed.
+ * @param {string} title - Dialog title.
+ * @param {string} message - Dialog message.
+ * @param {string} btnLabel - Label for the OK button.
+ * @returns {Promise<void>}
+ */
+export function showAlert(title, message, btnLabel = 'OK') {
+  return new Promise((resolve) => {
+    const dialog = document.getElementById('alert-dialog');
+    const titleEl = document.getElementById('alert-title');
+    const messageEl = document.getElementById('alert-message');
+    const okBtn = document.getElementById('alert-ok');
+    const closeBtn = dialog ? dialog.querySelector('.confirm-close') : null;
+
+    if (!dialog || !okBtn) {
+      if (window._nativeAlert) {
+        window._nativeAlert(message);
+      } else {
+        alert(message);
+      }
+      resolve();
+      return;
+    }
+
+    if (titleEl) titleEl.textContent = title;
+    if (messageEl) messageEl.textContent = message;
+    okBtn.textContent = btnLabel;
+
+    const onOk = () => {
+      cleanup();
+      resolve();
+    };
+
+    const cleanup = () => {
+      okBtn.removeEventListener('click', onOk);
+      dialog.removeEventListener('close', onOk);
+      if (closeBtn) closeBtn.removeEventListener('click', onOk);
+      if (dialog.open) dialog.close();
+    };
+
+    okBtn.addEventListener('click', onOk);
+    dialog.addEventListener('close', onOk);
+    if (closeBtn) closeBtn.addEventListener('click', onOk);
+
+    dialog.showModal();
+  });
+}
+
+// Global window.alert override
+if (typeof window !== 'undefined') {
+  if (!window._nativeAlert) {
+    window._nativeAlert = window.alert;
+  }
+  window.alert = function(message) {
+    const dialog = document.getElementById('alert-dialog');
+    if (!dialog) {
+      if (window._nativeAlert) {
+        window._nativeAlert(message);
+      } else {
+        console.warn("Native alert fallback missing. Message:", message);
+      }
+      return;
+    }
+    showAlert("Alert", message);
+  };
 }

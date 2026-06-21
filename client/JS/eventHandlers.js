@@ -41,17 +41,6 @@ export function wireFiltersAndSearch(callbacks) {
       callbacks.renderNotesList();
     }, 300);
   });
-
-  const dateInput = $("#date-filter");
-  dateInput?.addEventListener("change", () => callbacks.renderNotesList());
-
-  const clearDateBtn = $("#clear-date");
-  clearDateBtn?.addEventListener("click", () => {
-    if (dateInput) {
-      dateInput.value = "";
-    }
-    callbacks.renderNotesList();
-  });
 }
 
 // Handles the sort dropdown functionality for notes list

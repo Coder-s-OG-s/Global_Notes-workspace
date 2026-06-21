@@ -199,7 +199,9 @@
                         <circle cx="11" cy="11" r="8"></circle>
                         <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
                     </svg>
-                    <input type="text" id="snippet-search" class="search-input" placeholder="Search snippets...">
+                    <input type="text" id="snippet-search" class="search-input" placeholder="Search snippets..." autocomplete="off">
+                    <button class="search-clear-btn hidden" id="snippet-search-clear" aria-label="Clear search">✕</button>
+                    <div class="search-results-dropdown hidden" id="snippet-search-dropdown"></div>
                 </div>
             </div>
 
@@ -232,6 +234,7 @@
     <!-- Confirm Dialog -->
     <dialog class="confirm-dialog" id="confirm-dialog">
         <div class="confirm-content">
+            <button class="confirm-close" aria-label="Close dialog">✕</button>
             <h3 class="confirm-title" id="confirm-title">Delete Snippet</h3>
             <p class="confirm-message" id="confirm-message">Are you sure? This cannot be undone.</p>
             <div class="confirm-actions">
@@ -244,6 +247,7 @@
     <!-- Prompt Dialog -->
     <dialog class="confirm-dialog" id="prompt-dialog">
         <div class="confirm-content">
+            <button class="confirm-close" aria-label="Close dialog">✕</button>
             <h3 class="confirm-title" id="prompt-title">Enter Details</h3>
             <div class="prompt-body">
                 <input type="text" id="prompt-input" class="prompt-input-field" placeholder="Type here..." autocomplete="off">
@@ -251,6 +255,18 @@
             <div class="confirm-actions">
                 <button class="btn secondary" id="prompt-cancel">Cancel</button>
                 <button class="btn primary" id="prompt-ok">OK</button>
+            </div>
+        </div>
+    </dialog>
+
+    <!-- Alert Dialog -->
+    <dialog class="confirm-dialog" id="alert-dialog">
+        <div class="confirm-content">
+            <button class="confirm-close" aria-label="Close dialog">✕</button>
+            <h3 class="confirm-title" id="alert-title">Alert</h3>
+            <p class="confirm-message" id="alert-message">Something happened.</p>
+            <div class="confirm-actions">
+                <button class="btn primary" id="alert-ok">OK</button>
             </div>
         </div>
     </dialog>
