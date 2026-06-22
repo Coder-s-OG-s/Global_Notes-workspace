@@ -19,7 +19,8 @@ function initAuthPage() {
     setMessage(`Connecting to ${provider}...`, "info");
     try {
       await signInWithProvider(provider);
-      // Redirect handled by Supabase (setRedirectTo)
+      // OAuth flow: browser is redirected to the provider, then back to /api/auth/<provider>/callback
+      // Session is managed server-side via Passport.js + express-session (not Supabase)
     } catch (error) {
       console.error("Social Login Error", error);
       setMessage(`Error logging in with ${provider}: ${error.message}`, "error");

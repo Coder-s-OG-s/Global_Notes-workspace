@@ -1040,6 +1040,8 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
   <script type="text/javascript" src="JS/vendor/lz-string.min.js"></script>
   <script type="text/javascript" src="JS/vendor/qrcode.min.js"></script>
+  <!-- DOMPurify: XSS sanitization for all innerHTML assignments (H6, L2) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.1.6/purify.min.js" integrity="sha512-jB0TkTBeQC9ZSkBqDhdmfTv1qdfbWpGE72yJ/01Srq6hEzZIz2xkz1e57p9ai7IeHMwEG7HpzG6NdptChif5Pg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
   <script type="module" src="JS/notesApp.js?v=3.4"></script>
   <script>
     if ('serviceWorker' in navigator) {

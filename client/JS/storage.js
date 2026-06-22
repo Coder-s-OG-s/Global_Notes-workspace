@@ -1,6 +1,12 @@
 import { NOTES_STORAGE_PREFIX, ACTIVE_USER_KEY } from "./constants.js";
 import { showToast } from "./utilities.js";
 
+// M2 SECURITY NOTE: The username stored in localStorage is used ONLY for keying
+// local note storage and display purposes. It is NOT a security boundary.
+// All actual access control is enforced server-side via Passport.js session auth.
+// A user changing their localStorage username can only affect their own local cache,
+// never other users' data on the server.
+
 export function storageKeyForUser(user) {
   return `${NOTES_STORAGE_PREFIX}.${user || "guest"}`;
 }
@@ -58,7 +64,19 @@ export async function getNotes(username) {
       }
     });
 
-    const finalNotes = Array.from(notesMap.values());
+    const finalNotes = Array.from(notesMap.values()).map(note => {
+      // Normalize tags to be an array of strings (preventing crashes when note.tags is string or null)
+      if (!Array.isArray(note.tags)) {
+        if (typeof note.tags === 'string') {
+          note.tags = note.tags.trim() ? note.tags.split(',').map(t => t.trim()) : [];
+        } else {
+          note.tags = [];
+        }
+      } else {
+        note.tags = note.tags.filter(t => typeof t === 'string');
+      }
+      return note;
+    });
     finalNotes.sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
 
     // Update LocalStorage to keep them in sync

@@ -1,4 +1,4 @@
-import config from './config.js';
+// config.js removed - AI key is now server-side in .env
 import { generateTextWithGemini } from './geminiAPI.js';
 import { THEME_KEY } from './constants.js';
 import { setThemeStorageKey, wireThemeToggle, getStoredTheme } from './themeManager.js';
@@ -218,11 +218,28 @@ function initHub() {
     }
 }
 
-// Check API Key status
-function checkAPIKey() {
-    const apiKey = config.GROQ_API_KEY;
-    if (!apiKey || apiKey === 'YOUR_GROQ_API_KEY' || apiKey.includes('YOUR')) {
-        document.getElementById('api-warning').classList.remove('hidden');
+// Check if the server-side AI proxy is configured
+async function checkAPIKey() {
+    try {
+        const res = await fetch('/api/ai/generate', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ prompt: 'ping' })
+        });
+        // 200 = works, 401 = auth needed (key exists), 429 = rate limited (key exists)
+        // 500/503 with specific message = key missing on server
+        if (res.ok || res.status === 401 || res.status === 429) {
+            // AI proxy is reachable and key is configured — hide banner
+            return;
+        }
+        const data = await res.json().catch(() => ({}));
+        const msg = (data.error || '').toLowerCase();
+        if (msg.includes('api key') || msg.includes('groq') || res.status === 503) {
+            document.getElementById('api-warning').classList.remove('hidden');
+        }
+    } catch (e) {
+        // Network error — server not running, don't show banner (dev mode may differ)
+        console.warn('[studentHub] Could not reach AI proxy:', e.message);
     }
 }
 
@@ -675,9 +692,7 @@ Syllabus / Notes / Topic Input:
 ${sourceText}`;
 
         const aiResponse = await generateTextWithGemini(prompt);
-        if (aiResponse.includes("Error:") || aiResponse.includes("Deployment Error")) {
-            throw new Error(aiResponse);
-        }
+
 
         const cards = parseJsonArray(aiResponse);
         if (!Array.isArray(cards)) {
@@ -996,9 +1011,7 @@ Syllabus Details:
 ${sourceSyllabus}`;
 
         const aiResponse = await generateTextWithGemini(prompt);
-        if (aiResponse.includes("Error:") || aiResponse.includes("Deployment Error")) {
-            throw new Error(aiResponse);
-        }
+
 
         const schedule = parseJsonArray(aiResponse);
         if (!Array.isArray(schedule)) {
@@ -2111,9 +2124,7 @@ Input Process Description:
 ${promptText}`;
 
         const aiResponse = await generateTextWithGemini(prompt);
-        if (aiResponse.includes("Error:") || aiResponse.includes("Deployment Error")) {
-            throw new Error(aiResponse);
-        }
+
 
         const data = parseJsonArray(aiResponse);
         if (!Array.isArray(data)) {

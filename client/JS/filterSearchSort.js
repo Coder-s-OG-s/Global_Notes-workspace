@@ -34,12 +34,12 @@ export function applyFilterSearchAndSort(baseNotes) {
   let result = [...baseNotes];
 
   if (filter && filter !== "all") {
-    result = result.filter((note) => note.tags && note.tags.includes(filter));
+    result = result.filter((note) => Array.isArray(note.tags) && note.tags.includes(filter));
   }
 
   if (query) {
     result = result.filter((note) => {
-      const haystack = [note.title || "", note.content || "", (note.tags || []).join(" ")]
+      const haystack = [note.title || "", note.content || "", (Array.isArray(note.tags) ? note.tags : []).join(" ")]
         .join(" ")
         .toLowerCase();
       return haystack.includes(query);

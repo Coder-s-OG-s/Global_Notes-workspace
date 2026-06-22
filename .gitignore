@@ -2,6 +2,7 @@
 .env*.local
 .env
 client/JS/config.js
+JS/config.js
 node_modules
 dist
 public

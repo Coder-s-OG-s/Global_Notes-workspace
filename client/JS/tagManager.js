@@ -104,7 +104,7 @@ function renderTagMenuOptions(filterText = "") {
 
     const predefined = ["work", "personal", "ideas", "todo", "remote"];
     const customTags = getCustomTags(stateRef.activeUser).map(t => t.name);
-    const noteTags = stateRef.notes.flatMap(n => n.tags || []);
+    const noteTags = stateRef.notes.flatMap(n => Array.isArray(n.tags) ? n.tags : []);
 
     const allTags = new Set([...predefined, ...customTags, ...noteTags]);
     const sortedTags = Array.from(allTags).sort();
@@ -125,7 +125,7 @@ function renderTagMenuOptions(filterText = "") {
         item.className = "tag-menu-item";
 
         const activeNote = stateRef.notes.find(n => n.id === stateRef.activeNoteId);
-        const hasTag = activeNote?.tags?.includes(tag);
+        const hasTag = Array.isArray(activeNote?.tags) && activeNote.tags.includes(tag);
         const color = getTagColor(tag);
 
         item.innerHTML = `
@@ -156,6 +156,10 @@ function renderTagMenuOptions(filterText = "") {
 function removeTagFromNote(tag) {
     const note = stateRef.notes.find(n => n.id === stateRef.activeNoteId);
     if (!note) return;
+
+    if (!Array.isArray(note.tags)) {
+        note.tags = [];
+    }
 
     if (note.tags.includes(tag)) {
         note.tags = note.tags.filter(t => t !== tag);

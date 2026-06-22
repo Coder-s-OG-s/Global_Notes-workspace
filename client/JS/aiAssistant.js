@@ -42,7 +42,9 @@ export function wireAIAssistant(state, callbacks) {
                 document.execCommand('insertText', false, text);
             } else {
                 // Escape HTML entities in each paragraph to prevent XSS
-                const safeHtml = paragraphs.map(p => escapeHtml(p)).join('<br>');
+                // L2: Sanitize AI-generated HTML to prevent adversarial model output from injecting scripts
+                const purify = (typeof DOMPurify !== 'undefined') ? DOMPurify : { sanitize: (s) => s };
+                const safeHtml = paragraphs.map(p => purify.sanitize(escapeHtml(p))).join('<br>');
                 document.execCommand('insertHTML', false, safeHtml);
             }
         } catch (e) {

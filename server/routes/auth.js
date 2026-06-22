@@ -37,11 +37,13 @@ router.get('/logout', (req, res, next) => {
   });
 });
 
-// @desc    Get current user
+// @desc    Get current user (public fields only — no OAuth provider IDs or internals)
 // @route   GET /api/auth/user
 router.get('/user', (req, res) => {
   if (req.isAuthenticated()) {
-    res.json(req.user);
+    // M1: Only expose safe, non-sensitive fields. Never expose googleId, githubId, _id, __v.
+    const { username, email, avatarUrl, createdAt } = req.user;
+    res.json({ username, email, avatarUrl, createdAt });
   } else {
     res.status(401).json({ msg: 'Not authenticated' });
   }

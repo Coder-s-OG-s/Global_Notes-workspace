@@ -11,7 +11,7 @@ export function formatNotesAsText(notes) {
   return notes
     .map((note, index) => {
       const title = note.title || "Untitled note";
-      const tags = (note.tags || []).join(", ") || "none";
+      const tags = (Array.isArray(note.tags) ? note.tags : []).join(", ") || "none";
       const created = note.createdAt || "";
       const updated = note.updatedAt || "";
       const content = stripHtml(note.content || "");
@@ -78,7 +78,7 @@ export function formatNotesAsMarkdown(notes) {
   return notes.map((note) => {
     const title = note.title || "Untitled";
     const created = note.createdAt ? `*Created: ${note.createdAt}*` : "";
-    const tags = (note.tags || []).length ? `**Tags:** ${note.tags.join(", ")}` : "";
+    const tags = (Array.isArray(note.tags) ? note.tags : []).length ? `**Tags:** ${note.tags.join(", ")}` : "";
     const content = htmlToMarkdown(note.content);
 
     return `# ${title}\n${created}\n${tags}\n\n${content}\n\n---\n`;
@@ -133,7 +133,7 @@ function printNotes(notes) {
           </div>
           <div class="meta-col">
             <span class="meta-label">Tags</span>
-            <span class="meta-value">${escapeHtml((note.tags || []).join(", ") || "No specific tags")}</span>
+            <span class="meta-value">${escapeHtml((Array.isArray(note.tags) ? note.tags : []).join(", ") || "No specific tags")}</span>
           </div>
           ${note.folderId ? `
           <div class="meta-col">
