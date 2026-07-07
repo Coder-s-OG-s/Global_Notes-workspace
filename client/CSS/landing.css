@@ -71,11 +71,12 @@ main {
 }
 
 section {
-  /* Prevent individual sections from overflowing horizontally */
-  overflow-x: hidden;
+  /* Prevent individual sections from overflowing horizontally.
+     Use clip (not hidden) to avoid scroll container creation.
+     Do NOT set position:relative here — it can break absolute/fixed children */
+  overflow-x: clip;
   width: 100%;
   max-width: 100vw;
-  position: relative;
 }
 
 /* Dot Matrix Grid Pattern Background */
@@ -2043,6 +2044,84 @@ body.student-engine-active .mini-note-item.active {
   .glow-1 { width: 400px; height: 400px; left: -100px; }
   .glow-2 { width: 500px; height: 500px; right: -150px; }
 }
+
+/* --- Mid-range / Foldable Tablet: 900px and below ---
+   Targets Asus Zenbook Fold, Surface Duo, Galaxy Z Fold, etc.
+   At this width a full 2-col hero + 2-col features is workable
+   but needs tighter padding and font scaling.
+*/
+@media (max-width: 900px) {
+  .container {
+    padding: 0 28px;
+  }
+
+  /* Hero: reduce excessive vertical padding */
+  .hero {
+    padding-top: 110px;
+    padding-bottom: 48px;
+  }
+
+  /* Hero title: slightly smaller clamp */
+  .hero-title {
+    font-size: clamp(2.2rem, 7vw, 3.4rem);
+    line-height: 1.1;
+  }
+
+  .hero-subtext {
+    font-size: 1rem;
+    max-width: 540px;
+  }
+
+  /* Engine toggle fits in one row */
+  .engine-toggle-container {
+    justify-content: center;
+  }
+
+  /* Features: keep 2-col at 900px */
+  .features-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }
+
+  .feature-card.bento-wide {
+    grid-column: span 2;
+    grid-template-columns: 1fr;
+  }
+
+  /* Section padding tightened */
+  .spotlight-section,
+  .preview-section,
+  .features,
+  .cta-banner {
+    padding: 72px 0;
+  }
+
+  /* CTA buttons: side-by-side but full area */
+  .cta-actions {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px;
+  }
+
+  /* Hero meta: horizontal with smaller dots */
+  .hero-meta {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px 16px;
+  }
+
+  .meta-dot {
+    display: none;
+  }
+
+  /* Preview frame: keep visible but hide AI panel */
+  .mock-ai-panel {
+    display: none;
+  }
+
+  .code-body-split .code-container {
+    border-right: none;
+  }
 
 /* --- Mobile: 768px and below --- */
 @media (max-width: 768px) {
