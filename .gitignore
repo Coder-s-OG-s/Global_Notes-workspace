@@ -1,7 +1,95 @@
-.vercel
-.env*.local
+# ============================================
+# SECRETS & ENVIRONMENT — NEVER PUSH THESE
+# ============================================
 .env
+.env.*
+.env.local
+.env.*.local
+.env.development
+.env.production
+.env.staging
+.env.test
+*.pem
+*.key
+secrets.json
+secrets.yaml
+
+# Generated config with injected API keys
 client/JS/config.js
-node_modules
-dist
-public
+
+# ============================================
+# DEPENDENCIES
+# ============================================
+node_modules/
+.npm/
+.yarn/
+
+# ============================================
+# BUILD OUTPUT
+# ============================================
+dist/
+build/
+.output/
+out/
+
+# ============================================
+# DEPLOYMENT PLATFORM DIRS
+# ============================================
+.vercel/
+.netlify/
+.wrangler/
+.cloudflare/
+
+# ============================================
+# OS FILES
+# ============================================
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+Thumbs.db
+ehthumbs.db
+desktop.ini
+
+# ============================================
+# IDE / EDITOR
+# ============================================
+.vscode/settings.json
+.idea/
+*.swp
+*.swo
+*~
+
+# ============================================
+# LOGS & TEMP
+# ============================================
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pids/
+*.pid
+.cache/
+tmp/
+temp/
+
+# ============================================
+# MOBILE / NATIVE BUILD ARTIFACTS
+# ============================================
+android/.gradle/
+android/app/build/
+android/local.properties
+ios/Pods/
+ios/build/
+*.ipa
+*.apk
+*.aab
+
+# ============================================
+# MISC
+# ============================================
+.idx/
+coverage/
+.nyc_output/

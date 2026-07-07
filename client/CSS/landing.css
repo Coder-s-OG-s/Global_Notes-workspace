@@ -43,7 +43,11 @@ html {
   scroll-behavior: smooth;
   background-color: var(--bg-primary);
   color: var(--text-primary);
-  overflow-x: hidden;
+  /* overflow-x: clip is stronger than hidden — it doesn't create a scroll
+     container so it truly prevents horizontal scroll on all browsers */
+  overflow-x: clip;
+  width: 100%;
+  max-width: 100vw;
 }
 
 body {
@@ -51,7 +55,27 @@ body {
   background-color: var(--bg-primary);
   color: var(--text-primary);
   line-height: 1.6;
+  overflow-x: clip;
+  width: 100%;
+  max-width: 100vw;
+  /* Prevent any child from stretching the page */
+  position: relative;
+}
+
+main {
+  /* Ensure main never causes horizontal scroll */
+  overflow-x: clip;
+  width: 100%;
+  max-width: 100vw;
+  position: relative;
+}
+
+section {
+  /* Prevent individual sections from overflowing horizontally */
   overflow-x: hidden;
+  width: 100%;
+  max-width: 100vw;
+  position: relative;
 }
 
 /* Dot Matrix Grid Pattern Background */
@@ -80,9 +104,10 @@ body {
   align-items: center;
 }
 
-/* Faint ambient light glow */
+/* Faint ambient light glow — use position:fixed so they never
+   extend the document scroll width */
 .radial-glow {
-  position: absolute;
+  position: fixed;
   border-radius: 50%;
   filter: blur(140px);
   opacity: 0.04;
@@ -167,9 +192,11 @@ h1, h2, h3, h4 {
   top: 0;
   left: 0;
   width: 100%;
+  max-width: 100vw;
   z-index: 1000;
   padding: 30px 0;
   transition: var(--transition-smooth);
+  /* NOTE: Do NOT add overflow:hidden here — it clips the mobile menu drawer */
 }
 
 .fixed-nav.scrolled {
@@ -185,6 +212,10 @@ h1, h2, h3, h4 {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  width: 100%;
+  /* Ensure hamburger always stays in view */
+  flex-wrap: nowrap;
+  min-width: 0;
 }
 
 .brand {
@@ -197,6 +228,9 @@ h1, h2, h3, h4 {
   letter-spacing: -0.05em;
   color: var(--text-primary);
   text-decoration: none;
+  /* Prevent brand from being squeezed on small screens */
+  flex-shrink: 0;
+  min-width: 0;
 }
 
 .brand-accent {
@@ -301,7 +335,7 @@ h1, h2, h3, h4 {
   transform: translateX(4px);
 }
 
-/* Menu Toggle */
+/* Menu Toggle — always rendered in DOM, only shown on mobile */
 .menu-toggle {
   display: none;
   background: none;
@@ -309,6 +343,11 @@ h1, h2, h3, h4 {
   flex-direction: column;
   gap: 6px;
   cursor: pointer;
+  /* Prevent it from being pushed off-screen */
+  flex-shrink: 0;
+  padding: 4px;
+  z-index: 1001;
+  position: relative;
 }
 
 .menu-toggle span {
@@ -316,6 +355,7 @@ h1, h2, h3, h4 {
   width: 24px;
   height: 2px;
   background: var(--text-primary);
+  border-radius: 2px;
   transition: var(--transition-smooth);
 }
 
@@ -329,10 +369,13 @@ h1, h2, h3, h4 {
   padding-top: 140px;
   padding-bottom: 60px;
   z-index: 10;
+  /* Contain any internal overflow */
+  overflow: hidden;
 }
 
 .hero-content {
   max-width: 850px;
+  width: 100%;
   text-align: center;
   display: flex;
   flex-direction: column;
@@ -458,6 +501,8 @@ body.student-engine-active .engine-toggle-container::before {
   display: inline-block;
   padding: 0 12px;
   z-index: 1;
+  /* Prevent SVG from extending beyond the hero */
+  overflow: visible;
 }
 
 .hand-drawn-circle {
@@ -922,11 +967,13 @@ body.student-engine-active .engine-toggle-container::before {
   display: flex;
   flex-grow: 1;
   min-height: 0;
+  overflow: hidden;
 }
 
 .code-body-split .code-container {
   flex: 1.25;
   overflow-y: auto;
+  overflow-x: auto;
   border-right: 1px solid var(--border-glass);
   background: #FFFFFF;
 }
@@ -936,6 +983,14 @@ body.student-engine-active .engine-toggle-container::before {
   font-family: var(--ff-mono);
   font-size: 0.8rem;
   color: var(--text-primary);
+}
+
+/* Prevent code blocks from stretching the preview frame */
+.code-container pre {
+  white-space: pre-wrap;
+  word-break: break-word;
+  overflow-x: auto;
+  max-width: 100%;
 }
 
 /* Syntax Highlights */
@@ -1904,145 +1959,592 @@ body.student-engine-active .mini-note-item.active {
   transform: translateY(0);
 }
 
-/* Responsive Styles */
+/* =========================================
+   RESPONSIVE STYLES — TABLET & MOBILE
+   ========================================= */
+
+/* --- Tablet: 1024px and below --- */
 @media (max-width: 1024px) {
+  .container {
+    padding: 0 32px;
+  }
+
   .grid-50-50 {
     grid-template-columns: 1fr;
-    gap: 40px;
+    gap: 48px;
   }
-  
+
   .reverse-layout {
     display: flex;
     flex-direction: column-reverse;
   }
-  
+
   .features-grid {
     grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
   }
-}
 
-@media (max-width: 768px) {
-  .container {
-    padding: 0 24px;
+  /* Bento-wide cards collapse to full width on tablet */
+  .feature-card.bento-wide {
+    grid-column: span 2;
+    grid-template-columns: 1fr;
+    gap: 24px;
   }
-  
-  .fixed-nav {
-    padding: 16px 0;
-    background: rgba(255, 255, 255, 0.95);
-    border-bottom: 1px solid var(--border-glass);
+
+  .spotlight-section {
+    padding: 80px 0;
   }
-  
-  .nav-links, .nav-ctas {
+
+  .preview-section {
+    padding: 80px 0;
+  }
+
+  .features {
+    padding: 80px 0;
+  }
+
+  .cta-banner {
+    padding: 80px 0;
+  }
+
+  /* Preview frame: hide AI panel on tablet to prevent overflow */
+  .mock-ai-panel {
     display: none;
   }
-  
+
+  /* Code body uses full width without the AI panel */
+  .code-body-split .code-container {
+    border-right: none;
+  }
+
+  /* Student hub widgets: 3 cols still fine on tablet but reduce gap */
+  .hub-header-widgets {
+    gap: 12px;
+  }
+
+  .hub-grid-layout {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  /* Hero subtext max-width reduction */
+  .hero-subtext {
+    font-size: 1.1rem;
+    max-width: 580px;
+  }
+
+  /* Footer slightly tighter on tablet */
+  .footer-grid {
+    grid-template-columns: 2fr repeat(2, 1fr);
+    gap: 40px;
+  }
+
+  /* Glow sizing on tablet */
+  .glow-1 { width: 400px; height: 400px; left: -100px; }
+  .glow-2 { width: 500px; height: 500px; right: -150px; }
+}
+
+/* --- Mobile: 768px and below --- */
+@media (max-width: 768px) {
+  .container {
+    padding: 0 16px;
+    /* Ensure container never overflows viewport */
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+
+  /* --- Navbar: width containment only, NO overflow clip (breaks drawer) --- */
+  .fixed-nav {
+    padding: 14px 0;
+    background: rgba(255, 255, 255, 0.98);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border-glass);
+    /* Pin to exact viewport width without using overflow:hidden */
+    width: 100vw;
+    max-width: 100vw;
+    left: 0;
+    right: 0;
+    /* IMPORTANT: Do NOT add overflow:hidden — it clips the .mobile-active drawer */
+  }
+
+  /* The nav-content flex row: brand on left, hamburger on right */
+  .nav-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    padding: 0;
+    gap: 8px;
+    /* No overflow:hidden here either — would clip hamburger spans animation */
+  }
+
+  /* Brand: allow text to truncate rather than push hamburger off */
+  .brand {
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow: hidden;
+  }
+
+  .brand-name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .nav-links,
+  .nav-ctas {
+    display: none;
+  }
+
+  /* Hamburger: always pinned to the right, never shrinks */
   .menu-toggle {
     display: flex;
+    flex: 0 0 auto;
+    flex-shrink: 0;
+    margin-left: auto;
+    min-width: 36px;
+    align-items: center;
+    justify-content: center;
+    /* Stays above the drawer overlay when menu is open */
+    z-index: 1600;
+    position: relative;
   }
-  
-  /* Mobile Nav active */
+
+  /* Mobile Nav drawer — full-screen overlay */
   .nav-links.mobile-active {
     display: flex;
     position: fixed;
-    top: 60px;
+    top: 0;
     left: 0;
-    width: 100%;
-    height: calc(100vh - 60px);
+    width: 100vw;
+    height: 100vh;
     background: var(--bg-primary);
     flex-direction: column;
     align-items: center;
-    justify-content: flex-start;
-    padding-top: 60px;
-    gap: 28px;
-    z-index: 999;
-    animation: drawerFadeIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-  }
-  
-  @keyframes drawerFadeIn {
-    from { opacity: 0; transform: translateY(-10px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-  
-  .nav-links.mobile-active a {
-    font-size: 1.3rem;
-    font-family: var(--ff-display);
-    font-weight: 700;
-  }
-  
-  .menu-toggle.active span:nth-child(1) {
-    transform: translateY(8px) rotate(45deg);
-  }
-  .menu-toggle.active span:nth-child(2) {
-    opacity: 0;
-  }
-  .menu-toggle.active span:nth-child(3) {
-    transform: translateY(-8px) rotate(-45deg);
+    justify-content: center;
+    padding-top: 0;
+    gap: 32px;
+    /* Above everything including the navbar (z-index: 1000) */
+    z-index: 1500;
+    animation: drawerFadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   }
 
+  @keyframes drawerFadeIn {
+    from { opacity: 0; transform: translateY(-12px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .nav-links.mobile-active a {
+    font-size: 1.4rem;
+    font-family: var(--ff-display);
+    font-weight: 700;
+    color: var(--text-primary);
+    text-decoration: none;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--border-glass);
+    width: 200px;
+    text-align: center;
+    transition: color 0.2s ease;
+  }
+
+  .nav-links.mobile-active a:hover {
+    color: var(--theme-color-1);
+  }
+
+  .menu-toggle.active span:nth-child(1) { transform: translateY(8px) rotate(45deg); }
+  .menu-toggle.active span:nth-child(2) { opacity: 0; }
+  .menu-toggle.active span:nth-child(3) { transform: translateY(-8px) rotate(-45deg); }
+
+
+  /* --- Hero Section --- */
   .hero {
-    min-height: 80vh;
-    padding-top: 110px;
+    min-height: auto;
+    padding-top: 100px;
+    padding-bottom: 48px;
   }
-  
+
+  .hero-content {
+    max-width: 100%;
+    padding: 0;
+  }
+
   .hero-headline {
-    font-size: 2.5rem;
+    font-size: clamp(2rem, 9vw, 2.8rem);
+    letter-spacing: -0.03em;
+    word-break: break-word;
   }
-  
+
+  /* Ensure the SVG circle doesn't overflow on mobile */
+  .highlight-wrapper {
+    display: inline;
+    padding: 0 4px;
+  }
+
+  .hand-drawn-circle {
+    display: none; /* hide on small screens where it clips */
+  }
+
+  .hero-subtext {
+    font-size: 1rem;
+    max-width: 100%;
+    margin-bottom: 28px;
+  }
+
   .hero-actions {
     flex-direction: column;
     width: 100%;
     gap: 12px;
+    margin-bottom: 28px;
   }
-  
-  .btn-pill-primary.lg, .btn-pill-secondary.lg {
+
+  .btn-pill-primary.lg,
+  .btn-pill-secondary.lg {
     width: 100%;
+    text-align: center;
+    justify-content: center;
   }
-  
-  .features-grid {
-    grid-template-columns: 1fr;
+
+  /* Hero meta — wrap nicely instead of overflowing */
+  .hero-meta {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px 12px;
+    font-size: 0.78rem;
   }
-  
+
+  .meta-dot {
+    display: none; /* dots look bad when wrapping */
+  }
+
+  /* Engine toggle: shrink text on mobile */
+  .engine-toggle-btn {
+    font-size: 0.78rem;
+    padding: 7px 14px;
+  }
+
+  /* --- Preview Section (Workspace Tabs) --- */
+  .preview-section {
+    padding: 60px 0;
+  }
+
+  .section-header {
+    margin-bottom: 40px;
+  }
+
+  /* Tab controls: wrap to vertical on mobile */
   .tab-controls-container {
     width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
   }
-  
+
   .tab-controls {
-    flex-direction: column;
-    width: 100%;
-    border-radius: 8px;
-    padding: 6px;
+    display: inline-flex;
+    flex-direction: row;
+    min-width: max-content;
+    border-radius: 30px;
+    padding: 4px;
+    gap: 0;
   }
-  
+
   .tab-btn {
-    justify-content: center;
-    width: 100%;
+    padding: 9px 16px;
+    font-size: 0.8rem;
+    white-space: nowrap;
   }
-  
+
+  .tab-btn svg {
+    display: none; /* hide icons on mobile to save space */
+  }
+
+  /* Interactive preview frame: shrink and scroll if needed */
+  .interactive-preview-frame {
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .frame-header {
+    padding: 10px 14px;
+    gap: 8px;
+  }
+
+  /* Hide address bar on small screens */
+  .address-bar {
+    display: none;
+  }
+
+  .frame-body {
+    min-height: 360px;
+    overflow: hidden;
+  }
+
+  /* Notes mock workspace: single column, no sidebar */
   .mock-workspace {
     grid-template-columns: 1fr;
+    min-height: 360px;
   }
-  
+
   .mock-sidebar {
     display: none;
   }
-  
-  .hub-header-widgets {
-    grid-template-columns: 1fr;
+
+  .mock-editor {
+    padding: 20px;
   }
-  
+
+  .editor-header h2 {
+    font-size: 1.3rem;
+  }
+
+  .mock-sketch-preview {
+    height: 120px;
+  }
+
+  /* Code mock workspace: single column */
+  .mock-code-workspace {
+    grid-template-columns: 1fr;
+    min-height: 360px;
+  }
+
+  .code-sidebar {
+    display: none;
+  }
+
+  .code-body-split {
+    flex-direction: column;
+  }
+
+  .mock-ai-panel {
+    display: none;
+  }
+
+  .code-body-split .code-container {
+    border-right: none;
+    flex: 1;
+  }
+
+  /* Student hub: vertical stack */
+  .mock-student-hub {
+    padding: 16px;
+    min-height: 360px;
+  }
+
+  .hub-header-widgets {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+
+  .hub-widget {
+    padding: 12px;
+  }
+
+  .widget-value {
+    font-size: 1.1rem;
+  }
+
   .hub-grid-layout {
     grid-template-columns: 1fr;
+    gap: 12px;
   }
-  
+
+  /* --- Features Section --- */
+  .features {
+    padding: 60px 0;
+  }
+
+  .features-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  /* All bento cards go full width */
+  .feature-card.bento-wide {
+    grid-column: span 1;
+    grid-template-columns: 1fr;
+    gap: 20px;
+    padding: 28px 24px;
+  }
+
+  .feature-card {
+    padding: 28px 24px;
+  }
+
+  .feature-card h3 {
+    font-size: 1.1rem;
+  }
+
+  /* Disable 3D hover on mobile (touch devices don't hover) */
+  .feature-card:hover {
+    transform: none;
+  }
+
+  /* --- Spotlight Sections --- */
+  .spotlight-section {
+    padding: 60px 0;
+  }
+
+  .spotlight-text h2 {
+    font-size: clamp(1.6rem, 7vw, 2.2rem);
+  }
+
+  .spotlight-text p {
+    font-size: 1rem;
+    margin-bottom: 24px;
+  }
+
+  .grid-50-50 {
+    gap: 32px;
+  }
+
+  .glowing-wrapper {
+    padding: 6px;
+  }
+
+  .browser-mockup-wrapper {
+    max-width: 100%;
+  }
+
+  /* --- CTA Banner --- */
+  .cta-banner {
+    padding: 60px 0;
+  }
+
+  .cta-title {
+    font-size: clamp(1.8rem, 8vw, 2.6rem);
+  }
+
+  .cta-desc {
+    font-size: 1rem;
+    margin-bottom: 32px;
+  }
+
+  .cta-actions {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+    padding: 0 20px;
+  }
+
+  .cta-actions .btn-pill-primary,
+  .cta-actions .btn-pill-secondary {
+    width: 100%;
+    justify-content: center;
+  }
+
+  /* --- Footer --- */
+  .footer {
+    padding: 60px 0 32px;
+  }
+
   .footer-grid {
     grid-template-columns: 1fr;
-    gap: 40px;
+    gap: 36px;
+    margin-bottom: 40px;
   }
-  
+
+  .footer-desc {
+    max-width: 100%;
+  }
+
   .footer-bottom {
     flex-direction: column;
-    gap: 16px;
+    gap: 12px;
     text-align: center;
+  }
+}
+
+/* --- Mobile Small: 480px and below --- */
+@media (max-width: 480px) {
+  .container {
+    padding: 0 14px;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+
+  .hero {
+    padding-top: 90px;
+    padding-bottom: 40px;
+  }
+
+  .hero-headline {
+    font-size: clamp(1.75rem, 10vw, 2.2rem);
+  }
+
+  .hero-subtext {
+    font-size: 0.95rem;
+  }
+
+  /* Badge pill: shrink slightly */
+  .badge-pill {
+    font-size: 0.7rem;
+    padding: 5px 12px;
+  }
+
+  /* Engine toggle: full width */
+  .engine-toggle-container {
+    width: 100%;
+  }
+
+  .engine-toggle-btn {
+    flex: 1;
+    justify-content: center;
+  }
+
+  /* Reduce section padding further */
+  .preview-section,
+  .features,
+  .spotlight-section,
+  .cta-banner {
+    padding: 48px 0;
+  }
+
+  /* Section headers */
+  .section-header h2 {
+    font-size: clamp(1.4rem, 7vw, 1.9rem);
+  }
+
+  .section-desc {
+    font-size: 0.95rem;
+  }
+
+  /* Preview section hub widgets: stack on very small screens */
+  .hub-header-widgets {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  /* Tab controls: horizontal scroll with smaller text */
+  .tab-btn {
+    padding: 8px 14px;
+    font-size: 0.78rem;
+  }
+
+  /* Frame body smaller */
+  .frame-body {
+    min-height: 300px;
+  }
+
+  .mock-workspace,
+  .mock-code-workspace,
+  .mock-student-hub {
+    min-height: 300px;
+  }
+
+  /* CTA actions padding */
+  .cta-actions {
+    padding: 0 8px;
+  }
+
+  /* Footer footer-grid to 1 col already done above */
+  .footer {
+    padding: 48px 0 24px;
+  }
+
+  .modal-content-wrapper {
+    padding: 28px 20px;
+    border-radius: 12px;
   }
 }
 
