@@ -3932,9 +3932,13 @@ html[data-theme="corporate-gray"] .custom-select-menu {
     gap: 2px;
   }
 
+  /* Settings/gear: keep visible but compact on small screens */
   #preferences-toggle {
-    display: none;
-    /* Hide less critical items on very small screens */
+    display: flex;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    min-width: 32px;
   }
 
   .search-container {
