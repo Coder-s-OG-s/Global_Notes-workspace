@@ -2864,6 +2864,7 @@ body.student-engine-active .mini-note-item.active {
   .code-body-split .code-container {
     border-right: none;
   }
+}
 
 /* --- Mobile: 768px and below --- */
 @media (max-width: 768px) {
