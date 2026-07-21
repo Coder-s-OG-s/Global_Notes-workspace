@@ -214,6 +214,7 @@ h1, h2, h3, h4 {
   justify-content: space-between;
   align-items: center;
   width: 100%;
+  gap: 16px;
   /* Ensure hamburger always stays in view */
   flex-wrap: nowrap;
   min-width: 0;
@@ -222,15 +223,16 @@ h1, h2, h3, h4 {
 .brand {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
   font-family: var(--ff-display);
   font-weight: 950;
-  font-size: 1.4rem;
+  font-size: 1.3rem;
   letter-spacing: -0.05em;
   color: var(--text-primary);
   text-decoration: none;
   /* Prevent brand from being squeezed on small screens */
   flex-shrink: 0;
+  white-space: nowrap;
   min-width: 0;
 }
 
@@ -243,19 +245,22 @@ h1, h2, h3, h4 {
   width: 28px;
   height: 28px;
   border-radius: 6px;
+  flex-shrink: 0;
 }
 
 .nav-links {
   display: flex;
-  gap: 36px;
+  gap: 20px;
+  white-space: nowrap;
 }
 
 .nav-links a {
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   font-weight: 600;
   color: var(--text-secondary);
   transition: var(--transition-smooth);
   text-decoration: none;
+  white-space: nowrap;
 }
 
 .nav-links a:hover {
@@ -265,7 +270,9 @@ h1, h2, h3, h4 {
 .nav-ctas {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 8px;
+  flex-shrink: 0;
+  white-space: nowrap;
 }
 
 .mobile-nav-ctas {
@@ -289,6 +296,7 @@ h1, h2, h3, h4 {
   align-items: center;
   justify-content: center;
   gap: 8px;
+  white-space: nowrap;
   box-shadow: 0 4px 14px rgba(255, 79, 0, 0.15);
 }
 
@@ -297,6 +305,12 @@ h1, h2, h3, h4 {
   border-color: var(--theme-color-2);
   transform: translateY(-2px);
   box-shadow: 0 6px 20px rgba(255, 79, 0, 0.25);
+}
+
+.btn-pill-primary.sm {
+  padding: 8px 14px;
+  font-size: 0.8rem;
+  white-space: nowrap;
 }
 
 .btn-pill-primary.lg {
@@ -319,7 +333,14 @@ h1, h2, h3, h4 {
   align-items: center;
   justify-content: center;
   gap: 8px;
+  white-space: nowrap;
   box-shadow: 0 4px 10px rgba(9, 9, 11, 0.02);
+}
+
+.btn-pill-secondary.sm {
+  padding: 8px 14px;
+  font-size: 0.8rem;
+  white-space: nowrap;
 }
 
 .btn-pill-secondary:hover {
