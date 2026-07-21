@@ -1,0 +1,145 @@
+export function wireSidebarToggle() {
+    const mobileToggleBtn = document.querySelector("#sidebar-toggle");
+    const mobileCloseBtn = document.querySelector("#sidebar-close");
+    const sidebarOverlay = document.querySelector("#sidebar-overlay");
+    const layout = document.querySelector(".layout");
+
+    if (!layout) return;
+
+    // Mobile Toggle Button (Navbar) - Opens Drawer
+    if (mobileToggleBtn) {
+        mobileToggleBtn.addEventListener("click", () => {
+            if (window.innerWidth <= 768) {
+                layout.classList.add("sidebar-visible");
+            }
+        });
+    }
+
+    // Mobile Close Button (Sidebar) - Closes Drawer
+    if (mobileCloseBtn) {
+        mobileCloseBtn.addEventListener("click", () => {
+            layout.classList.remove("sidebar-visible");
+        });
+    }
+
+    // Close sidebar on overlay click
+    if (sidebarOverlay) {
+        sidebarOverlay.addEventListener("click", () => {
+            layout.classList.remove("sidebar-visible");
+        });
+    }
+}
+
+export function wireToolTabs() {
+    const tabs = document.querySelectorAll(".tool-tab");
+    const panels = document.querySelectorAll(".tool-panel");
+
+    if (!tabs.length || !panels.length) return;
+
+    tabs.forEach(tab => {
+        tab.addEventListener("click", () => {
+            // Remove active class from all tabs
+            tabs.forEach(t => t.classList.remove("active"));
+            // Add active class to clicked tab
+            tab.classList.add("active");
+
+            // Hide all panels
+            panels.forEach(p => p.classList.remove("active"));
+            // Show target panel
+            const targetId = `tool-panel-${tab.dataset.tab}`;
+            const targetPanel = document.getElementById(targetId);
+            if (targetPanel) {
+                targetPanel.classList.add("active");
+            }
+        });
+    });
+}
+
+// Handles toggling the visibility of the formatting toolbar
+export function wireToolbarToggle() {
+    const toggleBtn = document.querySelector("#toolbar-toggle");
+    const toolbar = document.querySelector(".editor-toolbar");
+
+    if (!toggleBtn || !toolbar) return;
+
+    // Check for saved preference
+    const isCollapsed = localStorage.getItem("notesWorkspace.toolbarCollapsed") === "true";
+    if (isCollapsed) {
+        toolbar.classList.add("collapsed");
+    }
+
+    toggleBtn.addEventListener("click", () => {
+        toolbar.classList.toggle("collapsed");
+
+        // Save preference
+        const isNowCollapsed = toolbar.classList.contains("collapsed");
+        localStorage.setItem("notesWorkspace.toolbarCollapsed", isNowCollapsed);
+    });
+}
+
+// Handles sidebar resizing
+export function wireSidebarResize() {
+    const resizer = document.getElementById("sidebar-resizer");
+    const layout = document.querySelector(".layout");
+
+    if (!resizer || !layout) return;
+
+    // Load saved width
+    const savedWidth = localStorage.getItem("notesWorkspace.sidebarWidth");
+    if (savedWidth) {
+        let widthVal = parseInt(savedWidth);
+        const minWidth = 240;
+        const maxWidth = 550;
+
+        if (!isNaN(widthVal)) {
+            if (widthVal < minWidth) widthVal = minWidth;
+            if (widthVal > maxWidth) widthVal = maxWidth;
+            document.documentElement.style.setProperty("--sidebar-width", `${widthVal}px`);
+        }
+    }
+
+    let isResizing = false;
+
+    let layoutRect;
+    let layoutPaddingLeft;
+
+    resizer.addEventListener("mousedown", (e) => {
+        isResizing = true;
+        resizer.classList.add("resizing");
+        document.body.style.cursor = "col-resize";
+        document.body.style.userSelect = "none"; // Prevent text selection
+
+        layoutRect = layout.getBoundingClientRect();
+        layoutPaddingLeft = parseFloat(getComputedStyle(layout).paddingLeft) || 0;
+    });
+
+    document.addEventListener("mousemove", (e) => {
+        if (!isResizing) return;
+
+        // Optimized: Use pre-calculated values
+        let newWidth = e.clientX - layoutRect.left - layoutPaddingLeft;
+
+        // Enforce min and max widths
+        const minWidth = 240;
+        const maxWidth = 550;
+
+        if (newWidth < minWidth) newWidth = minWidth;
+        if (newWidth > maxWidth) newWidth = maxWidth;
+
+        // Update CSS variable
+        document.documentElement.style.setProperty("--sidebar-width", `${newWidth}px`);
+    });
+
+    document.addEventListener("mouseup", () => {
+        if (isResizing) {
+            isResizing = false;
+            resizer.classList.remove("resizing");
+            document.body.style.cursor = "";
+            document.body.style.userSelect = "";
+
+            // Save width
+            const currentWidth = getComputedStyle(document.documentElement).getPropertyValue("--sidebar-width");
+            localStorage.setItem("notesWorkspace.sidebarWidth", currentWidth);
+        }
+    });
+}

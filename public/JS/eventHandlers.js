@@ -1,0 +1,328 @@
+import { getTagColor, formatDate, showConfirm, showPrompt } from "./utilities.js";
+import { getSelectedDate } from "./filterSearchSort.js";
+import {
+  handleNewNote,
+  handleSaveNote,
+  handleDeleteNote,
+  handleDuplicateNote,
+  handleToggleFavorite,
+  handleArchiveNote,
+  handleUnarchiveNote,
+  addTagToActiveNote
+} from "./noteOperations.js";
+import {
+  createNewFolder,
+  deleteFolder,
+  renameFolder,
+  getFolders
+} from "./folderManager.js";
+
+const $ = (selector) => document.querySelector(selector);
+const $all = (selector) => Array.from(document.querySelectorAll(selector));
+
+// Sets up event listeners for filter chips, search input, and date filter
+export function wireFiltersAndSearch(callbacks) {
+  $all(".filters .chip").forEach((chip) => {
+    chip.addEventListener("click", () => {
+      $all(".filters .chip").forEach((c) => {
+        const isTarget = c === chip;
+        c.classList.toggle("active", isTarget);
+        c.setAttribute("aria-pressed", String(isTarget));
+      });
+      callbacks.renderNotesList();
+    });
+  });
+
+  const searchInput = $("#search");
+  let searchTimeout;
+  searchInput?.addEventListener("input", () => {
+    clearTimeout(searchTimeout);
+    searchTimeout = setTimeout(() => {
+      callbacks.renderNotesList();
+    }, 300);
+  });
+}
+
+// Handles the sort dropdown functionality for notes list
+export function wireSort(callbacks) {
+  const select = $("#sort");
+  select?.addEventListener("change", () => callbacks.renderNotesList());
+}
+
+// Manages tag input field for adding new tags to the active note
+// DEPRECATED: Replaced by tagManager.js
+export function wireTagInput(state, callbacks) {
+  // Functionality moved to Tag Manager
+}
+
+// Connects all CRUD (Create, Read, Update, Delete) buttons to their respective handlers
+export function wireCrudButtons(state, getActiveFilter, callbacks) {
+  $("#new-note")?.addEventListener("click", () => {
+    handleNewNote(state.notes, state.activeUser, getActiveFilter, getSelectedDate, callbacks, state.activeFolderId);
+  });
+
+  $("#save-note")?.addEventListener("click", async () => {
+    if (!state.activeUser) {
+      const shouldLogin = await showConfirm(
+        "Login Required",
+        "You need to be logged in to save notes. Would you like to log in now?",
+        "Log In"
+      );
+      if (shouldLogin) {
+        window.location.href = "./HTML/signup.html";
+      }
+      return;
+    }
+    handleSaveNote(state.notes, state.activeNoteId, state.activeUser, getActiveFilter, callbacks);
+  });
+
+  $("#delete-note")?.addEventListener("click", () => {
+    handleDeleteNote(state.notes, state.activeNoteId, state.activeUser, callbacks);
+  });
+
+  $("#delete-note-main")?.addEventListener("click", () => {
+    handleDeleteNote(state.notes, state.activeNoteId, state.activeUser, callbacks);
+  });
+
+  $("#duplicate-note")?.addEventListener("click", () => {
+    handleDuplicateNote(state.notes, state.activeNoteId, state.activeUser, callbacks);
+  });
+
+  $("#toggle-favorite")?.addEventListener("click", () => {
+    handleToggleFavorite(state.notes, state.activeNoteId, state.activeUser, callbacks);
+  });
+
+  $("#archive-note")?.addEventListener("click", () => {
+    const note = state.notes.find(n => n.id === state.activeNoteId);
+    if (!note) return;
+    if (note.isArchived) {
+      handleUnarchiveNote(state.notes, note.id, state.activeUser, callbacks);
+    } else {
+      handleArchiveNote(state.notes, note.id, state.activeUser, callbacks);
+    }
+  });
+}
+
+// Handles folder-related operations: create, rename, and delete folders
+export function wireFolderButtons(state, callbacks) {
+  const createFolderBtn = $("#create-folder");
+  const foldersListEl = $("#folders-list");
+
+  if (createFolderBtn) {
+    createFolderBtn.addEventListener("click", async () => {
+      const folderName = await showPrompt("Create New Folder", "", "Create");
+      if (folderName && folderName.trim()) {
+        const newFolder = createNewFolder(state.activeUser, folderName.trim());
+        state.folders.push(newFolder);
+        callbacks.renderFolders();
+        callbacks.renderNotesDashboard(); // Ensure grid UI reflects folder addition
+      }
+    });
+  }
+
+  document.addEventListener("delete-folder", async (event) => {
+    const folderId = event.detail.id;
+    if (!folderId) return;
+
+    const confirmed = await showConfirm(
+      "Delete Folder",
+      `Are you sure you want to delete this folder? Notes inside will be moved back to "All Notes".`,
+      "Delete Folder"
+    );
+    if (!confirmed) return;
+
+    deleteFolder(state.activeUser, folderId, state.notes);
+    state.folders = state.folders.filter((f) => f.id !== folderId);
+
+    if (state.activeFolderId === folderId) {
+      callbacks.setActiveFolder(null); // This already calls renderNotesDashboard internally
+    } else {
+      callbacks.renderFolders();
+      callbacks.renderNotesList();
+      callbacks.renderNotesDashboard(); // Ensure grid UI reflects deletion
+    }
+  });
+
+  document.addEventListener("rename-folder", async (event) => {
+    const folderId = event.detail.id;
+    if (!folderId) return;
+
+    const currentFolder = state.folders.find((f) => f.id === folderId);
+    const currentName = currentFolder ? currentFolder.name : "";
+    const newName = await showPrompt("Rename Folder", currentName, "Save");
+    if (!newName || !newName.trim()) return;
+
+    renameFolder(state.activeUser, folderId, newName.trim());
+    if (currentFolder) {
+      currentFolder.name = newName.trim();
+    }
+    callbacks.renderFolders();
+    callbacks.renderNotesList(); // if it affects the active view title
+    callbacks.renderNotesDashboard(); // ensure grid reflects rename
+  });
+}
+
+// Moves a note to a specified folder and updates its timestamp
+export function moveNoteToFolder(noteId, folderId, notes) {
+  const note = notes.find((n) => n.id === noteId);
+  if (note) {
+    note.folderId = folderId;
+    note.updatedAt = new Date().toISOString();
+  }
+}
+
+// Handles theme selector dropdown for changing note card appearance
+export function wireThemeSelector(state, callbacks) {
+  const themeSelect = $("#note-theme");
+  if (!themeSelect) return;
+
+  themeSelect.addEventListener("change", () => {
+    const selectedTheme = themeSelect.value;
+    const note = state.notes.find((n) => n.id === state.activeNoteId);
+
+    if (note) {
+      note.theme = selectedTheme;
+      note.updatedAt = new Date().toISOString();
+      callbacks.persistNotes();
+      callbacks.renderNotesList();
+      callbacks.renderActiveNote();
+    }
+  });
+}
+
+// Manages dropdown toggles (Preferences, Profile, Overflow)
+export function wireDropdowns() {
+  const toggleDropdown = (wrapperId, menuId) => {
+    const wrapper = document.getElementById(wrapperId);
+    const menu = document.getElementById(menuId);
+    const btn = wrapper?.querySelector("button");
+
+    if (!wrapper || !menu || !btn) return;
+
+    btn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      // Close others
+      document.querySelectorAll(".dropdown-menu").forEach(el => {
+        if (el !== menu) el.classList.add("hidden");
+      });
+      document.querySelectorAll(".overflow-menu").forEach(el => el.classList.add("hidden"));
+      // Close editor tool popovers (AI/Mail)
+      document.querySelectorAll(".editor-tool-popover.open").forEach(p => p.classList.remove("open"));
+      document.querySelectorAll(".editor-tool-trigger.active, .ai-pill-btn.active, .mail-pill-btn.active").forEach(t => t.classList.remove("active"));
+      menu.classList.toggle("hidden");
+    });
+  };
+
+  toggleDropdown("preferences-dropdown-wrapper", "preferences-menu");
+  toggleDropdown("user-pill", "profile-menu");
+
+  // Overflow menu (editor actions)
+  const overflowTrigger = document.querySelector(".overflow-trigger");
+  const overflowMenu = document.querySelector(".overflow-menu");
+  if (overflowTrigger && overflowMenu) {
+    overflowTrigger.addEventListener("click", (e) => {
+      e.stopPropagation();
+      document.querySelectorAll(".dropdown-menu").forEach(el => el.classList.add("hidden"));
+      // Close editor tool popovers (AI/Mail)
+      document.querySelectorAll(".editor-tool-popover.open").forEach(p => p.classList.remove("open"));
+      overflowMenu.classList.toggle("hidden");
+    });
+  }
+
+  // Click outside to close all
+  document.addEventListener("click", () => {
+    document.querySelectorAll(".dropdown-menu").forEach(el => el.classList.add("hidden"));
+    document.querySelectorAll(".overflow-menu").forEach(el => el.classList.add("hidden"));
+  });
+
+  // Prevent overflow menu clicks from closing itself
+  overflowMenu?.addEventListener("click", (e) => {
+    // Only stop propagation for non-action items (the menu container itself)
+    // Action items should close the menu after their handler fires
+  });
+}
+
+// Updates the theme selector to match the current note's theme
+export function syncThemeSelector(activeNote) {
+  const themeSelect = $("#note-theme");
+  if (!themeSelect || !activeNote) return;
+
+  themeSelect.value = activeNote.theme || "";
+}
+
+// Handles editor pattern selector dropdown for changing text area background
+export function wireEditorPatternSelector(state, callbacks) {
+  const patternSelect = $("#editor-pattern");
+  if (!patternSelect) return;
+
+  patternSelect.addEventListener("change", () => {
+    const selectedPattern = patternSelect.value;
+    const note = state.notes.find((n) => n.id === state.activeNoteId);
+
+    if (note) {
+      note.editorPattern = selectedPattern;
+      note.updatedAt = new Date().toISOString();
+      callbacks.persistNotes();
+      callbacks.renderActiveNote();
+    }
+  });
+}
+
+// Updates the editor pattern selector to match the current note's pattern
+export function syncEditorPatternSelector(activeNote) {
+  const patternSelect = $("#editor-pattern");
+  if (!patternSelect || !activeNote) return;
+
+  patternSelect.value = activeNote.editorPattern || "plain";
+}
+
+// Wires up the new Library Section navigation
+export function wireLibraryNav(state, callbacks) {
+  const navItems = [
+    { id: "nav-all-notes", action: "all" },
+    { id: "nav-recent", action: "recent" },
+    { id: "nav-favorites", action: "favorites" },
+    { id: "nav-archived", action: "archived" }
+  ];
+
+  /* 
+   * Helper to set active visual state. 
+   * In a real app, this might be reactive. Here we manually toggle classes 
+   * or rely on a centralized render. Ideally, callbacks.setActiveLibraryItem(id) would handle it.
+   */
+
+  navItems.forEach((item) => {
+    const el = document.getElementById(item.id);
+    if (!el) return;
+
+    el.addEventListener("click", (e) => {
+      e.preventDefault();
+
+      // 1. Visual Update
+      document.querySelectorAll(".library-item").forEach((li) => li.classList.remove("active"));
+      document.querySelectorAll(".folder-item").forEach((li) => li.classList.remove("active")); // Deselect folders
+      el.classList.add("active");
+
+      // 2. Logic Update
+      callbacks.setActiveFolder(null, item.id); // Clear folder selection but keep library visual state
+
+      if (item.action === "all") {
+        callbacks.setActiveLibraryFilter('all');
+      } else if (item.action === "recent") {
+        callbacks.setActiveLibraryFilter('all');
+        const sortSelect = document.getElementById("sort");
+        if (sortSelect) {
+          sortSelect.value = "updated-desc";
+          sortSelect.dispatchEvent(new Event("change"));
+        }
+      } else if (item.action === "favorites") {
+        callbacks.setActiveLibraryFilter('favorites');
+      } else if (item.action === "archived") {
+        callbacks.setActiveLibraryFilter('archived');
+      }
+
+      // Refresh list
+      callbacks.renderNotesList();
+    });
+  });
+}

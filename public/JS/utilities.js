@@ -1,0 +1,338 @@
+// ========================================
+// TAG & COLOR UTILITIES
+// ========================================
+const TAG_COLORS = {
+  work: "#6aa6ff",
+  personal: "#ff85a1",
+  ideas: "#faca6b",
+  todo: "#88ffc3",
+  remote: "#b084ff",
+};
+
+// Returns a color associated with a tag, or a default color if none is defined
+export function getTagColor(tag) {
+  if (!tag) return "#0f1526";
+  // Check case-insensitive
+  const lowerTag = tag.toLowerCase();
+  if (TAG_COLORS[lowerTag]) {
+    return TAG_COLORS[lowerTag];
+  }
+  return "#4f6b95"; // Default fallback
+}
+
+// Registers a set of custom tags with their colors
+export function registerCustomTags(customTags) {
+  customTags.forEach(tag => {
+    if (tag.name && tag.color) {
+      TAG_COLORS[tag.name.toLowerCase()] = tag.color;
+    }
+  });
+}
+
+// ========================================
+// DATE UTILITIES
+// ========================================
+// Converts a date-like object to a localized date string (YYYY-MM-DD format)
+export function toLocalDateString(dateLike) {
+  if (!dateLike) return "";
+  const parsed = new Date(dateLike);
+  if (Number.isNaN(parsed.getTime())) return "";
+  return parsed.toLocaleDateString("en-CA");
+}
+
+// Formats an ISO date string into a more readable format (e.g., 'Jan 1, 2023')
+export function formatDate(iso) {
+  if (!iso) return "";
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return "";
+  return d.toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" });
+}
+
+// ========================================
+// HTML ESCAPING UTILITY
+// ========================================
+// Escapes HTML special characters to prevent XSS attacks
+export function escapeHtml(str = "") {
+  return String(str).replace(/[&<>"']/g, (ch) => {
+    switch (ch) {
+      case "&":
+        return "&amp;";
+      case "<":
+        return "&lt;";
+      case ">":
+        return "&gt;";
+      case '"':
+        return "&quot;";
+      case "'":
+        return "&#39;";
+      default:
+        return ch;
+    }
+  });
+}
+
+// ========================================
+// TOAST NOTIFICATIONS
+// ========================================
+/**
+ * Shows a toast notification.
+ * @param {string} message - The message to display.
+ * @param {'success'|'error'|'warning'} type - Toast type.
+ * @param {number} duration - Auto-dismiss time in ms (default 4000).
+ */
+export function showToast(message, type = 'success', duration = 4000) {
+  const container = document.getElementById('toast-container');
+  if (!container) return;
+
+  const icons = { success: '✓', error: '✕', warning: '⚠' };
+
+  const toast = document.createElement('div');
+  toast.className = `toast toast-${type}`;
+  toast.innerHTML = `
+    <span class="toast-icon">${icons[type] || ''}</span>
+    <span class="toast-message">${escapeHtml(message)}</span>
+    <button class="toast-close" aria-label="Dismiss">&times;</button>
+  `;
+
+  toast.querySelector('.toast-close').addEventListener('click', () => dismissToast(toast));
+  container.appendChild(toast);
+
+  // Trigger animation
+  requestAnimationFrame(() => toast.classList.add('show'));
+
+  if (duration > 0) {
+    setTimeout(() => dismissToast(toast), duration);
+  }
+}
+
+function dismissToast(toast) {
+  if (!toast || !toast.parentNode) return;
+  toast.classList.remove('show');
+  setTimeout(() => toast.remove(), 300);
+}
+
+// ========================================
+// CONFIRM DIALOG
+// ========================================
+/**
+ * Shows a confirmation dialog. Returns a promise that resolves to true/false.
+ * @param {string} title - Dialog title.
+ * @param {string} message - Dialog message.
+ * @param {string} confirmLabel - Label for the confirm button (default "Delete").
+ * @returns {Promise<boolean>}
+ */
+export function showConfirm(title, message, confirmLabel = 'Delete') {
+  return new Promise((resolve) => {
+    const dialog = document.getElementById('confirm-dialog');
+    const titleEl = document.getElementById('confirm-title');
+    const messageEl = document.getElementById('confirm-message');
+    const okBtn = document.getElementById('confirm-ok');
+    const cancelBtn = document.getElementById('confirm-cancel');
+    const closeBtn = dialog ? dialog.querySelector('.confirm-close') : null;
+
+    if (!dialog || !okBtn || !cancelBtn) { 
+      resolve(confirm(message)); 
+      return; 
+    }
+
+    if (titleEl) titleEl.textContent = title;
+    if (messageEl) messageEl.textContent = message;
+    okBtn.textContent = confirmLabel;
+
+    const onCancel = () => {
+      cleanup();
+      resolve(false);
+    };
+
+    const onOk = () => {
+      cleanup();
+      resolve(true);
+    };
+
+    const onClose = () => {
+      cleanup();
+      resolve(false);
+    };
+
+    const cleanup = () => {
+      cancelBtn.removeEventListener('click', onCancel);
+      okBtn.removeEventListener('click', onOk);
+      dialog.removeEventListener('close', onClose);
+      if (closeBtn) closeBtn.removeEventListener('click', onCancel);
+      if (dialog.open) dialog.close();
+    };
+
+    cancelBtn.addEventListener('click', onCancel);
+    okBtn.addEventListener('click', onOk);
+    dialog.addEventListener('close', onClose);
+    if (closeBtn) closeBtn.addEventListener('click', onCancel);
+
+    dialog.showModal();
+  });
+}
+
+/**
+ * Shows a custom prompt dialog. Returns a promise that resolves to the string or null.
+ * @param {string} title - Dialog title.
+ * @param {string} defaultValue - Initial value.
+ * @param {string} confirmLabel - Label for the confirm button.
+ * @returns {Promise<string|null>}
+ */
+export function showPrompt(title, defaultValue = '', confirmLabel = 'OK') {
+  return new Promise((resolve) => {
+    const dialog = document.getElementById('prompt-dialog');
+    const titleEl = document.getElementById('prompt-title');
+    const inputEl = document.getElementById('prompt-input');
+    const okBtn = document.getElementById('prompt-ok');
+    const cancelBtn = document.getElementById('prompt-cancel');
+    const closeBtn = dialog ? dialog.querySelector('.confirm-close') : null;
+
+    if (!dialog || !okBtn || !cancelBtn || !inputEl) {
+      resolve(prompt(title, defaultValue));
+      return;
+    }
+
+    if (titleEl) titleEl.textContent = title;
+    inputEl.value = defaultValue;
+    okBtn.textContent = confirmLabel;
+
+    const onCancel = () => {
+      cleanup();
+      resolve(null);
+    };
+
+    const onOk = (e) => {
+      if (e) e.preventDefault();
+      const val = inputEl.value;
+      cleanup();
+      resolve(val);
+    };
+
+    const onClose = () => {
+      cleanup();
+      resolve(null);
+    };
+
+    const onKeyDown = (e) => {
+      if (e.key === 'Enter') {
+        onOk();
+      } else if (e.key === 'Escape') {
+        onCancel();
+      }
+    };
+
+    const cleanup = () => {
+      cancelBtn.removeEventListener('click', onCancel);
+      okBtn.removeEventListener('click', onOk);
+      dialog.removeEventListener('close', onClose);
+      inputEl.removeEventListener('keydown', onKeyDown);
+      if (closeBtn) closeBtn.removeEventListener('click', onCancel);
+      if (dialog.open) dialog.close();
+    };
+
+    cancelBtn.addEventListener('click', onCancel);
+    okBtn.addEventListener('click', onOk);
+    dialog.addEventListener('close', onClose);
+    inputEl.addEventListener('keydown', onKeyDown);
+    if (closeBtn) closeBtn.addEventListener('click', onCancel);
+
+    dialog.showModal();
+    // Auto-focus and select text
+    setTimeout(() => {
+      inputEl.focus();
+      inputEl.select();
+    }, 50);
+  });
+}
+
+// ========================================
+// HTML SANITIZATION
+// ========================================
+/**
+ * Strips HTML tags from a string, returning plain text.
+ * Uses a safe approach that avoids innerHTML-based XSS.
+ */
+export function stripHtml(html) {
+  if (!html) return '';
+  return html
+    .replace(/<br\s*\/?>/gi, '\n')
+    .replace(/<\/p>/gi, '\n')
+    .replace(/<\/div>/gi, '\n')
+    .replace(/<[^>]*>/g, '')
+    .replace(/&nbsp;/g, ' ')
+    .replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/\n{3,}/g, '\n\n')
+    .trim();
+}
+
+/**
+ * Shows a custom alert dialog. Returns a promise that resolves when closed.
+ * @param {string} title - Dialog title.
+ * @param {string} message - Dialog message.
+ * @param {string} btnLabel - Label for the OK button.
+ * @returns {Promise<void>}
+ */
+export function showAlert(title, message, btnLabel = 'OK') {
+  return new Promise((resolve) => {
+    const dialog = document.getElementById('alert-dialog');
+    const titleEl = document.getElementById('alert-title');
+    const messageEl = document.getElementById('alert-message');
+    const okBtn = document.getElementById('alert-ok');
+    const closeBtn = dialog ? dialog.querySelector('.confirm-close') : null;
+
+    if (!dialog || !okBtn) {
+      if (window._nativeAlert) {
+        window._nativeAlert(message);
+      } else {
+        alert(message);
+      }
+      resolve();
+      return;
+    }
+
+    if (titleEl) titleEl.textContent = title;
+    if (messageEl) messageEl.textContent = message;
+    okBtn.textContent = btnLabel;
+
+    const onOk = () => {
+      cleanup();
+      resolve();
+    };
+
+    const cleanup = () => {
+      okBtn.removeEventListener('click', onOk);
+      dialog.removeEventListener('close', onOk);
+      if (closeBtn) closeBtn.removeEventListener('click', onOk);
+      if (dialog.open) dialog.close();
+    };
+
+    okBtn.addEventListener('click', onOk);
+    dialog.addEventListener('close', onOk);
+    if (closeBtn) closeBtn.addEventListener('click', onOk);
+
+    dialog.showModal();
+  });
+}
+
+// Global window.alert override
+if (typeof window !== 'undefined') {
+  if (!window._nativeAlert) {
+    window._nativeAlert = window.alert;
+  }
+  window.alert = function(message) {
+    const dialog = document.getElementById('alert-dialog');
+    if (!dialog) {
+      if (window._nativeAlert) {
+        window._nativeAlert(message);
+      } else {
+        console.warn("Native alert fallback missing. Message:", message);
+      }
+      return;
+    }
+    showAlert("Alert", message);
+  };
+}

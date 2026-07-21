@@ -1,0 +1,9 @@
+{
+  "version": 2,
+  "rewrites": [
+    { "source": "/api/(.*)", "destination": "/api/index.js" },
+    { "source": "/(CSS|JS|HTML|assets)/(.*)", "destination": "/client/$1/$2" },
+    { "source": "/(app.html|index.html|sw.js|manifest.json|robots.txt|sitemap.xml)", "destination": "/client/$1" },
+    { "source": "/(.*)", "destination": "/api/index.js" }
+  ]
+}
