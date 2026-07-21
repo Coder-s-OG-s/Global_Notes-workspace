@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://global-notes.com/sitemap.xml

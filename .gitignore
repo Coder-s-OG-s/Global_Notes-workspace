@@ -16,6 +16,7 @@ secrets.yaml
 
 # Generated config with injected API keys
 client/JS/config.js
+public/JS/config.js
 
 # ============================================
 # DEPENDENCIES

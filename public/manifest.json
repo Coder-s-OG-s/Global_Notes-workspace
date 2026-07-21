@@ -1,0 +1,25 @@
+{
+  "name": "Global Notes Workspace",
+  "short_name": "GlobalNotes",
+  "description": "A powerful, offline-capable workspace for organizing your thoughts and notes.",
+  "categories": [
+    "productivity",
+    "utilities"
+  ],
+  "start_url": "./app.html",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#0f172a",
+  "icons": [
+    {
+      "src": "assets/images/logo_workspace.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "assets/images/logo_workspace.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
