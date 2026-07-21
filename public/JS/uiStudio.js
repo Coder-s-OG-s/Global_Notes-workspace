@@ -338,47 +338,171 @@ function initExportModal() {
 }
 
 /**
- * Client-side Fallback Screens Generator
+ * Dynamic Client-Side UI Engine (Tailors full designs to domain keywords)
  */
 function getFallbackScreens(prompt, theme) {
   const primary = theme.primaryColor || '#FF4F00';
+  const secondary = theme.secondaryColor || '#8B5CF6';
+  const lower = (prompt || '').toLowerCase();
+  
+  const isGym = lower.includes('gym') || lower.includes('fitness') || lower.includes('workout') || lower.includes('exercise');
+  const isCrypto = lower.includes('crypto') || lower.includes('wallet') || lower.includes('trading') || lower.includes('coin');
+  const isShop = lower.includes('shop') || lower.includes('store') || lower.includes('cart') || lower.includes('e-commerce') || lower.includes('product');
+  const isFood = lower.includes('food') || lower.includes('restaurant') || lower.includes('recipe') || lower.includes('meal');
+
   const sharedCSS = `
-    :root { --primary: ${primary}; --bg: #09090B; --surface: #18181B; --text: #FFF; }
+    :root { --primary: ${primary}; --secondary: ${secondary}; --bg: #09090B; --surface: #18181B; --text: #FFF; --border: rgba(255,255,255,0.1); }
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: 'Outfit', sans-serif; background: var(--bg); color: var(--text); padding: 24px; }
-    .card { background: var(--surface); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 24px; }
-    .btn { background: var(--primary); color: #FFF; border: none; padding: 10px 18px; border-radius: 8px; font-weight: 700; cursor: pointer; }
+    body { font-family: 'Outfit', -apple-system, sans-serif; background: var(--bg); color: var(--text); padding: 0; line-height: 1.5; }
+    .container { max-width: 1000px; margin: 0 auto; padding: 20px; }
+    .header { display: flex; justify-content: space-between; align-items: center; padding: 14px 0; border-bottom: 1px solid var(--border); }
+    .brand { font-size: 1.25rem; font-weight: 900; color: var(--primary); }
+    .btn { display: inline-flex; align-items: center; justify-content: center; padding: 10px 18px; border-radius: 8px; font-weight: 700; cursor: pointer; border: none; text-decoration: none; font-size: 0.85rem; }
+    .btn-primary { background: var(--primary); color: #FFF; }
+    .btn-secondary { background: var(--surface); color: var(--text); border: 1px solid var(--border); }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; margin-top: 20px; }
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px; }
+    .val { font-size: 1.8rem; font-weight: 900; color: var(--primary); margin-top: 4px; }
+    input, select { width: 100%; padding: 10px 14px; background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 8px; color: var(--text); margin-bottom: 12px; font-family: inherit; font-size: 0.88rem; }
   `;
 
+  if (isGym) {
+    return [
+      {
+        id: 's1',
+        title: 'FitPulse — Gym & Fitness Hero',
+        html: `
+          <header class="header container">
+            <div class="brand">💪 FitPulse Gym</div>
+            <a href="#" class="btn btn-primary">Join Now</a>
+          </header>
+          <main class="container" style="text-align: center; padding-top: 32px;">
+            <span style="background: rgba(255,79,0,0.15); color: var(--primary); padding: 4px 12px; border-radius: 20px; font-weight: 800; font-size: 0.75rem;">AI GYM PLATFORM</span>
+            <h1 style="font-size: 2.2rem; margin: 12px 0; font-weight: 900;">Push Beyond Your Limits</h1>
+            <p style="opacity: 0.8; max-width: 500px; margin: 0 auto 20px auto;">AI-powered workout routines, muscle rep tracking, and personalized bodybuilding macros.</p>
+            <div style="display: flex; justify-content: center; gap: 10px;">
+              <a href="#" class="btn btn-primary">Start Workout ➔</a>
+              <a href="#" class="btn btn-secondary">Explore Routines</a>
+            </div>
+            <div class="grid" style="text-align: left;">
+              <div class="card">
+                <h3 style="color: var(--primary); margin-bottom: 4px;">🏋️ Heavy Push/Pull/Legs</h3>
+                <p style="font-size: 0.8rem; opacity: 0.75;">Progressive overload tracking for bench, squat, and deadlift.</p>
+              </div>
+              <div class="card">
+                <h3 style="color: var(--secondary); margin-bottom: 4px;">🥗 Macro Meal Plans</h3>
+                <p style="font-size: 0.8rem; opacity: 0.75;">High-protein diet calculator tailored to bodyweight goals.</p>
+              </div>
+            </div>
+          </main>
+        `,
+        css: sharedCSS
+      },
+      {
+        id: 's2',
+        title: 'Gym Member Workout Selection',
+        html: `
+          <div style="min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px;">
+            <div class="card" style="width: 100%; max-width: 380px; text-align: center;">
+              <div class="brand" style="margin-bottom: 8px;">💪 Member Portal</div>
+              <h2 style="font-size: 1.2rem; font-weight: 800;">Log Today's Gym Session</h2>
+              <p style="font-size: 0.78rem; opacity: 0.7; margin-bottom: 16px;">Select your training program</p>
+              <form style="text-align: left;">
+                <label style="font-size: 0.75rem; font-weight: 700;">Select Routine</label>
+                <select>
+                  <option>Chest & Triceps Hypertrophy</option>
+                  <option>Back & Biceps Heavy Pull</option>
+                  <option>Quads & Calves Leg Day</option>
+                  <option>HIIT Conditioning & Core</option>
+                </select>
+                <label style="font-size: 0.75rem; font-weight: 700;">Target Training Duration</label>
+                <input type="text" value="60 Minutes">
+                <button type="button" class="btn btn-primary" style="width: 100%; margin-top: 6px;">Begin Workout Session ➔</button>
+              </form>
+            </div>
+          </div>
+        `,
+        css: sharedCSS
+      },
+      {
+        id: 's3',
+        title: 'Gym Metrics & Log Dashboard',
+        html: `
+          <div class="container">
+            <h1 style="font-size: 1.6rem; font-weight: 900;">Fitness Dashboard</h1>
+            <p style="font-size: 0.8rem; opacity: 0.7; margin-bottom: 16px;">Personal Bests & Muscle Recovery Overview</p>
+            <div class="grid">
+              <div class="card">
+                <span style="font-size: 0.72rem; opacity: 0.6;">BENCH PRESS PR</span>
+                <div class="val">245 lbs</div>
+              </div>
+              <div class="card">
+                <span style="font-size: 0.72rem; opacity: 0.6;">SQUAT PR</span>
+                <div class="val" style="color: var(--secondary);">315 lbs</div>
+              </div>
+              <div class="card">
+                <span style="font-size: 0.72rem; opacity: 0.6;">WEEKLY VOLUME</span>
+                <div class="val" style="color: #10B981;">42.5k lbs</div>
+              </div>
+            </div>
+          </div>
+        `,
+        css: sharedCSS
+      }
+    ];
+  }
+
+  // Fallback SaaS/App Template
   return [
     {
       id: 's1',
-      title: 'Landing Page',
-      html: `<div class="card" style="text-align: center;">
-        <span style="color: var(--primary); font-weight: 800;">STITCH UI</span>
-        <h1 style="margin: 16px 0;">${prompt}</h1>
-        <button class="btn">Explore Prototype ➔</button>
-      </div>`,
+      title: `${prompt} — Hero Presentation`,
+      html: `
+        <header class="header container">
+          <div class="brand">⚡ ${prompt.substring(0, 15)}</div>
+          <a href="#" class="btn btn-primary">Get Started</a>
+        </header>
+        <main class="container" style="text-align: center; padding-top: 40px;">
+          <h1 style="font-size: 2.2rem; margin: 12px 0; font-weight: 900;">${prompt}</h1>
+          <p style="opacity: 0.8; max-width: 520px; margin: 0 auto 20px auto;">Connected multi-page application prototype generated with unified design tokens.</p>
+          <a href="#" class="btn btn-primary">Launch Experience ➔</a>
+        </main>
+      `,
       css: sharedCSS
     },
     {
       id: 's2',
-      title: 'Authentication',
-      html: `<div class="card" style="max-width: 320px; margin: 0 auto; text-align: center;">
-        <h2>Sign In</h2>
-        <input type="email" placeholder="Email" style="width:100%; padding:10px; margin: 12px 0; background: #000; border: 1px solid #333; color: #fff; border-radius: 6px;">
-        <button class="btn" style="width: 100%;">Continue</button>
-      </div>`,
+      title: 'User Access Portal',
+      html: `
+        <div style="min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px;">
+          <div class="card" style="width: 100%; max-width: 360px; text-align: center;">
+            <div class="brand" style="margin-bottom: 10px;">⚡ Account Portal</div>
+            <input type="email" placeholder="Email Address">
+            <input type="password" value="••••••••••••">
+            <button class="btn btn-primary" style="width: 100%;">Continue to Console ➔</button>
+          </div>
+        </div>
+      `,
       css: sharedCSS
     },
     {
       id: 's3',
-      title: 'Dashboard Console',
-      html: `<div class="card">
-        <h2>System Dashboard</h2>
-        <p style="opacity: 0.7; margin: 8px 0 16px 0;">Connected multi-page flow active.</p>
-        <button class="btn">+ Add Metric Node</button>
-      </div>`,
+      title: 'Console Dashboard',
+      html: `
+        <div class="container">
+          <h1 style="font-size: 1.5rem; font-weight: 900;">App Metrics Console</h1>
+          <div class="grid">
+            <div class="card">
+              <span style="font-size: 0.72rem; opacity: 0.6;">ACTIVE USERS</span>
+              <div class="val">1,840</div>
+            </div>
+            <div class="card">
+              <span style="font-size: 0.72rem; opacity: 0.6;">SYSTEM STATUS</span>
+              <div class="val" style="color: #10B981;">Operational</div>
+            </div>
+          </div>
+        </div>
+      `,
       css: sharedCSS
     }
   ];
