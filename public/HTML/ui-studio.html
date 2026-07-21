@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Multi-Page UI Studio — Google Stitch Style Prototyping</title>
+  <meta name="description" content="AI Multi-Page UI Studio: Generate connected multi-screen UI prototypes side-by-side on an interactive canvas with unified design tokens.">
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Inter:wght@400;500;600;700&family=Outfit:wght@500;700;800;900&display=swap" rel="stylesheet">
+  
+  <!-- CSS -->
+  <link rel="stylesheet" href="../CSS/ui-studio.css?v=1.0">
+  <link rel="icon" type="image/png" href="../assets/images/logo_workspace.png" />
+</head>
+
+<body class="studio-dark-theme">
+
+  <!-- Top Studio Navigation Bar -->
+  <header class="studio-navbar">
+    <div class="navbar-left">
+      <a href="../index.html" class="studio-brand" title="Back to Landing Page">
+        <span class="brand-badge">STITCH AI</span>
+        <span class="brand-text">UI Studio</span>
+      </a>
+      <div class="project-title-wrapper">
+        <input type="text" id="project-title-input" value="SaaS Product Flow Prototype" placeholder="Project Title...">
+        <span class="status-save-tag" id="save-status-indicator">Saved to Cloud</span>
+      </div>
+    </div>
+
+    <div class="navbar-center">
+      <div class="canvas-controls">
+        <button class="control-btn" id="btn-zoom-out" title="Zoom Out (-)">-</button>
+        <span class="zoom-level" id="zoom-level-label">100%</span>
+        <button class="control-btn" id="btn-zoom-in" title="Zoom In (+)">+</button>
+        <button class="control-btn" id="btn-zoom-reset" title="Reset View">Reset</button>
+      </div>
+    </div>
+
+    <div class="navbar-right">
+      <button class="btn-studio btn-secondary" id="btn-add-blank-screen">+ Add Screen</button>
+      <button class="btn-studio btn-primary" id="btn-export-project">⚡ Export Bundle</button>
+      <a href="../app.html" class="btn-studio btn-glass">Open Notes Workspace ➔</a>
+    </div>
+  </header>
+
+  <!-- Main UI Studio Workspace Layout -->
+  <div class="studio-body">
+
+    <!-- Left Control Sidebar: Prompts & PRD Briefs -->
+    <aside class="studio-sidebar">
+      <div class="sidebar-section">
+        <h3>💡 AI Flow Prompt</h3>
+        <p class="section-desc">Describe the app screens or user journey you want to prototype side-by-side.</p>
+        <textarea id="ui-prompt-input" rows="4" placeholder="e.g. Create a sleek dark-mode AI Analytics SaaS with Landing Page, Login Modal, and Main Dashboard Metrics Console..."></textarea>
+      </div>
+
+      <div class="sidebar-section">
+        <h3>📄 PRD Document Brief</h3>
+        <p class="section-desc">Upload PRD specifications (.txt or .md) to extract screen flows automatically.</p>
+        <div class="file-upload-dropzone" id="prd-dropzone">
+          <input type="file" id="prd-file-input" accept=".txt,.md,.json">
+          <div class="dropzone-content">
+            <span class="upload-icon">📁</span>
+            <span class="upload-text" id="upload-filename">Drop PRD File or Click to Upload</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="sidebar-section">
+        <h3>🎨 Design System Theme</h3>
+        <p class="section-desc">Enforce identical color tokens across all generated screen cards.</p>
+        <div class="theme-picker-grid">
+          <div class="theme-option active" data-theme="vibrant-neon" style="--t-color: #FF4F00;">
+            <span class="swatch" style="background: #FF4F00;"></span>
+            <span>Vibrant Orange</span>
+          </div>
+          <div class="theme-option" data-theme="obsidian-purple" style="--t-color: #8B5CF6;">
+            <span class="swatch" style="background: #8B5CF6;"></span>
+            <span>Obsidian Violet</span>
+          </div>
+          <div class="theme-option" data-theme="emerald-pro" style="--t-color: #10B981;">
+            <span class="swatch" style="background: #10B981;"></span>
+            <span>Emerald Mint</span>
+          </div>
+          <div class="theme-option" data-theme="cyberpunk-gold" style="--t-color: #F59E0B;">
+            <span class="swatch" style="background: #F59E0B;"></span>
+            <span>Cyber Amber</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="sidebar-actions">
+        <button class="btn-studio-cta" id="btn-generate-flow">
+          <span>✨ Generate Multi-Page UI Flow</span>
+        </button>
+      </div>
+    </aside>
+
+    <!-- Right Side-by-Side Interactive Canvas Stage -->
+    <main class="studio-canvas-stage" id="canvas-stage">
+      <div class="canvas-viewport" id="canvas-viewport">
+        <div class="canvas-grid-bg"></div>
+
+        <!-- Dynamic Connected Screen Nodes Container -->
+        <div class="screens-container" id="screens-container">
+          <!-- Screen cards generated dynamically via JS -->
+        </div>
+      </div>
+    </main>
+
+  </div>
+
+  <!-- Export Code Modal -->
+  <div class="studio-modal-overlay" id="export-modal">
+    <div class="studio-modal">
+      <div class="modal-header">
+        <h3>⚡ Export Project HTML/CSS Code</h3>
+        <button class="modal-close-btn" id="btn-close-modal">✕</button>
+      </div>
+      <div class="modal-body">
+        <p>Copy the unified design tokens and clean HTML source code for all screens:</p>
+        <div class="code-tab-nav">
+          <button class="code-tab active" data-target="code-export-html">All HTML Screens</button>
+          <button class="code-tab" data-target="code-export-css">Unified Design Tokens CSS</button>
+        </div>
+        <textarea id="code-export-output" readonly rows="12"></textarea>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-studio btn-secondary" id="btn-copy-export">📋 Copy Code to Clipboard</button>
+        <button class="btn-studio btn-primary" id="btn-download-export">💾 Download Bundle (.html)</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- JavaScript -->
+  <script type="module" src="../JS/uiStudio.js"></script>
+</body>
+
+</html>
