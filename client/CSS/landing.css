@@ -4647,6 +4647,96 @@ body.student-engine-active .mini-note-item.active {
   color: #52525b !important;
 }
 
+/* Interactive Sandbox Hint Badge */
+.interactive-demo-hint-badge {
+  position: absolute;
+  top: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(9, 9, 11, 0.93) !important;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1.5px solid rgba(255, 79, 0, 0.4) !important;
+  padding: 6px 14px;
+  border-radius: 24px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  z-index: 101;
+  font-family: var(--ff-body);
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #FFFFFF !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4), 0 0 12px rgba(255, 79, 0, 0.1);
+  animation: floatHint 3s ease-in-out infinite, pulseBorder 2s ease-in-out infinite;
+  pointer-events: auto;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.interactive-demo-hint-badge.hidden {
+  opacity: 0;
+  pointer-events: none;
+  transform: translate(-50%, -10px);
+}
+
+@keyframes floatHint {
+  0%, 100% { transform: translate(-50%, 0); }
+  50% { transform: translate(-50%, -4px); }
+}
+
+@keyframes pulseBorder {
+  0%, 100% { 
+    border-color: rgba(255, 79, 0, 0.4) !important; 
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4), 0 0 12px rgba(255, 79, 0, 0.15); 
+  }
+  50% { 
+    border-color: rgba(255, 79, 0, 0.75) !important; 
+    box-shadow: 0 4px 25px rgba(0, 0, 0, 0.55), 0 0 16px rgba(255, 79, 0, 0.3); 
+  }
+}
+
+.pulse-ring {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--theme-color-1);
+  position: relative;
+  flex-shrink: 0;
+}
+
+.pulse-ring::after {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: var(--theme-color-1);
+  animation: ringPulse 1.8s ease-out infinite;
+  top: 0;
+  left: 0;
+}
+
+@keyframes ringPulse {
+  0% { transform: scale(1); opacity: 1; }
+  100% { transform: scale(3); opacity: 0; }
+}
+
+.interactive-demo-hint-badge .close-hint-btn {
+  background: none !important;
+  border: none !important;
+  color: rgba(255, 255, 255, 0.6) !important;
+  cursor: pointer;
+  font-size: 0.9rem;
+  line-height: 1;
+  padding: 0 0 0 6px;
+  transition: color 0.2s;
+  font-weight: 700;
+}
+
+.interactive-demo-hint-badge .close-hint-btn:hover {
+  color: #FFFFFF !important;
+}
+
 /* ==========================================
    FINAL OVERRIDE MEDIA QUERIES FOR MOBILE & TABLET
    ========================================== */
@@ -4667,6 +4757,18 @@ body.student-engine-active .mini-note-item.active {
     flex-direction: column !important;
     gap: 16px !important;
     height: auto !important;
+  }
+
+  .interactive-demo-hint-badge {
+    position: relative !important;
+    top: auto !important;
+    left: auto !important;
+    transform: none !important;
+    margin: 8px auto !important;
+    width: fit-content !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+    animation: pulseBorder 2s ease-in-out infinite !important;
   }
 
   /* Desktop icons row above window */
