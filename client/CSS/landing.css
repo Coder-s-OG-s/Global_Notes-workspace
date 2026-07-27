@@ -4653,10 +4653,10 @@ body.student-engine-active .mini-note-item.active {
   top: 12px;
   left: 50%;
   transform: translateX(-50%);
-  background: rgba(255, 79, 0, 0.15) !important;
+  background: rgba(9, 9, 11, 0.93) !important;
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  border: 1.5px solid rgba(255, 79, 0, 0.3) !important;
+  border: 1.5px solid rgba(255, 79, 0, 0.4) !important;
   padding: 6px 14px;
   border-radius: 24px;
   display: flex;
@@ -4667,7 +4667,7 @@ body.student-engine-active .mini-note-item.active {
   font-size: 0.72rem;
   font-weight: 600;
   color: #FFFFFF !important;
-  box-shadow: 0 4px 20px rgba(255, 79, 0, 0.15);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4), 0 0 12px rgba(255, 79, 0, 0.1);
   animation: floatHint 3s ease-in-out infinite, pulseBorder 2s ease-in-out infinite;
   pointer-events: auto;
   transition: opacity 0.3s ease, transform 0.3s ease;
@@ -4686,12 +4686,12 @@ body.student-engine-active .mini-note-item.active {
 
 @keyframes pulseBorder {
   0%, 100% { 
-    border-color: rgba(255, 79, 0, 0.3) !important; 
-    box-shadow: 0 4px 20px rgba(255, 79, 0, 0.15); 
+    border-color: rgba(255, 79, 0, 0.4) !important; 
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4), 0 0 12px rgba(255, 79, 0, 0.15); 
   }
   50% { 
-    border-color: rgba(255, 79, 0, 0.6) !important; 
-    box-shadow: 0 4px 25px rgba(255, 79, 0, 0.3); 
+    border-color: rgba(255, 79, 0, 0.75) !important; 
+    box-shadow: 0 4px 25px rgba(0, 0, 0, 0.55), 0 0 16px rgba(255, 79, 0, 0.3); 
   }
 }
 
