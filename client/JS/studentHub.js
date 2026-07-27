@@ -3,6 +3,7 @@ import { generateTextWithGemini } from './geminiAPI.js';
 import { THEME_KEY } from './constants.js';
 import { setThemeStorageKey, wireThemeToggle, getStoredTheme } from './themeManager.js';
 import { showToast, showConfirm } from './utilities.js';
+import { getCurrentUser } from './authService.js';
 
 // --- Local Storage Keys ---
 const STORAGE_DECKS_KEY = 'global_notes_hub_decks';
@@ -26,6 +27,7 @@ const STORAGE_FLOWCHARTS_LIST_KEY = 'global_notes_hub_flowcharts_list';
 const STORAGE_ACTIVE_FLOWCHART_ID_KEY = 'global_notes_hub_active_flowchart_id';
 
 // --- State Variables ---
+let currentUser = null;
 let flashcardFileText = '';
 let scheduleFileText = '';
 let savedDecks = [];
@@ -35,6 +37,37 @@ let activeScheduleId = null;
 let savedFlowcharts = [];
 let activeFlowchartId = null;
 let activeTab = 'flashcards'; // 'flashcards', 'schedule', or 'flowcharts'
+
+async function saveState() {
+    // Write local storage as fallback/guest backup
+    localStorage.setItem(STORAGE_DECKS_KEY, JSON.stringify(savedDecks));
+    localStorage.setItem(STORAGE_ACTIVE_DECK_ID_KEY, activeDeckId || '');
+    localStorage.setItem(STORAGE_SCHEDULES_KEY, JSON.stringify(savedSchedules));
+    localStorage.setItem(STORAGE_ACTIVE_SCHEDULE_ID_KEY, activeScheduleId || '');
+    localStorage.setItem(STORAGE_FLOWCHARTS_LIST_KEY, JSON.stringify(savedFlowcharts));
+    localStorage.setItem(STORAGE_ACTIVE_FLOWCHART_ID_KEY, activeFlowchartId || '');
+    localStorage.setItem(STORAGE_FLOWCHART_SHAPES_KEY, JSON.stringify(shapes));
+
+    // If authenticated user is logged in, sync state to MongoDB database
+    if (currentUser) {
+        try {
+            await fetch('/api/student-hub', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    decks: savedDecks,
+                    activeDeckId,
+                    schedules: savedSchedules,
+                    activeScheduleId,
+                    flowcharts: savedFlowcharts,
+                    activeFlowchartId
+                })
+            });
+        } catch (e) {
+            console.error("Failed to sync Student Hub state to database:", e);
+        }
+    }
+}
 
 // Flowchart State
 let shapes = [];
@@ -51,11 +84,11 @@ let shapeStartY = 0;
 let shapeStartWidth = 0;
 let shapeStartHeight = 0;
 
-document.addEventListener('DOMContentLoaded', () => {
-    initHub();
+document.addEventListener('DOMContentLoaded', async () => {
+    await initHub();
 });
 
-function initHub() {
+async function initHub() {
     // Save current page state
     localStorage.setItem('lastPage', 'student-hub');
 
@@ -182,7 +215,7 @@ function initHub() {
     setupHistoryDropdown();
 
     // 7. Load Saved State
-    loadSavedState();
+    await loadSavedState();
 
     // Check URL parameters for pre-populating deadlines
     const urlParams = new URLSearchParams(window.location.search);
@@ -711,8 +744,7 @@ ${sourceText}`;
         savedDecks.unshift(newDeck);
         activeDeckId = newDeck.id;
         
-        localStorage.setItem(STORAGE_DECKS_KEY, JSON.stringify(savedDecks));
-        localStorage.setItem(STORAGE_ACTIVE_DECK_ID_KEY, activeDeckId);
+        saveState();
 
         renderFlashcards(newDeck.cards);
         
@@ -737,7 +769,7 @@ ${sourceText}`;
 
 function selectDeck(deckId) {
     activeDeckId = deckId;
-    localStorage.setItem(STORAGE_ACTIVE_DECK_ID_KEY, activeDeckId);
+    saveState();
     
     const activeDeck = savedDecks.find(d => d.id === activeDeckId);
     if (activeDeck) {
@@ -747,18 +779,17 @@ function selectDeck(deckId) {
 
 function deleteDeck(deckId) {
     savedDecks = savedDecks.filter(d => d.id !== deckId);
-    localStorage.setItem(STORAGE_DECKS_KEY, JSON.stringify(savedDecks));
 
     if (activeDeckId === deckId) {
         activeDeckId = savedDecks.length > 0 ? savedDecks[0].id : null;
-        if (activeDeckId) {
-            localStorage.setItem(STORAGE_ACTIVE_DECK_ID_KEY, activeDeckId);
-            const activeDeck = savedDecks.find(d => d.id === activeDeckId);
-            renderFlashcards(activeDeck ? activeDeck.cards : []);
-        } else {
-            localStorage.removeItem(STORAGE_ACTIVE_DECK_ID_KEY);
-            renderFlashcards([]);
-        }
+    }
+    saveState();
+
+    if (activeDeckId) {
+        const activeDeck = savedDecks.find(d => d.id === activeDeckId);
+        renderFlashcards(activeDeck ? activeDeck.cards : []);
+    } else {
+        renderFlashcards([]);
     }
     renderHistoryList();
     showToast('Deck deleted.', 'success');
@@ -769,7 +800,7 @@ function toggleCardMastery(cardIndex) {
     if (!activeDeck) return;
 
     activeDeck.cards[cardIndex].mastered = !activeDeck.cards[cardIndex].mastered;
-    localStorage.setItem(STORAGE_DECKS_KEY, JSON.stringify(savedDecks));
+    saveState();
     
     renderFlashcards(activeDeck.cards);
 }
@@ -1036,8 +1067,7 @@ ${sourceSyllabus}`;
         savedSchedules.unshift(newSchedule);
         activeScheduleId = newSchedule.id;
 
-        localStorage.setItem(STORAGE_SCHEDULES_KEY, JSON.stringify(savedSchedules));
-        localStorage.setItem(STORAGE_ACTIVE_SCHEDULE_ID_KEY, activeScheduleId);
+        saveState();
 
         renderSchedule(newSchedule.items);
         
@@ -1063,7 +1093,7 @@ ${sourceSyllabus}`;
 
 function selectSchedule(schedId) {
     activeScheduleId = schedId;
-    localStorage.setItem(STORAGE_ACTIVE_SCHEDULE_ID_KEY, activeScheduleId);
+    saveState();
     
     const activeSched = savedSchedules.find(s => s.id === activeScheduleId);
     if (activeSched) {
@@ -1073,18 +1103,17 @@ function selectSchedule(schedId) {
 
 function deleteScheduleRecord(schedId) {
     savedSchedules = savedSchedules.filter(s => s.id !== schedId);
-    localStorage.setItem(STORAGE_SCHEDULES_KEY, JSON.stringify(savedSchedules));
 
     if (activeScheduleId === schedId) {
         activeScheduleId = savedSchedules.length > 0 ? savedSchedules[0].id : null;
-        if (activeScheduleId) {
-            localStorage.setItem(STORAGE_ACTIVE_SCHEDULE_ID_KEY, activeScheduleId);
-            const activeSched = savedSchedules.find(s => s.id === activeScheduleId);
-            renderSchedule(activeSched ? activeSched.items : []);
-        } else {
-            localStorage.removeItem(STORAGE_ACTIVE_SCHEDULE_ID_KEY);
-            renderSchedule([]);
-        }
+    }
+    saveState();
+
+    if (activeScheduleId) {
+        const activeSched = savedSchedules.find(s => s.id === activeScheduleId);
+        renderSchedule(activeSched ? activeSched.items : []);
+    } else {
+        renderSchedule([]);
     }
     renderHistoryList();
     showToast('Schedule deleted.', 'success');
@@ -1092,33 +1121,29 @@ function deleteScheduleRecord(schedId) {
 
 function selectFlowchart(flowId) {
     activeFlowchartId = flowId;
-    localStorage.setItem(STORAGE_ACTIVE_FLOWCHART_ID_KEY, activeFlowchartId);
     
     const activeFlow = savedFlowcharts.find(f => f.id === activeFlowchartId);
     if (activeFlow) {
         shapes = activeFlow.shapes || [];
-        localStorage.setItem(STORAGE_FLOWCHART_SHAPES_KEY, JSON.stringify(shapes));
-        renderFlowchart();
     }
+    saveState();
+    renderFlowchart();
 }
 
 function deleteFlowchart(flowId) {
     savedFlowcharts = savedFlowcharts.filter(f => f.id !== flowId);
-    localStorage.setItem(STORAGE_FLOWCHARTS_LIST_KEY, JSON.stringify(savedFlowcharts));
 
     if (activeFlowchartId === flowId) {
         activeFlowchartId = savedFlowcharts.length > 0 ? savedFlowcharts[0].id : null;
-        localStorage.setItem(STORAGE_ACTIVE_FLOWCHART_ID_KEY, activeFlowchartId || '');
-        
         if (activeFlowchartId) {
             const activeFlow = savedFlowcharts.find(f => f.id === activeFlowchartId);
             shapes = activeFlow ? activeFlow.shapes : [];
         } else {
             shapes = [];
         }
-        localStorage.setItem(STORAGE_FLOWCHART_SHAPES_KEY, JSON.stringify(shapes));
-        renderFlowchart();
     }
+    saveState();
+    renderFlowchart();
     
     renderHistoryList();
     showToast('Flowchart deleted.', 'success');
@@ -1263,7 +1288,7 @@ function toggleScheduleTask(itemIdx, lineIdx, isChecked) {
                 activeSched.items[itemIdx].checkedTasks = [];
             }
             activeSched.items[itemIdx].checkedTasks[lineIdx] = isChecked;
-            localStorage.setItem(STORAGE_SCHEDULES_KEY, JSON.stringify(savedSchedules));
+            saveState();
         }
     } else {
         // Fallback for unsaved/legacy items
@@ -1293,7 +1318,7 @@ function toggleLeetCodeTask(itemIdx, problemIdx, isChecked) {
                 activeSched.items[itemIdx].checkedLeetCode = [];
             }
             activeSched.items[itemIdx].checkedLeetCode[problemIdx] = isChecked;
-            localStorage.setItem(STORAGE_SCHEDULES_KEY, JSON.stringify(savedSchedules));
+            saveState();
         }
     } else {
         const stored = localStorage.getItem(STORAGE_SCHEDULE_KEY);
@@ -1313,113 +1338,139 @@ function toggleLeetCodeTask(itemIdx, problemIdx, isChecked) {
         }
     }
 }
-// ─── LOCAL STORAGE LOADER ───
-function loadSavedState() {
-    // 1. Load Decks
+// ─── LOCAL STORAGE & DATABASE LOADER ───
+async function loadSavedState() {
     try {
-        console.log("Loading flashcard decks from localStorage...");
-        const storedDecks = localStorage.getItem(STORAGE_DECKS_KEY);
-        if (storedDecks) {
-            savedDecks = JSON.parse(storedDecks);
-        }
-        
-        const storedActiveId = localStorage.getItem(STORAGE_ACTIVE_DECK_ID_KEY);
-        if (storedActiveId) {
-            activeDeckId = storedActiveId;
-        } else if (savedDecks.length > 0) {
-            activeDeckId = savedDecks[0].id;
-        }
-        
-        if (activeDeckId) {
-            const activeDeck = savedDecks.find(d => d.id === activeDeckId);
-            if (activeDeck) {
-                renderFlashcards(activeDeck.cards);
-            }
-        } else {
-            renderFlashcards([]);
-        }
+        currentUser = await getCurrentUser();
     } catch (e) {
-        console.error("Failed to load flashcard decks from localStorage:", e);
+        console.error("Auth check failed, fallback to local storage:", e);
     }
 
-    // 2. Load Schedules
-    try {
-        console.log("Loading study schedules from localStorage...");
-        const storedSchedules = localStorage.getItem(STORAGE_SCHEDULES_KEY);
-        if (storedSchedules) {
-            savedSchedules = JSON.parse(storedSchedules);
-        }
-        
-        const storedActiveScheduleId = localStorage.getItem(STORAGE_ACTIVE_SCHEDULE_ID_KEY);
-        if (storedActiveScheduleId) {
-            activeScheduleId = storedActiveScheduleId;
-        } else if (savedSchedules.length > 0) {
-            activeScheduleId = savedSchedules[0].id;
-        }
-        
-        if (activeScheduleId) {
-            const activeSched = savedSchedules.find(s => s.id === activeScheduleId);
-            if (activeSched) {
-                renderSchedule(activeSched.items);
-            }
-        } else {
-            // Check legacy key
-            const savedSchedule = localStorage.getItem(STORAGE_SCHEDULE_KEY);
-            if (savedSchedule) {
-                try {
-                    const schedule = JSON.parse(savedSchedule);
-                    if (Array.isArray(schedule) && schedule.length) {
-                        renderSchedule(schedule);
-                        
-                        // Migrate legacy schedule to new multi-schedule structure
-                        const migratedId = "legacy_" + Date.now().toString();
-                        const migratedSchedule = {
-                            id: migratedId,
-                            name: "Legacy Study Plan",
-                            timestamp: Date.now(),
-                            examDate: "",
-                            items: schedule
-                        };
-                        
-                        savedSchedules.push(migratedSchedule);
-                        activeScheduleId = migratedId;
-                        
-                        localStorage.setItem(STORAGE_SCHEDULES_KEY, JSON.stringify(savedSchedules));
-                        localStorage.setItem(STORAGE_ACTIVE_SCHEDULE_ID_KEY, activeScheduleId);
-                        
-                        // Clean up legacy key to prevent repeating migration
-                        localStorage.removeItem(STORAGE_SCHEDULE_KEY);
-                    }
-                } catch (e) {
-                    console.error("Failed to parse legacy schedule:", e);
-                    renderSchedule([]);
+    let loadedFromDb = false;
+
+    if (currentUser) {
+        try {
+            console.log("Loading student hub state from database...");
+            const res = await fetch('/api/student-hub');
+            if (res.ok) {
+                const data = await res.json();
+                if (data && (data.decks?.length || data.schedules?.length || data.flowcharts?.length)) {
+                    savedDecks = data.decks || [];
+                    activeDeckId = data.activeDeckId || null;
+                    savedSchedules = data.schedules || [];
+                    activeScheduleId = data.activeScheduleId || null;
+                    savedFlowcharts = data.flowcharts || [];
+                    activeFlowchartId = data.activeFlowchartId || null;
+                    loadedFromDb = true;
+                    console.log("Student hub state successfully loaded from database.");
                 }
-            } else {
-                renderSchedule([]);
             }
+        } catch (e) {
+            console.error("Failed to load state from database, using localStorage fallback:", e);
         }
-    } catch (e) {
-        console.error("Failed to load schedules from localStorage:", e);
     }
 
-    // 3. Load Flowcharts
-    try {
-        console.log("Loading flowchart state from localStorage...");
-        const storedFlowcharts = localStorage.getItem(STORAGE_FLOWCHARTS_LIST_KEY);
-        if (storedFlowcharts) {
-            savedFlowcharts = JSON.parse(storedFlowcharts);
-        }
-        
-        const storedActiveFlowchartId = localStorage.getItem(STORAGE_ACTIVE_FLOWCHART_ID_KEY);
-        if (storedActiveFlowchartId) {
-            activeFlowchartId = storedActiveFlowchartId;
-        } else if (savedFlowcharts.length > 0) {
-            activeFlowchartId = savedFlowcharts[0].id;
+    if (!loadedFromDb) {
+        // 1. Load Decks from localStorage
+        try {
+            console.log("Loading flashcard decks from localStorage...");
+            const storedDecks = localStorage.getItem(STORAGE_DECKS_KEY);
+            if (storedDecks) {
+                savedDecks = JSON.parse(storedDecks);
+            }
+            const storedActiveId = localStorage.getItem(STORAGE_ACTIVE_DECK_ID_KEY);
+            if (storedActiveId) {
+                activeDeckId = storedActiveId;
+            } else if (savedDecks.length > 0) {
+                activeDeckId = savedDecks[0].id;
+            }
+        } catch (e) {
+            console.error("Failed to load flashcard decks from localStorage:", e);
         }
 
-        // Check for new/unsaved visualizations from code workspace
-        const rawStored = localStorage.getItem(STORAGE_FLOWCHART_SHAPES_KEY);
-        if (rawStored) {
+        // 2. Load Schedules from localStorage
+        try {
+            console.log("Loading study schedules from localStorage...");
+            const storedSchedules = localStorage.getItem(STORAGE_SCHEDULES_KEY);
+            if (storedSchedules) {
+                savedSchedules = JSON.parse(storedSchedules);
+            }
+            const storedActiveScheduleId = localStorage.getItem(STORAGE_ACTIVE_SCHEDULE_ID_KEY);
+            if (storedActiveScheduleId) {
+                activeScheduleId = storedActiveScheduleId;
+            } else if (savedSchedules.length > 0) {
+                activeScheduleId = savedSchedules[0].id;
+            }
+            if (!activeScheduleId) {
+                const savedSchedule = localStorage.getItem(STORAGE_SCHEDULE_KEY);
+                if (savedSchedule) {
+                    try {
+                        const schedule = JSON.parse(savedSchedule);
+                        if (Array.isArray(schedule) && schedule.length) {
+                            const migratedId = "legacy_" + Date.now().toString();
+                            const migratedSchedule = {
+                                id: migratedId,
+                                name: "Legacy Study Plan",
+                                timestamp: Date.now(),
+                                examDate: "",
+                                items: schedule
+                            };
+                            savedSchedules.push(migratedSchedule);
+                            activeScheduleId = migratedId;
+                            localStorage.setItem(STORAGE_SCHEDULES_KEY, JSON.stringify(savedSchedules));
+                            localStorage.setItem(STORAGE_ACTIVE_SCHEDULE_ID_KEY, activeScheduleId);
+                            localStorage.removeItem(STORAGE_SCHEDULE_KEY);
+                        }
+                    } catch (e) {
+                        console.error("Failed to parse legacy schedule:", e);
+                    }
+                }
+            }
+        } catch (e) {
+            console.error("Failed to load schedules from localStorage:", e);
+        }
+
+        // 3. Load Flowcharts from localStorage
+        try {
+            console.log("Loading flowchart state from localStorage...");
+            const storedFlowcharts = localStorage.getItem(STORAGE_FLOWCHARTS_LIST_KEY);
+            if (storedFlowcharts) {
+                savedFlowcharts = JSON.parse(storedFlowcharts);
+            }
+            const storedActiveFlowchartId = localStorage.getItem(STORAGE_ACTIVE_FLOWCHART_ID_KEY);
+            if (storedActiveFlowchartId) {
+                activeFlowchartId = storedActiveFlowchartId;
+            } else if (savedFlowcharts.length > 0) {
+                activeFlowchartId = savedFlowcharts[0].id;
+            }
+        } catch (e) {
+            console.error("Failed to load flowchart state from localStorage:", e);
+        }
+    }
+
+    // Render active views based on loaded state
+    if (activeDeckId) {
+        const activeDeck = savedDecks.find(d => d.id === activeDeckId);
+        if (activeDeck) {
+            renderFlashcards(activeDeck.cards);
+        }
+    } else {
+        renderFlashcards([]);
+    }
+
+    if (activeScheduleId) {
+        const activeSched = savedSchedules.find(s => s.id === activeScheduleId);
+        if (activeSched) {
+            renderSchedule(activeSched.items);
+        }
+    } else {
+        renderSchedule([]);
+    }
+
+    // Check for new/unsaved visualizations from code workspace
+    const rawStored = localStorage.getItem(STORAGE_FLOWCHART_SHAPES_KEY);
+    if (rawStored) {
+        try {
             const rawShapes = JSON.parse(rawStored);
             if (rawShapes && rawShapes.length > 0) {
                 const isAlreadySaved = savedFlowcharts.some(f => JSON.stringify(f.shapes) === rawStored);
@@ -1432,27 +1483,26 @@ function loadSavedState() {
                     };
                     savedFlowcharts.unshift(newFlow);
                     activeFlowchartId = newFlow.id;
-                    localStorage.setItem(STORAGE_FLOWCHARTS_LIST_KEY, JSON.stringify(savedFlowcharts));
-                    localStorage.setItem(STORAGE_ACTIVE_FLOWCHART_ID_KEY, activeFlowchartId);
+                    saveState();
                 }
             }
+        } catch (e) {
+            console.error("Failed to parse raw flowchart shapes:", e);
         }
+    }
 
-        if (activeFlowchartId) {
-            const activeFlow = savedFlowcharts.find(f => f.id === activeFlowchartId);
-            if (activeFlow) {
-                shapes = activeFlow.shapes || [];
-                localStorage.setItem(STORAGE_FLOWCHART_SHAPES_KEY, JSON.stringify(shapes));
-            }
-        } else {
-            loadFlowchartState();
+    if (activeFlowchartId) {
+        const activeFlow = savedFlowcharts.find(f => f.id === activeFlowchartId);
+        if (activeFlow) {
+            shapes = activeFlow.shapes || [];
+            localStorage.setItem(STORAGE_FLOWCHART_SHAPES_KEY, JSON.stringify(shapes));
         }
+    } else {
+        loadFlowchartState();
+    }
 
-        if (activeTab === 'flowcharts') {
-            renderFlowchart();
-        }
-    } catch (e) {
-        console.error("Failed to load flowchart state from localStorage:", e);
+    if (activeTab === 'flowcharts') {
+        renderFlowchart();
     }
 }
 
@@ -1493,14 +1543,13 @@ function renderSafeHtml(str) {
 // ─── FLOWCHART MAKER FUNCTIONS ───
 
 function saveFlowchartState() {
-    localStorage.setItem(STORAGE_FLOWCHART_SHAPES_KEY, JSON.stringify(shapes));
     if (activeFlowchartId) {
         const idx = savedFlowcharts.findIndex(f => f.id === activeFlowchartId);
         if (idx !== -1) {
             savedFlowcharts[idx].shapes = shapes;
-            localStorage.setItem(STORAGE_FLOWCHARTS_LIST_KEY, JSON.stringify(savedFlowcharts));
         }
     }
+    saveState();
 }
 
 function loadFlowchartState() {
@@ -2141,8 +2190,7 @@ ${promptText}`;
         };
         savedFlowcharts.unshift(newFlowchart);
         activeFlowchartId = newFlowchart.id;
-        localStorage.setItem(STORAGE_FLOWCHARTS_LIST_KEY, JSON.stringify(savedFlowcharts));
-        localStorage.setItem(STORAGE_ACTIVE_FLOWCHART_ID_KEY, activeFlowchartId);
+        saveState();
 
         selectedShapeId = null;
         saveFlowchartState();
