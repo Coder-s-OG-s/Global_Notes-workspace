@@ -792,42 +792,79 @@ document.addEventListener('DOMContentLoaded', () => {
             const selectedText = text.substring(start, end);
 
             let replacement = '';
-            let cursorOffset = 0;
+            let selStart = start;
+            let selEnd = end;
 
             switch (action) {
                 case 'bold':
-                    replacement = `**${selectedText || 'bold text'}**`;
-                    cursorOffset = selectedText ? 0 : -2; // offset to position cursor inside bold markers
+                    if (selectedText) {
+                        replacement = `**${selectedText}**`;
+                        selStart = start + 2;
+                        selEnd = start + 2 + selectedText.length;
+                    } else {
+                        replacement = `**bold text**`;
+                        selStart = start + 2;
+                        selEnd = start + 11; // "bold text" is 9 chars
+                    }
                     break;
                 case 'italic':
-                    replacement = `*${selectedText || 'italic text'}*`;
-                    cursorOffset = selectedText ? 0 : -1;
+                    if (selectedText) {
+                        replacement = `*${selectedText}*`;
+                        selStart = start + 1;
+                        selEnd = start + 1 + selectedText.length;
+                    } else {
+                        replacement = `*italic text*`;
+                        selStart = start + 1;
+                        selEnd = start + 12; // "italic text" is 11 chars
+                    }
                     break;
                 case 'header':
-                    replacement = `\n### ${selectedText || 'Heading'}\n`;
-                    cursorOffset = 0;
+                    if (selectedText) {
+                        replacement = `\n### ${selectedText}\n`;
+                        selStart = start + 5;
+                        selEnd = start + 5 + selectedText.length;
+                    } else {
+                        replacement = `\n### Heading\n`;
+                        selStart = start + 5;
+                        selEnd = start + 12; // "Heading" is 7 chars
+                    }
                     break;
                 case 'list':
-                    replacement = `\n- ${selectedText || 'List item'}\n`;
-                    cursorOffset = 0;
+                    if (selectedText) {
+                        replacement = `\n- ${selectedText}\n`;
+                        selStart = start + 3;
+                        selEnd = start + 3 + selectedText.length;
+                    } else {
+                        replacement = `\n- List item\n`;
+                        selStart = start + 3;
+                        selEnd = start + 12; // "List item" is 9 chars
+                    }
                     break;
                 case 'quote':
-                    replacement = `\n> ${selectedText || 'Quote'}\n`;
-                    cursorOffset = 0;
+                    if (selectedText) {
+                        replacement = `\n> ${selectedText}\n`;
+                        selStart = start + 3;
+                        selEnd = start + 3 + selectedText.length;
+                    } else {
+                        replacement = `\n> Quote\n`;
+                        selStart = start + 3;
+                        selEnd = start + 8; // "Quote" is 5 chars
+                    }
                     break;
             }
 
             editorTextarea.value = text.substring(0, start) + replacement + text.substring(end);
-            editorTextarea.focus();
             
-            // Adjust cursor position
-            const newCursorPos = start + replacement.length + cursorOffset;
-            editorTextarea.setSelectionRange(newCursorPos, newCursorPos);
+            // Programmatically trigger input event to sync state immediately
+            editorTextarea.dispatchEvent(new Event('input', { bubbles: true }));
+            
+            editorTextarea.focus();
+            editorTextarea.setSelectionRange(selStart, selEnd);
 
             // Sync with local trial note state and render card previews
-            const activeId = editorTextarea.getAttribute('data-active-note-id') || 'Welcome';
-            if (trialNotes[activeId]) {
-                trialNotes[activeId].body = editorTextarea.value;
+            const note = trialNotes.find(n => n.id === trialSelectedNote);
+            if (note) {
+                note.content = editorTextarea.value;
                 renderTrialNotesList();
             }
 
@@ -866,6 +903,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
         bentoStage.addEventListener('mouseenter', () => {
             bentoStage.style.transition = 'none'; // Instant response on hover start
+        });
+    }
+
+    // Close Interactive Demo Sandbox Hint Badge
+    const closeHintBtn = document.getElementById('btn-close-demo-hint');
+    const hintBadge = document.getElementById('demo-interactive-hint');
+    if (closeHintBtn && hintBadge) {
+        closeHintBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            hintBadge.classList.add('hidden');
         });
     }
 

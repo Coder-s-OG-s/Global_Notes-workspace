@@ -79,14 +79,12 @@
         <a href="#code-spotlight">Code IDE</a>
         <a href="#student-spotlight">Student Hub</a>
         <div class="mobile-nav-ctas">
-          <a href="HTML/ui-studio.html" class="btn-pill-primary sm" style="background: linear-gradient(135deg, #FF4F00 0%, #E65100 100%); border: none;">✨ UI Studio</a>
           <a href="app.html?guest=true" class="btn-pill-primary sm">Open Workspace</a>
           <a href="HTML/signup.html" class="btn-pill-secondary sm">Sign In</a>
         </div>
       </div>
 
       <div class="nav-ctas">
-        <a href="HTML/ui-studio.html" class="btn-pill-primary sm" style="background: linear-gradient(135deg, #FF4F00 0%, #E65100 100%); border: none;">✨ UI Studio</a>
         <a href="HTML/signup.html" class="btn-pill-secondary sm">Sign In</a>
         <a href="app.html?guest=true" class="btn-pill-primary sm">Open Workspace</a>
       </div>
@@ -130,11 +128,8 @@
           </p>
 
           <!-- CTA Buttons -->
-          <div class="hero-actions" style="display: flex; gap: 14px; flex-wrap: wrap; justify-content: center; margin-bottom: 24px;">
-            <a href="HTML/ui-studio.html" class="btn-pill-primary lg" style="background: linear-gradient(135deg, #FF4F00 0%, #E65100 100%); border: none; box-shadow: 0 8px 24px rgba(255, 79, 0, 0.4);">
-              ✨ Launch AI UI Studio
-            </a>
-            <a href="app.html?guest=true" class="btn-pill-secondary lg">
+          <div class="hero-actions">
+            <a href="app.html?guest=true" class="btn-pill-primary lg">
               Open Free Workspace
               <svg class="btn-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
             </a>
@@ -193,6 +188,14 @@
       <!-- Main Desktop Area -->
       <div class="desktop-workspace">
         
+        <!-- Live Sandbox Interactive Cue Indicator -->
+        <div class="interactive-demo-hint-badge" id="demo-interactive-hint">
+          <span class="pulse-ring"></span>
+          <span class="hint-icon">💡</span>
+          <span class="hint-text">Interactive Demo Sandbox: Type, use format toolbar or switch apps to test!</span>
+          <button class="close-hint-btn" id="btn-close-demo-hint" title="Dismiss Hint">&times;</button>
+        </div>
+
         <!-- Desktop Grid Shortcuts (Icons) -->
         <div class="desktop-icons-grid">
           <div class="desktop-icon-item" data-app="notes">
@@ -213,12 +216,6 @@
             </div>
             <span class="icon-label">StudentHub.app</span>
           </div>
-          <a href="HTML/ui-studio.html" class="desktop-icon-item" style="text-decoration: none;">
-            <div class="icon-wrapper studio-app-icon" style="background: rgba(255, 79, 0, 0.15); border-color: rgba(255, 79, 0, 0.3);">
-              <svg viewBox="0 0 24 24" fill="none" stroke="#FF4F00" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path></svg>
-            </div>
-            <span class="icon-label" style="color: #FF4F00;">UIStudio.app</span>
-          </a>
           <a href="HTML/signup.html" class="desktop-icon-item" style="text-decoration: none;">
             <div class="icon-wrapper register-app-icon">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"></path></svg>
@@ -502,9 +499,6 @@
             <div class="dock-item" data-app="student" title="Student Hub">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"></path><path d="M6 12v5c0 2 2 3 6 3s6-1 6-3v-5"></path></svg>
             </div>
-            <a href="HTML/ui-studio.html" class="dock-item" title="AI Multi-Page UI Studio" style="text-decoration: none;">
-              <svg viewBox="0 0 24 24" fill="none" stroke="#FF4F00" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path></svg>
-            </a>
             <span class="dock-divider"></span>
             <a href="HTML/signup.html" class="dock-item" title="Register Account" style="text-decoration: none;">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"></path></svg>
