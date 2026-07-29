@@ -240,9 +240,15 @@ h1, h2, h3, h4 {
 }
 
 .nav-logo {
-  width: 28px;
-  height: 28px;
-  border-radius: 6px;
+  height: 44px;
+  width: auto;
+  max-width: 180px;
+  object-fit: contain;
+  background: #ffffff;
+  padding: 4px 10px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  display: inline-block;
 }
 
 .nav-links {
@@ -2502,9 +2508,15 @@ body.student-engine-active .mini-note-item.active {
 }
 
 .footer-logo {
-  width: 28px;
-  height: 28px;
-  border-radius: 6px;
+  height: 52px;
+  width: auto;
+  max-width: 200px;
+  object-fit: contain;
+  background: #ffffff;
+  padding: 4px 12px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  display: inline-block;
 }
 
 .footer-desc {

@@ -645,8 +645,15 @@ html,
 }
 
 .logo-img {
-  width: 24px;
-  height: 24px;
+  height: 42px;
+  width: auto;
+  max-width: 170px;
+  object-fit: contain;
+  background: #ffffff;
+  padding: 4px 10px;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  display: inline-block;
 }
 
 .brand-name {
