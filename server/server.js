@@ -14,7 +14,8 @@ try {
     APPWRITE_SHARED_NOTES_COLLECTION_ID: '${process.env.APPWRITE_SHARED_NOTES_COLLECTION_ID || "shared_notes"}',
     SUPABASE_URL: '${process.env.SUPABASE_URL || ""}',
     SUPABASE_ANON_KEY: '${process.env.SUPABASE_ANON_KEY || ""}',
-    GROQ_API_KEY: '${process.env.GROQ_API_KEY || ""}'
+    GROQ_API_KEY: '${process.env.GROQ_API_KEY || ""}',
+    GEMINI_API_KEY: '${process.env.GEMINI_API_KEY || ""}'
 };
 
 export default config;`;
@@ -82,6 +83,8 @@ app.use('/api/auth', require('./routes/auth'));
 app.use('/api/notes', require('./routes/notes'));
 app.use('/api/folders', require('./routes/folders'));
 app.use('/api/student-hub', require('./routes/studentHub'));
+app.use('/api/proxy', require('./routes/proxy'));
+app.use('/api/ai', require('./routes/ai'));
 
 // Serve Static Frontend Assets
 app.use(express.static(path.join(__dirname, '../client')));
