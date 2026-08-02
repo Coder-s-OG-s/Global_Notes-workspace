@@ -663,14 +663,19 @@ document.addEventListener('DOMContentLoaded', () => {
     dockItems.forEach(btn => {
         btn.addEventListener('click', () => {
             const targetApp = btn.getAttribute('data-app');
-            if (targetApp) switchTab(targetApp);
+            if (targetApp && ['notes', 'code', 'student'].includes(targetApp)) {
+                switchTab(targetApp);
+            }
         });
     });
 
     desktopIcons.forEach(icon => {
-        icon.addEventListener('click', () => {
+        icon.addEventListener('click', (e) => {
             const targetApp = icon.getAttribute('data-app');
-            if (targetApp) switchTab(targetApp);
+            if (targetApp && ['notes', 'code', 'student'].includes(targetApp)) {
+                e.preventDefault();
+                switchTab(targetApp);
+            }
         });
     });
 
