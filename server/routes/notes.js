@@ -22,19 +22,34 @@ router.get('/', ensureAuth, async (req, res) => {
   }
 });
 
+// Helper to whitelist allowed note fields (Mass Assignment & Schema Injection Prevention)
+function sanitizeNotePayload(body) {
+  const allowed = {};
+  if (typeof body.title === 'string') allowed.title = body.title.substring(0, 500);
+  if (typeof body.content === 'string') allowed.content = body.content.substring(0, 500000); // 500 KB limit per note
+  if (Array.isArray(body.tags)) allowed.tags = body.tags.filter(t => typeof t === 'string').map(t => t.substring(0, 50));
+  if (body.folderId !== undefined) allowed.folderId = body.folderId ? String(body.folderId) : null;
+  if (typeof body.theme === 'string') allowed.theme = body.theme.substring(0, 50);
+  if (typeof body.editorPattern === 'string') allowed.editorPattern = body.editorPattern.substring(0, 50);
+  if (typeof body.isFavorite === 'boolean') allowed.isFavorite = body.isFavorite;
+  if (typeof body.isArchived === 'boolean') allowed.isArchived = body.isArchived;
+  return allowed;
+}
+
 // @desc    Create a note
 // @route   POST /api/notes
 router.post('/', ensureAuth, async (req, res) => {
   try {
+    const cleanPayload = sanitizeNotePayload(req.body);
     const newNote = new Note({
-      ...req.body,
+      ...cleanPayload,
       userId: req.user.id
     });
     const note = await newNote.save();
     res.json(note);
   } catch (err) {
     console.error('Error creating note:', err);
-    res.status(500).json({ error: 'Failed to create note', details: err.message });
+    res.status(500).json({ error: 'Failed to create note' });
   }
 });
 
@@ -46,11 +61,12 @@ router.put('/:id', ensureAuth, async (req, res) => {
     if (!note) return res.status(404).json({ msg: 'Note not found' });
     if (note.userId.toString() !== req.user.id) return res.status(401).json({ msg: 'Not authorized' });
 
-    note = await Note.findByIdAndUpdate(req.params.id, { $set: req.body, updatedAt: Date.now() }, { new: true });
+    const cleanPayload = sanitizeNotePayload(req.body);
+    note = await Note.findByIdAndUpdate(req.params.id, { $set: cleanPayload, updatedAt: Date.now() }, { new: true });
     res.json(note);
   } catch (err) {
     console.error('Error updating note:', err);
-    res.status(500).json({ error: 'Failed to update note', details: err.message });
+    res.status(500).json({ error: 'Failed to update note' });
   }
 });
 

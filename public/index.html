@@ -77,6 +77,7 @@
         <a href="#features">Features</a>
         <a href="#workspaces">Workspaces</a>
         <a href="#code-spotlight">Code IDE</a>
+        <a href="#ui-designer-spotlight">UI Designer AI</a>
         <a href="#student-spotlight">Student Hub</a>
         <div class="mobile-nav-ctas">
           <a href="app.html?guest=true" class="btn-pill-primary sm">Open Workspace</a>
@@ -123,17 +124,20 @@
 
           <!-- Subtext -->
           <p class="hero-subtext">
-            One offline-first workspace for your notes, code snippets, and ideas.
-            Instantly searchable. Always yours. No subscriptions required.
+            One offline-first workspace for your notes, code snippets, and AI UI component designs.
+            Instantly searchable. 100% private. No subscriptions required.
           </p>
 
           <!-- CTA Buttons -->
           <div class="hero-actions">
             <a href="app.html?guest=true" class="btn-pill-primary lg">
-              Open Free Workspace
+              Open Workspace
               <svg class="btn-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
             </a>
-            <a href="HTML/signup.html" class="btn-pill-secondary lg">Sign In</a>
+            <a href="HTML/ui-designer.html" class="btn-pill-secondary lg" style="border-color: rgba(249, 115, 22, 0.4); color: #f97316;">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 6px;"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+              Try UI Designer AI
+            </a>
           </div>
 
           <!-- Social Proof Meta -->
@@ -215,6 +219,12 @@
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"></path><path d="M6 12v5c0 2 2 3 6 3s6-1 6-3v-5"></path></svg>
             </div>
             <span class="icon-label">StudentHub.app</span>
+          </div>
+          <div class="desktop-icon-item" data-app="uidesigner">
+            <div class="icon-wrapper uidesigner-app-icon" style="background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); color: #fff; box-shadow: 0 4px 14px rgba(249, 115, 22, 0.4);">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+            </div>
+            <span class="icon-label">UIDesigner.app</span>
           </div>
           <a href="HTML/signup.html" class="desktop-icon-item" style="text-decoration: none;">
             <div class="icon-wrapper register-app-icon">
@@ -472,6 +482,70 @@
             </div>
           </div>
 
+          <!-- UI Designer Window Card -->
+          <div class="bento-window" id="window-uidesigner" data-window="uidesigner">
+            <div class="window-header">
+              <div class="window-controls">
+                <span class="dot dot-close" data-win-close="uidesigner"></span>
+                <span class="dot dot-minimize" data-win-minimize="uidesigner"></span>
+                <span class="dot dot-expand" data-win-expand="uidesigner"></span>
+              </div>
+              <div class="window-title" style="color: #f97316;">global-notes://workspace/ui-designer-ai</div>
+              <div class="window-status-pill" style="background: rgba(249, 115, 22, 0.2); color: #f97316; border-color: rgba(249, 115, 22, 0.4);">UI Designer Mode</div>
+            </div>
+            <div class="window-body" style="padding: 0; background: #111113;">
+              <div class="mock-uidesigner-workspace" style="display: flex; gap: 14px; padding: 14px; background: #111113; color: #ececef; font-family: 'Inter', sans-serif; height: 100%; box-sizing: border-box;">
+                
+                <!-- Left Preview Area -->
+                <div style="flex: 1.2; background: #1a1a1d; border: 1px solid #27272b; border-radius: 12px; padding: 14px; display: flex; flex-direction: column; gap: 10px;">
+                  <div style="font-size: 11px; color: #a0a0ab; display: flex; align-items: center; justify-content: space-between;">
+                    <span>Live Visual Preview Canvas</span>
+                    <span style="color: #10b981; font-weight: 600;">● Inspector Active</span>
+                  </div>
+                  
+                  <div id="trial-uidesigner-preview-card" style="background: #232326; border: 2px dashed #f97316; border-radius: 12px; padding: 18px; text-align: center; cursor: pointer; transition: all 0.3s ease;">
+                    <span style="font-size: 10px; color: #f97316; font-family: monospace; display: block; margin-bottom: 6px; font-weight: 600;">Target Node: &lt;div#demo-card&gt; [node-01]</span>
+                    <h4 id="trial-uidesigner-title" style="margin: 0 0 6px 0; font-size: 15px; font-weight: 700; color: #ffffff;">Interactive Component Sandbox</h4>
+                    <p id="trial-uidesigner-desc" style="margin: 0 0 12px 0; font-size: 12px; color: #a0a0ab;">Click preset chips on the right to transform this element live!</p>
+                    <button id="trial-uidesigner-btn" style="background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); color: #fff; border: none; padding: 7px 16px; border-radius: 18px; font-weight: 600; font-size: 11px; cursor: pointer; box-shadow: 0 4px 12px rgba(249,115,22,0.4);">
+                      Sample Button &rarr;
+                    </button>
+                  </div>
+                  
+                  <div style="font-size: 10px; color: #a0a0ab; text-align: center;">
+                    💡 Click preset chips on the right to test real-time visual transformations.
+                  </div>
+                </div>
+
+                <!-- Right AI Refiner Panel -->
+                <div style="flex: 1; background: #141416; border: 1px solid #27272b; border-radius: 12px; padding: 12px; display: flex; flex-direction: column; gap: 8px;">
+                  <div style="font-size: 11px; font-weight: 700; color: #f97316; display: flex; align-items: center; justify-content: space-between;">
+                    <span>Targeted AI Editor</span>
+                    <span style="font-size: 10px; background: rgba(16, 185, 129, 0.2); color: #10b981; padding: 2px 6px; border-radius: 10px; font-weight: 600;">Gemini 2.5 Flash</span>
+                  </div>
+
+                  <div style="display: flex; gap: 4px; flex-wrap: wrap;">
+                    <button class="trial-preset-chip" data-preset="glassmorphic" style="background: rgba(249, 115, 22, 0.15); color: #f97316; border: 1px solid rgba(249, 115, 22, 0.3); border-radius: 12px; padding: 3px 8px; font-size: 10px; font-weight: 600; cursor: pointer;">🥞 Glassmorphic</button>
+                    <button class="trial-preset-chip" data-preset="neon-glow" style="background: rgba(249, 115, 22, 0.15); color: #f97316; border: 1px solid rgba(249, 115, 22, 0.3); border-radius: 12px; padding: 3px 8px; font-size: 10px; font-weight: 600; cursor: pointer;">⚙ Neon Glow</button>
+                    <button class="trial-preset-chip" data-preset="hover-anim" style="background: rgba(249, 115, 22, 0.15); color: #f97316; border: 1px solid rgba(249, 115, 22, 0.3); border-radius: 12px; padding: 3px 8px; font-size: 10px; font-weight: 600; cursor: pointer;">⚡ Hover Anim</button>
+                    <button class="trial-preset-chip" data-preset="pill-shape" style="background: rgba(249, 115, 22, 0.15); color: #f97316; border: 1px solid rgba(249, 115, 22, 0.3); border-radius: 12px; padding: 3px 8px; font-size: 10px; font-weight: 600; cursor: pointer;">⊕ Pill Shape</button>
+                  </div>
+
+                  <textarea id="trial-uidesigner-prompt" style="width: 100%; background: #1e1e24; border: 1px solid #27272b; border-radius: 6px; padding: 6px 8px; color: #ececef; font-size: 10px; resize: none; height: 42px; font-family: inherit;" placeholder="Select a preset chip or type instructions..."></textarea>
+
+                  <button id="btn-trial-refine-ai" style="background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); color: #fff; border: none; padding: 7px; border-radius: 6px; font-size: 10px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 4px;">
+                    ✨ Refine Target Component with AI
+                  </button>
+
+                  <a href="HTML/ui-designer.html" class="btn-pill-secondary sm" style="text-align: center; text-decoration: none; padding: 5px; font-size: 10px; margin-top: auto; border-color: rgba(249, 115, 22, 0.3); color: #f97316;">
+                    Launch Full Standalone Tool &rarr;
+                  </a>
+                </div>
+
+              </div>
+            </div>
+          </div>
+
           <!-- TRIAL SIGN-IN UPGRADE MODAL OVERLAY -->
           <div class="trial-modal-overlay hidden" id="trial-upgrade-modal">
             <div class="trial-modal-card">
@@ -498,6 +572,9 @@
             </div>
             <div class="dock-item" data-app="student" title="Student Hub">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"></path><path d="M6 12v5c0 2 2 3 6 3s6-1 6-3v-5"></path></svg>
+            </div>
+            <div class="dock-item" data-app="uidesigner" title="UI Designer AI">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
             </div>
             <span class="dock-divider"></span>
             <a href="HTML/signup.html" class="dock-item" title="Register Account" style="text-decoration: none;">
@@ -580,6 +657,43 @@
                 <div class="preview-body" id="explorer-preview-body">
                   <p>Welcome to Global Notes! This document outlines your persistent offline knowledge base environment.</p>
                 </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Featured Card: Targeted UI Designer AI Engine -->
+          <div class="feature-card bento-wide glass-panel ui-designer-card" style="--card-index: 2;">
+            <div class="bento-content">
+              <div class="icon-box icon-accent">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+              </div>
+              <span class="badge-pill" style="margin-bottom: 12px; color: #ea580c; border-color: rgba(249, 115, 22, 0.3); background: rgba(249, 115, 22, 0.08);">
+                <span class="pulse-dot" style="background: #f97316;"></span>
+                <span>NEW FEATURE &bull; Targeted AI Component Editor</span>
+              </span>
+              <h3>Targeted UI Designer AI Engine</h3>
+              <p>Paste any web HTML code or import from Stitch/Figma. Click any element in the live visual preview to isolate its node tree and prompt AI to refine, transform into glassmorphic/neon surfaces, or add smooth micro-interactions in real-time.</p>
+              <div style="margin-top: 18px;">
+                <a href="#ui-designer-spotlight" class="btn-pill-primary sm" style="background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); color: #ffffff; text-decoration: none; box-shadow: 0 4px 14px rgba(249, 115, 22, 0.35);">
+                  Launch UI Designer AI &rarr;
+                </a>
+              </div>
+            </div>
+            <div class="bento-visual ui-designer-bento-visual">
+              <div class="ui-designer-visual-header">
+                <span class="target-tag">Target: &lt;button#cta-btn&gt; [node-22]</span>
+                <span class="status-active">
+                  <span class="status-dot"></span>
+                  AI Engine Active
+                </span>
+              </div>
+              <div class="ui-designer-chips-preview">
+                <span class="ui-designer-chip-badge">🥞 Glassmorphic</span>
+                <span class="ui-designer-chip-badge">⚙ Neon Glow</span>
+                <span class="ui-designer-chip-badge">⚡ Hover Animation</span>
+              </div>
+              <div class="ui-designer-code-box">
+                &lt;button class="btn-glassmorphic-orange"&gt;Get Started &rarr;&lt;/button&gt;
               </div>
             </div>
           </div>
@@ -718,6 +832,65 @@
       </div>
     </section>
 
+    <!-- UI Designer AI Spotlight Section -->
+    <section class="spotlight-section dark-spotlight" id="ui-designer-spotlight" style="background: linear-gradient(180deg, #111113 0%, #17171a 100%); padding: 80px 0; border-top: 1px solid #27272b; border-bottom: 1px solid #27272b;">
+      <div class="container grid-50-50 reverse-layout">
+        <div class="spotlight-visual scroll-reveal-left">
+          <div class="glowing-wrapper" style="box-shadow: 0 0 40px rgba(249, 115, 22, 0.25);">
+            <div class="browser-mockup-wrapper" style="border-color: rgba(249, 115, 22, 0.3);">
+              <div class="browser-mockup-header" style="background: #141416;">
+                <div class="browser-mockup-dots">
+                  <span class="dot close"></span>
+                  <span class="dot minimize"></span>
+                  <span class="dot expand"></span>
+                </div>
+                <div class="browser-mockup-address" style="color: #f97316; font-family: 'JetBrains Mono', monospace;">global-notes://workspace/ui-designer-ai</div>
+              </div>
+              
+              <!-- Live Interactive UI Designer Preview Card -->
+              <div style="background: #111113; padding: 24px; color: #ececef; font-family: 'Inter', sans-serif;">
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid #27272b;">
+                  <span style="font-weight: 700; font-size: 14px; color: #f97316; display: flex; align-items: center; gap: 8px;">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+                    Visual Component Inspector
+                  </span>
+                  <span style="font-size: 11px; background: rgba(16, 185, 129, 0.15); color: #10b981; padding: 2px 8px; border-radius: 12px; font-weight: 600;">Cheerio DOM Tagged</span>
+                </div>
+
+                <div style="background: rgba(255,255,255,0.03); border: 1px dashed #f97316; border-radius: 12px; padding: 20px; text-align: center; margin-bottom: 16px;">
+                  <div style="font-size: 11px; color: #f97316; font-family: monospace; margin-bottom: 8px; font-weight: 600;">Selected Target Node: &lt;div#feature-card&gt; [node-14]</div>
+                  <div style="background: linear-gradient(135deg, rgba(249, 115, 22, 0.2) 0%, rgba(234, 88, 12, 0.1) 100%); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(249, 115, 22, 0.4); border-radius: 16px; padding: 20px; box-shadow: 0 8px 32px rgba(0,0,0,0.4); color: #ffffff;">
+                    <h4 style="margin: 0 0 6px 0; font-size: 16px; font-weight: 700; color: #ffffff;">Refined Glassmorphic Component</h4>
+                    <p style="margin: 0; font-size: 12px; color: rgba(255,255,255,0.85);">Surgically edited via server-side Gemini 2.5 Flash / Groq LLM</p>
+                  </div>
+                </div>
+
+                <div style="display: flex; gap: 8px; justify-content: center;">
+                  <a href="HTML/ui-designer.html" class="btn-pill-primary sm" style="background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); padding: 8px 18px; text-decoration: none; box-shadow: 0 4px 14px rgba(249, 115, 22, 0.4);">Try Live UI Designer AI &rarr;</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="spotlight-text scroll-reveal-right">
+          <span class="eyebrow" style="color: #f97316;">NEW &bull; AI UI/UX ARCHITECT</span>
+          <h2>Targeted Component Redesign with Server-Side AI</h2>
+          <p>Import your web app design from Stitch or paste raw HTML. Select any element to isolate its node tree and prompt AI to refine, transform into glassmorphic/neon surfaces, or add smooth micro-interactions in real-time.</p>
+          <ul class="check-list">
+            <li><strong>1-Click HTML Import & Paste</strong> — Load designs from authenticated tools like Stitch with 100% fidelity</li>
+            <li><strong>Targeted Visual Element Inspector</strong> — Hover & click any button, card, or container to edit it in isolation</li>
+            <li><strong>Instant Styling Presets</strong> — Apply Glassmorphic, Neon Glow, Hover Animations, or Pill Shapes with 1 click</li>
+            <li><strong>Protected Server AI & Local Storage</strong> — Secure API keys on backend & auto-save work across browser refreshes</li>
+          </ul>
+          <a href="HTML/ui-designer.html" class="btn-pill-primary" style="background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); box-shadow: 0 4px 14px rgba(249, 115, 22, 0.4); text-decoration: none;">
+            <span>Open UI Designer AI</span>
+            <svg class="btn-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+          </a>
+        </div>
+      </div>
+    </section>
+
     <!-- Student Hub Spotlight Section -->
     <section class="spotlight-section dark-spotlight" id="student-spotlight">
       <div class="container grid-50-50 reverse-layout">
@@ -842,6 +1015,7 @@
           <ul>
             <li><a href="#features">Smart Editor</a></li>
             <li><a href="#code-spotlight">Code Workspace</a></li>
+            <li><a href="#ui-designer-spotlight">UI Designer AI</a></li>
             <li><a href="#student-spotlight">Student Hub</a></li>
           </ul>
         </div>

@@ -27,6 +27,11 @@ function createCustomSelect(select) {
     trigger.className = 'custom-select-trigger';
     trigger.tabIndex = 0;
 
+    // Prevent mousedown on trigger from stealing text selection/focus in editor
+    trigger.addEventListener('mousedown', (e) => {
+        e.preventDefault();
+    });
+
     const label = document.createElement('span');
     label.className = 'trigger-value';
     label.textContent = select.options[select.selectedIndex]?.text || '';
@@ -43,6 +48,12 @@ function createCustomSelect(select) {
     // Create menu (Global container to avoid clipping by overflow:auto or backdrop-filter)
     const menu = document.createElement('div');
     menu.className = 'custom-select-menu';
+
+    // Prevent mousedown on menu container from stealing focus
+    menu.addEventListener('mousedown', (e) => {
+        e.preventDefault();
+    });
+
     document.body.appendChild(menu);
 
     // Sync options
@@ -115,13 +126,17 @@ function updateMenuOptions(select, menu, label) {
         item.textContent = option.text;
         item.dataset.value = option.value;
 
+        item.addEventListener('mousedown', (e) => {
+            e.preventDefault();
+        });
+
         item.addEventListener('click', (e) => {
             e.stopPropagation();
             select.value = option.value;
             select.dispatchEvent(new Event('change', { bubbles: true }));
 
             // UI Update
-            label.textContent = option.text;
+            label.textContent = select.options[select.selectedIndex]?.text || option.text;
 
             // Close
             menu.classList.remove('show');

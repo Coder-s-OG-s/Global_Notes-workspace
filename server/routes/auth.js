@@ -11,7 +11,7 @@ router.get('/google', passport.authenticate('google', { scope: ['profile', 'emai
 router.get('/google/callback', 
   passport.authenticate('google', { failureRedirect: '/HTML/signup.html' }),
   (req, res) => {
-    res.redirect('/HTML/ui-designer.html');
+    res.redirect('/app.html');
   }
 );
 
@@ -24,7 +24,7 @@ router.get('/github', passport.authenticate('github', { scope: ['user:email'] })
 router.get('/github/callback', 
   passport.authenticate('github', { failureRedirect: '/HTML/signup.html' }),
   (req, res) => {
-    res.redirect('/HTML/ui-designer.html');
+    res.redirect('/app.html');
   }
 );
 

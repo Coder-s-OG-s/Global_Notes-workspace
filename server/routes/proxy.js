@@ -9,6 +9,34 @@ try {
   puppeteer = null;
 }
 
+// Helper to detect forbidden internal/loopback/metadata URLs (SSRF Protection)
+function isForbiddenUrl(urlString) {
+  try {
+    const parsed = new URL(urlString);
+    const host = parsed.hostname.toLowerCase();
+    
+    if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:') return true;
+    
+    if (
+      host === 'localhost' ||
+      host === '127.0.0.1' ||
+      host === '0.0.0.0' ||
+      host === '::1' ||
+      host.endsWith('.local') ||
+      host.endsWith('.internal') ||
+      host.startsWith('169.254.') ||
+      host.startsWith('10.') ||
+      host.startsWith('192.168.') ||
+      (host.startsWith('172.') && parseInt(host.split('.')[1], 10) >= 16 && parseInt(host.split('.')[1], 10) <= 31)
+    ) {
+      return true;
+    }
+    return false;
+  } catch {
+    return true;
+  }
+}
+
 // Route to fetch external URL, rewrite relative links, tag DOM elements with data-element-id, and inject inspector bridge
 router.post('/fetch-url', async (req, res) => {
   try {
@@ -22,6 +50,11 @@ router.post('/fetch-url', async (req, res) => {
       if (!url.startsWith('http://') && !url.startsWith('https://')) {
         url = 'https://' + url;
       }
+
+      if (isForbiddenUrl(url)) {
+        return res.status(400).json({ error: 'Access to internal or restricted network URLs is forbidden.' });
+      }
+
       const parsedUrl = new URL(url);
       targetOrigin = parsedUrl.origin;
 

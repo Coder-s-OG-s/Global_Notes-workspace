@@ -70,15 +70,19 @@ export function wireAutoSave(state, callbacks) {
         note.content = currentContent;
         note.updatedAt = new Date().toISOString();
 
-        // Persist to storage (async — errors handled inside persistNotes via toast)
-        callbacks.persistNotes();
+        // Save ONLY this target modified note to storage & cloud
+        if (typeof callbacks.saveSingleNote === "function") {
+          callbacks.saveSingleNote(note);
+        } else {
+          callbacks.persistNotes();
+        }
 
         // Update sidebar to show new time/preview
         callbacks.renderNotesList();
     };
 
-    // Create a debounced version of the save function (e.g., 2 seconds)
-    const debouncedSave = debounce(performAutoSave, 2000);
+    // Create a debounced version of the save function (3 seconds)
+    const debouncedSave = debounce(performAutoSave, 3000);
 
     // Attach listeners
     titleInput.addEventListener("input", debouncedSave);

@@ -5057,3 +5057,96 @@ body.student-engine-active .mini-note-item.active {
     grid-template-columns: 1fr !important;
   }
 }
+
+/* ==========================================
+   UI DESIGNER BENTO CARD STYLING (REDESIGNED)
+   ========================================== */
+.feature-card.ui-designer-card {
+  border: 1px solid rgba(249, 115, 22, 0.25);
+  background: var(--bg-card);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.feature-card.ui-designer-card:hover {
+  border-color: rgba(249, 115, 22, 0.5);
+  box-shadow: 0 12px 36px rgba(249, 115, 22, 0.12);
+}
+
+.ui-designer-bento-visual {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 18px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-glass);
+  border-radius: 16px;
+  box-shadow: var(--shadow-sm);
+  width: 100%;
+}
+
+.ui-designer-visual-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.ui-designer-visual-header .target-tag {
+  font-family: var(--ff-mono);
+  color: #ea580c;
+  background: rgba(249, 115, 22, 0.1);
+  padding: 3px 8px;
+  border-radius: 6px;
+  border: 1px solid rgba(249, 115, 22, 0.2);
+}
+
+.ui-designer-visual-header .status-active {
+  color: #10b981;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.ui-designer-visual-header .status-dot {
+  width: 7px;
+  height: 7px;
+  background: #10b981;
+  border-radius: 50%;
+  box-shadow: 0 0 8px rgba(16, 185, 129, 0.6);
+}
+
+.ui-designer-chips-preview {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.ui-designer-chip-badge {
+  padding: 5px 12px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  background: rgba(249, 115, 22, 0.1);
+  color: #ea580c;
+  border: 1px solid rgba(249, 115, 22, 0.25);
+  border-radius: 20px;
+  transition: all 0.2s ease;
+}
+
+.ui-designer-chip-badge:hover {
+  background: rgba(249, 115, 22, 0.2);
+  transform: translateY(-1px);
+}
+
+.ui-designer-code-box {
+  font-family: var(--ff-mono);
+  font-size: 0.78rem;
+  background: #111113;
+  color: #38bdf8;
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid #27272b;
+  overflow-x: auto;
+  white-space: nowrap;
+}
