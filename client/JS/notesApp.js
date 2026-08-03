@@ -1,5 +1,5 @@
 import { getActiveUser, setActiveUser, clearActiveUser, mergeGuestNotes } from "./storage.js";
-import { loadNotesForCurrentUser, ensureAtLeastOneNote, persistNotes } from "./noteManager.js";
+import { loadNotesForCurrentUser, ensureAtLeastOneNote, persistNotes, saveSingleNote } from "./noteManager.js";
 import { getFolders, saveFolders, syncFoldersFromCloud } from "./folderManager.js";
 import { renderNotesList, renderActiveNote, updateUserDisplay, renderFolders, updateToolbarMetadata, renderNotesDashboard, renderDashboardSkeletons } from "./renderer.js";
 import { wireFiltersAndSearch, wireSort, wireTagInput, wireCrudButtons, wireFolderButtons, wireThemeSelector, syncThemeSelector, wireEditorPatternSelector, syncEditorPatternSelector, wireDropdowns, wireLibraryNav } from "./eventHandlers.js";
@@ -133,6 +133,9 @@ const callbacks = {
   // Saves all notes to storage
   persistNotes: async () => {
     await persistNotes(state.activeUser, state.notes);
+  },
+  saveSingleNote: async (note) => {
+    await saveSingleNote(state.activeUser, note || state.notes.find((n) => n.id === state.activeNoteId));
   },
   getActiveNoteId: () => state.activeNoteId,
   renderDashboardSkeletons: () => renderDashboardSkeletons(state.activeFolderId, state.activeLibraryFilter),

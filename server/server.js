@@ -2,7 +2,7 @@ require('dotenv').config();
 const path = require('path');
 const fs = require('fs');
 
-// Dynamically generate client/JS/config.js on startup to ensure front-end parity with local .env keys
+// Dynamically generate client/JS/config.js on startup for front-end public keys ONLY
 try {
   const configContent = `const config = {
     APPWRITE_ENDPOINT: '${process.env.APPWRITE_ENDPOINT || "https://cloud.appwrite.io/v1"}',
@@ -13,9 +13,7 @@ try {
     APPWRITE_PROFILES_COLLECTION_ID: '${process.env.APPWRITE_PROFILES_COLLECTION_ID || "profiles"}',
     APPWRITE_SHARED_NOTES_COLLECTION_ID: '${process.env.APPWRITE_SHARED_NOTES_COLLECTION_ID || "shared_notes"}',
     SUPABASE_URL: '${process.env.SUPABASE_URL || ""}',
-    SUPABASE_ANON_KEY: '${process.env.SUPABASE_ANON_KEY || ""}',
-    GROQ_API_KEY: '${process.env.GROQ_API_KEY || ""}',
-    GEMINI_API_KEY: '${process.env.GEMINI_API_KEY || ""}'
+    SUPABASE_ANON_KEY: '${process.env.SUPABASE_ANON_KEY || ""}'
 };
 
 export default config;`;
@@ -38,8 +36,10 @@ const morgan = require('morgan');
 const session = require('express-session');
 const MongoStore = require('connect-mongo');
 const passport = require('passport');
+const rateLimit = require('express-rate-limit');
 
 const app = express();
+app.disable('x-powered-by');
 app.enable('trust proxy');
 const PORT = process.env.PORT || 3000;
 
@@ -50,12 +50,40 @@ mongoose.connect(process.env.MONGODB_URI)
 
 // Middleware
 app.use(helmet({
-  contentSecurityPolicy: false, // Disabled for development simplicity
+  contentSecurityPolicy: false, // Disabled for local development
+  crossOriginEmbedderPolicy: false,
+  dnsPrefetchControl: { allow: false },
+  frameguard: { action: 'sameorigin' },
+  hidePoweredBy: true,
+  hsts: { maxAge: 31536000, includeSubDomains: true },
+  ieNoOpen: true,
+  noSniff: true,
+  xssFilter: true,
 }));
 app.use(cors());
 app.use(morgan('dev'));
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+
+// Rate Limiting Security
+const apiLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 300,
+  message: { error: 'Too many requests from this IP, please try again later.' },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 30,
+  message: { error: 'Too many authentication attempts, please try again later.' },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+app.use('/api/', apiLimiter);
+app.use('/api/auth/', authLimiter);
 
 // Sessions
 app.use(session({

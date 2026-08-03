@@ -74,48 +74,58 @@ export async function getNotes(username) {
 
 /**
  * SET NOTES
- * HYBRID: Saves to LocalStorage immediately, then syncs to MongoDB.
+ * Saves to LocalStorage immediately.
  */
 export async function setNotes(username, notes) {
   try {
-    // 1. Save to LocalStorage first (Offline-First)
     localStorage.setItem(storageKeyForUser(username), JSON.stringify(notes));
+  } catch (err) {
+    showToast("Failed to save notes locally", "warning");
+  }
+}
 
-    // 2. If authenticated, Sync to MongoDB
-    if (username && username !== 'guest') {
-      const syncPromises = notes.map(async (note) => {
-        // If the note has a MongoDB _id, it's an update (PUT)
-        const method = note._id ? 'PUT' : 'POST';
-        const url = note._id ? `/api/notes/${note._id}` : '/api/notes';
-        
-        return fetch(url, {
-          method,
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(note)
-        });
+/**
+ * SAVE SINGLE NOTE
+ * Syncs ONLY the specific modified note to cloud storage & local storage.
+ * Prevents mass network requests, data leakage, and bandwidth flooding.
+ */
+export async function saveSingleNote(username, note) {
+  if (!note) return;
+  try {
+    const userKey = storageKeyForUser(username);
+    const localData = localStorage.getItem(userKey);
+    let notes = localData ? JSON.parse(localData) : [];
+
+    const idx = notes.findIndex((n) => n.id === note.id || (note._id && n._id === note._id));
+    if (idx !== -1) {
+      notes[idx] = { ...notes[idx], ...note };
+    } else {
+      notes.unshift(note);
+    }
+    localStorage.setItem(userKey, JSON.stringify(notes));
+
+    // Sync ONLY this single note to MongoDB if authenticated
+    if (username && username !== "guest") {
+      const method = note._id ? "PUT" : "POST";
+      const url = note._id ? `/api/notes/${note._id}` : "/api/notes";
+
+      const res = await fetch(url, {
+        method,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(note),
       });
-      
-      const results = await Promise.allSettled(syncPromises);
-      
-      // Update local storage with the _ids returned by the server for new notes
-      let storageUpdated = false;
-      for (let i = 0; i < results.length; i++) {
-        const res = results[i];
-        if (res.status === 'fulfilled' && res.value.ok) {
-          const serverNote = await res.value.json();
-          if (serverNote._id && !notes[i]._id) {
-            notes[i]._id = serverNote._id;
-            storageUpdated = true;
-          }
-        }
-      }
 
-      if (storageUpdated) {
-        localStorage.setItem(storageKeyForUser(username), JSON.stringify(notes));
+      if (res.ok) {
+        const serverNote = await res.json();
+        if (serverNote._id && !note._id) {
+          note._id = serverNote._id;
+          if (idx !== -1) notes[idx]._id = serverNote._id;
+          localStorage.setItem(userKey, JSON.stringify(notes));
+        }
       }
     }
   } catch (err) {
-    showToast("Failed to sync with cloud", "warning");
+    console.error("Cloud sync error for single note:", err);
   }
 }
 

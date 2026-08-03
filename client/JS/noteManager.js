@@ -1,4 +1,9 @@
-import { setNotes, getNotes as getStoredNotes } from "./storage.js";
+import { setNotes, saveSingleNote as syncSingleNote, getNotes as getStoredNotes } from "./storage.js";
+
+// Saves a single note to cloud and local storage without mass payload sync
+export async function saveSingleNote(activeUser, note) {
+  await syncSingleNote(activeUser, note);
+}
 
 // Creates a new note object with default values and a unique ID
 export function createNote(partial = {}) {

@@ -155,23 +155,17 @@ function printNotes(notes) {
     return;
   }
 
+  const origin = window.location.origin;
+
   printWindow.document.write(`
+    <!DOCTYPE html>
     <html>
       <head>
-        <title>Global Notes - Premium Export</title>
-        <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+        <meta charset="utf-8">
+        <title>${escapeHtml(notes[0]?.title || "Global Notes Export")}</title>
+        <base href="${origin}/">
+        <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
         <style>
-          @page { 
-            size: A4; 
-            margin: 20mm;
-            @bottom-right {
-              content: "Page " counter(page) " of " counter(pages);
-              font-family: 'Inter', sans-serif;
-              font-size: 9pt;
-              color: #999;
-            }
-          }
-          
           :root {
             --primary-charcoal: #1e293b;
             --secondary-slate: #64748b;
@@ -179,13 +173,19 @@ function printNotes(notes) {
             --border-light: #e2e8f0;
           }
 
+          * {
+            box-sizing: border-box;
+          }
+
           body { 
-            font-family: 'Inter', system-ui, sans-serif; 
+            font-family: 'Inter', system-ui, -apple-system, sans-serif; 
             background: #fff;
             color: var(--primary-charcoal);
             line-height: 1.6;
             margin: 0;
             padding: 30px;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
           }
 
           /* Premium Branding Header */
@@ -195,7 +195,7 @@ function printNotes(notes) {
             align-items: center;
             border-bottom: 2px solid var(--primary-charcoal);
             padding-bottom: 15px;
-            margin-bottom: 40px;
+            margin-bottom: 30px;
           }
           .brand-logo {
             font-family: 'Outfit', sans-serif;
@@ -203,6 +203,9 @@ function printNotes(notes) {
             font-size: 18pt;
             letter-spacing: -0.5px;
             color: var(--primary-charcoal);
+            display: flex;
+            align-items: center;
+            gap: 10px;
           }
           .brand-logo span { color: var(--accent-blue); }
           .doc-type {
@@ -216,20 +219,20 @@ function printNotes(notes) {
           /* Document Title & Metadata */
           .document-title {
             font-family: 'Outfit', sans-serif;
-            font-size: 32pt;
+            font-size: 28pt;
             font-weight: 700;
-            margin: 0 0 20px 0;
-            line-height: 1.1;
+            margin: 0 0 16px 0;
+            line-height: 1.15;
             color: var(--primary-charcoal);
           }
           .document-metadata {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 20px;
-            padding: 20px 0;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 16px;
+            padding: 16px 0;
             border-top: 1px solid var(--border-light);
             border-bottom: 1px solid var(--border-light);
-            margin-bottom: 40px;
+            margin-bottom: 30px;
           }
           .meta-col { display: flex; flex-direction: column; }
           .meta-label { 
@@ -240,86 +243,98 @@ function printNotes(notes) {
             margin-bottom: 4px;
             letter-spacing: 0.5px;
           }
-          .meta-value { font-size: 10pt; font-weight: 500; }
+          .meta-value { font-size: 9.5pt; font-weight: 500; }
 
           /* Content Styling */
           .note-print-content { 
-            font-size: 11.5pt; 
+            font-size: 11pt; 
             color: #334155;
           }
           .note-print-content h1, .note-print-content h2, .note-print-content h3 {
             font-family: 'Outfit', sans-serif;
             color: var(--primary-charcoal);
-            margin-top: 30px;
+            margin-top: 24px;
             margin-bottom: 10px;
+            page-break-after: avoid;
           }
-          .note-print-content h1 { font-size: 20pt; }
-          .note-print-content h2 { font-size: 16pt; }
-          .note-print-content h3 { font-size: 14pt; }
+          .note-print-content h1 { font-size: 18pt; }
+          .note-print-content h2 { font-size: 15pt; }
+          .note-print-content h3 { font-size: 13pt; }
           
-          .note-print-content p { margin-bottom: 16px; font-size: 11pt; }
+          .note-print-content p { margin-bottom: 14px; font-size: 10.5pt; }
           
           .note-print-content ul, .note-print-content ol { 
-            margin-bottom: 16px; 
+            margin-bottom: 14px; 
             padding-left: 1.5rem;
           }
-          .note-print-content li { margin-bottom: 8px; font-size: 11pt; }
+          .note-print-content li { margin-bottom: 6px; font-size: 10.5pt; }
           
-          .note-print-wrapper { page-break-after: always; }
-          .note-print-wrapper:last-child { page-break-after: auto; }
+          .note-print-wrapper { 
+            page-break-after: always;
+            break-after: page;
+          }
+          .note-print-wrapper:last-of-type, .note-print-wrapper:last-child { 
+            page-break-after: avoid !important; 
+            break-after: avoid !important; 
+          }
 
           img, video { 
             max-width: 100%; 
             height: auto; 
             border-radius: 8px; 
             display: block; 
-            margin: 25px 0; 
+            margin: 20px 0; 
             border: 1px solid var(--border-light);
+            page-break-inside: avoid;
+            break-inside: avoid;
           }
           pre { 
             background: #f8fafc; 
-            padding: 20px; 
+            padding: 16px; 
             border-radius: 8px; 
             border-left: 4px solid var(--accent-blue);
             font-family: 'Consolas', monospace; 
-            font-size: 10pt; 
-            margin: 20px 0;
+            font-size: 9.5pt; 
+            margin: 16px 0;
             white-space: pre-wrap;
+            word-break: break-word;
+            page-break-inside: avoid;
+            break-inside: avoid;
           }
           code { font-family: monospace; background: #eff6ff; color: var(--accent-blue); padding: 2px 6px; border-radius: 4px; }
           
           blockquote {
             border-left: 4px solid var(--border-light);
-            padding-left: 20px;
-            margin: 20px 0;
+            padding-left: 16px;
+            margin: 16px 0;
             font-style: italic;
             color: var(--secondary-slate);
+            page-break-inside: avoid;
+            break-inside: avoid;
           }
 
-          @media print {
-            body { padding: 0; }
-            .no-print { display: none; }
-            .document-header { margin-top: 0; }
-          }
-          
           .footer {
-            margin-top: 80px;
-            padding-top: 20px;
+            margin-top: 24px;
+            padding-top: 12px;
             border-top: 1px solid var(--border-light);
             display: flex;
             justify-content: space-between;
             align-items: center;
+            page-break-before: avoid !important;
+            break-before: avoid !important;
+            page-break-inside: avoid !important;
+            break-inside: avoid !important;
           }
           .footer-text { font-size: 8pt; color: var(--secondary-slate); }
-          .page-counter:after { content: "Page " counter(page); font-size: 8pt; color: var(--secondary-slate); }
           
-          /* Print Buttons */
+          /* Floating Screen-Only Controls */
           .print-controls {
             position: fixed;
             bottom: 30px;
             right: 30px;
             display: flex;
             gap: 12px;
+            z-index: 9999;
           }
           .btn-print {
             padding: 12px 24px;
@@ -338,6 +353,31 @@ function printNotes(notes) {
             font-family: 'Outfit', sans-serif;
           }
           .btn-print:hover { transform: translateY(-2px); background: #000; }
+
+          /* PRINT MEDIA OVERRIDES - CRITICAL FIX */
+          @page { 
+            size: A4; 
+            margin: 15mm 15mm 20mm 15mm;
+          }
+
+          @media print {
+            body { 
+              padding: 0 !important; 
+              margin: 0 !important;
+              background: #fff !important;
+            }
+            .no-print, .print-controls { 
+              display: none !important; 
+              visibility: hidden !important;
+              opacity: 0 !important;
+              height: 0 !important;
+              width: 0 !important;
+              overflow: hidden !important;
+            }
+            .document-header { 
+              margin-top: 0 !important; 
+            }
+          }
         </style>
       </head>
       <body>
@@ -349,20 +389,28 @@ function printNotes(notes) {
         </div>
 
         <div class="document-header">
-          <div class="brand-logo" style="display:flex;align-items:center;gap:10px;"><img src="assets/images/logo_workspace.png" alt="Global Notes" style="height:32px;width:auto;object-fit:contain;background:#fff;padding:2px 6px;border-radius:6px;" /> Global Notes <span>Workspace</span></div>
+          <div class="brand-logo"><img src="assets/images/logo_workspace.png" alt="Global Notes" style="height:32px;width:auto;object-fit:contain;background:#fff;padding:2px 6px;border-radius:6px;" /> Global Notes <span>Workspace</span></div>
           <div class="doc-type">Intelligence Report</div>
         </div>
 
         ${printContent}
 
-        <div class="footer no-print">
+        <div class="footer">
           <div class="footer-text">Verified Document &bull; ${new Date().toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })}</div>
-          <div class="page-counter"></div>
+          <div class="footer-text">Global Notes Workspace</div>
         </div>
       </body>
     </html>
   `);
   printWindow.document.close();
+  printWindow.focus();
+  setTimeout(() => {
+    try {
+      printWindow.print();
+    } catch (e) {
+      console.warn("Auto-print triggered block:", e);
+    }
+  }, 400);
 }
 
 // Sets up event listeners for import/export functionality

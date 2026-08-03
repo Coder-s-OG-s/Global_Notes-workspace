@@ -663,16 +663,74 @@ document.addEventListener('DOMContentLoaded', () => {
     dockItems.forEach(btn => {
         btn.addEventListener('click', () => {
             const targetApp = btn.getAttribute('data-app');
-            if (targetApp) switchTab(targetApp);
+            if (targetApp && ['notes', 'code', 'student', 'uidesigner'].includes(targetApp)) {
+                switchTab(targetApp);
+            }
         });
     });
 
     desktopIcons.forEach(icon => {
-        icon.addEventListener('click', () => {
+        icon.addEventListener('click', (e) => {
             const targetApp = icon.getAttribute('data-app');
-            if (targetApp) switchTab(targetApp);
+            if (targetApp && ['notes', 'code', 'student', 'uidesigner'].includes(targetApp)) {
+                e.preventDefault();
+                switchTab(targetApp);
+            }
         });
     });
+
+    // ==========================================
+    // 2B. TRIAL UI DESIGNER INTERACTIVE PRESETS
+    // ==========================================
+    const trialPreviewCard = document.getElementById('trial-uidesigner-preview-card');
+    const trialBtn = document.getElementById('trial-uidesigner-btn');
+    const trialPromptInput = document.getElementById('trial-uidesigner-prompt');
+    const trialRefineBtn = document.getElementById('btn-trial-refine-ai');
+    const trialChips = document.querySelectorAll('.trial-preset-chip');
+
+    if (trialPreviewCard) {
+        const applyTrialPreset = (preset) => {
+            if (preset === 'glassmorphic') {
+                trialPreviewCard.style.background = 'rgba(255, 255, 255, 0.12)';
+                trialPreviewCard.style.backdropFilter = 'blur(16px)';
+                trialPreviewCard.style.webkitBackdropFilter = 'blur(16px)';
+                trialPreviewCard.style.border = '1px solid rgba(255, 255, 255, 0.3)';
+                trialPreviewCard.style.boxShadow = '0 8px 32px rgba(0, 0, 0, 0.5)';
+            } else if (preset === 'neon-glow') {
+                trialPreviewCard.style.background = '#431407';
+                trialPreviewCard.style.border = '2px solid #f97316';
+                trialPreviewCard.style.boxShadow = '0 0 20px rgba(249, 115, 22, 0.8), inset 0 0 15px rgba(249, 115, 22, 0.3)';
+            } else if (preset === 'hover-anim') {
+                trialPreviewCard.style.transform = 'scale(1.04) translateY(-4px)';
+                trialPreviewCard.style.boxShadow = '0 20px 25px -5px rgba(0,0,0,0.5)';
+                setTimeout(() => {
+                    trialPreviewCard.style.transform = 'scale(1) translateY(0)';
+                }, 1000);
+            } else if (preset === 'pill-shape' && trialBtn) {
+                trialBtn.style.borderRadius = '9999px';
+                trialBtn.style.padding = '8px 24px';
+                trialBtn.style.background = 'linear-gradient(135deg, #f97316 0%, #ea580c 100%)';
+            }
+        };
+
+        trialChips.forEach(chip => {
+            chip.addEventListener('click', () => {
+                const preset = chip.getAttribute('data-preset');
+                if (trialPromptInput) trialPromptInput.value = `Apply ${preset} styling to target component`;
+                applyTrialPreset(preset);
+            });
+        });
+
+        if (trialRefineBtn) {
+            trialRefineBtn.addEventListener('click', () => {
+                const text = (trialPromptInput ? trialPromptInput.value.toLowerCase() : '');
+                if (text.includes('neon')) applyTrialPreset('neon-glow');
+                else if (text.includes('pill')) applyTrialPreset('pill-shape');
+                else if (text.includes('hover') || text.includes('anim')) applyTrialPreset('hover-anim');
+                else applyTrialPreset('glassmorphic');
+            });
+        }
+    }
 
     // Close and minimize buttons
     const winCloseButtons = document.querySelectorAll('.window-controls .dot-close, .window-controls .dot-minimize');
