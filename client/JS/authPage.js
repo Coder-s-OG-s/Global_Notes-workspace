@@ -1,14 +1,26 @@
 import { setActiveUser } from "./storage.js";
 import { signInWithProvider } from "./authService.js";
-import config from "./config.js";
 
-function initAuthPage() {
+async function initAuthPage() {
   // Set flag to indicate module has loaded
   window._authPageInitialized = true;
 
   const messageEl = document.getElementById("auth-message");
   let turnstileToken = "";
   let turnstileWidgetId = null;
+
+  let appConfig = {
+    TURNSTILE_SITE_KEY: "0x4AAAAAAEQyiKm40gWQ6_Gx"
+  };
+
+  try {
+    const configModule = await import("./config.js");
+    if (configModule && configModule.default) {
+      appConfig = { ...appConfig, ...configModule.default };
+    }
+  } catch (err) {
+    console.warn("Notice: config.js not found or ignored. Using production fallback config.", err);
+  }
 
   // Displays a message to the user with optional type (info/error/success)
   const setMessage = (text, type = "info") => {
@@ -18,7 +30,7 @@ function initAuthPage() {
   };
 
   // --- Turnstile Setup ---
-  const siteKey = config?.TURNSTILE_SITE_KEY || "1x00000000000000000000AA";
+  const siteKey = appConfig.TURNSTILE_SITE_KEY || "0x4AAAAAAEQyiKm40gWQ6_Gx";
   const turnstileContainer = document.getElementById("turnstile-container");
 
   const renderTurnstile = () => {
