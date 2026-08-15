@@ -44,16 +44,11 @@ export function applyTheme(theme) {
   if (selector) {
     selector.value = normalized;
   }
-  // Handle visibility of the 'Note Card Theme' selector (only relevant for light themes)
+  // Note Card Theme selector is always available
   const noteThemeSelect = document.querySelector("#note-theme");
   if (noteThemeSelect) {
-    const isDark = normalized === "amoled-dark" || normalized === "corporate-gray";
-    // Target ONLY the note-theme custom wrapper or the select itself
     const target = noteThemeSelect.closest(".custom-select-wrapper") || noteThemeSelect;
-
-    if (target) {
-      target.classList.toggle("hidden", isDark);
-    }
+    if (target) target.classList.remove("hidden");
   }
 
   // Synchronize icons for quick-toggle if button exists

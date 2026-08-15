@@ -1,6 +1,38 @@
-/**
- * utility to transform native selects into polished custom dropdowns
- */
+function getOptionIcon(selectId, optionValue) {
+    if (selectId === 'insert-action') {
+        return `<svg class="select-option-icon" viewBox="0 0 24 24" fill="none" stroke="#6366f1" stroke-width="2.2" style="width:13px;height:13px;margin-right:6px;flex-shrink:0;"><path d="M12 5v14M5 12h14"></path></svg>`;
+    }
+    if (selectId === 'note-theme') {
+        const themeColors = {
+            'sunset-orange': '#f97316',
+            'classic-blue': '#3b82f6',
+            'elegant-purple': '#a855f7',
+            'forest-green': '#22c55e',
+            'ocean-teal': '#14b8a6',
+            'rose-gold': '#f43f5e',
+            'slate-gray': '#64748b',
+            'crimson-red': '#ef4444'
+        };
+        const color = themeColors[optionValue] || '#6366f1';
+        return `<span class="theme-color-dot" style="display:inline-block;width:9px;height:9px;border-radius:50%;background:${color};margin-right:6px;box-shadow: 0 0 0 1px rgba(0,0,0,0.15);flex-shrink:0;"></span>`;
+    }
+    if (selectId === 'editor-pattern') {
+        return `<svg class="select-option-icon" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2" style="width:13px;height:13px;margin-right:6px;flex-shrink:0;"><rect x="3" y="3" width="18" height="18" rx="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="3" y1="15" x2="21" y2="15"></line></svg>`;
+    }
+    return '';
+}
+
+function updateLabelContent(select, label) {
+    const selectedOption = select.options[select.selectedIndex];
+    const text = selectedOption?.text || '';
+    const val = selectedOption?.value || '';
+    const icon = getOptionIcon(select.id, val);
+    if (icon) {
+        label.innerHTML = `${icon}<span class="label-text-span">${text}</span>`;
+    } else {
+        label.textContent = text;
+    }
+}
 
 export function upgradeToolbarSelects() {
     const selects = document.querySelectorAll('.editor-toolbar select.tiny, .editor-toolbar .select.tiny, .sort-select-dashboard');
@@ -34,7 +66,7 @@ function createCustomSelect(select) {
 
     const label = document.createElement('span');
     label.className = 'trigger-value';
-    label.textContent = select.options[select.selectedIndex]?.text || '';
+    updateLabelContent(select, label);
 
     const chevron = `
         <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
@@ -71,6 +103,8 @@ function createCustomSelect(select) {
         menu.style.top = `${rect.bottom + 6}px`;
         menu.style.left = `${rect.left}px`;
         menu.style.width = `${Math.max(rect.width, 140)}px`;
+        menu.style.maxHeight = '280px';
+        menu.style.overflowY = 'auto';
     };
 
     // Toggle menu
@@ -106,7 +140,7 @@ function createCustomSelect(select) {
 
     // Sync selection back to original select
     select.addEventListener('change', () => {
-        label.textContent = select.options[select.selectedIndex]?.text || '';
+        updateLabelContent(select, label);
         updateMenuOptions(select, menu, label);
     });
 
@@ -123,7 +157,16 @@ function updateMenuOptions(select, menu, label) {
         item.className = 'custom-select-option';
         if (index === select.selectedIndex) item.classList.add('selected');
 
-        item.textContent = option.text;
+        if (select.id === 'font-family-select' && option.value) {
+            item.style.fontFamily = option.value;
+        }
+
+        const icon = getOptionIcon(select.id, option.value);
+        if (icon) {
+            item.innerHTML = `${icon}<span>${option.text}</span>`;
+        } else {
+            item.textContent = option.text;
+        }
         item.dataset.value = option.value;
 
         item.addEventListener('mousedown', (e) => {
@@ -136,7 +179,7 @@ function updateMenuOptions(select, menu, label) {
             select.dispatchEvent(new Event('change', { bubbles: true }));
 
             // UI Update
-            label.textContent = select.options[select.selectedIndex]?.text || option.text;
+            updateLabelContent(select, label);
 
             // Close
             menu.classList.remove('show');
