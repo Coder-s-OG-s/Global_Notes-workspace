@@ -36,6 +36,12 @@ const configPath = path.join(jsDir, 'config.js');
 try {
     fs.writeFileSync(configPath, configContent);
     console.log('Successfully generated client/JS/config.js');
+
+    const publicJsDir = path.join(__dirname, 'public', 'JS');
+    if (fs.existsSync(publicJsDir)) {
+        fs.writeFileSync(path.join(publicJsDir, 'config.js'), configContent);
+        console.log('Successfully generated public/JS/config.js');
+    }
 } catch (error) {
     console.error('Error generating configuration:', error);
     process.exit(1);

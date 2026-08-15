@@ -23,7 +23,12 @@ export default config;`;
     fs.mkdirSync(clientJsDir, { recursive: true });
   }
   fs.writeFileSync(path.join(clientJsDir, 'config.js'), configContent);
-  console.log('Successfully generated client/JS/config.js on server startup.');
+
+  const publicJsDir = path.join(__dirname, '../public/JS');
+  if (fs.existsSync(publicJsDir)) {
+    fs.writeFileSync(path.join(publicJsDir, 'config.js'), configContent);
+  }
+  console.log('Successfully generated client/JS/config.js and public/JS/config.js on server startup.');
 } catch (err) {
   console.error('Failed to generate client/JS/config.js on server startup:', err.message);
 }
