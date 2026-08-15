@@ -70,7 +70,8 @@ const configContent = `const config = {
     APPWRITE_SHARED_NOTES_COLLECTION_ID: '${process.env.APPWRITE_SHARED_NOTES_COLLECTION_ID || "shared_notes"}',
     SUPABASE_URL: '${process.env.SUPABASE_URL || ""}',
     SUPABASE_ANON_KEY: '${process.env.SUPABASE_ANON_KEY || ""}',
-    GROQ_API_KEY: '${process.env.GROQ_API_KEY || ""}'
+    GROQ_API_KEY: '${process.env.GROQ_API_KEY || ""}',
+    TURNSTILE_SITE_KEY: '${process.env.TURNSTILE_SITE_KEY || "1x00000000000000000000AA"}'
 };
 
 export default config;

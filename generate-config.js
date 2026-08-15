@@ -19,10 +19,12 @@ const configContent = `const config = {
     APPWRITE_DATABASE_ID: '${process.env.APPWRITE_DATABASE_ID || ""}',
     SUPABASE_URL: '${process.env.SUPABASE_URL || ""}',
     SUPABASE_ANON_KEY: '${process.env.SUPABASE_ANON_KEY || ""}',
-    GROQ_API_KEY: '${process.env.GROQ_API_KEY || ""}'
+    GROQ_API_KEY: '${process.env.GROQ_API_KEY || ""}',
+    TURNSTILE_SITE_KEY: '${process.env.TURNSTILE_SITE_KEY || "1x00000000000000000000AA"}'
 };
 
 export default config;
+
 `;
 
 const jsDir = path.join(__dirname, 'client', 'JS');
@@ -34,6 +36,12 @@ const configPath = path.join(jsDir, 'config.js');
 try {
     fs.writeFileSync(configPath, configContent);
     console.log('Successfully generated client/JS/config.js');
+
+    const publicJsDir = path.join(__dirname, 'public', 'JS');
+    if (fs.existsSync(publicJsDir)) {
+        fs.writeFileSync(path.join(publicJsDir, 'config.js'), configContent);
+        console.log('Successfully generated public/JS/config.js');
+    }
 } catch (error) {
     console.error('Error generating configuration:', error);
     process.exit(1);

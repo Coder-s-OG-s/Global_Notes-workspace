@@ -1,3 +1,5 @@
+import { createColorPalettePopover } from "./colorPalette.js";
+
 const $ = (selector) => document.querySelector(selector);
 
 // Inserts HTML content at the current cursor position in the content editable area
@@ -59,35 +61,21 @@ export function wireFormattingToolbar() {
   }
 
   function withRestoredSelection(runCommand) {
-    const selection = window.getSelection();
-    const hasLiveEditorSelection = selection && selection.rangeCount > 0 && isRangeInsideEditor(selection.getRangeAt(0));
-    if (!hasLiveEditorSelection) {
-      contentEl.focus({ preventScroll: true });
+    contentEl.focus({ preventScroll: true });
+    if (savedRange) {
       restoreSelection();
     }
     try {
       runCommand();
-      saveSelection();
     } catch (error) {
       console.error("Formatting command failed:", error);
     }
+    saveSelection();
   }
 
   contentEl.addEventListener("mouseup", saveSelection);
   contentEl.addEventListener("keyup", saveSelection);
   contentEl.addEventListener("input", saveSelection);
-
-  // Custom select UI renders outside native <select>; capture selection before clicks.
-  document.addEventListener("mousedown", (event) => {
-    const target = event.target;
-    if (!(target instanceof Element)) return;
-    if (
-      target.closest(".custom-select-trigger") ||
-      target.closest(".custom-select-option")
-    ) {
-      saveSelection();
-    }
-  });
 
   document.addEventListener("selectionchange", () => {
     const selection = window.getSelection();
@@ -202,6 +190,8 @@ export function wireFormattingToolbar() {
     { id: "#edit-italic", command: "italic" },
     { id: "#edit-underline", command: "underline" },
     { id: "#edit-strikethrough", command: "strikeThrough" },
+    { id: "#edit-subscript", command: "subscript" },
+    { id: "#edit-superscript", command: "superscript" },
     { id: "#align-left", command: "justifyLeft" },
     { id: "#align-center", command: "justifyCenter" },
     { id: "#align-right", command: "justifyRight" },
@@ -462,97 +452,186 @@ export function wireFormattingToolbar() {
   contentEl.addEventListener("mouseup", updateActiveStates);
   document.addEventListener("selectionchange", updateActiveStates);
 
-  // Font size stepper control
-  const fontSizeInput = $("#font-size-input");
-  const decreaseBtn = $("#decrease-font-size");
-  const increaseBtn = $("#increase-font-size");
-
-  if (fontSizeInput && decreaseBtn && increaseBtn) {
-    decreaseBtn.addEventListener("mousedown", (e) => e.preventDefault());
-    increaseBtn.addEventListener("mousedown", (e) => e.preventDefault());
-
-    const updateFontSize = (newSize) => {
-      // Keep size within bounds
-      const size = Math.min(100, Math.max(1, parseInt(newSize) || 15));
-      fontSizeInput.value = size;
-
-      const selection = window.getSelection();
-      const hasSelection = selection && selection.rangeCount > 0 && !selection.isCollapsed && isRangeInsideEditor(selection.getRangeAt(0));
-
-      if (hasSelection) {
-        // Apply font size ONLY to the selected text range
-        try {
-          document.execCommand("fontSize", false, "7");
-          const fontElements = contentEl.querySelectorAll("font[size='7']");
-          fontElements.forEach((fontEl) => {
-            fontEl.removeAttribute("size");
-            fontEl.style.fontSize = `${size}px`;
-          });
-        } catch (err) {
-          console.error("Failed to apply font size to selection:", err);
+  // Clipboard actions
+  const pasteBtn = $("#edit-paste-large");
+  if (pasteBtn) {
+    pasteBtn.addEventListener("click", async () => {
+      contentEl.focus({ preventScroll: true });
+      restoreSelection();
+      try {
+        const text = await navigator.clipboard.readText();
+        if (text) {
+          document.execCommand("insertText", false, text);
         }
-      } else {
-        // No selection active: update default editor container base font size
-        if (contentEl) {
-          contentEl.style.setProperty("--editor-font-size", `${size}px`);
-          contentEl.style.fontSize = `${size}px`;
-        }
-        try {
-          localStorage.setItem("notesWorkspace.textSize", size);
-        } catch (err) {
-          console.warn("Failed to save font size preference:", err);
-        }
+      } catch (err) {
+        document.execCommand("paste", false, null);
       }
-    };
+    });
+  }
 
-    // Load saved default size preference from localStorage
-    const savedSize = localStorage.getItem("notesWorkspace.textSize") || "15";
-    if (contentEl) {
-      contentEl.style.setProperty("--editor-font-size", `${savedSize}px`);
-      contentEl.style.fontSize = `${savedSize}px`;
+  const cutBtn = $("#edit-cut");
+  if (cutBtn) {
+    cutBtn.addEventListener("click", () => {
+      applyFormat("cut");
+    });
+  }
+
+  const copyBtn = $("#edit-copy");
+  if (copyBtn) {
+    copyBtn.addEventListener("click", () => {
+      applyFormat("copy");
+    });
+  }
+
+  // Format Painter (Copy & Paste Style)
+  let formatPainterStyle = null;
+  let isFormatPainterActive = false;
+  const formatPainterBtn = $("#format-painter");
+
+  if (formatPainterBtn) {
+    formatPainterBtn.addEventListener("click", () => {
+      const selection = window.getSelection();
+      if (!selection || selection.rangeCount === 0 || selection.isCollapsed) {
+        return;
+      }
+      const range = selection.getRangeAt(0);
+      let container = range.commonAncestorContainer;
+      if (container.nodeType === 3) container = container.parentNode;
+
+      const computed = window.getComputedStyle(container);
+      formatPainterStyle = {
+        fontFamily: computed.fontFamily,
+        color: computed.color,
+        fontWeight: computed.fontWeight,
+        fontStyle: computed.fontStyle,
+      };
+
+      isFormatPainterActive = true;
+      formatPainterBtn.classList.add("active");
+    });
+  }
+
+  contentEl.addEventListener("mouseup", () => {
+    saveSelection();
+    if (isFormatPainterActive && formatPainterStyle) {
+      const selection = window.getSelection();
+      if (selection && !selection.isCollapsed) {
+        try {
+          if (formatPainterStyle.fontFamily) document.execCommand("fontName", false, formatPainterStyle.fontFamily);
+          if (formatPainterStyle.color) document.execCommand("foreColor", false, formatPainterStyle.color);
+        } catch (e) {}
+        isFormatPainterActive = false;
+        if (formatPainterBtn) formatPainterBtn.classList.remove("active");
+      }
     }
+  });
 
-    // Increase button click
-    increaseBtn.addEventListener("click", () => {
-      updateFontSize(parseInt(fontSizeInput.value) + 1);
+  // Font Family selector
+  const fontFamilySelect = $("#font-family-select");
+  if (fontFamilySelect) {
+    fontFamilySelect.addEventListener("mousedown", saveSelection);
+    fontFamilySelect.addEventListener("change", (e) => {
+      const font = e.target.value;
+      if (font) {
+        withRestoredSelection(() => {
+          document.execCommand("fontName", false, font);
+        });
+      }
     });
+  }
 
-    // Decrease button click
-    decreaseBtn.addEventListener("click", () => {
-      updateFontSize(parseInt(fontSizeInput.value) - 1);
-    });
+  // Font Size selector & stepper control
+  const updateFontSize = (newSize) => {
+    const size = Math.min(100, Math.max(1, parseInt(newSize) || 15));
+    const fontSizeInput = $("#font-size-input");
+    if (fontSizeInput) fontSizeInput.value = size;
 
-    // Direct input change
-    fontSizeInput.addEventListener("input", (e) => {
+    const fontSizeSelect = $("#font-size-select");
+    if (fontSizeSelect) fontSizeSelect.value = size;
+
+    const selection = window.getSelection();
+    const hasSelection = selection && selection.rangeCount > 0 && !selection.isCollapsed && isRangeInsideEditor(selection.getRangeAt(0));
+
+    if (hasSelection) {
+      try {
+        document.execCommand("fontSize", false, "7");
+        const fontElements = contentEl.querySelectorAll("font[size='7']");
+        fontElements.forEach((fontEl) => {
+          fontEl.removeAttribute("size");
+          fontEl.style.fontSize = `${size}px`;
+        });
+      } catch (err) {
+        console.error("Failed to apply font size to selection:", err);
+      }
+    } else {
+      if (contentEl) {
+        contentEl.style.setProperty("--editor-font-size", `${size}px`);
+        contentEl.style.fontSize = `${size}px`;
+      }
+      try {
+        localStorage.setItem("notesWorkspace.textSize", size);
+      } catch (err) {
+        console.warn("Failed to save font size preference:", err);
+      }
+    }
+  };
+
+  const fontSizeSelect = $("#font-size-select");
+  if (fontSizeSelect) {
+    fontSizeSelect.addEventListener("mousedown", saveSelection);
+    fontSizeSelect.addEventListener("change", (e) => {
       updateFontSize(e.target.value);
     });
   }
 
-  // Text color control
-  const textColorSelect = $("#text-color");
-  if (textColorSelect) {
-    textColorSelect.addEventListener("mousedown", (e) => e.preventDefault());
-    textColorSelect.addEventListener("change", (e) => {
-      const color = e.target.value;
-      if (color) {
-        try {
-          withRestoredSelection(() => {
-            document.execCommand("foreColor", false, color);
-          });
-        } catch (err) {
-          console.error("Color command failed", err);
+  const decreaseBtn = $("#decrease-font-size");
+  const increaseBtn = $("#increase-font-size");
+
+  if (decreaseBtn && increaseBtn) {
+    decreaseBtn.addEventListener("mousedown", (e) => e.preventDefault());
+    increaseBtn.addEventListener("mousedown", (e) => e.preventDefault());
+
+    increaseBtn.addEventListener("click", () => {
+      const current = parseInt(fontSizeSelect?.value || "15");
+      updateFontSize(current + 1);
+    });
+
+    decreaseBtn.addEventListener("click", () => {
+      const current = parseInt(fontSizeSelect?.value || "15");
+      updateFontSize(current - 1);
+    });
+  }
+
+  // Change Case control
+  const changeCaseSelect = $("#change-case-select");
+  if (changeCaseSelect) {
+    changeCaseSelect.addEventListener("mousedown", saveSelection);
+    changeCaseSelect.addEventListener("change", (e) => {
+      const val = e.target.value;
+      if (!val) return;
+
+      withRestoredSelection(() => {
+        const selection = window.getSelection();
+        if (!selection || selection.rangeCount === 0) return;
+        const text = selection.toString();
+        if (!text) return;
+
+        let transformed = text;
+        if (val === "lowercase") {
+          transformed = text.toLowerCase();
+        } else if (val === "uppercase") {
+          transformed = text.toUpperCase();
+        } else if (val === "titlecase") {
+          transformed = text.replace(/\b\w/g, (char) => char.toUpperCase());
+        } else if (val === "sentence") {
+          transformed = text.toLowerCase().replace(/(^\s*\w|[.!?]\s*\w)/g, (char) => char.toUpperCase());
         }
-      } else {
-        try {
-          withRestoredSelection(() => {
-            document.execCommand("removeFormat", false, null);
-          });
-        } catch (err) {
-          console.error("Remove format failed", err);
-        }
-      }
+
+        document.execCommand("insertText", false, transformed);
+      });
+
       setTimeout(() => {
-        textColorSelect.value = "";
+        changeCaseSelect.value = "";
       }, 150);
     });
   }
@@ -560,69 +639,53 @@ export function wireFormattingToolbar() {
   // Custom text color control
   const customColorInput = $("#custom-text-color");
   const customColorSwatch = $("#custom-text-color-swatch");
-  if (customColorInput) {
-    const updateSwatch = () => {
-      if (customColorSwatch) customColorSwatch.style.backgroundColor = customColorInput.value;
-    };
-    updateSwatch();
+  const fontColorBadgeBtn = document.querySelector(".fontcolor-badge-btn");
 
-    customColorInput.addEventListener("input", (e) => {
-      updateSwatch();
-      const color = e.target.value;
-      if (color) {
-        try {
+  if (fontColorBadgeBtn && customColorInput) {
+    fontColorBadgeBtn.parentElement?.addEventListener("click", (e) => {
+      e.preventDefault();
+      saveSelection();
+      createColorPalettePopover({
+        triggerElement: fontColorBadgeBtn,
+        initialColor: customColorInput.value,
+        showAutomatic: true,
+        nativeInput: customColorInput,
+        onSelectColor: (color) => {
+          const targetColor = color === "inherit" ? "#000000" : color;
+          if (customColorSwatch) customColorSwatch.style.backgroundColor = targetColor;
+          customColorInput.value = targetColor;
           withRestoredSelection(() => {
-            document.execCommand("foreColor", false, color);
+            document.execCommand("foreColor", false, targetColor);
           });
-        } catch (err) {
-          console.error("Color command failed", err);
         }
-      }
-    });
-
-    customColorInput.addEventListener("change", (e) => {
-      updateSwatch();
-      const color = e.target.value;
-      if (color) {
-        try {
-          withRestoredSelection(() => {
-            document.execCommand("foreColor", false, color);
-          });
-        } catch (err) {
-          console.error("Color command failed", err);
-        }
-      }
+      });
     });
   }
 
-  // Highlight color control
-  const highlightColorSelect = $("#highlight-color");
-  if (highlightColorSelect) {
-    highlightColorSelect.addEventListener("mousedown", (e) => e.preventDefault());
-    highlightColorSelect.addEventListener("change", (e) => {
-      const color = e.target.value;
-      if (color) {
-        try {
+  // Highlight color picker
+  const highlightColorPicker = $("#highlight-color-picker");
+  const highlightBarIndicator = $("#highlight-bar-indicator");
+  const highlightBadgeBtn = document.querySelector(".highlight-badge-btn");
+
+  if (highlightBadgeBtn && highlightColorPicker) {
+    highlightBadgeBtn.parentElement?.addEventListener("click", (e) => {
+      e.preventDefault();
+      saveSelection();
+      createColorPalettePopover({
+        triggerElement: highlightBadgeBtn,
+        initialColor: highlightColorPicker.value,
+        showAutomatic: true,
+        nativeInput: highlightColorPicker,
+        onSelectColor: (color) => {
+          const targetColor = color === "inherit" ? "transparent" : color;
+          if (highlightBarIndicator) highlightBarIndicator.style.backgroundColor = targetColor === "transparent" ? "#ffff00" : targetColor;
+          highlightColorPicker.value = targetColor === "transparent" ? "#ffff00" : targetColor;
           withRestoredSelection(() => {
-            document.execCommand("hiliteColor", false, color);
-            document.execCommand("backColor", false, color);
+            document.execCommand("hiliteColor", false, targetColor);
+            document.execCommand("backColor", false, targetColor);
           });
-        } catch (err) {
-          console.error("Highlight command failed", err);
         }
-      } else {
-        try {
-          withRestoredSelection(() => {
-            document.execCommand("hiliteColor", false, "transparent");
-            document.execCommand("backColor", false, "transparent");
-          });
-        } catch (err) {
-          console.error("Remove highlight failed", err);
-        }
-      }
-      setTimeout(() => {
-        highlightColorSelect.value = "";
-      }, 150);
+      });
     });
   }
 }

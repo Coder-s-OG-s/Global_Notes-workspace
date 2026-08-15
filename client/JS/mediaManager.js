@@ -45,6 +45,13 @@ export function wireUploadButtons() {
         case "table":
           insertTable();
           break;
+        case "hr":
+          insertHtmlAtCursor('<hr style="border:none;border-top:2px solid var(--border,#e2e8f0);margin:16px 0;" /><p><br></p>');
+          break;
+        case "datetime":
+          const nowStr = new Date().toLocaleString(undefined, { dateStyle: "medium", timeStyle: "short" });
+          insertHtmlAtCursor(` <span style="font-weight:600;color:var(--primary,#3b82f6);">${escapeHtml(nowStr)}</span> `);
+          break;
       }
 
       // Reset dropdown

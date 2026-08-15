@@ -14,6 +14,8 @@
   <link rel="stylesheet" href="../CSS/signup.css?v=2.4">
   <link rel="stylesheet" href="../CSS/footer.css">
   <link rel="icon" type="image/png" href="../assets/images/logo_workspace.png" />
+  <!-- Cloudflare Turnstile API -->
+  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 </head>
 
 <body>
@@ -45,8 +47,12 @@
           </p>
         </div>
 
+        <!-- Cloudflare Turnstile -->
+        <div id="turnstile-container" style="display: flex; justify-content: center; margin-bottom: 16px; min-height: 65px;"></div>
+
         <!-- Social Auth -->
         <div class="social-section">
+
           <button class="social-btn google">
             <svg viewBox="0 0 24 24" class="social-icon">
               <!-- Google Icon -->
