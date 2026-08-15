@@ -60,22 +60,21 @@ itemsToCopy.forEach(item => {
 
 // 4. Generate Config in DIST
 // 4. Generate Config in DIST
-const configContent = `const config = {
-    APPWRITE_ENDPOINT: '${process.env.APPWRITE_ENDPOINT || "https://cloud.appwrite.io/v1"}',
-    APPWRITE_PROJECT_ID: '${process.env.APPWRITE_PROJECT_ID || ""}',
-    APPWRITE_DATABASE_ID: '${process.env.APPWRITE_DATABASE_ID || ""}',
-    APPWRITE_NOTES_COLLECTION_ID: '${process.env.APPWRITE_NOTES_COLLECTION_ID || "notes"}',
-    APPWRITE_FOLDERS_COLLECTION_ID: '${process.env.APPWRITE_FOLDERS_COLLECTION_ID || "folders"}',
-    APPWRITE_PROFILES_COLLECTION_ID: '${process.env.APPWRITE_PROFILES_COLLECTION_ID || "profiles"}',
-    APPWRITE_SHARED_NOTES_COLLECTION_ID: '${process.env.APPWRITE_SHARED_NOTES_COLLECTION_ID || "shared_notes"}',
-    SUPABASE_URL: '${process.env.SUPABASE_URL || ""}',
-    SUPABASE_ANON_KEY: '${process.env.SUPABASE_ANON_KEY || ""}',
-    GROQ_API_KEY: '${process.env.GROQ_API_KEY || ""}',
-    TURNSTILE_SITE_KEY: '${process.env.TURNSTILE_SITE_KEY || "1x00000000000000000000AA"}'
+const configObj = {
+    APPWRITE_ENDPOINT: process.env.APPWRITE_ENDPOINT || "https://cloud.appwrite.io/v1",
+    APPWRITE_PROJECT_ID: process.env.APPWRITE_PROJECT_ID || "",
+    APPWRITE_DATABASE_ID: process.env.APPWRITE_DATABASE_ID || "",
+    APPWRITE_NOTES_COLLECTION_ID: process.env.APPWRITE_NOTES_COLLECTION_ID || "notes",
+    APPWRITE_FOLDERS_COLLECTION_ID: process.env.APPWRITE_FOLDERS_COLLECTION_ID || "folders",
+    APPWRITE_PROFILES_COLLECTION_ID: process.env.APPWRITE_PROFILES_COLLECTION_ID || "profiles",
+    APPWRITE_SHARED_NOTES_COLLECTION_ID: process.env.APPWRITE_SHARED_NOTES_COLLECTION_ID || "shared_notes",
+    SUPABASE_URL: process.env.SUPABASE_URL || "",
+    SUPABASE_ANON_KEY: process.env.SUPABASE_ANON_KEY || "",
+    GROQ_API_KEY: process.env.GROQ_API_KEY || "",
+    TURNSTILE_SITE_KEY: (process.env.TURNSTILE_SITE_KEY || "0x4AAAAAAEQyiKm40gWQ6_Gx").trim()
 };
 
-export default config;
-`;
+const configContent = `const config = ${JSON.stringify(configObj, null, 4)};\n\nexport default config;\n`;
 
 // Ensure JS dir exists in dist (it should from copy, but safety check)
 const distJsDir = path.join(distDir, 'JS');

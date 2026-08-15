@@ -1,4 +1,4 @@
-const CACHE_NAME = 'my-note-app-cache-v10';
+const CACHE_NAME = 'my-note-app-cache-v11';
 const urlsToCache = [
   '/',
   '/index.html',
@@ -63,13 +63,14 @@ self.addEventListener('fetch', event => {
           return response;
         }
 
-        // Clone the response
-        var responseToCache = response.clone();
-
-        caches.open(CACHE_NAME)
-          .then(cache => {
-            cache.put(event.request, responseToCache);
-          });
+        // Cache API only supports GET requests
+        if (event.request.method === 'GET') {
+          var responseToCache = response.clone();
+          caches.open(CACHE_NAME)
+            .then(cache => {
+              cache.put(event.request, responseToCache);
+            });
+        }
 
         return response;
       })
