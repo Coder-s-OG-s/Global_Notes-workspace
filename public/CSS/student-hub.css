@@ -855,14 +855,15 @@ html[data-theme="minimal-white"] { --calendar-invert: 0.1; }
 
 .card-body-content {
   width: 100%;
-  padding: 14px 20px 10px 20px;
+  padding: 12px 18px 12px 18px;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  align-items: stretch;
-  justify-content: flex-start;
+  align-items: center;
+  justify-content: center;
   flex-grow: 1;
-  gap: 12px;
+  overflow-y: auto;
+  max-height: 220px;
 }
 
 .flashcard-question-text {
@@ -872,6 +873,29 @@ html[data-theme="minimal-white"] { --calendar-invert: 0.1; }
   color: var(--text, #0f172a);
   text-align: center;
   margin: 0;
+  width: 100%;
+  word-break: break-word;
+}
+
+/* Inline Code Snippets & Tags inside Question Text */
+.flashcard-question-text code,
+.flashcard-question-text pre,
+.flashcard-question-text [class*="bg-"] {
+  display: inline-block !important;
+  padding: 2px 7px !important;
+  margin: 2px 3px !important;
+  border-radius: 6px !important;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace !important;
+  font-size: 12px !important;
+  line-height: 1.35 !important;
+  vertical-align: middle !important;
+  background-color: #0f172a !important;
+  color: #38bdf8 !important;
+  border: 1px solid rgba(56, 189, 248, 0.25) !important;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15) !important;
+  max-width: 100% !important;
+  white-space: pre-wrap !important;
+  word-break: break-all !important;
 }
 
 .card-footer-info-row {
