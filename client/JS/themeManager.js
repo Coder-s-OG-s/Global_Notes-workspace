@@ -71,11 +71,14 @@ export function applyTheme(theme) {
   const normalized = VALID_THEMES.includes(theme) ? theme : DEFAULT_THEME;
   const root = document.documentElement;
   if (root) {
-    // Add transition class for smooth crossfade
     root.classList.add("theme-transitioning");
     root.dataset.theme = normalized;
-    // Remove transition class after animation completes
     setTimeout(() => root.classList.remove("theme-transitioning"), 350);
+  }
+  if (document.body) {
+    document.body.dataset.theme = normalized;
+    const isDarkTheme = normalized.includes("dark") || normalized === "corporate-gray";
+    document.body.classList.toggle('dark-mode', isDarkTheme);
   }
 
   const isDarkTheme = normalized.includes("dark") || normalized === "corporate-gray";
@@ -182,16 +185,18 @@ export function wireThemeToggle() {
 
   // 4. Handle Quick Toggle Button (Navbar)
   const quickToggle = document.querySelector("#theme-quick-toggle");
-  if (quickToggle) {
-    quickToggle.addEventListener("click", () => {
+  if (quickToggle && !quickToggle.dataset.wired) {
+    quickToggle.dataset.wired = "true";
+    quickToggle.addEventListener("click", (e) => {
+      e.stopPropagation();
       const current = getStoredTheme();
-      // Decide toggle target: if currently dark, go to a white theme; otherwise go to dark.
-      const isDark = current.includes("dark") || current === "corporate-gray";
+      const isDark = (current || '').includes("dark") || current === "corporate-gray";
       const target = isDark ? "minimal-white" : "amoled-dark";
 
       persistTheme(target);
       updateButtonState(target);
       if (selector) selector.value = target;
+      showToast(`Switched to ${target === 'amoled-dark' ? 'Dark' : 'Light'} mode`, 'info');
     });
   }
 

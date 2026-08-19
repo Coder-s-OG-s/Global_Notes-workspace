@@ -11,7 +11,6 @@ export async function getCurrentUser() {
         }
         return null;
     } catch (error) {
-        console.error("Error fetching user session:", error);
         return null;
     }
 }

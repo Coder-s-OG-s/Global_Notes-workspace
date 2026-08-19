@@ -1,7 +1,7 @@
 import config from './config.js';
 import { generateTextWithGemini } from './geminiAPI.js';
 import { THEME_KEY } from './constants.js';
-import { setThemeStorageKey, wireThemeToggle, getStoredTheme } from './themeManager.js';
+import { setThemeStorageKey, wireThemeToggle, getStoredTheme, persistTheme } from './themeManager.js';
 import { showToast, showConfirm } from './utilities.js';
 import { getCurrentUser } from './authService.js';
 
@@ -125,6 +125,106 @@ async function initHub() {
     document.getElementById('btn-generate-flashcards').addEventListener('click', handleGenerateFlashcards);
     document.getElementById('btn-generate-schedule').addEventListener('click', handleGenerateSchedule);
     
+    // Bind 2x2 Study Set Cards (Intro to Calculus, Lecture 1 Slides, Syllabus, Cell Division)
+    document.querySelectorAll('.pastel-study-card').forEach(card => {
+        card.addEventListener('click', () => {
+            const topic = card.dataset.topic;
+            const topicInput = document.getElementById('flashcards-topic-input');
+            if (topicInput) {
+                topicInput.value = topic;
+                handleGenerateFlashcards();
+            }
+        });
+    });
+
+    // Bind Pick a Source Grid Cards
+    document.querySelectorAll('.source-card-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.source-card-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            const srcType = btn.dataset.type;
+            if (srcType === 'pdf' || srcType === 'docx') {
+                const fileInput = document.getElementById('flashcards-file-input');
+                if (fileInput) fileInput.click();
+            } else if (srcType === 'youtube') {
+                const ytInput = document.getElementById('youtube-link-input');
+                if (ytInput) ytInput.focus();
+            }
+        });
+    });
+
+    // Bind YouTube Go Button
+    const btnYtGo = document.getElementById('btn-youtube-go');
+    if (btnYtGo) {
+        btnYtGo.addEventListener('click', () => {
+            const ytInput = document.getElementById('youtube-link-input');
+            const val = ytInput ? ytInput.value.trim() : '';
+            if (val) {
+                const topicInput = document.getElementById('flashcards-topic-input');
+                if (topicInput) topicInput.value = `Video Analysis for ${val}`;
+                showToast('YouTube link accepted. Generating flashcards...', 'info');
+                handleGenerateFlashcards();
+            } else {
+                showToast('Please paste a valid YouTube video link.', 'warning');
+            }
+        });
+    }
+
+    // Bind + Add source button
+    const btnOpenAddSource = document.getElementById('btn-open-add-source');
+    if (btnOpenAddSource) {
+        btnOpenAddSource.addEventListener('click', () => {
+            const addSourceModal = document.querySelector('.add-source-card-modal');
+            if (addSourceModal) {
+                addSourceModal.style.display = 'block';
+            }
+            const placeholder = document.getElementById('flashcards-placeholder');
+            const grid = document.getElementById('flashcards-grid');
+            const header = document.getElementById('flashcards-header');
+            if (placeholder) placeholder.classList.add('hidden');
+            if (grid) grid.classList.add('hidden');
+            if (header) header.classList.add('hidden');
+
+            const dropzone = document.getElementById('flashcards-dropzone');
+            if (dropzone) dropzone.scrollIntoView({ behavior: 'smooth' });
+        });
+    }
+
+    // Bind Search Bar Toggle & Input Filter
+    const libSearchBtn = document.getElementById('lib-search-btn');
+    const libSearchInput = document.getElementById('lib-search-input');
+    if (libSearchBtn && libSearchInput) {
+        libSearchBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            libSearchInput.classList.toggle('active');
+            if (libSearchInput.classList.contains('active')) {
+                libSearchInput.focus();
+            } else {
+                libSearchInput.value = '';
+                renderLibraryDecks('');
+            }
+        });
+
+        libSearchInput.addEventListener('input', (e) => {
+            renderLibraryDecks(e.target.value);
+        });
+    }
+
+    // Bind Sidebar Menu Toggle Button
+    const libMenuBtn = document.getElementById('lib-menu-btn');
+    if (libMenuBtn) {
+        libMenuBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const libraryPanel = document.querySelector('.my-library-panel');
+            if (libraryPanel) {
+                libraryPanel.classList.toggle('collapsed');
+                showToast(libraryPanel.classList.contains('collapsed') ? 'Library sidebar hidden' : 'Library sidebar expanded', 'info');
+            }
+        });
+    }
+
+
+
     // 6. Populate Coding Note Snippet Dropdowns
     populateSnippetSelects();
 
@@ -764,6 +864,7 @@ ${sourceText}`;
         saveState();
 
         renderFlashcards(newDeck.cards);
+        renderLibraryDecks();
         
         // Reset Inputs
         topicInputEl.value = '';
@@ -784,6 +885,147 @@ ${sourceText}`;
     }
 }
 
+function getDefaultStudyDecks() {
+    return [
+        {
+            id: 'deck_calc_1',
+            name: 'Intro to Calculus',
+            sourceType: 'youtube',
+            timestamp: Date.now(),
+            cards: [
+                { question: 'What is the derivative of sin(x)?', answer: 'The derivative of sin(x) is <strong>cos(x)</strong>.', mastered: true, category: 'Calculus' },
+                { question: 'What is the derivative of cos(x)?', answer: 'The derivative of cos(x) is <strong>-sin(x)</strong>.', mastered: true, category: 'Calculus' },
+                { question: 'What is the Power Rule for differentiation?', answer: 'For <strong>f(x) = x^n</strong>, f\'(x) = <strong>n * x^(n-1)</strong>.', mastered: false, category: 'Calculus' }
+            ]
+        },
+        {
+            id: 'deck_lecture_1',
+            name: 'Lecture 1 Slides',
+            sourceType: 'pdf',
+            timestamp: Date.now(),
+            cards: [
+                { question: 'What is the fundamental theorem of calculus?', answer: 'It connects differentiation and integration as inverse operations.', mastered: true, category: 'Mathematics' },
+                { question: 'Define a continuous function.', answer: 'A function with no jumps, breaks, or holes in its domain.', mastered: false, category: 'Analysis' }
+            ]
+        },
+        {
+            id: 'deck_syllabus_1',
+            name: 'Syllabus',
+            sourceType: 'docx',
+            timestamp: Date.now(),
+            cards: [
+                { question: 'What is the weight of midterms?', answer: 'Midterms count for <strong>30%</strong> of final grade.', mastered: false, category: 'Course Info' },
+                { question: 'When are weekly assignments due?', answer: 'Every Sunday night at 11:59 PM.', mastered: false, category: 'Course Info' }
+            ]
+        },
+        {
+            id: 'deck_cell_div_1',
+            name: 'Cell Division',
+            sourceType: 'recording',
+            timestamp: Date.now(),
+            cards: [
+                { question: 'What are the phases of mitosis?', answer: '<strong>Prophase, Metaphase, Anaphase, Telophase</strong> (PMAT).', mastered: true, category: 'Biology' },
+                { question: 'Difference between Mitosis and Meiosis?', answer: 'Mitosis creates 2 identical diploid cells; Meiosis creates 4 unique haploid gametes.', mastered: true, category: 'Biology' }
+            ]
+        }
+    ];
+}
+
+function renderLibraryDecks(query = '') {
+    const gridEl = document.querySelector('.study-cards-grid');
+    const learnedCardsEl = document.getElementById('stats-learned-cards');
+    const learnedSetsEl = document.getElementById('stats-learned-sets');
+    if (!gridEl) return;
+
+    gridEl.innerHTML = '';
+
+    let totalMasteredCards = 0;
+    const filterQuery = (query || '').toLowerCase().trim();
+
+    const filteredDecks = savedDecks.filter(deck => {
+        if (!filterQuery) return true;
+        return (deck.name || '').toLowerCase().includes(filterQuery) ||
+               (deck.sourceType || '').toLowerCase().includes(filterQuery);
+    });
+
+    if (!savedDecks || savedDecks.length === 0) {
+        gridEl.innerHTML = `
+            <div class="empty-library-prompt" style="grid-column: span 2; padding: 24px; text-align: center; background: #f8fafc; border: 1.5px dashed #cbd5e1; border-radius: 20px;">
+                <div style="display: flex; justify-content: center; margin-bottom: 8px;">
+                    <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="#6366f1" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+                </div>
+                <div style="font-weight: 800; font-size: 14px; color: #0f172a;">No Study Decks Created Yet</div>
+                <div style="font-size: 12px; color: #64748b; margin-top: 4px;">Upload notes or enter a topic above to generate your first deck!</div>
+            </div>
+        `;
+        if (learnedCardsEl) learnedCardsEl.textContent = '0 cards';
+        if (learnedSetsEl) learnedSetsEl.textContent = '0';
+        return;
+    }
+
+    if (filteredDecks.length === 0) {
+        gridEl.innerHTML = `
+            <div class="empty-library-prompt" style="grid-column: span 2; padding: 20px; text-align: center; background: #f8fafc; border: 1.5px dashed #cbd5e1; border-radius: 20px;">
+                <div style="font-weight: 700; font-size: 13px; color: #64748b;">No decks match "${escapeHtml(query)}"</div>
+            </div>
+        `;
+    }
+
+    const PASTEL_CLASSES = ['mockup-card-yellow', 'mockup-card-purple', 'mockup-card-pink', 'mockup-card-mint'];
+    const TILT_CLASSES = ['card-tilt-left', 'card-tilt-right'];
+    const CORNER_SVGS = [
+        '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>',
+        '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>',
+        '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>',
+        '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M12 8v8M8 12h8"></path></svg>'
+    ];
+
+    let totalCardsInLibrary = 0;
+    savedDecks.forEach(d => {
+        totalCardsInLibrary += (d.cards ? d.cards.length : 0);
+    });
+
+    filteredDecks.forEach((deck, idx) => {
+        const totalCards = deck.cards ? deck.cards.length : 0;
+        const masteredCount = deck.cards ? deck.cards.filter(c => c.mastered).length : 0;
+        totalMasteredCards += masteredCount;
+
+        const masteryPercent = totalCards > 0 ? Math.round((masteredCount / totalCards) * 100) : 0;
+        const pastelClass = PASTEL_CLASSES[idx % PASTEL_CLASSES.length];
+        const tiltClass = TILT_CLASSES[idx % TILT_CLASSES.length];
+        const cornerIcon = CORNER_SVGS[idx % CORNER_SVGS.length];
+        const badgeText = deck.sourceType ? deck.sourceType.toUpperCase() : (totalCards > 10 ? 'FLASHCARDS' : 'PDF');
+
+        const cardEl = document.createElement('div');
+        cardEl.className = `pastel-study-card ${pastelClass} ${tiltClass} ${deck.id === activeDeckId ? 'active-deck' : ''}`;
+        cardEl.dataset.deckId = deck.id;
+
+        cardEl.innerHTML = `
+            <div class="card-top-row">
+                <span class="badge-pill-black">${badgeText}</span>
+                <span class="card-corner-icon">${cornerIcon}</span>
+            </div>
+            <h3 class="card-main-title">${escapeHtml(deck.name || 'Untitled Deck')}</h3>
+            <div class="card-bottom-row">
+                <span class="card-count-text">${totalCards} cards</span>
+                <span class="card-percent-text">${masteryPercent}%</span>
+            </div>
+            <div class="card-progress-bar">
+                <div class="card-progress-fill" style="width: ${masteryPercent}%;"></div>
+            </div>
+        `;
+
+        cardEl.addEventListener('click', () => {
+            selectDeck(deck.id);
+        });
+
+        gridEl.appendChild(cardEl);
+    });
+
+    if (learnedCardsEl) learnedCardsEl.textContent = `${totalCardsInLibrary} cards`;
+    if (learnedSetsEl) learnedSetsEl.textContent = `${savedDecks.length}`;
+}
+
 function selectDeck(deckId) {
     activeDeckId = deckId;
     saveState();
@@ -792,6 +1034,16 @@ function selectDeck(deckId) {
     if (activeDeck) {
         renderFlashcards(activeDeck.cards);
     }
+    renderLibraryDecks();
+
+    const addSourceModal = document.querySelector('.add-source-card-modal');
+    if (addSourceModal) {
+        addSourceModal.style.display = 'none';
+    }
+    const grid = document.getElementById('flashcards-grid');
+    const header = document.getElementById('flashcards-header');
+    if (grid) grid.classList.remove('hidden');
+    if (header) header.classList.remove('hidden');
 }
 
 function deleteDeck(deckId) {
@@ -809,6 +1061,7 @@ function deleteDeck(deckId) {
         renderFlashcards([]);
     }
     renderHistoryList();
+    renderLibraryDecks();
     showToast('Deck deleted.', 'success');
 }
 
@@ -820,6 +1073,7 @@ function toggleCardMastery(cardIndex) {
     saveState();
     
     renderFlashcards(activeDeck.cards);
+    renderLibraryDecks();
 }
 
 function updateProgressBar(cards) {
@@ -833,6 +1087,11 @@ function updateProgressBar(cards) {
 
     textEl.textContent = `${percentage}% Mastered (${masteredCount}/${total} cards)`;
     fillEl.style.width = `${percentage}%`;
+}
+
+function stripEmojis(text) {
+    if (!text) return '';
+    return text.replace(/[\u{1F600}-\u{1F64F}\u{1F300}-\u{1F5FF}\u{1F680}-\u{1F6FF}\u{1F700}-\u{1F77F}\u{1F780}-\u{1F7FF}\u{1F800}-\u{1F8FF}\u{1F900}-\u{1F9FF}\u{1FA00}-\u{1FA6F}\u{1FA70}-\u{1FAFF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}]/gu, '').trim();
 }
 
 function renderFlashcards(cards) {
@@ -890,12 +1149,12 @@ function renderFlashcards(cards) {
                             ✓ Got It
                         </div>
                     ` : ''}
-                    <div class="flashcard-question-text">${renderSafeHtml(card.question)}</div>
+                    <div class="flashcard-question-text">${renderSafeHtml(stripEmojis(card.question))}</div>
                     ${recallHtml}
                 </div>
                 <div class="flashcard-back">
                     <div class="flashcard-back-content">
-                        <p class="flashcard-back-answer">${renderSafeHtml(card.answer)}</p>
+                        <p class="flashcard-back-answer">${renderSafeHtml(stripEmojis(card.answer))}</p>
                         ${mnemonicHtml}
                     </div>
                     <button class="card-mastery-btn ${card.mastered ? 'active' : ''}" title="Mark as Mastered">
@@ -1360,14 +1619,13 @@ async function loadSavedState() {
     try {
         currentUser = await getCurrentUser();
     } catch (e) {
-        console.error("Auth check failed, fallback to local storage:", e);
+        currentUser = null;
     }
 
     let loadedFromDb = false;
 
     if (currentUser) {
         try {
-            console.log("Loading student hub state from database...");
             const res = await fetch('/api/student-hub');
             if (res.ok) {
                 const data = await res.json();
@@ -1379,21 +1637,22 @@ async function loadSavedState() {
                     savedFlowcharts = data.flowcharts || [];
                     activeFlowchartId = data.activeFlowchartId || null;
                     loadedFromDb = true;
-                    console.log("Student hub state successfully loaded from database.");
                 }
             }
         } catch (e) {
-            console.error("Failed to load state from database, using localStorage fallback:", e);
+            // quiet fallback
         }
     }
 
     if (!loadedFromDb) {
         // 1. Load Decks from localStorage
         try {
-            console.log("Loading flashcard decks from localStorage...");
             const storedDecks = localStorage.getItem(STORAGE_DECKS_KEY);
             if (storedDecks) {
                 savedDecks = JSON.parse(storedDecks);
+            }
+            if (!savedDecks || savedDecks.length === 0) {
+                savedDecks = getDefaultStudyDecks();
             }
             const storedActiveId = localStorage.getItem(STORAGE_ACTIVE_DECK_ID_KEY);
             if (storedActiveId) {
@@ -1402,7 +1661,7 @@ async function loadSavedState() {
                 activeDeckId = savedDecks[0].id;
             }
         } catch (e) {
-            console.error("Failed to load flashcard decks from localStorage:", e);
+            // quiet fallback
         }
 
         // 2. Load Schedules from localStorage
@@ -1466,6 +1725,8 @@ async function loadSavedState() {
     }
 
     // Render active views based on loaded state
+    renderLibraryDecks();
+
     if (activeDeckId) {
         const activeDeck = savedDecks.find(d => d.id === activeDeckId);
         if (activeDeck) {

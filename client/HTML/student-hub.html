@@ -27,6 +27,9 @@
     <!-- Header -->
     <header class="hub-header">
         <div class="header-left">
+            <button class="menu-icon-btn" id="lib-menu-btn" title="Toggle Library Sidebar" style="margin-right: 6px;">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+            </button>
             <a href="../app.html" class="btn ghost icon-only back-btn" title="Back to Home">
                 <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
                     <polyline points="15 18 9 12 15 6"></polyline>
@@ -90,44 +93,105 @@
 
     <!-- Main Workspace -->
     <main class="hub-main-content">
-        <!-- 1. FLASHCARDS SECTION -->
+        <!-- 1. FLASHCARDS SECTION (Target Design 1:1 Match) -->
         <section class="hub-view active" id="view-flashcards">
             <div class="split-layout">
-                <!-- Inputs panel -->
-                <aside class="options-panel">
-                    <h2 class="panel-heading">Generate Study Flashcards</h2>
-                    <p class="panel-subtext">Learn concepts faster. Generate interactive cards from notes or by typing a topic.</p>
-
-                    <div class="form-group">
-                        <label for="flashcards-topic-input">Study Topic / Description</label>
-                        <textarea id="flashcards-topic-input" class="form-textarea" placeholder="E.g., Photosynthesis steps, JavaScript closures, Newton's laws of motion..."></textarea>
-                    </div>
-
-                    <div class="form-group">
-                        <label>Or Upload Document (.txt, .md, .pdf)</label>
-                        <div class="upload-dropzone" id="flashcards-dropzone">
-                            <svg class="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                                <polyline points="17 8 12 3 7 8"></polyline>
-                                <line x1="12" y1="3" x2="12" y2="15"></line>
-                            </svg>
-                            <span class="upload-text">Click to browse or drag & drop files</span>
-                            <span class="upload-filename" id="flashcards-filename"></span>
-                            <input type="file" id="flashcards-file-input" class="file-input" accept=".txt,.md,.pdf">
+                <!-- Left Panel: My Library & Study Sets -->
+                <aside class="options-panel my-library-panel">
+                    <div class="library-header-row">
+                        <div class="library-title-group" id="lib-title-group">
+                            <h2 class="library-heading">My library</h2>
+                        </div>
+                        <div class="library-search-wrapper" id="lib-search-wrapper" style="display: flex; align-items: center;">
+                            <input type="text" id="lib-search-input" class="library-search-input" placeholder="Search sets...">
+                            <button class="icon-circle-btn" id="lib-search-btn" title="Search Library">
+                                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                            </button>
                         </div>
                     </div>
 
-                    <button class="btn primary full-width" id="btn-generate-flashcards">
-                        <span>✦ Generate Flashcards</span>
-                    </button>
+                    <!-- 2x2 Tilted Pastel Study Set Cards Grid -->
+                    <div class="study-cards-container">
+                        <div class="study-cards-grid">
+                            <!-- Dynamic Cards populated via JS -->
+                        </div>
+                    </div>
+
+                    <!-- Add Source Yellow Button -->
+                    <div style="text-align: center; margin: 18px 0 24px 0;">
+                        <button class="btn-hub-primary" id="btn-open-add-source" style="padding: 12px 28px !important;">
+                            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                            <span>Add source</span>
+                        </button>
+                    </div>
                 </aside>
 
-                <!-- Output Workspace -->
-                <div class="output-workspace">
-                    <!-- Study Progress Bar -->
-                    <div class="workspace-header hidden" id="flashcards-header">
+                <!-- Right Panel: Add Source & Interactive Study Generator Workspace -->
+                <div class="output-workspace add-source-workspace">
+                    <div class="add-source-card-modal">
+                        <div class="modal-top-bar" style="justify-content: center;">
+                            <h2 class="modal-title" style="text-align: center;">Add source</h2>
+                        </div>
+
+                        <!-- Dashed Folder Dropzone -->
+                        <div class="hub-dropzone mockup-dropzone" id="flashcards-dropzone">
+                            <div class="folder-graphic-icon">
+                                <svg viewBox="0 0 24 24" width="40" height="40" fill="none" stroke="#6366f1" stroke-width="1.8"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
+                            </div>
+                            <div class="dropzone-heading" style="font-weight: 800; font-size: 18px; margin-top: 6px;">Drop files here</div>
+                            <div class="dropzone-subtext" style="font-size: 12px; margin-top: 2px;">PDFs, videos, and recordings</div>
+                            <span class="upload-filename" id="flashcards-filename" style="display: block; font-weight: 700; color: #6366f1; margin-top: 6px;"></span>
+                            <input type="file" id="flashcards-file-input" class="file-input" accept=".txt,.md,.pdf,.docx">
+                        </div>
+
+                        <div class="pick-source-label">or pick a source</div>
+
+                        <!-- 2x2 Pick a Source Grid -->
+                        <div class="source-picker-grid mockup-source-grid">
+                            <div class="source-card-btn active" id="src-btn-pdf" data-type="pdf">
+                                <div class="source-icon-badge" style="background: #fef08a; color: #b45309;">
+                                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
+                                </div>
+                                <div class="source-card-title">PDF</div>
+                                <div class="source-card-desc">slides & papers</div>
+                            </div>
+                            <div class="source-card-btn" id="src-btn-docx" data-type="docx">
+                                <div class="source-icon-badge" style="background: #fecdd3; color: #be123c;">
+                                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line></svg>
+                                </div>
+                                <div class="source-card-title">DOCX</div>
+                                <div class="source-card-desc">notes & essays</div>
+                            </div>
+                            <div class="source-card-btn" id="src-btn-youtube" data-type="youtube">
+                                <div class="source-icon-badge" style="background: #c7d2fe; color: #4338ca;">
+                                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-1.96C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 1.96A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.4 19c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-1.96 29 29 0 0 0 .46-5.25 29 29 0 0 0-.46-5.37z"></path><polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02"></polygon></svg>
+                                </div>
+                                <div class="source-card-title">YouTube</div>
+                                <div class="source-card-desc">paste a link</div>
+                            </div>
+                        </div>
+
+                        <!-- YouTube Paste Input -->
+                        <div class="youtube-paste-bar" id="youtube-paste-bar">
+                            <input type="text" id="youtube-link-input" class="youtube-input" placeholder="paste a youtube link">
+                            <button class="btn-go-black" id="btn-youtube-go">Go</button>
+                        </div>
+
+                        <div class="form-group" style="margin-top: 14px;">
+                            <textarea id="flashcards-topic-input" class="form-textarea" placeholder="E.g., Intro to Calculus, Cell Division, Photosynthesis..."></textarea>
+                        </div>
+
+                        <!-- Main Yellow Button -->
+                        <button class="btn-hub-primary full-width" id="btn-generate-flashcards" style="margin-top: 14px; width: 100%;">
+                            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path></svg>
+                            <span>Generate study materials</span>
+                        </button>
+                    </div>
+
+                    <!-- Study Mastery Progress Bar -->
+                    <div class="workspace-header hidden" id="flashcards-header" style="margin-top: 20px;">
                         <div class="progress-info">
-                            <span class="progress-title">Study Progress</span>
+                            <span class="progress-title">Study Mastery</span>
                             <span class="progress-value" id="flashcards-progress-text">0% Mastered (0/0 cards)</span>
                         </div>
                         <div class="progress-track">
@@ -137,8 +201,8 @@
 
                     <div class="workspace-placeholder" id="flashcards-placeholder">
                         <div class="placeholder-icon">🃏</div>
-                        <h3>Your Flashcards Space</h3>
-                        <p>Generate study flashcards to start your interactive self-testing session.</p>
+                        <h3>Your Flashcards & Quiz Space</h3>
+                        <p>Click any study set on the left or generate new study materials above.</p>
                     </div>
 
                     <div class="flashcards-grid hidden" id="flashcards-grid">
@@ -188,8 +252,8 @@
                         </div>
                     </div>
 
-                    <button class="btn primary full-width" id="btn-generate-schedule">
-                        <span>✦ Generate Revision Plan</span>
+                    <button class="btn-hub-primary full-width" id="btn-generate-schedule">
+                        <span>⚡ Generate Revision Plan</span>
                     </button>
                 </aside>
 
@@ -222,8 +286,8 @@
                         <textarea id="flowchart-ai-prompt" class="form-textarea" placeholder="E.g., User registration steps, binary search algorithm, HTTP request cycle..."></textarea>
                     </div>
 
-                    <button class="btn primary full-width" id="btn-generate-flowchart-ai">
-                        <span>✦ AI Generate Flowchart</span>
+                    <button class="btn-hub-primary full-width" id="btn-generate-flowchart-ai">
+                        <span>⚡ AI Generate Flowchart</span>
                     </button>
                 </aside>
 
