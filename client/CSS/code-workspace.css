@@ -3,10 +3,93 @@
    Optimized for macOS and Windows
    ═══════════════════════════════════════════ */
 
-:root {
+:root,
+html[data-theme="amoled-dark"],
+html[data-theme="corporate-gray"],
+body.code-workspace-page {
     --side-nav-width: 300px;
     --editor-font: 'JetBrains Mono', 'Fira Code', monospace;
     --header-blur: 20px;
+    --header-height: 60px;
+    
+    --bg: #0b0f19;
+    --surface-rgb: 15, 23, 42;
+    --surface: rgba(15, 23, 42, 0.75);
+    --surface-2: #0f172a;
+    --surface-3: #1e293b;
+    --text: #f8fafc;
+    --text-dim: #cbd5e1;
+    --text-muted: #64748b;
+    --border: rgba(255, 255, 255, 0.08);
+    --border-light: rgba(255, 255, 255, 0.15);
+    --editor-bg: #111827;
+    --editor-gutter: #0f172a;
+    --primary: #6366f1;
+    --primary-rgb: 99, 102, 241;
+    --primary-strong: #4f46e5;
+    --primary-light: #818cf8;
+    --primary-glow: rgba(99, 102, 241, 0.25);
+    --active-bg: rgba(99, 102, 241, 0.15);
+    --shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    --shadow-lg: 0 10px 40px rgba(0, 0, 0, 0.5);
+    --header-bg: rgba(15, 23, 42, 0.85);
+}
+
+html[data-theme="minimal-white"],
+html[data-theme="nature-green"] {
+    --bg: #f8fafc;
+    --surface-rgb: 255, 255, 255;
+    --surface: #ffffff;
+    --surface-2: #f1f5f9;
+    --surface-3: #e2e8f0;
+    --text: #0f172a;
+    --text-dim: #334155;
+    --text-muted: #64748b;
+    --border: rgba(226, 232, 240, 0.9);
+    --border-light: rgba(203, 213, 225, 0.8);
+    --editor-bg: #ffffff;
+    --editor-gutter: #f1f5f9;
+    --primary: #4f46e5;
+    --primary-rgb: 79, 70, 229;
+    --primary-strong: #4338ca;
+    --primary-light: #6366f1;
+    --primary-glow: rgba(79, 70, 229, 0.12);
+    --active-bg: rgba(79, 70, 229, 0.08);
+    --shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+    --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.1);
+    --header-bg: rgba(255, 255, 255, 0.9);
+}
+
+/* Light Theme CodeMirror Override */
+html[data-theme="minimal-white"] .code-editor-container,
+html[data-theme="minimal-white"] .CodeMirror {
+    background: #ffffff !important;
+    color: #0f172a !important;
+}
+
+html[data-theme="minimal-white"] .CodeMirror-gutters {
+    background: #f8fafc !important;
+    border-right: 1px solid #e2e8f0 !important;
+    color: #94a3b8 !important;
+}
+
+html[data-theme="minimal-white"] .CodeMirror-linenumber {
+    color: #94a3b8 !important;
+}
+
+html[data-theme="minimal-white"] .CodeMirror-activeline-background {
+    background: rgba(79, 70, 229, 0.04) !important;
+}
+
+html[data-theme="minimal-white"] .editor-header-bar {
+    background: #f1f5f9;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+html[data-theme="minimal-white"] .editor-tab.active {
+    background: #ffffff;
+    border-right: 1px solid #e2e8f0;
+    color: #0f172a;
 }
 
 body.code-workspace-page {
@@ -17,6 +100,7 @@ body.code-workspace-page {
     flex-direction: column;
     overflow: hidden;
     font-family: var(--font-sans);
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 /* ── API Warning Banner ── */
@@ -456,8 +540,70 @@ body.code-workspace-page {
     display: flex;
     flex-direction: column;
     position: relative;
-    background: #282a36;
-    /* Dracula bg default */
+    background: var(--editor-bg);
+}
+
+.editor-header-bar {
+    height: 40px;
+    background: var(--surface-2);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 16px;
+    flex-shrink: 0;
+    user-select: none;
+    transition: background 0.3s ease, border-color 0.3s ease;
+}
+
+.editor-tab {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 14px;
+    background: var(--surface-3);
+    border-radius: 8px 8px 0 0;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-bottom: none;
+}
+
+.tab-lang-icon {
+    font-size: 14px;
+    color: var(--primary-light);
+}
+
+.tab-title {
+    max-width: 220px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.tab-badge {
+    font-size: 10px;
+    text-transform: uppercase;
+    background: var(--primary-glow);
+    color: var(--primary-light);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+}
+
+.editor-status-bar {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    font-size: 12px;
+    color: var(--text-muted);
+}
+
+.status-item {
+    font-family: var(--editor-font);
+    font-size: 11px;
 }
 
 #editor-target {

@@ -148,9 +148,12 @@ class CodeWorkspace {
         const editorTarget = document.getElementById('editor-target');
         if (!editorTarget) return;
 
+        const currentTheme = document.documentElement.dataset.theme || 'amoled-dark';
+        const isDark = currentTheme.includes('dark') || currentTheme === 'corporate-gray';
+
         this.editor = CodeMirror(editorTarget, {
             lineNumbers: true,
-            theme: 'dracula',
+            theme: isDark ? 'dracula' : 'default',
             mode: 'javascript',
             tabSize: 4,
             indentUnit: 4,
@@ -162,6 +165,30 @@ class CodeWorkspace {
             viewportMargin: Infinity,
             lineWrapping: false
         });
+
+        // Sync Status Bar (Line Count & Char Count) & Header Tab
+        const updateStatusBar = () => {
+            if (!this.editor) return;
+            const lineCountEl = document.getElementById('editor-line-count');
+            const charCountEl = document.getElementById('editor-char-count');
+            const val = this.editor.getValue() || '';
+            if (lineCountEl) lineCountEl.textContent = `Lines: ${this.editor.lineCount()}`;
+            if (charCountEl) charCountEl.textContent = `Chars: ${val.length}`;
+        };
+
+        this.editor.on('change', updateStatusBar);
+        this.editor.on('cursorActivity', updateStatusBar);
+        updateStatusBar();
+
+        // Listen for Theme Toggle changes dynamically
+        const themeObserver = new MutationObserver(() => {
+            const activeTheme = document.documentElement.dataset.theme || 'amoled-dark';
+            const isDarkTheme = activeTheme.includes('dark') || activeTheme === 'corporate-gray';
+            if (this.editor) {
+                this.editor.setOption('theme', isDarkTheme ? 'dracula' : 'default');
+            }
+        });
+        themeObserver.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
 
         this.editor.setOption("extraKeys", {
             "Tab": (cm) => {
@@ -1191,6 +1218,32 @@ Example for a clean vertical process:
         this.renderSnippetList();
     }
 
+    updateEditorHeaderTab(title, langKey) {
+        const titleEl = document.getElementById('editor-tab-title');
+        const langEl = document.getElementById('editor-tab-lang');
+        const iconEl = document.getElementById('editor-tab-icon');
+        const langObj = languageMap[langKey] || { name: langKey || 'JavaScript' };
+        
+        if (titleEl) titleEl.textContent = title || 'Untitled Snippet';
+        if (langEl) langEl.textContent = langObj.name;
+        if (iconEl) {
+            const iconMap = {
+                javascript: '⚡',
+                typescript: '📘',
+                python: '🐍',
+                python3: '🐍',
+                htmlmixed: '🌐',
+                css: '🎨',
+                cpp: '⚙️',
+                java: '☕',
+                sql: '🗄️',
+                rust: '🦀',
+                go: '🐹'
+            };
+            iconEl.textContent = iconMap[langKey] || '💻';
+        }
+    }
+
     updateEditorSettings(lang) {
         const settings = languageMap[lang];
         if (this.editor && settings) {
@@ -1199,6 +1252,8 @@ Example for a clean vertical process:
             this.editor.setOption('tabSize', settings.indent || 4);
             this.editor.setOption('indentWithTabs', !!settings.useTabs);
         }
+        const currentSnippet = this.snippets.find(s => s.id === this.activeSnippetId);
+        this.updateEditorHeaderTab(currentSnippet ? currentSnippet.title : 'Untitled Snippet', lang);
     }
 
     updateActiveSnippetMeta(updates) {
