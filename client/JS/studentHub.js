@@ -510,6 +510,14 @@ async function initHub() {
         showToast('Syllabus document uploaded and parsed successfully.', 'success');
     });
 
+    setupUploadDropzone('flowchart-dropzone', 'flowchart-file-input', 'flowchart-filename', (text) => {
+        const promptInputEl = document.getElementById('flowchart-ai-prompt');
+        if (promptInputEl && text) {
+            promptInputEl.value = text.substring(0, 800) + (text.length > 800 ? '...' : '');
+        }
+        showToast('Process file loaded into Flowchart Studio.', 'success');
+    });
+
     // 5. Button Action Listeners
     document.getElementById('btn-generate-flashcards').addEventListener('click', handleGenerateFlashcards);
     document.getElementById('btn-generate-schedule').addEventListener('click', handleGenerateSchedule);
