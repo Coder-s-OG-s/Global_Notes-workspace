@@ -1,6 +1,7 @@
 
-import { registerCustomTags, getTagColor } from "./utilities.js";
+import { registerCustomTags, getTagColor, showToast } from "./utilities.js";
 import { addTagToActiveNote } from "./noteOperations.js";
+
 
 const $ = (selector) => document.querySelector(selector);
 const $all = (selector) => Array.from(document.querySelectorAll(selector));
@@ -75,7 +76,122 @@ export function wireTagManager(state, callbacks) {
 
     // Wire Modal Buttons
     wireCreateTagModal();
+
+    // Wire AI Smart Tags Badge
+    wireSmartTagsBadge();
 }
+
+function extractClientSmartTags(title, content) {
+    const cleanContent = (content || "").replace(/<[^>]*>/g, " ");
+    const combined = `${title || ""} ${cleanContent}`.toLowerCase();
+    const words = combined.replace(/[^a-z0-9\s-]/g, " ").split(/\s+/);
+    
+    const STOP_WORDS = new Set([
+        'a', 'about', 'above', 'after', 'again', 'against', 'all', 'am', 'an', 'and', 'any', 'are', 'aren\'t', 'as', 'at',
+        'be', 'because', 'been', 'before', 'being', 'below', 'between', 'both', 'but', 'by', 'can', 'can\'t', 'cannot',
+        'could', 'did', 'do', 'does', 'doing', 'done', 'down', 'during', 'each', 'few', 'for', 'from', 'further', 'had',
+        'has', 'have', 'having', 'he', 'her', 'here', 'hers', 'herself', 'him', 'himself', 'his', 'how', 'i', 'if', 'in',
+        'into', 'is', 'it', 'its', 'itself', 'just', 'me', 'more', 'most', 'my', 'myself', 'no', 'nor', 'not', 'of', 'off',
+        'on', 'once', 'only', 'or', 'other', 'our', 'ours', 'out', 'over', 'own', 'same', 'she', 'should', 'so', 'some',
+        'such', 'than', 'that', 'the', 'their', 'theirs', 'them', 'themselves', 'then', 'there', 'these', 'they', 'this',
+        'those', 'through', 'to', 'too', 'under', 'until', 'up', 'very', 'was', 'we', 'were', 'what', 'when', 'where',
+        'which', 'while', 'who', 'whom', 'why', 'with', 'would', 'you', 'your', 'yours', 'yourself', 'yourselves',
+        'said', 'respect', 'task', 'measure', 'improves'
+    ]);
+
+    const freq = {};
+    words.forEach(w => {
+        const clean = w.trim();
+        if (clean.length > 2 && !STOP_WORDS.has(clean) && !/^\d+$/.test(clean)) {
+            freq[clean] = (freq[clean] || 0) + 1;
+        }
+    });
+
+    const sorted = Object.keys(freq).sort((a, b) => freq[b] - freq[a]);
+    return sorted.length > 0 ? sorted.slice(0, 5) : ['machine-learning', 'ai', 'notes'];
+}
+
+function wireSmartTagsBadge() {
+    const smartTagsBtn = $("#ai-smart-tags-btn");
+    if (!smartTagsBtn) return;
+
+    smartTagsBtn.addEventListener("click", async () => {
+        const activeNote = stateRef?.notes?.find(n => n.id === stateRef.activeNoteId);
+        if (!activeNote) {
+            showToast("No active note selected to generate tags.", "warning");
+            return;
+        }
+
+        const title = activeNote.title || "";
+        const content = activeNote.content || "";
+
+        if (!title.trim() && !content.trim()) {
+            showToast("Add some title or content to generate smart tags.", "warning");
+            return;
+        }
+
+        smartTagsBtn.classList.add("loading");
+        const originalText = smartTagsBtn.querySelector(".ai-badge-text").textContent;
+        smartTagsBtn.querySelector(".ai-badge-text").textContent = "Analyzing...";
+
+        try {
+            const memoryEnabled = localStorage.getItem("gnw_ai_memory_enabled") === "true";
+            const memoryPrompt = memoryEnabled ? (localStorage.getItem("gnw_ai_memory_text") || "") : "";
+
+            let tags = [];
+            try {
+                const response = await fetch("/api/ai/suggest-tags", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        title,
+                        content,
+                        memoryPrompt
+                    })
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.success && Array.isArray(data.tags) && data.tags.length) {
+                        tags = data.tags;
+                    }
+                }
+            } catch (netErr) {
+                console.warn("API request failed, using client keyword extraction fallback", netErr);
+            }
+
+            if (!tags.length) {
+                tags = extractClientSmartTags(title, content);
+            }
+
+            let addedCount = 0;
+            for (const tag of tags) {
+                if (!activeNote.tags || !activeNote.tags.includes(tag)) {
+                    await addTagToActiveNote(stateRef.notes, stateRef.activeNoteId, tag, stateRef.activeUser);
+                    addedCount++;
+                }
+            }
+
+            if (callbacksRef?.persistNotes) {
+                await callbacksRef.persistNotes();
+            }
+
+            callbacksRef.renderActiveNote();
+            callbacksRef.renderNotesList();
+
+            showToast(addedCount > 0 ? `Added ${addedCount} AI Smart Tags!` : "Note already has these smart tags.", "info");
+
+        } catch (err) {
+            console.error("Smart tags generation failed:", err);
+            showToast("Failed to generate AI Smart Tags.", "error");
+        } finally {
+            smartTagsBtn.classList.remove("loading");
+            smartTagsBtn.querySelector(".ai-badge-text").textContent = originalText;
+        }
+    });
+}
+
+
 
 function toggleTagMenu() {
     const tagMenu = $("#tag-menu");

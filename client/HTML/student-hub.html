@@ -43,8 +43,11 @@
                 <button class="tab-btn active" id="tab-flashcards">Flashcards</button>
                 <button class="tab-btn" id="tab-schedule">Exam Prep Schedule</button>
                 <button class="tab-btn" id="tab-flowcharts">Flowcharts</button>
+                <button class="tab-btn" id="tab-visuals">Diagrams & Images</button>
+                <button class="tab-btn" id="tab-timers">Study Timers</button>
             </div>
         </div>
+
 
         <div class="header-right">
             <!-- Dynamic Contextual History Dropdown -->
@@ -393,7 +396,124 @@
                 </div>
             </div>
         </section>
+
+        <!-- 4. DIAGRAMS & IMAGE GENERATOR SECTION -->
+        <section class="hub-view" id="view-visuals">
+            <div class="split-layout">
+                <aside class="options-panel">
+                    <h2 class="panel-heading">AI Visuals & Image Generator</h2>
+                    <p class="panel-subtext">Generate custom educational diagrams, infographics, or visual study aids for complex topics.</p>
+
+                    <div class="form-group">
+                        <label for="visual-prompt-input">Diagram Description / Topic</label>
+                        <textarea id="visual-prompt-input" class="form-textarea" placeholder="E.g. Human heart circulatory system, Photosynthesis cycle, Neural network architecture..."></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Category Preset</label>
+                        <select id="visual-category-select" class="form-input">
+                            <option value="Biology">Biology & Anatomy</option>
+                            <option value="Physics">Physics & Mechanics</option>
+                            <option value="Chemistry">Chemistry & Molecules</option>
+                            <option value="Math">Mathematics & Geometry</option>
+                            <option value="Computer Science">Computer Science & Architecture</option>
+                            <option value="History">History & Timeline</option>
+                        </select>
+                    </div>
+
+                    <button class="btn primary full-width" id="btn-generate-visual">
+                        <span>✦ Generate Visual Diagram</span>
+                    </button>
+                </aside>
+
+                <div class="output-workspace">
+                    <div class="workspace-placeholder" id="visual-placeholder">
+                        <div class="placeholder-icon"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>
+                        <h3>Student Visual Generator</h3>
+                        <p>Enter a study topic to generate an interactive educational diagram or graphic visual aid.</p>
+                    </div>
+
+                    <div class="visual-output-container hidden" id="visual-output-container">
+                        <div class="visual-canvas-card" id="visual-canvas-card"></div>
+                        <div class="visual-actions-bar">
+                            <button class="btn secondary" id="btn-download-visual">⬇ Download SVG</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 5. STUDY TIMERS (POMODORO & STOPWATCH) SECTION -->
+        <section class="hub-view" id="view-timers">
+            <div class="timer-hub-container">
+                <div class="timer-tabs">
+                    <button class="timer-tab-btn active" id="timer-tab-pomodoro"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle;margin-right:4px;"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> Focus Timer</button>
+                    <button class="timer-tab-btn" id="timer-tab-stopwatch"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle;margin-right:4px;"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2 2"/><path d="M5 3 2 6"/><path d="m22 6-3-3"/><path d="M10 2h4"/></svg> Stopwatch</button>
+                </div>
+
+
+                <!-- Pomodoro View -->
+                <div class="timer-card-panel" id="pomodoro-panel">
+                    <div class="pomodoro-modes">
+                        <button class="mode-pill active" data-mode="work">Focus (25m)</button>
+                        <button class="mode-pill" data-mode="short">Short Break (5m)</button>
+                        <button class="mode-pill" data-mode="long">Long Break (15m)</button>
+                    </div>
+
+                    <div class="timer-display-ring">
+                        <svg class="ring-svg" viewBox="0 0 200 200">
+                            <circle class="ring-bg" cx="100" cy="100" r="85"></circle>
+                            <circle class="ring-progress" id="pomo-progress-ring" cx="100" cy="100" r="85"></circle>
+                        </svg>
+                        <div class="timer-text-overlay">
+                            <span class="timer-digits" id="pomo-timer-text">25:00</span>
+                            <span class="timer-status-label" id="pomo-status-label">Time to Focus</span>
+                        </div>
+                    </div>
+
+                    <div class="timer-controls">
+                        <button class="btn primary btn-lg" id="pomo-start-btn">Start Session</button>
+                        <button class="btn secondary btn-lg" id="pomo-reset-btn">Reset</button>
+                    </div>
+
+                    <div class="timer-stats">
+                        <div class="stat-box">
+                            <span class="stat-val" id="pomo-completed-count">0</span>
+                            <span class="stat-lbl">Sessions Done</span>
+                        </div>
+                        <div class="stat-box">
+                            <span class="stat-val" id="pomo-total-time">0m</span>
+                            <span class="stat-lbl">Focus Time</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Stopwatch View -->
+                <div class="timer-card-panel hidden" id="stopwatch-panel">
+                    <div class="timer-display-ring">
+                        <div class="timer-text-overlay">
+                            <span class="timer-digits" id="sw-timer-text">00:00.00</span>
+                            <span class="timer-status-label">Stopwatch</span>
+                        </div>
+                    </div>
+
+                    <div class="timer-controls">
+                        <button class="btn primary btn-lg" id="sw-start-btn">Start</button>
+                        <button class="btn secondary btn-lg" id="sw-lap-btn">Lap</button>
+                        <button class="btn ghost btn-lg" id="sw-reset-btn">Reset</button>
+                    </div>
+
+                    <div class="sw-laps-container" id="sw-laps-container">
+                        <div class="laps-header">Lap Times</div>
+                        <ul class="laps-list" id="sw-laps-list">
+                            <li class="lap-empty">No laps recorded</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
     </main>
+
 
     <!-- Toast Container for floating messages -->
     <div class="toast-container" id="toast-container"></div>

@@ -401,12 +401,13 @@ Provide ONLY the code. Do NOT wrap it in markdown codeblocks (no \`\`\`), do NOT
     'crimson-red': '#ef4444'
   };
 
-  const getNoteEmoji = (note) => {
-    if (note.isFavorite) return '⭐';
-    if (note.isArchived) return '📦';
-    if (note.content && (note.content.includes('<pre') || note.content.includes('<code>'))) return '💻';
-    return '📄';
+  const getNoteIcon = (note) => {
+    if (note.isFavorite) return `<svg width="12" height="12" viewBox="0 0 24 24" fill="#f59e0b" stroke="#f59e0b" stroke-width="2" style="vertical-align:middle;margin-right:4px;"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>`;
+    if (note.isArchived) return `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle;margin-right:4px;"><polyline points="21 8 21 21 3 21 3 8"/><rect x="1" y="3" width="22" height="5"/><line x1="10" y1="12" x2="14" y2="12"/></svg>`;
+    if (note.content && (note.content.includes('<pre') || note.content.includes('<code>'))) return `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle;margin-right:4px;"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>`;
+    return `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle;margin-right:4px;"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></svg>`;
   };
+
 
   initSearchDropdown({
     inputId: 'search',

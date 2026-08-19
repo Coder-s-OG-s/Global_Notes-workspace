@@ -14,6 +14,7 @@ try {
     APPWRITE_SHARED_NOTES_COLLECTION_ID: process.env.APPWRITE_SHARED_NOTES_COLLECTION_ID || "shared_notes",
     SUPABASE_URL: process.env.SUPABASE_URL || "",
     SUPABASE_ANON_KEY: process.env.SUPABASE_ANON_KEY || "",
+    GEMINI_API_KEY: process.env.GEMINI_API_KEY || "",
     GROQ_API_KEY: process.env.GROQ_API_KEY || "",
     TURNSTILE_SITE_KEY: (process.env.TURNSTILE_SITE_KEY || "0x4AAAAAAEQyiKm40gWQ6_Gx").trim()
   };
@@ -79,6 +80,7 @@ const apiLimiter = rateLimit({
   message: { error: 'Too many requests from this IP, please try again later.' },
   standardHeaders: true,
   legacyHeaders: false,
+  validate: { trustProxy: false }
 });
 
 const authLimiter = rateLimit({
@@ -87,6 +89,7 @@ const authLimiter = rateLimit({
   message: { error: 'Too many authentication attempts, please try again later.' },
   standardHeaders: true,
   legacyHeaders: false,
+  validate: { trustProxy: false }
 });
 
 app.use('/api/', apiLimiter);

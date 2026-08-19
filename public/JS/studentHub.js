@@ -127,6 +127,11 @@ async function initHub() {
     
     // 6. Populate Coding Note Snippet Dropdowns
     populateSnippetSelects();
+
+    // 7. Initialize Visuals & Timers
+    initStudentVisuals();
+    initStudentTimers();
+
     // Flowchart Shapes Dropdown and Controls
     const btnShapesDropdown = document.getElementById('btn-shapes-dropdown');
     const shapesDropdownPanel = document.getElementById('shapes-dropdown-panel');
@@ -264,23 +269,32 @@ function initTabs() {
     const btnFlashcards = document.getElementById('tab-flashcards');
     const btnSchedule = document.getElementById('tab-schedule');
     const btnFlowcharts = document.getElementById('tab-flowcharts');
+    const btnVisuals = document.getElementById('tab-visuals');
+    const btnTimers = document.getElementById('tab-timers');
+
     const viewFlashcards = document.getElementById('view-flashcards');
     const viewSchedule = document.getElementById('view-schedule');
     const viewFlowcharts = document.getElementById('view-flowcharts');
+    const viewVisuals = document.getElementById('view-visuals');
+    const viewTimers = document.getElementById('view-timers');
 
     const switchTab = (tab) => {
         activeTab = tab;
         closeDropdown();
 
         // Toggle buttons active state
-        btnFlashcards.classList.toggle('active', tab === 'flashcards');
-        btnSchedule.classList.toggle('active', tab === 'schedule');
-        btnFlowcharts.classList.toggle('active', tab === 'flowcharts');
+        btnFlashcards?.classList.toggle('active', tab === 'flashcards');
+        btnSchedule?.classList.toggle('active', tab === 'schedule');
+        btnFlowcharts?.classList.toggle('active', tab === 'flowcharts');
+        btnVisuals?.classList.toggle('active', tab === 'visuals');
+        btnTimers?.classList.toggle('active', tab === 'timers');
 
         // Toggle views active state
-        viewFlashcards.classList.toggle('active', tab === 'flashcards');
-        viewSchedule.classList.toggle('active', tab === 'schedule');
-        viewFlowcharts.classList.toggle('active', tab === 'flowcharts');
+        viewFlashcards?.classList.toggle('active', tab === 'flashcards');
+        viewSchedule?.classList.toggle('active', tab === 'schedule');
+        viewFlowcharts?.classList.toggle('active', tab === 'flowcharts');
+        viewVisuals?.classList.toggle('active', tab === 'visuals');
+        viewTimers?.classList.toggle('active', tab === 'timers');
 
         // Ensure history button container is always visible
         const historyContainer = document.querySelector('.history-dropdown-container');
@@ -293,26 +307,29 @@ function initTabs() {
         }
     };
 
-    btnFlashcards.addEventListener('click', () => switchTab('flashcards'));
-    btnSchedule.addEventListener('click', () => switchTab('schedule'));
-    btnFlowcharts.addEventListener('click', () => switchTab('flowcharts'));
+    btnFlashcards?.addEventListener('click', () => switchTab('flashcards'));
+    btnSchedule?.addEventListener('click', () => switchTab('schedule'));
+    btnFlowcharts?.addEventListener('click', () => switchTab('flowcharts'));
+    btnVisuals?.addEventListener('click', () => switchTab('visuals'));
+    btnTimers?.addEventListener('click', () => switchTab('timers'));
 
-    // Check location hash for tab routing on load
+    const validTabs = ['flowcharts', 'flashcards', 'schedule', 'visuals', 'timers'];
+
     if (window.location.hash) {
         const hash = window.location.hash.substring(1);
-        if (hash === 'flowcharts' || hash === 'flashcards' || hash === 'schedule') {
+        if (validTabs.includes(hash)) {
             switchTab(hash);
         }
     }
 
-    // Dynamic hashchange listener for active transitions
     window.addEventListener('hashchange', () => {
         const hash = window.location.hash.substring(1);
-        if (hash === 'flowcharts' || hash === 'flashcards' || hash === 'schedule') {
+        if (validTabs.includes(hash)) {
             switchTab(hash);
         }
     });
 }
+
 
 // History Dropdown Toggle
 function setupHistoryDropdown() {
@@ -2263,3 +2280,309 @@ function populateSnippetSelects() {
         });
     }
 }
+
+/* ==========================================================================
+   AI VISUALS & DIAGRAM GENERATOR FOR STUDENT HUB
+   ========================================================================== */
+function initStudentVisuals() {
+    const btnGenerate = document.getElementById('btn-generate-visual');
+    const promptInput = document.getElementById('visual-prompt-input');
+    const categorySelect = document.getElementById('visual-category-select');
+    const placeholder = document.getElementById('visual-placeholder');
+    const container = document.getElementById('visual-output-container');
+    const canvasCard = document.getElementById('visual-canvas-card');
+    const downloadBtn = document.getElementById('btn-download-visual');
+
+    if (!btnGenerate) return;
+
+    let currentSvg = '';
+
+    btnGenerate.addEventListener('click', async () => {
+        const prompt = (promptInput?.value || '').trim();
+        const category = categorySelect?.value || 'General';
+
+        if (!prompt) {
+            showToast('Please enter a description for the visual diagram.', 'warning');
+            return;
+        }
+
+        btnGenerate.disabled = true;
+        btnGenerate.innerHTML = '<span>⏳ Generating Visual...</span>';
+
+        try {
+            const res = await fetch('/api/ai/generate-student-image', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ prompt, category })
+            });
+
+            if (res.ok) {
+                const data = await res.json();
+                if (data.success) {
+                    currentSvg = data.svg || '';
+                    const imageUrl = data.imageUrl || '';
+                    placeholder?.classList.add('hidden');
+                    container?.classList.remove('hidden');
+
+                    if (imageUrl) {
+                        canvasCard.innerHTML = `
+                            <div style="width:100%; display:flex; flex-direction:column; align-items:center; gap:12px;">
+                                <div style="display:flex; gap:10px; margin-bottom:4px;">
+                                    <button id="btn-show-ai-img" class="btn primary btn-sm" style="font-size:12px; padding:6px 14px;">🎨 Nano AI Illustration</button>
+                                    ${currentSvg ? '<button id="btn-show-vector-svg" class="btn secondary btn-sm" style="font-size:12px; padding:6px 14px;">📊 Vector Diagram</button>' : ''}
+                                </div>
+                                <div id="visual-display-area" style="width:100%; display:flex; justify-content:center; align-items:center; background:#0f172a; border-radius:12px; padding:12px;">
+                                    <img src="${imageUrl}" alt="${prompt}" style="max-width:100%; max-height:480px; object-fit:contain; border-radius:8px; box-shadow:0 10px 30px rgba(0,0,0,0.6);" />
+                                </div>
+                            </div>
+                        `;
+
+                        document.getElementById('btn-show-ai-img')?.addEventListener('click', () => {
+                            const display = document.getElementById('visual-display-area');
+                            if (display) {
+                                display.innerHTML = `<img src="${imageUrl}" alt="${prompt}" style="max-width:100%; max-height:480px; object-fit:contain; border-radius:8px; box-shadow:0 10px 30px rgba(0,0,0,0.6);" />`;
+                            }
+                        });
+
+                        document.getElementById('btn-show-vector-svg')?.addEventListener('click', () => {
+                            const display = document.getElementById('visual-display-area');
+                            if (display && currentSvg) {
+                                display.innerHTML = currentSvg;
+                            }
+                        });
+
+                    } else if (currentSvg) {
+                        canvasCard.innerHTML = currentSvg;
+                    }
+
+                    showToast('Visual Biology Diagram Generated!', 'success');
+                } else {
+                    throw new Error('Diagram generation failed');
+                }
+            } else {
+                throw new Error('API server error');
+            }
+        } catch (err) {
+            console.error('Visual diagram generation error:', err);
+            showToast('Failed to generate visual diagram. Please check API keys.', 'error');
+        } finally {
+            btnGenerate.disabled = false;
+            btnGenerate.innerHTML = '<span>✦ Generate Visual Diagram</span>';
+        }
+    });
+
+    downloadBtn?.addEventListener('click', () => {
+        if (!currentSvg) return;
+        const blob = new Blob([currentSvg], { type: 'image/svg+xml' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `student_diagram_${Date.now()}.svg`;
+        a.click();
+        URL.revokeObjectURL(url);
+        showToast('Downloaded SVG diagram', 'info');
+    });
+}
+
+/* ==========================================================================
+   STOPWATCH AND POMODORO STUDY TIMERS
+   ========================================================================== */
+function playAudioAlert() {
+    try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(587.33, ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(880, ctx.currentTime + 0.3);
+        gain.gain.setValueAtTime(0.3, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.5);
+        osc.start();
+        osc.stop(ctx.currentTime + 0.5);
+    } catch(e){}
+}
+
+function initStudentTimers() {
+    const tabPomo = document.getElementById('timer-tab-pomodoro');
+    const tabSW = document.getElementById('timer-tab-stopwatch');
+    const panelPomo = document.getElementById('pomodoro-panel');
+    const panelSW = document.getElementById('stopwatch-panel');
+
+    if (!tabPomo || !tabSW) return;
+
+    tabPomo.addEventListener('click', () => {
+        tabPomo.classList.add('active');
+        tabSW.classList.remove('active');
+        panelPomo.classList.remove('hidden');
+        panelSW.classList.add('hidden');
+    });
+
+    tabSW.addEventListener('click', () => {
+        tabSW.classList.add('active');
+        tabPomo.classList.remove('active');
+        panelSW.classList.remove('hidden');
+        panelPomo.classList.add('hidden');
+    });
+
+    // --- POMODORO TIMER ---
+    const MODE_TIMES = { work: 1500, short: 300, long: 900 };
+    const MODE_LABELS = { work: 'Time to Focus', short: 'Short Break', long: 'Long Break' };
+    let currentPomoMode = 'work';
+    let pomoTimeLeft = 1500;
+    let pomoTimerId = null;
+    let pomoCompletedSessions = 0;
+    let pomoTotalFocusSeconds = 0;
+
+    const textPomoDigits = document.getElementById('pomo-timer-text');
+    const labelPomoStatus = document.getElementById('pomo-status-label');
+    const ringProgress = document.getElementById('pomo-progress-ring');
+    const btnPomoStart = document.getElementById('pomo-start-btn');
+    const btnPomoReset = document.getElementById('pomo-reset-btn');
+    const elCompletedSessions = document.getElementById('pomo-completed-count');
+    const elTotalFocusTime = document.getElementById('pomo-total-time');
+
+    const updatePomoDisplay = () => {
+        const mins = Math.floor(pomoTimeLeft / 60);
+        const secs = pomoTimeLeft % 60;
+        textPomoDigits.textContent = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+
+        const totalForMode = MODE_TIMES[currentPomoMode];
+        const fraction = pomoTimeLeft / totalForMode;
+        // Total dasharray = 2 * PI * 85 ~= 534
+        const dashoffset = 534 * (1 - fraction);
+        if (ringProgress) ringProgress.style.strokeDashoffset = dashoffset;
+    };
+
+    const modePills = document.querySelectorAll('.mode-pill');
+    modePills.forEach(pill => {
+        pill.addEventListener('click', () => {
+            modePills.forEach(p => p.classList.remove('active'));
+            pill.classList.add('active');
+            currentPomoMode = pill.dataset.mode || 'work';
+            labelPomoStatus.textContent = MODE_LABELS[currentPomoMode];
+            pomoTimeLeft = MODE_TIMES[currentPomoMode];
+            if (pomoTimerId) {
+                clearInterval(pomoTimerId);
+                pomoTimerId = null;
+                btnPomoStart.textContent = 'Start Session';
+            }
+            updatePomoDisplay();
+        });
+    });
+
+    btnPomoStart?.addEventListener('click', () => {
+        if (pomoTimerId) {
+            // Pause
+            clearInterval(pomoTimerId);
+            pomoTimerId = null;
+            btnPomoStart.textContent = 'Resume';
+        } else {
+            // Start
+            btnPomoStart.textContent = 'Pause';
+            pomoTimerId = setInterval(() => {
+                if (pomoTimeLeft > 0) {
+                    pomoTimeLeft--;
+                    if (currentPomoMode === 'work') pomoTotalFocusSeconds++;
+                    updatePomoDisplay();
+                } else {
+                    clearInterval(pomoTimerId);
+                    pomoTimerId = null;
+                    btnPomoStart.textContent = 'Start Session';
+                    playAudioAlert();
+                    if (currentPomoMode === 'work') {
+                        pomoCompletedSessions++;
+                        elCompletedSessions.textContent = pomoCompletedSessions;
+                        showToast('🍅 Great focus session completed! Take a break.', 'success');
+                    } else {
+                        showToast('🔔 Break time is over! Ready to focus?', 'info');
+                    }
+                    elTotalFocusTime.textContent = `${Math.floor(pomoTotalFocusSeconds / 60)}m`;
+                }
+            }, 1000);
+        }
+    });
+
+    btnPomoReset?.addEventListener('click', () => {
+        if (pomoTimerId) {
+            clearInterval(pomoTimerId);
+            pomoTimerId = null;
+        }
+        pomoTimeLeft = MODE_TIMES[currentPomoMode];
+        btnPomoStart.textContent = 'Start Session';
+        updatePomoDisplay();
+    });
+
+    updatePomoDisplay();
+
+    // --- STOPWATCH ---
+    let swStartTime = 0;
+    let swElapsedTime = 0;
+    let swTimerId = null;
+    let swLaps = [];
+
+    const textSWDigits = document.getElementById('sw-timer-text');
+    const btnSWStart = document.getElementById('sw-start-btn');
+    const btnSWLap = document.getElementById('sw-lap-btn');
+    const btnSWReset = document.getElementById('sw-reset-btn');
+    const lapsList = document.getElementById('sw-laps-list');
+
+    const formatSWTime = (ms) => {
+        const totalSecs = Math.floor(ms / 1000);
+        const mins = Math.floor(totalSecs / 60);
+        const secs = totalSecs % 60;
+        const hundredths = Math.floor((ms % 1000) / 10);
+        return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}.${String(hundredths).padStart(2, '0')}`;
+    };
+
+    const renderLaps = () => {
+        if (!swLaps.length) {
+            lapsList.innerHTML = '<li class="lap-empty">No laps recorded</li>';
+            return;
+        }
+        lapsList.innerHTML = swLaps.map((lap, idx) => `
+            <li class="lap-item">
+                <span>Lap ${idx + 1}</span>
+                <span>${formatSWTime(lap)}</span>
+            </li>
+        `).join('');
+    };
+
+    btnSWStart?.addEventListener('click', () => {
+        if (swTimerId) {
+            // Pause
+            clearInterval(swTimerId);
+            swTimerId = null;
+            btnSWStart.textContent = 'Start';
+        } else {
+            // Start
+            swStartTime = Date.now() - swElapsedTime;
+            btnSWStart.textContent = 'Pause';
+            swTimerId = setInterval(() => {
+                swElapsedTime = Date.now() - swStartTime;
+                textSWDigits.textContent = formatSWTime(swElapsedTime);
+            }, 30);
+        }
+    });
+
+    btnSWLap?.addEventListener('click', () => {
+        if (swElapsedTime > 0) {
+            swLaps.push(swElapsedTime);
+            renderLaps();
+        }
+    });
+
+    btnSWReset?.addEventListener('click', () => {
+        if (swTimerId) {
+            clearInterval(swTimerId);
+            swTimerId = null;
+        }
+        swElapsedTime = 0;
+        swLaps = [];
+        btnSWStart.textContent = 'Start';
+        textSWDigits.textContent = '00:00.00';
+        renderLaps();
+    });
+}
+

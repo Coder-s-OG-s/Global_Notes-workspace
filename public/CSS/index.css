@@ -936,6 +936,26 @@ html,
   transition: transform 0.22s ease;
 }
 
+/* Apps & Tools Dropdown Button Pill */
+.nav-apps-pill {
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  color: var(--text);
+  font-size: 12px;
+  font-weight: 600;
+  height: 34px;
+  padding: 0 12px;
+  border-radius: 8px;
+}
+.nav-apps-pill:hover {
+  background: var(--surface-hover);
+  border-color: var(--primary);
+  color: var(--primary);
+  box-shadow: 0 2px 8px rgba(99, 102, 241, 0.15);
+  transform: translateY(-1px);
+}
+
+
 /* 1. Code Workspace - Cyan / Blue Accent */
 .nav-code-pill {
   border-color: rgba(6, 182, 212, 0.35);
@@ -1090,24 +1110,26 @@ html,
 
 .dropdown-menu {
   position: absolute;
-  top: calc(100% + 4px);
+  top: calc(100% + 6px);
   right: 0;
-  min-width: 200px;
+  min-width: 210px;
   background: var(--surface);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   border: 1px solid var(--border);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow-lg);
+  border-radius: 12px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.14), 0 2px 6px rgba(0, 0, 0, 0.05);
   z-index: 1000;
-  padding: 4px;
-  animation: slideDown 0.12s ease both;
+  padding: 6px;
+  animation: slideDown 0.15s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 .dropdown-header {
-  padding: 8px 10px 6px;
-  font-size: 11px;
-  font-weight: 600;
+  padding: 8px 12px 6px;
+  font-size: 10.5px;
+  font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.06em;
   color: var(--text-muted);
 }
 
@@ -1130,24 +1152,39 @@ html,
 .dropdown-item {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   width: 100%;
-  padding: 8px 10px;
-  border-radius: var(--radius-sm);
+  padding: 9px 12px;
+  border-radius: 8px;
   font-size: 13px;
-  color: var(--text);
+  font-weight: 500;
+  color: var(--text) !important;
+  text-decoration: none !important;
   text-align: left;
-  transition: background var(--transition-fast);
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.15s ease;
 }
 
 .dropdown-item:hover {
-  background: var(--surface-3);
+  background: var(--surface-hover);
+  color: var(--primary) !important;
+  transform: translateX(2px);
 }
 
 .dropdown-item .icon {
   width: 16px;
   height: 16px;
-  color: var(--text-muted);
+  color: var(--primary);
+  flex-shrink: 0;
+  transition: transform 0.15s ease;
+}
+
+.dropdown-item:hover .icon {
+  transform: scale(1.15);
+}
+
 }
 
 .danger-text {
@@ -1163,22 +1200,30 @@ html,
 }
 
 .theme-option {
-  padding: 6px 4px;
+  padding: 8px 6px;
   border-radius: var(--radius-sm);
   border: 1px solid var(--border);
   font-size: 11px;
+  font-weight: 600;
   text-align: center;
-  color: var(--text-dim);
-  transition: border-color var(--transition-fast), background var(--transition-fast);
+  color: var(--text);
+  background: var(--surface-2);
+  transition: all var(--transition-fast);
+  cursor: pointer;
 }
 
 .theme-option:hover {
-  border-color: var(--text-muted);
+  border-color: var(--primary);
+  color: var(--text);
+  background: var(--surface-3);
 }
 
 .theme-option.active {
   border-color: var(--primary);
-  background: var(--active-bg);
+  background: rgba(99, 102, 241, 0.25);
+  color: #ffffff;
+  font-weight: 700;
+  box-shadow: 0 0 10px rgba(99, 102, 241, 0.25);
 }
 
 .theme-check {
@@ -1189,7 +1234,9 @@ html,
   display: inline;
   color: var(--primary);
   font-size: 10px;
+  margin-right: 2px;
 }
+
 
 .theme-name {
   display: block;
@@ -2171,9 +2218,9 @@ html,
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 6px 16px;
-  min-height: 82px;
-  max-height: 92px;
+  padding: 4px 16px;
+  min-height: 44px;
+  max-height: 52px;
   border-top: 1px solid var(--border);
   border-bottom: 1px solid var(--border);
   flex-shrink: 0;
@@ -2184,9 +2231,21 @@ html,
 
 .toolbar-controls {
   transition: opacity 0.15s ease, max-height 0.2s ease;
-  max-height: 86px;
-  overflow: hidden;
+  max-height: 44px;
+  flex: 1;
+  min-width: 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
+
+.toolbar-controls::-webkit-scrollbar {
+  display: none;
+}
+
 
 .editor-toolbar.collapsed .toolbar-controls {
   max-height: 0;
@@ -2228,51 +2287,38 @@ html,
 
 .toolbar-controls.ribbon-toolbar {
   display: flex;
-  align-items: stretch;
-  justify-content: space-between;
-  gap: 12px;
+  align-items: center;
+  gap: 8px;
   flex: 1;
   width: 100%;
-  padding: 2px 8px;
+  padding: 2px 4px;
 }
 
 /* Ribbon Section & Divider Rules */
 .ribbon-section {
   display: flex;
-  flex-direction: column;
   align-items: center;
-  justify-content: space-between;
-  height: 72px;
+  justify-content: center;
+  height: 34px;
   flex-shrink: 0;
   position: relative;
-  padding-bottom: 15px;
+  padding-bottom: 0;
 }
 
 .ribbon-label {
-  position: absolute;
-  bottom: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  font-size: 9px;
-  font-weight: 700;
-  color: var(--text-muted);
-  opacity: 0.7;
-  letter-spacing: 0.5px;
-  text-transform: uppercase;
-  white-space: nowrap;
-  user-select: none;
-  pointer-events: none;
+  display: none !important;
 }
 
 .ribbon-divider {
   width: 1px;
-  height: 58px;
+  height: 22px;
   background: var(--border);
-  opacity: 0.6;
-  margin: 4px 6px;
+  opacity: 0.5;
+  margin: 0 6px;
   flex-shrink: 0;
   align-self: center;
 }
+
 
 .ribbon-content {
   display: flex;
@@ -2321,11 +2367,12 @@ html,
 
 .ribbon-paste-btn {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
   justify-content: center;
-  height: 50px;
-  width: 44px;
+  gap: 4px;
+  height: 28px;
+  padding: 0 8px;
   border-radius: 6px;
   border: 1px solid transparent;
   background: transparent;
@@ -2339,50 +2386,91 @@ html,
 }
 
 .paste-text {
-  font-size: 9.5px;
+  font-size: 11px;
   font-weight: 600;
-  margin-top: 1px;
   color: var(--text);
 }
 
+
+.format-icon-btn,
+.toolbar-btn,
 .ribbon-icon-btn {
-  height: 24px;
-  min-width: 24px;
-  padding: 0 4px;
-  border-radius: 5px;
-  border: none;
+  height: 28px;
+  min-width: 28px;
+  padding: 0 6px;
+  border-radius: 6px;
+  border: 1px solid transparent;
   background: transparent;
-  display: flex;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  color: var(--text-dim);
+  color: var(--text);
   cursor: pointer;
-  font-size: 11px;
-  transition: background 0.15s ease, color 0.15s ease;
+  font-size: 12px;
+  transition: all 0.15s ease;
 }
 
+.format-icon-btn:hover,
+.toolbar-btn:hover,
 .ribbon-icon-btn:hover {
   background: var(--surface-hover);
-  color: var(--text);
+  border-color: var(--border);
+  color: var(--primary);
 }
 
+.format-icon-btn.active,
+.toolbar-btn.active,
 .ribbon-icon-btn.active {
-  background: var(--primary);
+  background: var(--primary, #6366f1) !important;
   color: #ffffff !important;
+  border-color: var(--primary, #6366f1) !important;
+  box-shadow: 0 2px 6px rgba(99, 102, 241, 0.35);
 }
 
-/* Sup / Sub shift formatting in ribbon */
-.ribbon-toolbar sup {
+
+/* Sup / Sub shift formatting in ribbon & buttons */
+sup,
+.ribbon-toolbar sup,
+.format-icon-btn sup,
+.editor-toolbar sup {
   vertical-align: super !important;
-  font-size: 8px !important;
+  font-size: 9px !important;
   line-height: 0 !important;
+  position: relative !important;
+  top: -0.35em !important;
 }
 
-.ribbon-toolbar sub {
+sub,
+.ribbon-toolbar sub,
+.format-icon-btn sub,
+.editor-toolbar sub {
   vertical-align: sub !important;
-  font-size: 8px !important;
+  font-size: 9px !important;
   line-height: 0 !important;
+  position: relative !important;
+  bottom: -0.25em !important;
 }
+
+.font-step-btn {
+  background: var(--surface-2, #f4f4f5) !important;
+  border: 1px solid var(--border, #e4e4e7) !important;
+  border-radius: 6px !important;
+  height: 28px !important;
+  padding: 0 6px !important;
+  font-weight: 700 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  color: var(--text) !important;
+  transition: all 0.15s ease !important;
+}
+
+.font-step-btn:hover {
+  background: var(--surface-hover, #ffffff) !important;
+  border-color: var(--primary) !important;
+  color: var(--primary) !important;
+}
+
 
 /* Ribbon Select Input Formatting (Font Family, Font Size, Change Case, Insert, Theme, Pattern) */
 .ribbon-select,
@@ -2451,6 +2539,57 @@ html,
   background: var(--surface-hover);
 }
 
+/* Editor Text Color Auto-Adaptation Across Themes */
+html[data-theme="amoled-dark"] #content,
+html[data-theme="dark"] #content,
+html[data-theme="corporate-gray"] #content,
+html[data-theme="amoled-dark"] #content p,
+html[data-theme="dark"] #content p,
+html[data-theme="corporate-gray"] #content p,
+html[data-theme="amoled-dark"] #content div,
+html[data-theme="dark"] #content div,
+html[data-theme="corporate-gray"] #content div {
+  color: #f8fafc !important;
+}
+
+html[data-theme="amoled-dark"] #content [style*="color: rgb(0, 0, 0)"],
+html[data-theme="amoled-dark"] #content [style*="color: rgb(17, 24, 39)"],
+html[data-theme="amoled-dark"] #content [style*="color: rgb(31, 41, 55)"],
+html[data-theme="amoled-dark"] #content [style*="color: #000"],
+html[data-theme="amoled-dark"] #content [style*="color: #000000"],
+html[data-theme="amoled-dark"] #content [style*="color: #111"],
+html[data-theme="amoled-dark"] #content [style*="color: #111111"],
+html[data-theme="amoled-dark"] #content [style*="color: #222"],
+html[data-theme="amoled-dark"] #content [style*="color: #222222"],
+html[data-theme="amoled-dark"] #content [style*="color: #333"],
+html[data-theme="amoled-dark"] #content [style*="color: #333333"],
+html[data-theme="dark"] #content [style*="color: rgb(0, 0, 0)"],
+html[data-theme="dark"] #content [style*="color: rgb(17, 24, 39)"],
+html[data-theme="dark"] #content [style*="color: rgb(31, 41, 55)"],
+html[data-theme="dark"] #content [style*="color: #000"],
+html[data-theme="dark"] #content [style*="color: #000000"],
+html[data-theme="dark"] #content [style*="color: #111"],
+html[data-theme="dark"] #content [style*="color: #111111"],
+html[data-theme="dark"] #content [style*="color: #222"],
+html[data-theme="dark"] #content [style*="color: #222222"],
+html[data-theme="dark"] #content [style*="color: #333"],
+html[data-theme="dark"] #content [style*="color: #333333"] {
+  color: #f8fafc !important;
+}
+
+
+/* Hide Note Card Theme dropdown in Dark Themes */
+html[data-theme="amoled-dark"] .custom-select-wrapper:has(#note-theme),
+html[data-theme="dark"] .custom-select-wrapper:has(#note-theme),
+html[data-theme="corporate-gray"] .custom-select-wrapper:has(#note-theme),
+html[data-theme="amoled-dark"] #note-theme,
+html[data-theme="dark"] #note-theme,
+html[data-theme="corporate-gray"] #note-theme {
+  display: none !important;
+}
+
+
+
 .color-bar {
   height: 3px;
   width: 14px;
@@ -2461,51 +2600,56 @@ html,
 /* Section 5 Insert & Theme Rules */
 .ribbon-insert-theme-section {
   display: flex;
-  flex-direction: column;
   align-items: center;
-  justify-content: space-between;
-  height: 72px;
+  justify-content: center;
+  height: 34px;
   flex-shrink: 0;
   position: relative;
-  padding-bottom: 15px;
+  padding-bottom: 0;
 }
 
 .ribbon-insert-theme-section .ribbon-content {
-  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  margin-bottom: 0;
   gap: 6px;
 }
 
+
 .pill-select,
 .custom-select-wrapper:has(.pill-select) .custom-select-trigger {
-  background: #f2eefe !important;
-  border: 1.5px solid #dcd3fe !important;
-  border-radius: 14px !important;
-  padding: 4px 14px !important;
-  font-size: 13px !important;
+  background: var(--surface-2, #f4f4f5) !important;
+  border: 1px solid var(--border, #e4e4e7) !important;
+  border-radius: 8px !important;
+  padding: 0 10px !important;
+  font-size: 12px !important;
   font-weight: 600 !important;
-  color: #3b2d54 !important;
-  height: 34px !important;
+  color: var(--text) !important;
+  height: 28px !important;
   display: inline-flex !important;
   align-items: center !important;
   gap: 6px !important;
-  box-shadow: 0 1px 3px rgba(110, 80, 200, 0.06) !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03) !important;
   transition: all 0.15s ease !important;
 }
 
 .pill-select:hover,
 .custom-select-wrapper:has(.pill-select) .custom-select-trigger:hover {
-  background: #e9e1fe !important;
-  border-color: #c9bafc !important;
+  background: var(--surface-hover, #ffffff) !important;
+  border-color: var(--primary) !important;
 }
 
 html[data-theme="amoled-dark"] .pill-select,
 html[data-theme="amoled-dark"] .custom-select-wrapper:has(.pill-select) .custom-select-trigger,
 html[data-theme="dark"] .pill-select,
 html[data-theme="dark"] .custom-select-wrapper:has(.pill-select) .custom-select-trigger {
-  background: #252033 !important;
-  border-color: #433a59 !important;
-  color: #e2dbf7 !important;
+  background: var(--surface-2) !important;
+  border-color: var(--border) !important;
+  color: var(--text) !important;
 }
+
 
 .toolbar-controls::-webkit-scrollbar {
   display: none;
@@ -2572,16 +2716,38 @@ html[data-theme="dark"] .custom-select-wrapper:has(.pill-select) .custom-select-
 
 .toolbar-toggle-btn {
   flex-shrink: 0;
-  margin-left: auto;
+  margin-left: 8px;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  color: var(--text-dim);
+  cursor: pointer;
+  z-index: 5;
+  transition: all 0.15s ease;
+}
+
+.toolbar-toggle-btn:hover {
+  background: var(--surface-hover);
+  border-color: var(--primary);
+  color: var(--primary);
 }
 
 .toggle-icon {
+  width: 14px;
+  height: 14px;
   transition: transform 0.2s ease;
 }
 
 .editor-toolbar.collapsed .toggle-icon {
   transform: rotate(180deg);
 }
+
 
 /* Select (Toolbar) */
 .select {
@@ -3226,6 +3392,19 @@ html[data-theme="corporate-gray"] .custom-select-menu {
   background-color: var(--note-theme-bg) !important;
   border-left-color: var(--note-theme-border) !important;
 }
+
+/* Disable note theme background tint in dark themes (only active in light themes) */
+html[data-theme="amoled-dark"] .editor[data-theme],
+html[data-theme="dark"] .editor[data-theme],
+html[data-theme="corporate-gray"] .editor[data-theme],
+html[data-theme="amoled-dark"] .note-card[data-theme],
+html[data-theme="dark"] .note-card[data-theme],
+html[data-theme="corporate-gray"] .note-card[data-theme] {
+  background: var(--surface) !important;
+  background-color: var(--surface) !important;
+  --note-theme-bg: transparent !important;
+}
+
 
 /* Card theme selector is visible in all modes */
 
@@ -4087,6 +4266,77 @@ html[data-theme="corporate-gray"] .custom-select-menu {
   background: var(--search-item-hover);
   border-left-color: var(--primary);
 }
+
+/* Cross Note Search Agent Styles */
+.search-cross-note-ai-btn {
+  margin: 6px 12px;
+  padding: 8px 12px;
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(168, 85, 247, 0.2));
+  border: 1px solid rgba(168, 85, 247, 0.4);
+  border-radius: 8px;
+  color: #d8b4fe;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: left;
+}
+
+.search-cross-note-ai-btn:hover {
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.35), rgba(168, 85, 247, 0.35));
+  border-color: rgba(168, 85, 247, 0.7);
+  transform: translateY(-1px);
+}
+
+.search-ai-loading {
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  color: #c084fc;
+}
+
+.search-ai-answer {
+  padding: 12px 16px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--text);
+  max-height: 250px;
+  overflow-y: auto;
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.search-ai-sources {
+  padding: 8px 16px 12px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  border-top: 1px solid var(--search-dropdown-border);
+}
+
+.sources-label {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.ai-source-chip {
+  padding: 3px 8px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  font-size: 11px;
+  color: var(--primary);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.ai-source-chip:hover {
+  background: var(--primary);
+  color: #ffffff;
+}
+
 
 .search-item-avatar {
   width: 32px;

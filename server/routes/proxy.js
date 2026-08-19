@@ -22,6 +22,7 @@ function isForbiddenUrl(urlString) {
       host === '127.0.0.1' ||
       host === '0.0.0.0' ||
       host === '::1' ||
+      !host.includes('.') || // Prevent single-label internal hosts like 'file', 'admin', 'internal'
       host.endsWith('.local') ||
       host.endsWith('.internal') ||
       host.startsWith('169.254.') ||
@@ -47,6 +48,11 @@ router.post('/fetch-url', async (req, res) => {
     if (rawHtml) {
       htmlContent = rawHtml;
     } else if (url) {
+      // Validate non-HTTP/HTTPS schemes directly on raw input
+      if (url.includes('://') && !url.startsWith('http://') && !url.startsWith('https://')) {
+        return res.status(400).json({ error: 'Access to non-HTTP/HTTPS protocols is forbidden.' });
+      }
+
       if (!url.startsWith('http://') && !url.startsWith('https://')) {
         url = 'https://' + url;
       }

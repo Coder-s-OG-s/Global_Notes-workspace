@@ -1,6 +1,6 @@
 import { createNote, persistNotes } from "./noteManager.js";
 import { renderActiveNote, renderNotesList } from "./renderer.js";
-import { deleteNote as deleteNoteFromCloud } from "./storage.js";
+import { deleteNote as deleteNoteFromCloud, saveSingleNote, setNotes } from "./storage.js";
 import { showToast, showConfirm } from "./utilities.js";
 
 const $ = (selector) => document.querySelector(selector);
@@ -13,20 +13,22 @@ export function readTagsFromUI() {
 }
 
 // Adds a new tag to the currently active note if it doesn't already exist
-export function addTagToActiveNote(notes, activeNoteId, tag, activeUser) {
+export async function addTagToActiveNote(notes, activeNoteId, tag, activeUser) {
   const trimmed = tag.trim();
-  if (!trimmed) return;
+  if (!trimmed) return false;
   const note = notes.find((n) => n.id === activeNoteId);
-  if (!note) return;
+  if (!note) return false;
   note.tags = note.tags || [];
   if (!note.tags.includes(trimmed)) {
     note.tags.push(trimmed);
     note.updatedAt = new Date().toISOString();
-    persistNotes(activeUser, notes);
+    await setNotes(activeUser, notes);
+    await saveSingleNote(activeUser, note);
     return true;
   }
   return false;
 }
+
 
 // Removes a specific tag from the currently active note
 export function removeTagFromActiveNote(notes, activeNoteId, tag, activeUser, callbacks) {

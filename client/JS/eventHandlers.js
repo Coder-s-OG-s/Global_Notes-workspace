@@ -213,8 +213,10 @@ export function wireDropdowns() {
     });
   };
 
+  toggleDropdown("apps-dropdown-wrapper", "apps-menu");
   toggleDropdown("preferences-dropdown-wrapper", "preferences-menu");
   toggleDropdown("user-pill", "profile-menu");
+
 
   // Overflow menu (editor actions)
   const overflowTrigger = document.querySelector(".overflow-trigger");

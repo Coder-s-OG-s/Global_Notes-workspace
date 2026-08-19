@@ -20,33 +20,42 @@
 
     <!-- Top Header Navigation -->
     <header class="designer-header">
-        <a href="../app.html" class="designer-brand">
-            <img src="../assets/images/logo_workspace.png" alt="Logo" class="logo-img">
-            <h1>Global UI <span class="brand-accent">Designer AI</span></h1>
-        </a>
+        <div style="display: flex; align-items: center; gap: 14px;">
+            <a href="../app.html" class="btn-secondary-gn" style="padding: 5px 10px; font-size: 12px; text-decoration: none;" title="Return to Notes Workspace">
+                ← Back to Notes
+            </a>
+            <a href="../app.html" class="designer-brand">
+                <img src="../assets/images/logo_workspace.png" alt="Logo" class="logo-img">
+                <h1>Global UI <span class="brand-accent">Designer AI</span></h1>
+            </a>
+        </div>
 
         <!-- Header Actions -->
         <div class="header-actions">
-            <button class="btn-primary-gn" id="open-paste-modal-btn" title="Paste HTML Source Code to Inspect & Edit" style="padding: 8px 18px; font-size: 14px; box-shadow: 0 0 16px rgba(249, 115, 22, 0.45);">
-                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>
+            <div class="custom-select-wrapper" style="position: relative;">
+                <select id="starter-templates-select" class="btn-secondary-gn" style="appearance: none; padding-right: 24px; cursor: pointer;" title="Load Starter UI Templates">
+                    <option value="" disabled selected>Starter Templates ▾</option>
+                    <option value="hero">Landing Hero Section</option>
+                    <option value="pricing">Pricing Cards Grid</option>
+                    <option value="card">Analytics Metrics Card</option>
+                </select>
+            </div>
+            <button class="btn-primary-gn" id="open-paste-modal-btn" title="Paste HTML Source Code to Inspect & Edit">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>
                 Import / Paste HTML
             </button>
-            <button class="btn-secondary-gn" id="set-api-key-btn" title="Configure Free Gemini / AI API Key">
-                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 2l-2 2m-2-2l2 2"></path><circle cx="7.5" cy="15.5" r="5.5"></circle><path d="m15.5 7.5-3 3"></path><path d="m21 2-9.6 9.6"></path></svg>
-                Set API Key
-            </button>
             <button class="btn-secondary-gn" id="undo-btn" title="Undo Edit" disabled>
-                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7v6h6"></path><path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13"></path></svg>
+                <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7v6h6"></path><path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13"></path></svg>
             </button>
             <button class="btn-secondary-gn" id="redo-btn" title="Redo Edit" disabled>
-                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 7v6h-6"></path><path d="M3 17a9 9 0 0 1 9-9 9 9 0 0 1 6 2.3l3 2.7"></path></svg>
+                <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 7v6h-6"></path><path d="M3 17a9 9 0 0 1 9-9 9 9 0 0 1 6 2.3l3 2.7"></path></svg>
             </button>
             <button class="btn-secondary-gn" id="clear-design-btn" title="Clear Design & Start Fresh">
-                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
                 Clear
             </button>
-            <button class="btn-primary-gn" id="export-html-btn" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);">
-                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+            <button class="btn-primary-gn" id="export-html-btn" style="background: #10b981; border: 1px solid #059669;">
+                <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
                 Export HTML
             </button>
         </div>
@@ -60,23 +69,52 @@
             <div class="pane-toolbar">
                 <div class="title">
                     <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
-                    Live Visual Preview (Click element to inspect)
+                    Live Visual Preview <span style="font-weight: 400; opacity: 0.7; font-size: 11px;">(Click any element to inspect & edit)</span>
                 </div>
-                <div id="inspector-status-badge" style="font-size: 11px; color: #10b981; display: none;">
-                    <span style="display: inline-block; width: 6px; height: 6px; background-color: #10b981; border-radius: 50%; margin-right: 4px;"></span> Hover Inspector Active
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <div class="viewport-toggle-bar">
+                        <button class="viewport-btn active" data-viewport="100%" title="Desktop View"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle;margin-right:3px;"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg> Desktop</button>
+                        <button class="viewport-btn" data-viewport="768px" title="Tablet View"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle;margin-right:3px;"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg> Tablet</button>
+                        <button class="viewport-btn" data-viewport="375px" title="Mobile View"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle;margin-right:3px;"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg> Mobile</button>
+                    </div>
+                    <div id="inspector-status-badge" style="font-size: 11px; color: #10b981; display: none;">
+                        <span style="display: inline-block; width: 6px; height: 6px; background-color: #10b981; border-radius: 50%; margin-right: 4px;"></span> Inspector Active
+                    </div>
                 </div>
             </div>
 
             <!-- Empty State Overlay -->
             <div class="empty-state" id="empty-state">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
-                    <line x1="8" y1="21" x2="16" y2="21"></line>
-                    <line x1="12" y1="17" x2="12" y2="21"></line>
-                </svg>
-                <h3>No Design Loaded</h3>
-                <p>Enter a web URL above or click "Paste HTML" to load your UI design into the interactive visual editor.</p>
+                <div class="empty-state-card">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                        <line x1="8" y1="21" x2="16" y2="21"></line>
+                        <line x1="12" y1="17" x2="12" y2="21"></line>
+                    </svg>
+                    <h3>Global UI Designer AI</h3>
+                    <p>Load a starter component below or click "Import / Paste HTML" to edit any UI visually with AI.</p>
+                    
+                    <div class="starter-cards-grid">
+                        <div class="starter-card-btn" data-template="hero">
+                            <div class="card-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2"><path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3z"/></svg></div>
+                            <div class="card-title">Landing Hero</div>
+                            <div class="card-desc">SaaS Hero Section</div>
+                        </div>
+                        <div class="starter-card-btn" data-template="pricing">
+                            <div class="card-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg></div>
+                            <div class="card-title">Pricing Cards</div>
+                            <div class="card-desc">3-Tier Pricing Grid</div>
+                        </div>
+                        <div class="starter-card-btn" data-template="card">
+                            <div class="card-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></div>
+                            <div class="card-title">Analytics Card</div>
+                            <div class="card-desc">Metrics & Stats Card</div>
+                        </div>
+                    </div>
+                </div>
             </div>
+
+
 
             <iframe id="preview-iframe" class="preview-iframe" sandbox="allow-same-origin allow-scripts"></iframe>
         </section>
@@ -98,7 +136,7 @@
                 <div class="selected-element-badge" id="selected-element-badge" style="justify-content: space-between; align-items: center;">
                     <div>
                         <span>Target: <span class="tag" id="target-tag-label">None selected</span></span>
-                        <span id="target-id-label" style="color: var(--gn-accent-indigo); font-size: 10px;">Click preview element</span>
+                        <span id="target-id-label" style="color: var(--gn-text-muted); font-size: 10px;">Click preview element</span>
                     </div>
                     <button class="btn-secondary-gn" id="copy-element-code-btn" style="padding: 4px 10px; font-size: 11px;" title="Copy Selected Element HTML Code">
                         <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
@@ -114,26 +152,27 @@
 
                 <!-- Quick AI Presets -->
                 <div class="preset-chips-container">
-                    <span class="preset-chip" data-preset="glassmorphic" data-prompt="Redesign element with a glassmorphic surface, frosted blur background, and border highlight">
+                    <span class="preset-chip" data-preset="glassmorphic" data-prompt="Redesign element with a clean card layout, subtle dark background, and border highlight">
                         <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path></svg>
-                        Glassmorphic
+                        Card Layout
                     </span>
-                    <span class="preset-chip" data-preset="neon-glow" data-prompt="Apply a vibrant neon purple glow effect with glowing border and ambient shadow">
+                    <span class="preset-chip" data-preset="neon-glow" data-prompt="Apply a crisp dark border highlight, subtle shadow, and clean padding">
                         <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"></circle><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"></path></svg>
-                        Neon Glow
+                        Border Accent
                     </span>
                     <span class="preset-chip" data-preset="hover-anim" data-prompt="Add smooth hover scale transition animation and shadow lift">
                         <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
                         Hover Animation
                     </span>
-                    <span class="preset-chip" data-preset="pill-shape" data-prompt="Transform element into a modern rounded-full pill shape with gradient background">
+                    <span class="preset-chip" data-preset="pill-shape" data-prompt="Transform element into a modern rounded pill shape button">
                         <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M12 8v8M8 12h8"></path></svg>
                         Pill Shape
                     </span>
                 </div>
 
                 <!-- Targeted Prompt Input -->
-                <textarea id="ai-prompt-input" class="prompt-textarea" placeholder="Describe changes (e.g. 'Make this card glassmorphic with neon purple border and hover elevation')"></textarea>
+                <textarea id="ai-prompt-input" class="prompt-textarea" placeholder="Describe changes (e.g. 'Make this card modern with rounded corners, subtle border, and shadow')"></textarea>
+
 
                 <button class="btn-primary-gn" id="refine-ai-btn" disabled style="width: 100%; justify-content: center; padding: 10px;">
                     <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3z"></path></svg>

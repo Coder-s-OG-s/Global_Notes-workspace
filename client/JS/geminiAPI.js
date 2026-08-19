@@ -21,7 +21,7 @@ export async function generateTextWithGemini(prompt, customApiKey) {
                     contents: [{ parts: [{ text: prompt }] }],
                     generationConfig: {
                         temperature: 0.4,
-                        maxOutputTokens: 4096
+                        maxOutputTokens: 8192
                     }
                 })
             });

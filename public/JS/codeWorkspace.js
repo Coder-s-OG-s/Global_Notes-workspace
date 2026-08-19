@@ -343,8 +343,12 @@ Provide ONLY the code. Do NOT wrap it in markdown codeblocks (no \`\`\`), do NOT
         resizer.addEventListener('mousedown', (e) => this.startResizing(e));
 
         // AI Feature Buttons
+        const suggestBtn = document.getElementById('ai-suggest-btn');
+        if (suggestBtn) suggestBtn.addEventListener('click', () => this.handleAIRequest('suggest'));
+
         const explainBtn = document.getElementById('ai-explain-btn');
         if (explainBtn) explainBtn.addEventListener('click', () => this.handleAIRequest('explain'));
+
         
         const docsBtn = document.getElementById('ai-docs-btn');
         if (docsBtn) docsBtn.addEventListener('click', () => this.handleAIRequest('docs'));
@@ -506,7 +510,34 @@ Provide ONLY the code. Do NOT wrap it in markdown codeblocks (no \`\`\`), do NOT
             const lang = (languageMap[langSelectVal] || { name: langSelectVal || 'Plain Text' }).name;
             let response = '';
 
-            if (type === 'explain') {
+            if (type === 'suggest') {
+                const memoryEnabled = localStorage.getItem("gnw_ai_memory_enabled") === "true";
+                const memoryPrompt = memoryEnabled ? (localStorage.getItem("gnw_ai_memory_text") || "") : "";
+                
+                try {
+                    const res = await fetch('/api/ai/code-suggest', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ code, language: lang, action: 'suggest', memoryPrompt })
+                    });
+                    if (res.ok) {
+                        const data = await res.json();
+                        const explanation = data.explanation || "AI Code Suggestions";
+                        const suggestedCode = data.suggestedCode || code;
+                        response = `**AI Suggestions & Refinements:**\n${explanation}\n\n**Suggested Code:**\n\`\`\`${langSelectVal}\n${suggestedCode}\n\`\`\``;
+                    } else {
+                        throw new Error('API request failed');
+                    }
+                } catch(e) {
+                    response = await this.callAI(
+                        "You are an AI code completion assistant. Suggest code improvements, completions, or fixes. Respond with:\n**Suggestions:**\n[bullet list]\n**Suggested Code:**\n[code block]",
+                        `Language: ${lang}\n\nCode:\n${code}`
+                    );
+                }
+                this.renderAIResult("AI Code Suggestions", response, true);
+
+            } else if (type === 'explain') {
+
                 response = await this.callAI(
                     "You are an expert programming tutor. Explain code clearly for intermediate developers. Structure your response with these exact sections:\n**Overview** — what the code does in 2–3 sentences\n**Key Functions** — explain each function/method\n**Concepts Used** — list and briefly explain the main concepts\nKeep it concise, practical, and beginner-friendly.",
                     `Language: ${lang}\n\nCode:\n${code}`

@@ -176,3 +176,25 @@ export function mergeGuestNotes(username) {
     return false;
   }
 }
+
+/**
+ * AI Memory Preference Helpers (Explicit Opt-In Only)
+ * Stores ONLY a short user preference string (e.g. "writing style"), NEVER raw note dumps.
+ */
+export function getAIMemoryEnabled() {
+  return localStorage.getItem("gnw_ai_memory_enabled") === "true";
+}
+
+export function setAIMemoryEnabled(enabled) {
+  localStorage.setItem("gnw_ai_memory_enabled", enabled ? "true" : "false");
+}
+
+export function getAIMemoryPrompt() {
+  if (!getAIMemoryEnabled()) return "";
+  return localStorage.getItem("gnw_ai_memory_text") || "";
+}
+
+export function setAIMemoryPrompt(text) {
+  localStorage.setItem("gnw_ai_memory_text", (text || "").trim().substring(0, 500));
+}
+
