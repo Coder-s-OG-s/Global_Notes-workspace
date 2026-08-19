@@ -192,14 +192,28 @@
                         </button>
                     </div>
 
-                    <!-- Study Mastery Progress Bar -->
-                    <div class="workspace-header hidden" id="flashcards-header" style="margin-top: 20px;">
-                        <div class="progress-info">
-                            <span class="progress-title">Study Mastery</span>
-                            <span class="progress-value" id="flashcards-progress-text">0% Mastered (0/0 cards)</span>
+                    <!-- Study Mastery Progress Bar & Cartoon Template Selector -->
+                    <div class="workspace-header hidden" id="flashcards-header" style="margin-top: 20px; display: flex; flex-direction: column; gap: 14px;">
+                        <div class="progress-info" style="display: flex; justify-content: space-between; align-items: center;">
+                            <span class="progress-title" style="font-size: 14px; font-weight: 800;">Study Mastery</span>
+                            <span class="progress-value" id="flashcards-progress-text" style="font-size: 12px; font-weight: 700; color: #6366f1;">0% Mastered (0/0 cards)</span>
                         </div>
-                        <div class="progress-track">
-                            <div class="progress-fill" id="flashcards-progress-fill" style="width: 0%"></div>
+                        <div class="progress-track" style="height: 8px; background: var(--border, #e2e8f0); border-radius: 10px; overflow: hidden;">
+                            <div class="progress-fill" id="flashcards-progress-fill" style="width: 0%; height: 100%; background: linear-gradient(90deg, #6366f1, #10b981); border-radius: 10px;"></div>
+                        </div>
+
+                        <!-- Cartoon Template Selector Bar -->
+                        <div class="cartoon-template-selector-bar" style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; background: var(--surface-2, #f8fafc); border: 1px solid var(--border, #e2e8f0); border-radius: 16px; padding: 10px 14px; margin-top: 4px;">
+                            <div style="display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 800; color: var(--text, #0f172a);">
+                                <span>🎨 CARTOON THEME:</span>
+                            </div>
+                            <div class="cartoon-template-pills" style="display: flex; gap: 6px; flex-wrap: wrap;">
+                                <button class="cartoon-pill-btn active" data-template="cubist" style="padding: 5px 12px; border-radius: 12px; font-size: 11px; font-weight: 800; border: 1px solid rgba(0,0,0,0.08); cursor: pointer; background: #6366f1; color: #fff;">🎨 Cubist Art</button>
+                                <button class="cartoon-pill-btn" data-template="cyberpunk" style="padding: 5px 12px; border-radius: 12px; font-size: 11px; font-weight: 800; border: 1px solid rgba(0,0,0,0.08); cursor: pointer; background: #ffffff; color: #0f172a;">⚡ Cyberpunk</button>
+                                <button class="cartoon-pill-btn" data-template="cosmic" style="padding: 5px 12px; border-radius: 12px; font-size: 11px; font-weight: 800; border: 1px solid rgba(0,0,0,0.08); cursor: pointer; background: #ffffff; color: #0f172a;">🚀 Space Sci-Fi</button>
+                                <button class="cartoon-pill-btn" data-template="minimal" style="padding: 5px 12px; border-radius: 12px; font-size: 11px; font-weight: 800; border: 1px solid rgba(0,0,0,0.08); cursor: pointer; background: #ffffff; color: #0f172a;">🌱 Minimal Flat</button>
+                                <button class="cartoon-pill-btn" data-template="pixel" style="padding: 5px 12px; border-radius: 12px; font-size: 11px; font-weight: 800; border: 1px solid rgba(0,0,0,0.08); cursor: pointer; background: #ffffff; color: #0f172a;">👾 Retro Pixel</button>
+                            </div>
                         </div>
                     </div>
 

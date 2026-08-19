@@ -33,6 +33,7 @@ let scheduleFileText = '';
 let savedDecks = [];
 let activeDeckId = null;
 let savedSchedules = [];
+let activeCartoonTemplate = localStorage.getItem('global_notes_hub_cartoon_template') || 'cubist';
 let activeScheduleId = null;
 let savedFlowcharts = [];
 let activeFlowchartId = null;
@@ -605,6 +606,40 @@ async function initHub() {
             }
         });
     }
+
+    // Bind Cartoon Template Selector Pills
+    const cartoonPills = document.querySelectorAll('.cartoon-pill-btn');
+    cartoonPills.forEach(pill => {
+        if (pill.dataset.template === activeCartoonTemplate) {
+            pill.classList.add('active');
+            pill.style.background = '#6366f1';
+            pill.style.color = '#ffffff';
+        } else {
+            pill.classList.remove('active');
+            pill.style.background = '#ffffff';
+            pill.style.color = '#0f172a';
+        }
+
+        pill.addEventListener('click', () => {
+            cartoonPills.forEach(p => {
+                p.classList.remove('active');
+                p.style.background = '#ffffff';
+                p.style.color = '#0f172a';
+            });
+            pill.classList.add('active');
+            pill.style.background = '#6366f1';
+            pill.style.color = '#ffffff';
+            activeCartoonTemplate = pill.dataset.template || 'cubist';
+            localStorage.setItem('global_notes_hub_cartoon_template', activeCartoonTemplate);
+
+            if (activeDeckId) {
+                const activeDeck = savedDecks.find(d => d.id === activeDeckId);
+                if (activeDeck) {
+                    renderFlashcards(activeDeck.cards);
+                }
+            }
+        });
+    });
 
     // Bind Search Bar Toggle & Input Filter
     const libSearchBtn = document.getElementById('lib-search-btn');
@@ -1484,6 +1519,86 @@ function stripEmojis(text) {
     return text.replace(/[\u{1F600}-\u{1F64F}\u{1F300}-\u{1F5FF}\u{1F680}-\u{1F6FF}\u{1F700}-\u{1F77F}\u{1F780}-\u{1F7FF}\u{1F800}-\u{1F8FF}\u{1F900}-\u{1F9FF}\u{1FA00}-\u{1FA6F}\u{1FA70}-\u{1FAFF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}]/gu, '').trim();
 }
 
+function getCartoonSvgForTemplate(templateName, idx) {
+    const seed = idx || 0;
+    const colors = [
+        { main: '#2563eb', sec: '#ef4444', acc: '#f59e0b', bg: '#fef3c7' },
+        { main: '#7c3aed', sec: '#ec4899', acc: '#06b6d4', bg: '#e0e7ff' },
+        { main: '#059669', sec: '#10b981', acc: '#34d399', bg: '#dcfce7' },
+        { main: '#ea580c', sec: '#f97316', acc: '#fbbf24', bg: '#ffedd5' }
+    ];
+    const c = colors[seed % colors.length];
+
+    if (templateName === 'cyberpunk') {
+        return `<svg viewBox="0 0 300 120" style="width:100%;height:100%;display:block;border-radius:18px 18px 0 0;" preserveAspectRatio="xMidYMid slice">
+            <rect width="300" height="120" fill="#1e1b4b"/>
+            <circle cx="150" cy="60" r="45" fill="#ec4899" opacity="0.3"/>
+            <circle cx="150" cy="60" r="30" fill="#06b6d4" opacity="0.4"/>
+            <rect x="120" y="30" width="60" height="60" rx="16" fill="#0f172a" stroke="#06b6d4" stroke-width="3"/>
+            <rect x="130" y="45" width="40" height="16" rx="8" fill="#ec4899"/>
+            <circle cx="112" cy="60" r="10" fill="#06b6d4"/>
+            <circle cx="188" cy="60" r="10" fill="#06b6d4"/>
+            <path d="M112 60 Q150 20 188 60" fill="none" stroke="#38bdf8" stroke-width="4"/>
+        </svg>`;
+    }
+
+    if (templateName === 'cosmic') {
+        return `<svg viewBox="0 0 300 120" style="width:100%;height:100%;display:block;border-radius:18px 18px 0 0;" preserveAspectRatio="xMidYMid slice">
+            <rect width="300" height="120" fill="#0f172a"/>
+            <circle cx="40" cy="25" r="2" fill="#fff" opacity="0.8"/>
+            <circle cx="260" cy="35" r="3" fill="#fde047" opacity="0.9"/>
+            <circle cx="220" cy="85" r="2" fill="#fff" opacity="0.7"/>
+            <circle cx="70" cy="95" r="2" fill="#fff" opacity="0.8"/>
+            <circle cx="230" cy="30" r="14" fill="#f59e0b"/>
+            <ellipse cx="230" cy="30" rx="22" ry="5" fill="none" stroke="#fbbf24" stroke-width="3" transform="rotate(-20 230 30)"/>
+            <circle cx="150" cy="60" r="32" fill="#f8fafc" stroke="#cbd5e1" stroke-width="3"/>
+            <ellipse cx="150" cy="57" rx="20" ry="14" fill="#1e293b"/>
+            <ellipse cx="145" cy="53" rx="7" ry="3" fill="#60a5fa" opacity="0.6"/>
+        </svg>`;
+    }
+
+    if (templateName === 'minimal') {
+        return `<svg viewBox="0 0 300 120" style="width:100%;height:100%;display:block;border-radius:18px 18px 0 0;" preserveAspectRatio="xMidYMid slice">
+            <rect width="300" height="120" fill="${c.bg}"/>
+            <circle cx="90" cy="60" r="40" fill="${c.main}" opacity="0.2"/>
+            <circle cx="210" cy="60" r="30" fill="${c.sec}" opacity="0.2"/>
+            <rect x="120" y="28" width="60" height="60" rx="22" fill="${c.main}"/>
+            <circle cx="138" cy="50" r="5" fill="#ffffff"/>
+            <circle cx="162" cy="50" r="5" fill="#ffffff"/>
+            <path d="M142 66 Q150 74 158 66" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round"/>
+        </svg>`;
+    }
+
+    if (templateName === 'pixel') {
+        return `<svg viewBox="0 0 300 120" style="width:100%;height:100%;display:block;border-radius:18px 18px 0 0;" preserveAspectRatio="xMidYMid slice">
+            <rect width="300" height="120" fill="#18181b"/>
+            <g transform="translate(110, 20)">
+                <rect x="20" y="10" width="40" height="10" fill="#f43f5e"/>
+                <rect x="10" y="20" width="60" height="40" fill="#fbbf24"/>
+                <rect x="20" y="30" width="10" height="10" fill="#09090b"/>
+                <rect x="50" y="30" width="10" height="10" fill="#09090b"/>
+                <rect x="25" y="50" width="30" height="8" fill="#e11d48"/>
+            </g>
+        </svg>`;
+    }
+
+    return `<svg viewBox="0 0 300 120" style="width:100%;height:100%;display:block;border-radius:18px 18px 0 0;" preserveAspectRatio="xMidYMid slice">
+        <rect width="300" height="120" fill="${c.bg}"/>
+        <path d="M0 0 L140 0 L90 120 L0 120 Z" fill="${c.sec}" opacity="0.85"/>
+        <path d="M140 0 L300 0 L300 120 L90 120 Z" fill="${c.main}" opacity="0.85"/>
+        <g transform="translate(110, 15)">
+            <rect x="15" y="10" width="55" height="70" rx="18" fill="#f8fafc" stroke="#0f172a" stroke-width="3"/>
+            <path d="M15 10 Q42 32 70 10 L70 42 Z" fill="${c.acc}"/>
+            <circle cx="34" cy="38" r="11" fill="#0f172a"/>
+            <circle cx="34" cy="38" r="4" fill="#38bdf8"/>
+            <polygon points="52,28 65,45 49,45" fill="#ef4444"/>
+            <rect x="28" y="58" width="28" height="9" rx="4" fill="#0f172a"/>
+            <line x1="37" y1="58" x2="37" y2="67" stroke="#fff" stroke-width="2"/>
+            <line x1="47" y1="58" x2="47" y2="67" stroke="#fff" stroke-width="2"/>
+        </g>
+    </svg>`;
+}
+
 function renderFlashcards(cards) {
     const placeholder = document.getElementById('flashcards-placeholder');
     const grid = document.getElementById('flashcards-grid');
@@ -1529,24 +1644,46 @@ function renderFlashcards(cards) {
                 </div>
             </div>
         ` : '';
+        const cartoonSvgMarkup = getCartoonSvgForTemplate(activeCartoonTemplate, idx);
+
         cardEl.innerHTML = `
             <div class="flashcard-inner">
                 <div class="flashcard-stack-layer layer-back-2"></div>
                 <div class="flashcard-stack-layer layer-back-1"></div>
                 <div class="flashcard-front">
-                    <div class="card-folder-tab-badge">
-                        <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                        <span>${escapeHtml(card.category || 'General')}</span>
+                    <!-- Hero Cartoon Cover Art Box at Top (Reference Match) -->
+                    <div class="card-hero-illustration-box" style="position: relative; width: 100%; height: 120px; border-radius: 18px 18px 0 0; overflow: hidden; margin-bottom: 12px; flex-shrink: 0;">
+                        ${cartoonSvgMarkup}
+                        <div class="card-folder-tab-badge" style="position: absolute; top: 10px; left: 12px; z-index: 5;">
+                            <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                            <span>${escapeHtml(card.category || 'General')}</span>
+                        </div>
+                        <span class="flashcard-index-label" style="position: absolute; top: 10px; right: 12px; z-index: 5; background: rgba(0,0,0,0.4); color: #fff; padding: 2px 8px; border-radius: 10px;">${idx + 1} / ${cards.length}</span>
                     </div>
-                    <span class="flashcard-index-label">${idx + 1} / ${cards.length}</span>
+
                     ${card.mastered ? `
-                        <div class="flashcard-mastered-badge">
+                        <div class="flashcard-mastered-badge" style="position: absolute; top: 124px; right: 12px; z-index: 6;">
                             ✓ Got It
                         </div>
                     ` : ''}
-                    <div class="flashcard-question-text">${renderSafeHtml(stripEmojis(card.question))}</div>
-                    ${recallHtml}
-                    <!-- Floating Circle Actions Overlapping Right Side -->
+
+                    <div class="card-body-content" style="width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; flex: 1; min-height: 90px;">
+                        <div class="flashcard-question-text" style="margin-top: 0;">${renderSafeHtml(stripEmojis(card.question))}</div>
+                        ${recallHtml}
+                    </div>
+
+                    <!-- Bottom Progress Info Track (Matching Reference Image!) -->
+                    <div class="card-footer-info-row" style="width: 100%; margin-top: auto; padding-top: 10px; border-top: 1px solid var(--border, #e2e8f0); display: flex; flex-direction: column; gap: 6px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; font-size: 11.5px; font-weight: 700; color: var(--text-muted, #64748b);">
+                            <span>Question ${idx + 1} of ${cards.length}</span>
+                            <span style="color: ${card.mastered ? '#10b981' : '#6366f1'};">${card.mastered ? 'Lesson Mastered' : 'In Progress'}</span>
+                        </div>
+                        <div class="card-mini-progress-track" style="height: 6px; background: var(--border, #e2e8f0); border-radius: 10px; overflow: hidden; width: 100%;">
+                            <div style="height: 100%; width: ${card.mastered ? '100%' : Math.round(((idx + 1) / cards.length) * 100) + '%'}; background: ${card.mastered ? '#10b981' : '#6366f1'}; border-radius: 10px;"></div>
+                        </div>
+                    </div>
+
+                    <!-- Floating Circle Actions Overlapping Right Edge (Matching Reference Image!) -->
                     <div class="card-floating-actions">
                         <button class="circle-action-btn btn-flip-card" title="Flip Card">
                             <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
