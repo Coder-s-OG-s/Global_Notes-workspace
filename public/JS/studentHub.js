@@ -567,13 +567,16 @@ async function initHub() {
         });
     }
 
-    // Bind + Add source button
+    // Bind + Add source button & Close button
     const btnOpenAddSource = document.getElementById('btn-open-add-source');
+    const btnCloseAddSource = document.getElementById('btn-close-add-source');
+    
     if (btnOpenAddSource) {
         btnOpenAddSource.addEventListener('click', () => {
             const addSourceModal = document.querySelector('.add-source-card-modal');
             if (addSourceModal) {
                 addSourceModal.style.display = 'block';
+                addSourceModal.classList.remove('hidden');
             }
             const placeholder = document.getElementById('flashcards-placeholder');
             const grid = document.getElementById('flashcards-grid');
@@ -584,6 +587,22 @@ async function initHub() {
 
             const dropzone = document.getElementById('flashcards-dropzone');
             if (dropzone) dropzone.scrollIntoView({ behavior: 'smooth' });
+        });
+    }
+
+    if (btnCloseAddSource) {
+        btnCloseAddSource.addEventListener('click', () => {
+            const addSourceModal = document.querySelector('.add-source-card-modal');
+            if (addSourceModal) {
+                addSourceModal.style.display = 'none';
+                addSourceModal.classList.add('hidden');
+            }
+            if (activeDeckId) {
+                selectDeck(activeDeckId);
+            } else {
+                const placeholder = document.getElementById('flashcards-placeholder');
+                if (placeholder) placeholder.classList.remove('hidden');
+            }
         });
     }
 
@@ -1392,19 +1411,29 @@ function selectDeck(deckId) {
     saveState();
     
     const activeDeck = savedDecks.find(d => d.id === activeDeckId);
-    if (activeDeck) {
-        renderFlashcards(activeDeck.cards);
-    }
     renderLibraryDecks();
 
     const addSourceModal = document.querySelector('.add-source-card-modal');
     if (addSourceModal) {
         addSourceModal.style.display = 'none';
+        addSourceModal.classList.add('hidden');
     }
+
+    const placeholder = document.getElementById('flashcards-placeholder');
     const grid = document.getElementById('flashcards-grid');
     const header = document.getElementById('flashcards-header');
-    if (grid) grid.classList.remove('hidden');
-    if (header) header.classList.remove('hidden');
+
+    if (activeDeck && activeDeck.cards && activeDeck.cards.length > 0) {
+        renderFlashcards(activeDeck.cards);
+        if (placeholder) placeholder.classList.add('hidden');
+        if (grid) grid.classList.remove('hidden');
+        if (header) header.classList.remove('hidden');
+    } else {
+        renderFlashcards([]);
+        if (placeholder) placeholder.classList.remove('hidden');
+        if (grid) grid.classList.add('hidden');
+        if (header) header.classList.add('hidden');
+    }
 }
 
 function deleteDeck(deckId) {
@@ -2099,11 +2128,13 @@ async function loadSavedState() {
     renderLibraryDecks();
 
     if (activeDeckId) {
-        const activeDeck = savedDecks.find(d => d.id === activeDeckId);
-        if (activeDeck) {
-            renderFlashcards(activeDeck.cards);
-        }
+        selectDeck(activeDeckId);
     } else {
+        const addSourceModal = document.querySelector('.add-source-card-modal');
+        if (addSourceModal) {
+            addSourceModal.style.display = 'block';
+            addSourceModal.classList.remove('hidden');
+        }
         renderFlashcards([]);
     }
 
