@@ -1281,49 +1281,7 @@ ${sourceText}`;
 }
 
 function getDefaultStudyDecks() {
-    return [
-        {
-            id: 'deck_calc_1',
-            name: 'Intro to Calculus',
-            sourceType: 'youtube',
-            timestamp: Date.now(),
-            cards: [
-                { question: 'What is the derivative of sin(x)?', answer: 'The derivative of sin(x) is <strong>cos(x)</strong>.', mastered: true, category: 'Calculus' },
-                { question: 'What is the derivative of cos(x)?', answer: 'The derivative of cos(x) is <strong>-sin(x)</strong>.', mastered: true, category: 'Calculus' },
-                { question: 'What is the Power Rule for differentiation?', answer: 'For <strong>f(x) = x^n</strong>, f\'(x) = <strong>n * x^(n-1)</strong>.', mastered: false, category: 'Calculus' }
-            ]
-        },
-        {
-            id: 'deck_lecture_1',
-            name: 'Lecture 1 Slides',
-            sourceType: 'pdf',
-            timestamp: Date.now(),
-            cards: [
-                { question: 'What is the fundamental theorem of calculus?', answer: 'It connects differentiation and integration as inverse operations.', mastered: true, category: 'Mathematics' },
-                { question: 'Define a continuous function.', answer: 'A function with no jumps, breaks, or holes in its domain.', mastered: false, category: 'Analysis' }
-            ]
-        },
-        {
-            id: 'deck_syllabus_1',
-            name: 'Syllabus',
-            sourceType: 'docx',
-            timestamp: Date.now(),
-            cards: [
-                { question: 'What is the weight of midterms?', answer: 'Midterms count for <strong>30%</strong> of final grade.', mastered: false, category: 'Course Info' },
-                { question: 'When are weekly assignments due?', answer: 'Every Sunday night at 11:59 PM.', mastered: false, category: 'Course Info' }
-            ]
-        },
-        {
-            id: 'deck_cell_div_1',
-            name: 'Cell Division',
-            sourceType: 'recording',
-            timestamp: Date.now(),
-            cards: [
-                { question: 'What are the phases of mitosis?', answer: '<strong>Prophase, Metaphase, Anaphase, Telophase</strong> (PMAT).', mastered: true, category: 'Biology' },
-                { question: 'Difference between Mitosis and Meiosis?', answer: 'Mitosis creates 2 identical diploid cells; Meiosis creates 4 unique haploid gametes.', mastered: true, category: 'Biology' }
-            ]
-        }
-    ];
+    return [];
 }
 
 function renderLibraryDecks(query = '') {
@@ -2045,24 +2003,28 @@ async function loadSavedState() {
         }
     }
 
-    if (!loadedFromDb) {
         // 1. Load Decks from localStorage
         try {
             const storedDecks = localStorage.getItem(STORAGE_DECKS_KEY);
             if (storedDecks) {
                 savedDecks = JSON.parse(storedDecks);
+                // Purge legacy hardcoded mock sample decks
+                savedDecks = savedDecks.filter(d => d.id !== 'deck_calc_1' && d.id !== 'deck_lecture_1' && d.id !== 'deck_syllabus_1' && d.id !== 'deck_cell_div_1');
             }
-            if (!savedDecks || savedDecks.length === 0) {
-                savedDecks = getDefaultStudyDecks();
+            if (!savedDecks) {
+                savedDecks = [];
             }
             const storedActiveId = localStorage.getItem(STORAGE_ACTIVE_DECK_ID_KEY);
-            if (storedActiveId) {
+            if (storedActiveId && savedDecks.some(d => d.id === storedActiveId)) {
                 activeDeckId = storedActiveId;
             } else if (savedDecks.length > 0) {
                 activeDeckId = savedDecks[0].id;
+            } else {
+                activeDeckId = null;
             }
         } catch (e) {
-            // quiet fallback
+            savedDecks = [];
+            activeDeckId = null;
         }
 
         // 2. Load Schedules from localStorage
