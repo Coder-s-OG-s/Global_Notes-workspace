@@ -210,18 +210,21 @@ async function initHub() {
         });
     }
 
-    // Bind Sidebar Menu Toggle Button
+    // Bind Sidebar Menu Toggle Buttons (Header & Sidebar Title)
+    const toggleSidebar = (e) => {
+        if (e) e.stopPropagation();
+        const libraryPanel = document.querySelector('.my-library-panel');
+        if (libraryPanel) {
+            libraryPanel.classList.toggle('collapsed');
+            showToast(libraryPanel.classList.contains('collapsed') ? 'Library sidebar hidden' : 'Library sidebar expanded', 'info');
+        }
+    };
+
     const libMenuBtn = document.getElementById('lib-menu-btn');
-    if (libMenuBtn) {
-        libMenuBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            const libraryPanel = document.querySelector('.my-library-panel');
-            if (libraryPanel) {
-                libraryPanel.classList.toggle('collapsed');
-                showToast(libraryPanel.classList.contains('collapsed') ? 'Library sidebar hidden' : 'Library sidebar expanded', 'info');
-            }
-        });
-    }
+    if (libMenuBtn) libMenuBtn.addEventListener('click', toggleSidebar);
+
+    const libMenuBtnSidebar = document.getElementById('lib-menu-btn-sidebar');
+    if (libMenuBtnSidebar) libMenuBtnSidebar.addEventListener('click', toggleSidebar);
 
 
 
