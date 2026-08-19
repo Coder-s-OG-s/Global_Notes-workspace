@@ -3133,21 +3133,35 @@ function initStudentTimers() {
     const tabSW = document.getElementById('timer-tab-stopwatch');
     const panelPomo = document.getElementById('pomodoro-panel');
     const panelSW = document.getElementById('stopwatch-panel');
+    const extraSWControls = document.getElementById('sw-controls-extra');
+    const extraSWLaps = document.getElementById('sw-laps-container');
 
     if (!tabPomo || !tabSW) return;
 
     tabPomo.addEventListener('click', () => {
         tabPomo.classList.add('active');
         tabSW.classList.remove('active');
-        panelPomo.classList.remove('hidden');
-        panelSW.classList.add('hidden');
+        tabPomo.style.background = '#6366f1';
+        tabPomo.style.color = '#ffffff';
+        tabSW.style.background = 'transparent';
+        tabSW.style.color = '#475569';
+        panelPomo?.classList.remove('hidden');
+        panelSW?.classList.add('hidden');
+        extraSWControls?.classList.add('hidden');
+        extraSWLaps?.classList.add('hidden');
     });
 
     tabSW.addEventListener('click', () => {
         tabSW.classList.add('active');
         tabPomo.classList.remove('active');
-        panelSW.classList.remove('hidden');
-        panelPomo.classList.add('hidden');
+        tabSW.style.background = '#6366f1';
+        tabSW.style.color = '#ffffff';
+        tabPomo.style.background = 'transparent';
+        tabPomo.style.color = '#475569';
+        panelSW?.classList.remove('hidden');
+        panelPomo?.classList.add('hidden');
+        extraSWControls?.classList.remove('hidden');
+        extraSWLaps?.classList.remove('hidden');
     });
 
     // --- POMODORO TIMER ---

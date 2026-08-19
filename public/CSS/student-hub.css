@@ -3589,4 +3589,70 @@ body.dark-mode .canvas-workspace-title {
   color: #f8fafc !important;
 }
 
+/* AMOLED Dark Mode Overrides for Focus & Study Timers */
+[data-theme="amoled-dark"] #view-timers .options-panel,
+[data-theme*="dark"] #view-timers .options-panel,
+body.dark-mode #view-timers .options-panel {
+  background: #09090b !important;
+  border-color: #18181b !important;
+}
+
+[data-theme="amoled-dark"] .timer-studio-container,
+[data-theme*="dark"] .timer-studio-container,
+body.dark-mode .timer-studio-container {
+  background: #09090b !important;
+  border-color: #18181b !important;
+}
+
+[data-theme="amoled-dark"] #view-timers .options-card-box.pastel-yellow-card,
+[data-theme*="dark"] #view-timers .options-card-box.pastel-yellow-card,
+body.dark-mode #view-timers .options-card-box.pastel-yellow-card {
+  background: #1c1917 !important;
+  border-color: #44403c !important;
+  color: #f8fafc !important;
+}
+
+[data-theme="amoled-dark"] #view-timers .options-card-box.pastel-blue-card,
+[data-theme*="dark"] #view-timers .options-card-box.pastel-blue-card,
+body.dark-mode #view-timers .options-card-box.pastel-blue-card {
+  background: #1e1b4b !important;
+  border-color: #312e81 !important;
+  color: #f8fafc !important;
+}
+
+[data-theme="amoled-dark"] .timer-type-toggle-bar,
+[data-theme*="dark"] .timer-type-toggle-bar,
+body.dark-mode .timer-type-toggle-bar {
+  background: #121215 !important;
+  border-color: #27272a !important;
+}
+
+[data-theme="amoled-dark"] .timer-digits,
+[data-theme*="dark"] .timer-digits,
+body.dark-mode .timer-digits {
+  color: #f8fafc !important;
+}
+
+[data-theme="amoled-dark"] .timer-stat-card,
+[data-theme*="dark"] .timer-stat-card,
+body.dark-mode .timer-stat-card {
+  background: #121215 !important;
+  border-color: #27272a !important;
+  color: #f8fafc !important;
+}
+
+[data-theme="amoled-dark"] .stat-card-number,
+[data-theme*="dark"] .stat-card-number,
+body.dark-mode .stat-card-number {
+  color: #f8fafc !important;
+}
+
+[data-theme="amoled-dark"] #sw-laps-container,
+[data-theme*="dark"] #sw-laps-container,
+body.dark-mode #sw-laps-container {
+  background: #121215 !important;
+  border-color: #27272a !important;
+  color: #f8fafc !important;
+}
+
 
