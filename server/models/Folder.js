@@ -10,6 +10,10 @@ const FolderSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  color: {
+    type: String,
+    default: 'blue'
+  },
   id: String, // Store client-side UUID for easier mapping
   createdAt: {
     type: Date,

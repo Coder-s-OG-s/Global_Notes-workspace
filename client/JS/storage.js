@@ -51,10 +51,15 @@ export async function getNotes(username) {
       notesMap.set(key, { ...n, id: key });
     });
 
-    // Add local notes only if they aren't already represented by a cloud note
+    // Add local notes or merge color preferences
     localNotes.forEach(n => {
-      if (!notesMap.has(n.id) && !notesMap.has(n._id)) {
-        notesMap.set(n.id, n);
+      const key = n.id || n._id;
+      const cloudNote = notesMap.get(key) || (n.id && notesMap.get(n.id)) || (n._id && notesMap.get(n._id));
+      if (cloudNote) {
+        if (n.color) cloudNote.color = n.color;
+        if (n.theme) cloudNote.theme = n.theme;
+      } else {
+        notesMap.set(key, n);
       }
     });
 
