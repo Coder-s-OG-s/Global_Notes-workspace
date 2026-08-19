@@ -1530,71 +1530,105 @@ function getCartoonSvgForTemplate(templateName, idx) {
     const c = colors[seed % colors.length];
 
     if (templateName === 'cyberpunk') {
-        return `<svg viewBox="0 0 300 120" style="width:100%;height:100%;display:block;border-radius:18px 18px 0 0;" preserveAspectRatio="xMidYMid slice">
-            <rect width="300" height="120" fill="#1e1b4b"/>
-            <circle cx="150" cy="60" r="45" fill="#ec4899" opacity="0.3"/>
-            <circle cx="150" cy="60" r="30" fill="#06b6d4" opacity="0.4"/>
-            <rect x="120" y="30" width="60" height="60" rx="16" fill="#0f172a" stroke="#06b6d4" stroke-width="3"/>
-            <rect x="130" y="45" width="40" height="16" rx="8" fill="#ec4899"/>
-            <circle cx="112" cy="60" r="10" fill="#06b6d4"/>
-            <circle cx="188" cy="60" r="10" fill="#06b6d4"/>
-            <path d="M112 60 Q150 20 188 60" fill="none" stroke="#38bdf8" stroke-width="4"/>
-        </svg>`;
-    }
-
-    if (templateName === 'cosmic') {
-        return `<svg viewBox="0 0 300 120" style="width:100%;height:100%;display:block;border-radius:18px 18px 0 0;" preserveAspectRatio="xMidYMid slice">
-            <rect width="300" height="120" fill="#0f172a"/>
-            <circle cx="40" cy="25" r="2" fill="#fff" opacity="0.8"/>
-            <circle cx="260" cy="35" r="3" fill="#fde047" opacity="0.9"/>
-            <circle cx="220" cy="85" r="2" fill="#fff" opacity="0.7"/>
-            <circle cx="70" cy="95" r="2" fill="#fff" opacity="0.8"/>
-            <circle cx="230" cy="30" r="14" fill="#f59e0b"/>
-            <ellipse cx="230" cy="30" rx="22" ry="5" fill="none" stroke="#fbbf24" stroke-width="3" transform="rotate(-20 230 30)"/>
-            <circle cx="150" cy="60" r="32" fill="#f8fafc" stroke="#cbd5e1" stroke-width="3"/>
-            <ellipse cx="150" cy="57" rx="20" ry="14" fill="#1e293b"/>
-            <ellipse cx="145" cy="53" rx="7" ry="3" fill="#60a5fa" opacity="0.6"/>
-        </svg>`;
-    }
-
-    if (templateName === 'minimal') {
-        return `<svg viewBox="0 0 300 120" style="width:100%;height:100%;display:block;border-radius:18px 18px 0 0;" preserveAspectRatio="xMidYMid slice">
-            <rect width="300" height="120" fill="${c.bg}"/>
-            <circle cx="90" cy="60" r="40" fill="${c.main}" opacity="0.2"/>
-            <circle cx="210" cy="60" r="30" fill="${c.sec}" opacity="0.2"/>
-            <rect x="120" y="28" width="60" height="60" rx="22" fill="${c.main}"/>
-            <circle cx="138" cy="50" r="5" fill="#ffffff"/>
-            <circle cx="162" cy="50" r="5" fill="#ffffff"/>
-            <path d="M142 66 Q150 74 158 66" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round"/>
-        </svg>`;
-    }
-
-    if (templateName === 'pixel') {
-        return `<svg viewBox="0 0 300 120" style="width:100%;height:100%;display:block;border-radius:18px 18px 0 0;" preserveAspectRatio="xMidYMid slice">
-            <rect width="300" height="120" fill="#18181b"/>
-            <g transform="translate(110, 20)">
-                <rect x="20" y="10" width="40" height="10" fill="#f43f5e"/>
-                <rect x="10" y="20" width="60" height="40" fill="#fbbf24"/>
-                <rect x="20" y="30" width="10" height="10" fill="#09090b"/>
-                <rect x="50" y="30" width="10" height="10" fill="#09090b"/>
-                <rect x="25" y="50" width="30" height="8" fill="#e11d48"/>
+        return `<svg viewBox="0 0 300 130" style="width:100%;height:100%;display:block;border-radius:18px 18px 0 0;" preserveAspectRatio="xMidYMid slice">
+            <defs>
+                <linearGradient id="cybGrad_${seed}" x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0%" stop-color="#7c3aed"/>
+                    <stop offset="100%" stop-color="#db2777"/>
+                </linearGradient>
+            </defs>
+            <rect width="300" height="130" fill="url(#cybGrad_${seed})"/>
+            <circle cx="60" cy="40" r="30" fill="#06b6d4" opacity="0.5"/>
+            <circle cx="240" cy="90" r="40" fill="#f43f5e" opacity="0.4"/>
+            <!-- Neon Cyber Mascot Face -->
+            <g transform="translate(105, 12)">
+                <rect x="10" y="10" width="70" height="75" rx="20" fill="#0f172a" stroke="#38bdf8" stroke-width="4"/>
+                <rect x="22" y="26" width="46" height="22" rx="10" fill="#ec4899"/>
+                <circle cx="33" cy="37" r="5" fill="#fde047"/>
+                <circle cx="57" cy="37" r="5" fill="#fde047"/>
+                <rect x="30" y="58" width="30" height="8" rx="4" fill="#38bdf8"/>
+                <circle cx="-2" cy="45" r="10" fill="#38bdf8" stroke="#0f172a" stroke-width="3"/>
+                <circle cx="92" cy="45" r="10" fill="#38bdf8" stroke="#0f172a" stroke-width="3"/>
+                <path d="M-2 45 Q45 10 92 45" fill="none" stroke="#f43f5e" stroke-width="4"/>
             </g>
         </svg>`;
     }
 
-    return `<svg viewBox="0 0 300 120" style="width:100%;height:100%;display:block;border-radius:18px 18px 0 0;" preserveAspectRatio="xMidYMid slice">
-        <rect width="300" height="120" fill="${c.bg}"/>
-        <path d="M0 0 L140 0 L90 120 L0 120 Z" fill="${c.sec}" opacity="0.85"/>
-        <path d="M140 0 L300 0 L300 120 L90 120 Z" fill="${c.main}" opacity="0.85"/>
-        <g transform="translate(110, 15)">
-            <rect x="15" y="10" width="55" height="70" rx="18" fill="#f8fafc" stroke="#0f172a" stroke-width="3"/>
-            <path d="M15 10 Q42 32 70 10 L70 42 Z" fill="${c.acc}"/>
-            <circle cx="34" cy="38" r="11" fill="#0f172a"/>
-            <circle cx="34" cy="38" r="4" fill="#38bdf8"/>
-            <polygon points="52,28 65,45 49,45" fill="#ef4444"/>
-            <rect x="28" y="58" width="28" height="9" rx="4" fill="#0f172a"/>
-            <line x1="37" y1="58" x2="37" y2="67" stroke="#fff" stroke-width="2"/>
-            <line x1="47" y1="58" x2="47" y2="67" stroke="#fff" stroke-width="2"/>
+    if (templateName === 'cosmic') {
+        return `<svg viewBox="0 0 300 130" style="width:100%;height:100%;display:block;border-radius:18px 18px 0 0;" preserveAspectRatio="xMidYMid slice">
+            <defs>
+                <linearGradient id="cosGrad_${seed}" x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0%" stop-color="#1e1b4b"/>
+                    <stop offset="100%" stop-color="#4338ca"/>
+                </linearGradient>
+            </defs>
+            <rect width="300" height="130" fill="url(#cosGrad_${seed})"/>
+            <circle cx="45" cy="30" r="3" fill="#ffffff"/>
+            <circle cx="255" cy="35" r="4" fill="#fde047"/>
+            <circle cx="215" cy="95" r="3" fill="#ffffff"/>
+            <circle cx="65" cy="105" r="3" fill="#60a5fa"/>
+            <!-- Saturn Planet -->
+            <circle cx="50" cy="90" r="16" fill="#f59e0b"/>
+            <ellipse cx="50" cy="90" rx="26" ry="6" fill="none" stroke="#fbbf24" stroke-width="3" transform="rotate(-20 50 90)"/>
+            <!-- Bright Astronaut Helmet Mascot -->
+            <g transform="translate(105, 12)">
+                <circle cx="45" cy="45" r="40" fill="#ffffff" stroke="#cbd5e1" stroke-width="4"/>
+                <ellipse cx="45" cy="42" rx="28" ry="18" fill="#0f172a"/>
+                <ellipse cx="38" cy="36" rx="10" ry="5" fill="#38bdf8" opacity="0.85"/>
+                <rect x="30" y="75" width="30" height="12" rx="6" fill="#ef4444"/>
+            </g>
+        </svg>`;
+    }
+
+    if (templateName === 'minimal') {
+        return `<svg viewBox="0 0 300 130" style="width:100%;height:100%;display:block;border-radius:18px 18px 0 0;" preserveAspectRatio="xMidYMid slice">
+            <rect width="300" height="130" fill="${c.bg}"/>
+            <circle cx="70" cy="65" r="45" fill="${c.sec}" opacity="0.25"/>
+            <circle cx="230" cy="65" r="40" fill="${c.main}" opacity="0.25"/>
+            <!-- Cute Bright Mascot -->
+            <g transform="translate(105, 15)">
+                <rect x="10" y="10" width="70" height="70" rx="26" fill="${c.main}" stroke="#0f172a" stroke-width="3.5"/>
+                <circle cx="30" cy="38" r="8" fill="#ffffff"/>
+                <circle cx="60" cy="38" r="8" fill="#ffffff"/>
+                <circle cx="32" cy="38" r="4" fill="#0f172a"/>
+                <circle cx="62" cy="38" r="4" fill="#0f172a"/>
+                <path d="M34 54 Q45 66 56 54" fill="none" stroke="#ffffff" stroke-width="4" stroke-linecap="round"/>
+            </g>
+        </svg>`;
+    }
+
+    if (templateName === 'pixel') {
+        return `<svg viewBox="0 0 300 130" style="width:100%;height:100%;display:block;border-radius:18px 18px 0 0;" preserveAspectRatio="xMidYMid slice">
+            <rect width="300" height="130" fill="#312e81"/>
+            <!-- Bright 8-Bit Pixel Character Avatar -->
+            <g transform="translate(105, 15)">
+                <rect x="25" y="5" width="40" height="10" fill="#ef4444"/>
+                <rect x="15" y="15" width="60" height="45" fill="#f59e0b"/>
+                <rect x="25" y="25" width="10" height="10" fill="#0f172a"/>
+                <rect x="55" y="25" width="10" height="10" fill="#0f172a"/>
+                <rect x="35" y="27" width="4" height="4" fill="#38bdf8"/>
+                <rect x="65" y="27" width="4" height="4" fill="#38bdf8"/>
+                <rect x="30" y="45" width="30" height="8" fill="#0f172a"/>
+                <rect x="20" y="60" width="50" height="20" fill="#2563eb"/>
+            </g>
+        </svg>`;
+    }
+
+    // Default: Cubist Picasso Abstract Art (1:1 matching user reference image!)
+    return `<svg viewBox="0 0 300 130" style="width:100%;height:100%;display:block;border-radius:18px 18px 0 0;" preserveAspectRatio="xMidYMid slice">
+        <rect width="300" height="130" fill="${c.bg}"/>
+        <path d="M0 0 L150 0 L100 130 L0 130 Z" fill="${c.sec}"/>
+        <path d="M150 0 L300 0 L300 130 L100 130 Z" fill="${c.main}"/>
+        <!-- Picasso Cubist Abstract Face Avatar (Bright, Crisp & 100% Visible!) -->
+        <g transform="translate(105, 10)">
+            <rect x="10" y="8" width="70" height="80" rx="22" fill="#ffffff" stroke="#0f172a" stroke-width="4"/>
+            <path d="M10 8 Q45 35 80 8 L80 48 Z" fill="${c.acc}"/>
+            <circle cx="34" cy="42" r="14" fill="#0f172a"/>
+            <circle cx="34" cy="42" r="5" fill="#38bdf8"/>
+            <polygon points="56,30 72,50 52,50" fill="#ef4444"/>
+            <rect x="28" y="64" width="34" height="12" rx="4" fill="#0f172a"/>
+            <line x1="39" y1="64" x2="39" y2="76" stroke="#ffffff" stroke-width="2.5"/>
+            <line x1="51" y1="64" x2="51" y2="76" stroke="#ffffff" stroke-width="2.5"/>
         </g>
     </svg>`;
 }
