@@ -1651,39 +1651,28 @@ function renderFlashcards(cards) {
                 <div class="flashcard-stack-layer layer-back-2"></div>
                 <div class="flashcard-stack-layer layer-back-1"></div>
                 <div class="flashcard-front">
-                    <!-- Hero Cartoon Cover Art Box at Top (Reference Match) -->
-                    <div class="card-hero-illustration-box" style="position: relative; width: 100%; height: 120px; border-radius: 18px 18px 0 0; overflow: hidden; margin-bottom: 12px; flex-shrink: 0;">
+                    <!-- Hero Cartoon Cover Art Box at Top -->
+                    <div class="card-hero-illustration-box" style="position: relative; width: 100%; height: 130px; border-radius: 18px 18px 0 0; overflow: hidden; margin-bottom: 14px; flex-shrink: 0;">
                         ${cartoonSvgMarkup}
                         <div class="card-folder-tab-badge" style="position: absolute; top: 10px; left: 12px; z-index: 5;">
-                            <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                            <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 16 14"/></svg>
                             <span>${escapeHtml(card.category || 'General')}</span>
                         </div>
-                        <span class="flashcard-index-label" style="position: absolute; top: 10px; right: 12px; z-index: 5; background: rgba(0,0,0,0.4); color: #fff; padding: 2px 8px; border-radius: 10px;">${idx + 1} / ${cards.length}</span>
+                        <span class="flashcard-index-label" style="position: absolute; top: 10px; right: 12px; z-index: 5; background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(4px); color: #fff; padding: 3px 10px; border-radius: 12px; font-size: 10.5px; font-weight: 800;">${idx + 1} / ${cards.length}</span>
                     </div>
 
                     ${card.mastered ? `
-                        <div class="flashcard-mastered-badge" style="position: absolute; top: 124px; right: 12px; z-index: 6;">
+                        <div class="flashcard-mastered-badge" style="position: absolute; top: 136px; right: 14px; z-index: 6;">
                             ✓ Got It
                         </div>
                     ` : ''}
 
-                    <div class="card-body-content" style="width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; flex: 1; min-height: 90px;">
-                        <div class="flashcard-question-text" style="margin-top: 0;">${renderSafeHtml(stripEmojis(card.question))}</div>
-                        ${recallHtml}
+                    <!-- Question Only Body Container (Clean & Focused) -->
+                    <div class="card-body-content" style="width: 100%; display: flex; align-items: center; justify-content: center; flex: 1; padding: 10px 24px 20px 24px; box-sizing: border-box;">
+                        <div class="flashcard-question-text" style="font-size: 15px; font-weight: 700; line-height: 1.6; color: var(--text, #0f172a); text-align: center; margin: 0;">${renderSafeHtml(stripEmojis(card.question))}</div>
                     </div>
 
-                    <!-- Bottom Progress Info Track (Matching Reference Image!) -->
-                    <div class="card-footer-info-row" style="width: 100%; margin-top: auto; padding-top: 10px; border-top: 1px solid var(--border, #e2e8f0); display: flex; flex-direction: column; gap: 6px;">
-                        <div style="display: flex; justify-content: space-between; align-items: center; font-size: 11.5px; font-weight: 700; color: var(--text-muted, #64748b);">
-                            <span>Question ${idx + 1} of ${cards.length}</span>
-                            <span style="color: ${card.mastered ? '#10b981' : '#6366f1'};">${card.mastered ? 'Lesson Mastered' : 'In Progress'}</span>
-                        </div>
-                        <div class="card-mini-progress-track" style="height: 6px; background: var(--border, #e2e8f0); border-radius: 10px; overflow: hidden; width: 100%;">
-                            <div style="height: 100%; width: ${card.mastered ? '100%' : Math.round(((idx + 1) / cards.length) * 100) + '%'}; background: ${card.mastered ? '#10b981' : '#6366f1'}; border-radius: 10px;"></div>
-                        </div>
-                    </div>
-
-                    <!-- Floating Circle Actions Overlapping Right Edge (Matching Reference Image!) -->
+                    <!-- Floating Circle Actions Overlapping Right Edge -->
                     <div class="card-floating-actions">
                         <button class="circle-action-btn btn-flip-card" title="Flip Card">
                             <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
@@ -1695,10 +1684,12 @@ function renderFlashcards(cards) {
                         </button>
                     </div>
                 </div>
+
                 <div class="flashcard-back">
                     <div class="flashcard-back-content">
                         <p class="flashcard-back-answer">${renderSafeHtml(stripEmojis(card.answer))}</p>
                         ${mnemonicHtml}
+                        ${recallHtml}
                     </div>
                     <button class="card-mastery-btn ${card.mastered ? 'active' : ''}" title="Mark as Mastered">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:12px;height:12px;margin-right:2px;">
