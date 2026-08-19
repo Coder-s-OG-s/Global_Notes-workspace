@@ -138,13 +138,108 @@ function initQuizArena() {
     const btnRetakeQuiz = document.getElementById('btn-retake-quiz');
     const btnFinishQuiz = document.getElementById('btn-finish-quiz');
 
-    if (btnStartQuizMe) btnStartQuizMe.addEventListener('click', () => startQuiz());
-    if (btnTopQuizMe) btnTopQuizMe.addEventListener('click', () => startQuiz());
+    if (btnStartQuizMe) btnStartQuizMe.addEventListener('click', () => generateDynamicAIQuiz());
+    if (btnTopQuizMe) btnTopQuizMe.addEventListener('click', () => generateDynamicAIQuiz());
     if (btnCloseQuiz) btnCloseQuiz.addEventListener('click', () => stopQuiz());
     if (btnSkipQuiz) btnSkipQuiz.addEventListener('click', () => skipQuizQuestion());
     if (btnCloseResults) btnCloseResults.addEventListener('click', () => stopQuiz());
-    if (btnRetakeQuiz) btnRetakeQuiz.addEventListener('click', () => startQuiz());
+    if (btnRetakeQuiz) btnRetakeQuiz.addEventListener('click', () => generateDynamicAIQuiz());
     if (btnFinishQuiz) btnFinishQuiz.addEventListener('click', () => stopQuiz());
+}
+
+async function generateDynamicAIQuiz() {
+    const syllabusInputEl = document.getElementById('schedule-syllabus-input');
+    const syllabusText = syllabusInputEl ? syllabusInputEl.value.trim() : '';
+    let sourceContent = (syllabusText + '\n' + (scheduleFileText || '')).trim();
+
+    if (!sourceContent && activeScheduleId) {
+        const sched = savedSchedules.find(s => s.id === activeScheduleId);
+        if (sched && sched.items) {
+            sourceContent = sched.items.map(item => `${item.focus}: ${item.topics}`).join('\n');
+        }
+    }
+
+    if (!sourceContent && activeDeckId) {
+        const deck = savedDecks.find(d => d.id === activeDeckId);
+        if (deck && deck.cards) {
+            sourceContent = deck.cards.map(c => `Topic: ${c.question}\nAnswer: ${c.answer}`).join('\n');
+        }
+    }
+
+    if (!sourceContent) {
+        showToast('Please enter your syllabus details or upload a syllabus file to generate an AI Quiz.', 'info');
+        return;
+    }
+
+    const btnStart = document.getElementById('btn-start-quiz-me');
+    const btnTop = document.getElementById('btn-top-quiz-me');
+    const origHtmlStart = btnStart ? btnStart.innerHTML : '';
+    const origHtmlTop = btnTop ? btnTop.innerHTML : '';
+
+    if (btnStart) { btnStart.disabled = true; btnStart.innerHTML = '<span class="ai-spinner"></span> Generating AI Quiz...'; }
+    if (btnTop) { btnTop.disabled = true; btnTop.innerHTML = '<span class="ai-spinner"></span> Generating AI Quiz...'; }
+
+    try {
+        const prompt = `You are an expert exam quiz creator.
+Create a comprehensive, high-quality multiple choice practice test based EXCLUSIVELY on the provided syllabus text/file content below.
+
+CRITICAL INSTRUCTIONS:
+1. Parse the syllabus into distinct subjects or major topics (e.g. Mathematics, Chemistry, DSA, Physics, History, etc.).
+2. For EACH detected subject/topic in the syllabus, generate EXACTLY 10 multiple choice questions (if 1 topic is given, generate 10 questions for that topic).
+3. Return ONLY a valid JSON array of question objects (optionally wrapped in \`\`\`json ... \`\`\` codeblock).
+4. Each object MUST have:
+   - "subject": string (e.g. "Calculus", "Organic Chemistry", "Data Structures")
+   - "question": string (clear question statement strictly based on syllabus content - NO emojis)
+   - "options": array of 4 distinct strings (e.g. ["Option A", "Option B", "Option C", "Option D"])
+   - "correctIndex": number (0, 1, 2, or 3 pointing to the correct option)
+   - "explanation": string (a clear, educational breakdown explaining why this answer is correct)
+
+Syllabus Content:
+${sourceContent}`;
+
+        const aiResponse = await generateTextWithGemini(prompt);
+        let quizData = parseJsonArray(aiResponse);
+
+        if (!Array.isArray(quizData) || quizData.length === 0) {
+            throw new Error("AI did not return a valid quiz array.");
+        }
+
+        const questions = quizData.map(q => ({
+            subject: q.subject || 'Syllabus Quiz',
+            question: stripEmojis(q.question || 'Syllabus Question'),
+            options: Array.isArray(q.options) && q.options.length === 4 ? q.options : ['Option A', 'Option B', 'Option C', 'Option D'],
+            correctIndex: typeof q.correctIndex === 'number' ? q.correctIndex : 0,
+            explanation: q.explanation || 'Based on your uploaded syllabus material.'
+        }));
+
+        startQuiz(questions, 'SYLLABUS PRACTICE QUIZ');
+        showToast(`AI Quiz generated successfully (${questions.length} questions across subjects)!`, 'success');
+
+    } catch (err) {
+        console.error("AI Quiz Generation Error:", err);
+        const lines = sourceContent.split('\n').filter(l => l.trim().length > 5);
+        if (lines.length > 0) {
+            const fallbackQuestions = lines.slice(0, 10).map((line, idx) => ({
+                subject: 'Syllabus Revision',
+                question: `What is the core concept behind: "${line.trim().substring(0, 60)}"?`,
+                options: [
+                    `Key principle of ${line.trim().substring(0, 30)}`,
+                    `Incorrect inverse operation`,
+                    `Unrelated topic property`,
+                    `None of the above`
+                ],
+                correctIndex: 0,
+                explanation: `Syllabus topic: ${line.trim()}`
+            }));
+            startQuiz(fallbackQuestions, 'SYLLABUS REVISION QUIZ');
+            showToast('Generated syllabus quiz using local NLP engine.', 'info');
+        } else {
+            showToast('Could not generate quiz from syllabus. Please refine syllabus text.', 'error');
+        }
+    } finally {
+        if (btnStart) { btnStart.disabled = false; btnStart.innerHTML = origHtmlStart; }
+        if (btnTop) { btnTop.disabled = false; btnTop.innerHTML = origHtmlTop; }
+    }
 }
 
 function startQuiz(customQuestions, title) {
@@ -219,7 +314,7 @@ function renderQuizQuestion() {
 
     if (progressText) progressText.textContent = `${currentNum} / ${total}`;
     if (progressFill) progressFill.style.width = `${percent}%`;
-    if (subtitle) subtitle.textContent = quizState.title;
+    if (subtitle) subtitle.textContent = q.subject ? `${q.subject.toUpperCase()} · QUIZ` : quizState.title;
     if (questionText) questionText.textContent = q.question;
     if (explanationCard) explanationCard.classList.add('hidden');
 
@@ -1486,8 +1581,9 @@ function renderFlashcards(cards) {
 // ─── REVISION SCHEDULE HANDLERS ───
 async function handleGenerateSchedule() {
     const syllabusInputEl = document.getElementById('schedule-syllabus-input');
+    const syllabusText = syllabusInputEl ? syllabusInputEl.value.trim() : '';
     let dateInput = document.getElementById('exam-date-input').value;
-    const sourceSyllabus = (syllabusText + '\n' + scheduleFileText).trim();
+    const sourceSyllabus = (syllabusText + '\n' + (scheduleFileText || '')).trim();
 
     if (!sourceSyllabus) {
         showToast('Please enter your syllabus details or upload a syllabus file.', 'error');
