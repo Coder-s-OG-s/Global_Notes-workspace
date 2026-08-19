@@ -84,6 +84,255 @@ let shapeStartY = 0;
 let shapeStartWidth = 0;
 let shapeStartHeight = 0;
 
+// ═══════════════════════════════════════════
+// INTERACTIVE AI QUIZ ARENA GAME ENGINE
+// ═══════════════════════════════════════════
+let quizState = {
+    active: false,
+    title: 'INTRO TO CALCULUS · QUIZ',
+    questions: [],
+    currentIndex: 0,
+    userAnswers: [],
+    score: 0
+};
+
+const DEFAULT_CALCULUS_QUIZ = [
+    {
+        question: "What is the derivative of sin(x)?",
+        options: ["cos(x)", "-cos(x)", "tan(x)", "-sin(x)"],
+        correctIndex: 0,
+        explanation: "The derivative of sin(x) with respect to x is cos(x). By calculus identity: d/dx[sin(x)] = cos(x)."
+    },
+    {
+        question: "What is the integral of 1/x dx?",
+        options: ["ln|x| + C", "x^2/2 + C", "-1/x^2 + C", "e^x + C"],
+        correctIndex: 0,
+        explanation: "The antiderivative of 1/x is the natural logarithm ln|x| + C for all non-zero x."
+    },
+    {
+        question: "What is the derivative of e^(2x)?",
+        options: ["2e^(2x)", "e^(2x)", "2x e^(2x-1)", "e^x"],
+        correctIndex: 0,
+        explanation: "Using the chain rule: d/dx[e^(2x)] = e^(2x) * d/dx[2x] = 2e^(2x)."
+    },
+    {
+        question: "What is the limit of (sin x)/x as x approaches 0?",
+        options: ["1", "0", "Infinity", "Undefined"],
+        correctIndex: 0,
+        explanation: "The fundamental trigonometric limit statement establishes that lim(x->0) (sin x)/x = 1."
+    },
+    {
+        question: "What does the Power Rule state for d/dx[x^n]?",
+        options: ["n * x^(n-1)", "x^(n+1) / (n+1)", "n * x^n", "n^x"],
+        correctIndex: 0,
+        explanation: "The Power Rule for differentiation states d/dx[x^n] = n * x^(n-1)."
+    }
+];
+
+function initQuizArena() {
+    const btnStartQuizMe = document.getElementById('btn-start-quiz-me');
+    const btnTopQuizMe = document.getElementById('btn-top-quiz-me');
+    const btnCloseQuiz = document.getElementById('btn-close-quiz');
+    const btnSkipQuiz = document.getElementById('btn-skip-quiz');
+    const btnCloseResults = document.getElementById('btn-close-quiz-results');
+    const btnRetakeQuiz = document.getElementById('btn-retake-quiz');
+    const btnFinishQuiz = document.getElementById('btn-finish-quiz');
+
+    if (btnStartQuizMe) btnStartQuizMe.addEventListener('click', () => startQuiz());
+    if (btnTopQuizMe) btnTopQuizMe.addEventListener('click', () => startQuiz());
+    if (btnCloseQuiz) btnCloseQuiz.addEventListener('click', () => stopQuiz());
+    if (btnSkipQuiz) btnSkipQuiz.addEventListener('click', () => skipQuizQuestion());
+    if (btnCloseResults) btnCloseResults.addEventListener('click', () => stopQuiz());
+    if (btnRetakeQuiz) btnRetakeQuiz.addEventListener('click', () => startQuiz());
+    if (btnFinishQuiz) btnFinishQuiz.addEventListener('click', () => stopQuiz());
+}
+
+function startQuiz(customQuestions, title) {
+    const activeDeck = savedDecks.find(d => d.id === activeDeckId);
+    let questions = customQuestions;
+
+    if (!questions || questions.length === 0) {
+        if (activeDeck && activeDeck.cards && activeDeck.cards.length > 0) {
+            questions = activeDeck.cards.map((c, i) => {
+                const options = [c.answer || 'Correct Answer'];
+                options.push('Incorrect derivative / output');
+                options.push('Opposite sign constant value');
+                options.push('None of the above');
+                for (let k = options.length - 1; k > 0; k--) {
+                    const j = Math.floor(Math.random() * (k + 1));
+                    [options[k], options[j]] = [options[j], options[k]];
+                }
+                const correctIdx = options.indexOf(c.answer || 'Correct Answer');
+                return {
+                    question: stripEmojis(c.question),
+                    options: options,
+                    correctIndex: correctIdx >= 0 ? correctIdx : 0,
+                    explanation: c.mnemonic || `Mastery card answer: ${c.answer}`
+                };
+            });
+        } else {
+            questions = DEFAULT_CALCULUS_QUIZ;
+        }
+    }
+
+    quizState = {
+        active: true,
+        title: title || (activeDeck ? `${activeDeck.name.toUpperCase()} · QUIZ` : 'INTRO TO CALCULUS · QUIZ'),
+        questions: questions,
+        currentIndex: 0,
+        userAnswers: [],
+        score: 0
+    };
+
+    const container = document.getElementById('quiz-arena-container');
+    const placeholder = document.getElementById('schedule-placeholder');
+    const timeline = document.getElementById('schedule-timeline');
+    const cardBody = document.getElementById('quiz-card-body');
+    const resultsCard = document.getElementById('quiz-results-card');
+
+    if (container) container.classList.remove('hidden');
+    if (placeholder) placeholder.classList.add('hidden');
+    if (timeline) timeline.classList.add('hidden');
+    if (cardBody) cardBody.classList.remove('hidden');
+    if (resultsCard) resultsCard.classList.add('hidden');
+
+    renderQuizQuestion();
+}
+
+function renderQuizQuestion() {
+    const q = quizState.questions[quizState.currentIndex];
+    if (!q) {
+        renderQuizResults();
+        return;
+    }
+
+    const progressText = document.getElementById('quiz-progress-text');
+    const progressFill = document.getElementById('quiz-progress-line-fill');
+    const subtitle = document.getElementById('quiz-category-subtitle');
+    const questionText = document.getElementById('quiz-question-text');
+    const optionsList = document.getElementById('quiz-options-list');
+    const explanationCard = document.getElementById('quiz-explanation-card');
+
+    const total = quizState.questions.length;
+    const currentNum = quizState.currentIndex + 1;
+    const percent = Math.round((currentNum / total) * 100);
+
+    if (progressText) progressText.textContent = `${currentNum} / ${total}`;
+    if (progressFill) progressFill.style.width = `${percent}%`;
+    if (subtitle) subtitle.textContent = quizState.title;
+    if (questionText) questionText.textContent = q.question;
+    if (explanationCard) explanationCard.classList.add('hidden');
+
+    if (optionsList) {
+        optionsList.innerHTML = '';
+        const badges = ['A', 'B', 'C', 'D'];
+
+        q.options.forEach((optText, optIdx) => {
+            const pill = document.createElement('div');
+            pill.className = 'quiz-option-pill';
+            pill.innerHTML = `
+                <div class="quiz-option-left">
+                    <div class="quiz-option-letter-badge">${badges[optIdx] || optIdx + 1}</div>
+                    <div class="quiz-option-text">${escapeHtml(optText)}</div>
+                </div>
+                <div class="quiz-option-status-icon"></div>
+            `;
+
+            pill.addEventListener('click', () => handleQuizOptionSelect(optIdx, pill));
+            optionsList.appendChild(pill);
+        });
+    }
+}
+
+function handleQuizOptionSelect(selectedIdx, pillElement) {
+    const q = quizState.questions[quizState.currentIndex];
+    if (!q) return;
+
+    const isCorrect = selectedIdx === q.correctIndex;
+    quizState.userAnswers.push({
+        questionIndex: quizState.currentIndex,
+        selectedOptionIdx: selectedIdx,
+        isCorrect: isCorrect
+    });
+
+    if (isCorrect) quizState.score += 1;
+
+    const allPills = document.querySelectorAll('.quiz-option-pill');
+    allPills.forEach((p, idx) => {
+        p.style.pointerEvents = 'none';
+        const statusIcon = p.querySelector('.quiz-option-status-icon');
+        if (idx === q.correctIndex) {
+            p.classList.add('correct');
+            if (statusIcon) statusIcon.innerHTML = `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#0f172a" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
+        } else if (idx === selectedIdx && !isCorrect) {
+            p.classList.add('incorrect');
+            if (statusIcon) statusIcon.innerHTML = `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#be123c" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>`;
+        }
+    });
+
+    const explanationCard = document.getElementById('quiz-explanation-card');
+    const explanationText = document.getElementById('quiz-explanation-text');
+    if (explanationCard && explanationText && q.explanation) {
+        explanationText.textContent = q.explanation;
+        explanationCard.classList.remove('hidden');
+    }
+
+    setTimeout(() => {
+        quizState.currentIndex += 1;
+        if (quizState.currentIndex < quizState.questions.length) {
+            renderQuizQuestion();
+        } else {
+            renderQuizResults();
+        }
+    }, 1800);
+}
+
+function skipQuizQuestion() {
+    quizState.currentIndex += 1;
+    if (quizState.currentIndex < quizState.questions.length) {
+        renderQuizQuestion();
+    } else {
+        renderQuizResults();
+    }
+}
+
+function renderQuizResults() {
+    const cardBody = document.getElementById('quiz-card-body');
+    const resultsCard = document.getElementById('quiz-results-card');
+
+    if (cardBody) cardBody.classList.add('hidden');
+    if (resultsCard) resultsCard.classList.remove('hidden');
+
+    const total = quizState.questions.length;
+    const correctCount = quizState.score;
+    const redoCount = total - correctCount;
+    const percent = total > 0 ? Math.round((correctCount / total) * 100) : 0;
+
+    const scorePercentageEl = document.getElementById('quiz-score-percentage');
+    const scoreSubtextEl = document.getElementById('quiz-score-subtext');
+    const metricNailedEl = document.getElementById('quiz-metric-nailed-number');
+    const metricRedoEl = document.getElementById('quiz-metric-redo-number');
+
+    if (scorePercentageEl) scorePercentageEl.textContent = `${percent}%`;
+    if (scoreSubtextEl) scoreSubtextEl.textContent = `${correctCount} of ${total} correct`;
+    if (metricNailedEl) metricNailedEl.textContent = `${correctCount}`;
+    if (metricRedoEl) metricRedoEl.textContent = `${redoCount}`;
+}
+
+function stopQuiz() {
+    quizState.active = false;
+    const container = document.getElementById('quiz-arena-container');
+    const placeholder = document.getElementById('schedule-placeholder');
+    const timeline = document.getElementById('schedule-timeline');
+
+    if (container) container.classList.add('hidden');
+    if (timeline && timeline.children.length > 0) {
+        timeline.classList.remove('hidden');
+    } else if (placeholder) {
+        placeholder.classList.remove('hidden');
+    }
+}
+
 document.addEventListener('DOMContentLoaded', async () => {
     await initHub();
 });
@@ -1237,8 +1486,7 @@ function renderFlashcards(cards) {
 // ─── REVISION SCHEDULE HANDLERS ───
 async function handleGenerateSchedule() {
     const syllabusInputEl = document.getElementById('schedule-syllabus-input');
-    const syllabusText = syllabusInputEl.value.trim();
-    const dateInput = document.getElementById('exam-date-input').value;
+    let dateInput = document.getElementById('exam-date-input').value;
     const sourceSyllabus = (syllabusText + '\n' + scheduleFileText).trim();
 
     if (!sourceSyllabus) {
@@ -1247,8 +1495,13 @@ async function handleGenerateSchedule() {
     }
 
     if (!dateInput) {
-        showToast('Please select your exam date first.', 'error');
-        return;
+        const defaultDate = new Date();
+        defaultDate.setDate(defaultDate.getDate() + 7);
+        const yyyy = defaultDate.getFullYear();
+        const mm = String(defaultDate.getMonth() + 1).padStart(2, '0');
+        const dd = String(defaultDate.getDate()).padStart(2, '0');
+        dateInput = `${yyyy}-${mm}-${dd}`;
+        document.getElementById('exam-date-input').value = dateInput;
     }
 
     const examDate = new Date(dateInput);
@@ -2851,254 +3104,5 @@ function initStudentTimers() {
         textSWDigits.textContent = '00:00.00';
         renderLaps();
     });
-}
-
-// ═══════════════════════════════════════════
-// INTERACTIVE AI QUIZ ARENA GAME ENGINE
-// ═══════════════════════════════════════════
-let quizState = {
-    active: false,
-    title: 'INTRO TO CALCULUS · QUIZ',
-    questions: [],
-    currentIndex: 0,
-    userAnswers: [],
-    score: 0
-};
-
-const DEFAULT_CALCULUS_QUIZ = [
-    {
-        question: "What is the derivative of sin(x)?",
-        options: ["cos(x)", "-cos(x)", "tan(x)", "-sin(x)"],
-        correctIndex: 0,
-        explanation: "The derivative of sin(x) with respect to x is cos(x). By calculus identity: d/dx[sin(x)] = cos(x)."
-    },
-    {
-        question: "What is the integral of 1/x dx?",
-        options: ["ln|x| + C", "x^2/2 + C", "-1/x^2 + C", "e^x + C"],
-        correctIndex: 0,
-        explanation: "The antiderivative of 1/x is the natural logarithm ln|x| + C for all non-zero x."
-    },
-    {
-        question: "What is the derivative of e^(2x)?",
-        options: ["2e^(2x)", "e^(2x)", "2x e^(2x-1)", "e^x"],
-        correctIndex: 0,
-        explanation: "Using the chain rule: d/dx[e^(2x)] = e^(2x) * d/dx[2x] = 2e^(2x)."
-    },
-    {
-        question: "What is the limit of (sin x)/x as x approaches 0?",
-        options: ["1", "0", "Infinity", "Undefined"],
-        correctIndex: 0,
-        explanation: "The fundamental trigonometric limit statement establishes that lim(x->0) (sin x)/x = 1."
-    },
-    {
-        question: "What does the Power Rule state for d/dx[x^n]?",
-        options: ["n * x^(n-1)", "x^(n+1) / (n+1)", "n * x^n", "n^x"],
-        correctIndex: 0,
-        explanation: "The Power Rule for differentiation states d/dx[x^n] = n * x^(n-1)."
-    }
-];
-
-function initQuizArena() {
-    const btnStartQuizMe = document.getElementById('btn-start-quiz-me');
-    const btnTopQuizMe = document.getElementById('btn-top-quiz-me');
-    const btnCloseQuiz = document.getElementById('btn-close-quiz');
-    const btnSkipQuiz = document.getElementById('btn-skip-quiz');
-    const btnCloseResults = document.getElementById('btn-close-quiz-results');
-    const btnRetakeQuiz = document.getElementById('btn-retake-quiz');
-    const btnFinishQuiz = document.getElementById('btn-finish-quiz');
-
-    if (btnStartQuizMe) btnStartQuizMe.addEventListener('click', () => startQuiz());
-    if (btnTopQuizMe) btnTopQuizMe.addEventListener('click', () => startQuiz());
-    if (btnCloseQuiz) btnCloseQuiz.addEventListener('click', () => stopQuiz());
-    if (btnSkipQuiz) btnSkipQuiz.addEventListener('click', () => skipQuizQuestion());
-    if (btnCloseResults) btnCloseResults.addEventListener('click', () => stopQuiz());
-    if (btnRetakeQuiz) btnRetakeQuiz.addEventListener('click', () => startQuiz());
-    if (btnFinishQuiz) btnFinishQuiz.addEventListener('click', () => stopQuiz());
-}
-
-function startQuiz(customQuestions, title) {
-    const activeDeck = savedDecks.find(d => d.id === activeDeckId);
-    let questions = customQuestions;
-
-    if (!questions || questions.length === 0) {
-        if (activeDeck && activeDeck.cards && activeDeck.cards.length > 0) {
-            questions = activeDeck.cards.map((c, i) => {
-                const options = [c.answer || 'Correct Answer'];
-                options.push('Incorrect derivative / output');
-                options.push('Opposite sign constant value');
-                options.push('None of the above');
-                for (let k = options.length - 1; k > 0; k--) {
-                    const j = Math.floor(Math.random() * (k + 1));
-                    [options[k], options[j]] = [options[j], options[k]];
-                }
-                const correctIdx = options.indexOf(c.answer || 'Correct Answer');
-                return {
-                    question: stripEmojis(c.question),
-                    options: options,
-                    correctIndex: correctIdx >= 0 ? correctIdx : 0,
-                    explanation: c.mnemonic || `Mastery card answer: ${c.answer}`
-                };
-            });
-        } else {
-            questions = DEFAULT_CALCULUS_QUIZ;
-        }
-    }
-
-    quizState = {
-        active: true,
-        title: title || (activeDeck ? `${activeDeck.name.toUpperCase()} · QUIZ` : 'INTRO TO CALCULUS · QUIZ'),
-        questions: questions,
-        currentIndex: 0,
-        userAnswers: [],
-        score: 0
-    };
-
-    const container = document.getElementById('quiz-arena-container');
-    const placeholder = document.getElementById('schedule-placeholder');
-    const timeline = document.getElementById('schedule-timeline');
-    const cardBody = document.getElementById('quiz-card-body');
-    const resultsCard = document.getElementById('quiz-results-card');
-
-    if (container) container.classList.remove('hidden');
-    if (placeholder) placeholder.classList.add('hidden');
-    if (timeline) timeline.classList.add('hidden');
-    if (cardBody) cardBody.classList.remove('hidden');
-    if (resultsCard) resultsCard.classList.add('hidden');
-
-    renderQuizQuestion();
-}
-
-function renderQuizQuestion() {
-    const q = quizState.questions[quizState.currentIndex];
-    if (!q) {
-        renderQuizResults();
-        return;
-    }
-
-    const progressText = document.getElementById('quiz-progress-text');
-    const progressFill = document.getElementById('quiz-progress-line-fill');
-    const subtitle = document.getElementById('quiz-category-subtitle');
-    const questionText = document.getElementById('quiz-question-text');
-    const optionsList = document.getElementById('quiz-options-list');
-    const explanationCard = document.getElementById('quiz-explanation-card');
-
-    const total = quizState.questions.length;
-    const currentNum = quizState.currentIndex + 1;
-    const percent = Math.round((currentNum / total) * 100);
-
-    if (progressText) progressText.textContent = `${currentNum} / ${total}`;
-    if (progressFill) progressFill.style.width = `${percent}%`;
-    if (subtitle) subtitle.textContent = quizState.title;
-    if (questionText) questionText.textContent = q.question;
-    if (explanationCard) explanationCard.classList.add('hidden');
-
-    if (optionsList) {
-        optionsList.innerHTML = '';
-        const badges = ['A', 'B', 'C', 'D'];
-
-        q.options.forEach((optText, optIdx) => {
-            const pill = document.createElement('div');
-            pill.className = 'quiz-option-pill';
-            pill.innerHTML = `
-                <div class="quiz-option-left">
-                    <div class="quiz-option-letter-badge">${badges[optIdx] || optIdx + 1}</div>
-                    <div class="quiz-option-text">${escapeHtml(optText)}</div>
-                </div>
-                <div class="quiz-option-status-icon"></div>
-            `;
-
-            pill.addEventListener('click', () => handleQuizOptionSelect(optIdx, pill));
-            optionsList.appendChild(pill);
-        });
-    }
-}
-
-function handleQuizOptionSelect(selectedIdx, pillElement) {
-    const q = quizState.questions[quizState.currentIndex];
-    if (!q) return;
-
-    const isCorrect = selectedIdx === q.correctIndex;
-    quizState.userAnswers.push({
-        questionIndex: quizState.currentIndex,
-        selectedOptionIdx: selectedIdx,
-        isCorrect: isCorrect
-    });
-
-    if (isCorrect) quizState.score += 1;
-
-    const allPills = document.querySelectorAll('.quiz-option-pill');
-    allPills.forEach((p, idx) => {
-        p.style.pointerEvents = 'none';
-        const statusIcon = p.querySelector('.quiz-option-status-icon');
-        if (idx === q.correctIndex) {
-            p.classList.add('correct');
-            if (statusIcon) statusIcon.innerHTML = `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#0f172a" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
-        } else if (idx === selectedIdx && !isCorrect) {
-            p.classList.add('incorrect');
-            if (statusIcon) statusIcon.innerHTML = `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#be123c" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>`;
-        }
-    });
-
-    const explanationCard = document.getElementById('quiz-explanation-card');
-    const explanationText = document.getElementById('quiz-explanation-text');
-    if (explanationCard && explanationText && q.explanation) {
-        explanationText.textContent = q.explanation;
-        explanationCard.classList.remove('hidden');
-    }
-
-    setTimeout(() => {
-        quizState.currentIndex += 1;
-        if (quizState.currentIndex < quizState.questions.length) {
-            renderQuizQuestion();
-        } else {
-            renderQuizResults();
-        }
-    }, 1800);
-}
-
-function skipQuizQuestion() {
-    quizState.currentIndex += 1;
-    if (quizState.currentIndex < quizState.questions.length) {
-        renderQuizQuestion();
-    } else {
-        renderQuizResults();
-    }
-}
-
-function renderQuizResults() {
-    const cardBody = document.getElementById('quiz-card-body');
-    const resultsCard = document.getElementById('quiz-results-card');
-
-    if (cardBody) cardBody.classList.add('hidden');
-    if (resultsCard) resultsCard.classList.remove('hidden');
-
-    const total = quizState.questions.length;
-    const correctCount = quizState.score;
-    const redoCount = total - correctCount;
-    const percent = total > 0 ? Math.round((correctCount / total) * 100) : 0;
-
-    const scorePercentageEl = document.getElementById('quiz-score-percentage');
-    const scoreSubtextEl = document.getElementById('quiz-score-subtext');
-    const metricNailedEl = document.getElementById('quiz-metric-nailed-number');
-    const metricRedoEl = document.getElementById('quiz-metric-redo-number');
-
-    if (scorePercentageEl) scorePercentageEl.textContent = `${percent}%`;
-    if (scoreSubtextEl) scoreSubtextEl.textContent = `${correctCount} of ${total} correct`;
-    if (metricNailedEl) metricNailedEl.textContent = `${correctCount}`;
-    if (metricRedoEl) metricRedoEl.textContent = `${redoCount}`;
-}
-
-function stopQuiz() {
-    quizState.active = false;
-    const container = document.getElementById('quiz-arena-container');
-    const placeholder = document.getElementById('schedule-placeholder');
-    const timeline = document.getElementById('schedule-timeline');
-
-    if (container) container.classList.add('hidden');
-    if (timeline && timeline.children.length > 0) {
-        timeline.classList.remove('hidden');
-    } else if (placeholder) {
-        placeholder.classList.remove('hidden');
-    }
 }
 
