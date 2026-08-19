@@ -1,5 +1,5 @@
 import config from './config.js';
-import { generateTextWithGemini } from './geminiAPI.js';
+import { generateTextWithGemini, generateTextWithGroq } from './geminiAPI.js';
 import { THEME_KEY } from './constants.js';
 import { setThemeStorageKey, wireThemeToggle, getStoredTheme, persistTheme } from './themeManager.js';
 import { showToast, showConfirm } from './utilities.js';
@@ -1669,7 +1669,7 @@ Example format:
 Syllabus Details:
 ${sourceSyllabus}`;
 
-        const aiResponse = await generateTextWithGemini(prompt);
+        const aiResponse = await generateTextWithGroq(prompt);
         if (aiResponse.includes("Error:") || aiResponse.includes("Deployment Error")) {
             throw new Error(aiResponse);
         }
@@ -2892,7 +2892,7 @@ ${promptText}`;
 
         let shapesData = [];
         try {
-            const aiResponse = await generateTextWithGemini(prompt);
+            const aiResponse = await generateTextWithGroq(prompt);
             if (aiResponse && !aiResponse.includes("Error:") && !aiResponse.includes("Deployment Error") && !aiResponse.includes("NO_LLM_RESPONSE")) {
                 const parsed = parseJsonArray(aiResponse);
                 if (Array.isArray(parsed) && parsed.length > 0) {
