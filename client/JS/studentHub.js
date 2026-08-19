@@ -1658,27 +1658,27 @@ function renderFlashcards(cards) {
                             <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 16 14"/></svg>
                             <span>${escapeHtml(card.category || 'General')}</span>
                         </div>
-                        <span class="flashcard-index-label" style="position: absolute; top: 10px; right: 12px; z-index: 5; background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(4px); color: #fff; padding: 3px 10px; border-radius: 12px; font-size: 10.5px; font-weight: 800;">${idx + 1} / ${cards.length}</span>
+                        <span class="flashcard-index-label" style="position: absolute; bottom: 10px; left: 12px; z-index: 5; background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(4px); color: #fff; padding: 3px 10px; border-radius: 12px; font-size: 10.5px; font-weight: 800;">${idx + 1} / ${cards.length}</span>
                     </div>
 
                     ${card.mastered ? `
-                        <div class="flashcard-mastered-badge" style="position: absolute; top: 136px; right: 14px; z-index: 6;">
+                        <div class="flashcard-mastered-badge" style="position: absolute; top: 10px; left: 140px; z-index: 6;">
                             ✓ Got It
                         </div>
                     ` : ''}
 
                     <!-- Question Only Body Container (Clean & Focused) -->
                     <div class="card-body-content" style="width: 100%; display: flex; align-items: center; justify-content: center; flex: 1; padding: 10px 24px 20px 24px; box-sizing: border-box;">
-                        <div class="flashcard-question-text" style="font-size: 15px; font-weight: 700; line-height: 1.6; color: var(--text, #0f172a); text-align: center; margin: 0;">${renderSafeHtml(stripEmojis(card.question))}</div>
+                        <div class="flashcard-question-text" style="font-size: 15px; font-weight: 700; line-height: 1.6; color: var(--text, #0f172a); text-align: left; margin: 0;">${renderSafeHtml(stripEmojis(card.question))}</div>
                     </div>
 
-                    <!-- Floating Circle Actions Overlapping Right Edge -->
+                    <!-- Floating Circle Actions Top-Right Inside Card -->
                     <div class="card-floating-actions">
                         <button class="circle-action-btn btn-flip-card" title="Flip Card">
-                            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
+                            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
                         </button>
                         <button class="circle-action-btn card-mastery-btn ${card.mastered ? 'active' : ''}" title="Mark as Mastered">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="16" height="16">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="15" height="15">
                                 <polyline points="20 6 9 17 4 12"></polyline>
                             </svg>
                         </button>
