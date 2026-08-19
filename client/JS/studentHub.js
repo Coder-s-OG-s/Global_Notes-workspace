@@ -1613,7 +1613,7 @@ function getCartoonSvgForTemplate(templateName, idx) {
     const c = colors[seed % colors.length];
 
     if (templateName === 'cyberpunk') {
-        return `<svg viewBox="0 0 300 130" style="width:100%;height:100%;display:block;border-radius:18px 18px 0 0;" preserveAspectRatio="xMidYMid slice">
+        return `<svg viewBox="0 0 300 130" style="width:100%;height:100%;display:block;border-radius:18px 18px 0 0;" preserveAspectRatio="xMidYMid meet">
             <defs>
                 <linearGradient id="cybGrad_${seed}" x1="0" y1="0" x2="1" y2="1">
                     <stop offset="0%" stop-color="#7c3aed"/>
@@ -1621,24 +1621,24 @@ function getCartoonSvgForTemplate(templateName, idx) {
                 </linearGradient>
             </defs>
             <rect width="300" height="130" fill="url(#cybGrad_${seed})"/>
-            <circle cx="60" cy="40" r="30" fill="#06b6d4" opacity="0.5"/>
-            <circle cx="240" cy="90" r="40" fill="#f43f5e" opacity="0.4"/>
-            <!-- Neon Cyber Mascot Face -->
-            <g transform="translate(105, 12)">
-                <rect x="10" y="10" width="70" height="75" rx="20" fill="#0f172a" stroke="#38bdf8" stroke-width="4"/>
-                <rect x="22" y="26" width="46" height="22" rx="10" fill="#ec4899"/>
-                <circle cx="33" cy="37" r="5" fill="#fde047"/>
-                <circle cx="57" cy="37" r="5" fill="#fde047"/>
-                <rect x="30" y="58" width="30" height="8" rx="4" fill="#38bdf8"/>
-                <circle cx="-2" cy="45" r="10" fill="#38bdf8" stroke="#0f172a" stroke-width="3"/>
-                <circle cx="92" cy="45" r="10" fill="#38bdf8" stroke="#0f172a" stroke-width="3"/>
-                <path d="M-2 45 Q45 10 92 45" fill="none" stroke="#f43f5e" stroke-width="4"/>
+            <circle cx="50" cy="65" r="35" fill="#06b6d4" opacity="0.6"/>
+            <circle cx="250" cy="65" r="35" fill="#f43f5e" opacity="0.6"/>
+            <!-- Dead-Centered Neon Cyber Mascot Face -->
+            <g transform="translate(115, 12)">
+                <rect x="0" y="0" width="70" height="80" rx="20" fill="#0f172a" stroke="#38bdf8" stroke-width="4"/>
+                <rect x="10" y="18" width="50" height="24" rx="10" fill="#ec4899"/>
+                <circle cx="22" cy="30" r="6" fill="#fde047"/>
+                <circle cx="48" cy="30" r="6" fill="#fde047"/>
+                <rect x="20" y="54" width="30" height="8" rx="4" fill="#38bdf8"/>
+                <circle cx="-12" cy="40" r="10" fill="#38bdf8" stroke="#0f172a" stroke-width="3"/>
+                <circle cx="82" cy="40" r="10" fill="#38bdf8" stroke="#0f172a" stroke-width="3"/>
+                <path d="M-12 40 Q35 0 82 40" fill="none" stroke="#f43f5e" stroke-width="4"/>
             </g>
         </svg>`;
     }
 
     if (templateName === 'cosmic') {
-        return `<svg viewBox="0 0 300 130" style="width:100%;height:100%;display:block;border-radius:18px 18px 0 0;" preserveAspectRatio="xMidYMid slice">
+        return `<svg viewBox="0 0 300 130" style="width:100%;height:100%;display:block;border-radius:18px 18px 0 0;" preserveAspectRatio="xMidYMid meet">
             <defs>
                 <linearGradient id="cosGrad_${seed}" x1="0" y1="0" x2="1" y2="1">
                     <stop offset="0%" stop-color="#1e1b4b"/>
@@ -1648,70 +1648,69 @@ function getCartoonSvgForTemplate(templateName, idx) {
             <rect width="300" height="130" fill="url(#cosGrad_${seed})"/>
             <circle cx="45" cy="30" r="3" fill="#ffffff"/>
             <circle cx="255" cy="35" r="4" fill="#fde047"/>
-            <circle cx="215" cy="95" r="3" fill="#ffffff"/>
-            <circle cx="65" cy="105" r="3" fill="#60a5fa"/>
-            <!-- Saturn Planet -->
-            <circle cx="50" cy="90" r="16" fill="#f59e0b"/>
-            <ellipse cx="50" cy="90" rx="26" ry="6" fill="none" stroke="#fbbf24" stroke-width="3" transform="rotate(-20 50 90)"/>
-            <!-- Bright Astronaut Helmet Mascot -->
-            <g transform="translate(105, 12)">
-                <circle cx="45" cy="45" r="40" fill="#ffffff" stroke="#cbd5e1" stroke-width="4"/>
-                <ellipse cx="45" cy="42" rx="28" ry="18" fill="#0f172a"/>
-                <ellipse cx="38" cy="36" rx="10" ry="5" fill="#38bdf8" opacity="0.85"/>
-                <rect x="30" y="75" width="30" height="12" rx="6" fill="#ef4444"/>
+            <circle cx="235" cy="95" r="3" fill="#ffffff"/>
+            <circle cx="55" cy="105" r="3" fill="#60a5fa"/>
+            <circle cx="40" cy="90" r="16" fill="#f59e0b"/>
+            <ellipse cx="40" cy="90" rx="26" ry="6" fill="none" stroke="#fbbf24" stroke-width="3" transform="rotate(-20 40 90)"/>
+            <!-- Dead-Centered Astronaut Helmet Mascot -->
+            <g transform="translate(115, 10)">
+                <circle cx="35" cy="45" r="38" fill="#ffffff" stroke="#cbd5e1" stroke-width="4"/>
+                <ellipse cx="35" cy="42" rx="26" ry="16" fill="#0f172a"/>
+                <ellipse cx="28" cy="36" rx="9" ry="5" fill="#38bdf8" opacity="0.9"/>
+                <rect x="20" y="74" width="30" height="10" rx="5" fill="#ef4444"/>
             </g>
         </svg>`;
     }
 
     if (templateName === 'minimal') {
-        return `<svg viewBox="0 0 300 130" style="width:100%;height:100%;display:block;border-radius:18px 18px 0 0;" preserveAspectRatio="xMidYMid slice">
+        return `<svg viewBox="0 0 300 130" style="width:100%;height:100%;display:block;border-radius:18px 18px 0 0;" preserveAspectRatio="xMidYMid meet">
             <rect width="300" height="130" fill="${c.bg}"/>
-            <circle cx="70" cy="65" r="45" fill="${c.sec}" opacity="0.25"/>
-            <circle cx="230" cy="65" r="40" fill="${c.main}" opacity="0.25"/>
-            <!-- Cute Bright Mascot -->
-            <g transform="translate(105, 15)">
-                <rect x="10" y="10" width="70" height="70" rx="26" fill="${c.main}" stroke="#0f172a" stroke-width="3.5"/>
-                <circle cx="30" cy="38" r="8" fill="#ffffff"/>
-                <circle cx="60" cy="38" r="8" fill="#ffffff"/>
-                <circle cx="32" cy="38" r="4" fill="#0f172a"/>
-                <circle cx="62" cy="38" r="4" fill="#0f172a"/>
-                <path d="M34 54 Q45 66 56 54" fill="none" stroke="#ffffff" stroke-width="4" stroke-linecap="round"/>
+            <circle cx="60" cy="65" r="40" fill="${c.sec}" opacity="0.3"/>
+            <circle cx="240" cy="65" r="40" fill="${c.main}" opacity="0.3"/>
+            <!-- Dead-Centered Cute Mascot -->
+            <g transform="translate(115, 15)">
+                <rect x="0" y="0" width="70" height="70" rx="24" fill="${c.main}" stroke="#0f172a" stroke-width="4"/>
+                <circle cx="20" cy="28" r="8" fill="#ffffff"/>
+                <circle cx="50" cy="28" r="8" fill="#ffffff"/>
+                <circle cx="22" cy="28" r="4" fill="#0f172a"/>
+                <circle cx="52" cy="28" r="4" fill="#0f172a"/>
+                <path d="M22 46 Q35 58 48 46" fill="none" stroke="#ffffff" stroke-width="4" stroke-linecap="round"/>
             </g>
         </svg>`;
     }
 
     if (templateName === 'pixel') {
-        return `<svg viewBox="0 0 300 130" style="width:100%;height:100%;display:block;border-radius:18px 18px 0 0;" preserveAspectRatio="xMidYMid slice">
+        return `<svg viewBox="0 0 300 130" style="width:100%;height:100%;display:block;border-radius:18px 18px 0 0;" preserveAspectRatio="xMidYMid meet">
             <rect width="300" height="130" fill="#312e81"/>
-            <!-- Bright 8-Bit Pixel Character Avatar -->
-            <g transform="translate(105, 15)">
-                <rect x="25" y="5" width="40" height="10" fill="#ef4444"/>
-                <rect x="15" y="15" width="60" height="45" fill="#f59e0b"/>
-                <rect x="25" y="25" width="10" height="10" fill="#0f172a"/>
-                <rect x="55" y="25" width="10" height="10" fill="#0f172a"/>
-                <rect x="35" y="27" width="4" height="4" fill="#38bdf8"/>
-                <rect x="65" y="27" width="4" height="4" fill="#38bdf8"/>
-                <rect x="30" y="45" width="30" height="8" fill="#0f172a"/>
-                <rect x="20" y="60" width="50" height="20" fill="#2563eb"/>
+            <!-- Dead-Centered 8-Bit Pixel Character Avatar -->
+            <g transform="translate(115, 15)">
+                <rect x="15" y="5" width="40" height="10" fill="#ef4444"/>
+                <rect x="5" y="15" width="60" height="45" fill="#f59e0b"/>
+                <rect x="15" y="25" width="10" height="10" fill="#0f172a"/>
+                <rect x="45" y="25" width="10" height="10" fill="#0f172a"/>
+                <rect x="25" y="27" width="4" height="4" fill="#38bdf8"/>
+                <rect x="55" y="27" width="4" height="4" fill="#38bdf8"/>
+                <rect x="20" y="45" width="30" height="8" fill="#0f172a"/>
+                <rect x="10" y="60" width="50" height="20" fill="#2563eb"/>
             </g>
         </svg>`;
     }
 
     // Default: Cubist Picasso Abstract Art (1:1 matching user reference image!)
-    return `<svg viewBox="0 0 300 130" style="width:100%;height:100%;display:block;border-radius:18px 18px 0 0;" preserveAspectRatio="xMidYMid slice">
+    return `<svg viewBox="0 0 300 130" style="width:100%;height:100%;display:block;border-radius:18px 18px 0 0;" preserveAspectRatio="xMidYMid meet">
         <rect width="300" height="130" fill="${c.bg}"/>
-        <path d="M0 0 L150 0 L100 130 L0 130 Z" fill="${c.sec}"/>
-        <path d="M150 0 L300 0 L300 130 L100 130 Z" fill="${c.main}"/>
-        <!-- Picasso Cubist Abstract Face Avatar (Bright, Crisp & 100% Visible!) -->
-        <g transform="translate(105, 10)">
-            <rect x="10" y="8" width="70" height="80" rx="22" fill="#ffffff" stroke="#0f172a" stroke-width="4"/>
-            <path d="M10 8 Q45 35 80 8 L80 48 Z" fill="${c.acc}"/>
-            <circle cx="34" cy="42" r="14" fill="#0f172a"/>
-            <circle cx="34" cy="42" r="5" fill="#38bdf8"/>
-            <polygon points="56,30 72,50 52,50" fill="#ef4444"/>
-            <rect x="28" y="64" width="34" height="12" rx="4" fill="#0f172a"/>
-            <line x1="39" y1="64" x2="39" y2="76" stroke="#ffffff" stroke-width="2.5"/>
-            <line x1="51" y1="64" x2="51" y2="76" stroke="#ffffff" stroke-width="2.5"/>
+        <path d="M0 0 L150 0 L110 130 L0 130 Z" fill="${c.sec}"/>
+        <path d="M150 0 L300 0 L300 130 L110 130 Z" fill="${c.main}"/>
+        <!-- Dead-Centered Picasso Abstract Face Avatar (x=115..185) -->
+        <g transform="translate(115, 12)">
+            <rect x="0" y="0" width="70" height="85" rx="20" fill="#ffffff" stroke="#0f172a" stroke-width="4"/>
+            <path d="M0 0 Q35 30 70 0 L70 45 Z" fill="${c.acc}"/>
+            <circle cx="24" cy="38" r="13" fill="#0f172a"/>
+            <circle cx="24" cy="38" r="5" fill="#38bdf8"/>
+            <polygon points="46,26 62,44 42,44" fill="#ef4444"/>
+            <rect x="18" y="60" width="34" height="12" rx="4" fill="#0f172a"/>
+            <line x1="29" y1="60" x2="29" y2="72" stroke="#ffffff" stroke-width="2.5"/>
+            <line x1="41" y1="60" x2="41" y2="72" stroke="#ffffff" stroke-width="2.5"/>
         </g>
     </svg>`;
 }
