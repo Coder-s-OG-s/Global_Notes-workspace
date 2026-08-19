@@ -70,11 +70,12 @@ export async function saveFolders(activeUser, folders) {
 /**
  * Create new folder
  */
-export function createNewFolder(activeUser, folderName) {
+export function createNewFolder(activeUser, folderName, folderColor = "blue") {
   const folders = getFolders(activeUser);
   const newFolder = {
     id: crypto.randomUUID ? crypto.randomUUID() : String(Date.now() + Math.random()),
     name: folderName || "New Folder",
+    color: folderColor || "blue",
     createdAt: new Date().toISOString(),
   };
   folders.push(newFolder);
@@ -105,13 +106,26 @@ export function deleteFolder(activeUser, folderId, notes) {
 }
 
 /**
- * Rename folder
+ * Rename or update folder properties (name, color)
  */
-export function renameFolder(activeUser, folderId, newName) {
+export function renameFolder(activeUser, folderId, newName, newColor) {
   const folders = getFolders(activeUser);
   const folder = folders.find((f) => f.id === folderId || f._id === folderId);
   if (folder) {
-    folder.name = newName;
+    if (newName !== undefined && newName !== null) folder.name = newName;
+    if (newColor !== undefined && newColor !== null) folder.color = newColor;
+    saveFolders(activeUser, folders);
+  }
+}
+
+/**
+ * Update color of an existing folder
+ */
+export function updateFolderColor(activeUser, folderId, newColor, currentFolders = null) {
+  const folders = currentFolders || getFolders(activeUser);
+  const folder = folders.find((f) => f.id === folderId || f._id === folderId);
+  if (folder) {
+    folder.color = newColor || "blue";
     saveFolders(activeUser, folders);
   }
 }
@@ -142,13 +156,13 @@ export async function syncFoldersFromCloud(activeUser) {
       // 2. Try to find by Name (Migration helper to prevent duplicates)
       const matchByName = Array.from(foldersMap.values()).find(cf => cf.name === f.name);
 
-      if (!matchById && !matchByName) {
-        foldersMap.set(f.id, f);
-      } else if (matchByName && !matchById) {
-        // If we found a name match, update the cloud folder's local ID to our UUID
-        // so they stay linked in the future
+      if (matchById) {
+        if (f.color) matchById.color = f.color;
+      } else if (matchByName) {
         const key = f.id || f._id;
-        foldersMap.set(key, { ...matchByName, id: key });
+        foldersMap.set(key, { ...matchByName, id: key, color: f.color || matchByName.color });
+      } else {
+        foldersMap.set(f.id, f);
       }
     });
 

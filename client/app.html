@@ -339,12 +339,6 @@
         <div class="dashboard-header">
           <h2 class="dashboard-title">My Notes</h2>
           <div class="dashboard-header-right">
-            <button class="btn ghost icon-only dashboard-add-btn" id="create-folder" title="New Folder">
-              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                <line x1="12" y1="5" x2="12" y2="19"></line>
-                <line x1="5" y1="12" x2="19" y2="12"></line>
-              </svg>
-            </button>
             <div class="dashboard-stats" id="dashboard-stats">0 items</div>
             <div class="dashboard-sort">
               <select id="sort" class="sort-select-dashboard" aria-label="Sort notes">
@@ -1242,6 +1236,54 @@
       <p class="confirm-message" id="alert-message">Something happened.</p>
       <div class="confirm-actions">
         <button class="btn primary" id="alert-ok">OK</button>
+      </div>
+    </div>
+  </dialog>
+
+  <!-- Folder Modal Dialog with Color Swatches -->
+  <dialog class="confirm-dialog folder-modal-dialog" id="folder-dialog">
+    <div class="confirm-content folder-modal-content">
+      <button class="confirm-close" aria-label="Close dialog">✕</button>
+      <h3 class="confirm-title" id="folder-dialog-title">Create Folder</h3>
+      <div class="folder-modal-body">
+        <label class="folder-modal-label" for="folder-name-input">Folder Name</label>
+        <input type="text" id="folder-name-input" class="prompt-input-field" placeholder="e.g. 2024, Recepies, Italian..." autocomplete="off">
+        
+        <label class="folder-modal-label" style="margin-top: 16px;">Choose Theme Color</label>
+        <div class="folder-color-selector" id="folder-color-selector">
+          <button type="button" class="color-swatch-btn selected" data-color="blue" title="Blue" style="--swatch-c: #1d4ed8;"></button>
+          <button type="button" class="color-swatch-btn" data-color="amber" title="Amber" style="--swatch-c: #d97706;"></button>
+          <button type="button" class="color-swatch-btn" data-color="coral" title="Coral" style="--swatch-c: #c2410c;"></button>
+          <button type="button" class="color-swatch-btn" data-color="emerald" title="Emerald" style="--swatch-c: #047857;"></button>
+          <button type="button" class="color-swatch-btn" data-color="purple" title="Purple" style="--swatch-c: #6d28d9;"></button>
+          <button type="button" class="color-swatch-btn" data-color="rose" title="Rose" style="--swatch-c: #be123c;"></button>
+          <button type="button" class="color-swatch-btn" data-color="teal" title="Teal" style="--swatch-c: #0f766e;"></button>
+          <button type="button" class="color-swatch-btn" data-color="slate" title="Slate" style="--swatch-c: #475569;"></button>
+        </div>
+
+        <div class="folder-modal-preview-wrapper">
+          <div class="folder-3d-card" id="folder-preview-card" data-color="blue" style="pointer-events: none;">
+            <div class="folder-3d-wrapper">
+              <div class="folder-3d-back"><div class="folder-3d-tab"></div></div>
+              <div class="folder-3d-papers">
+                <div class="paper-sheet sheet-3"></div>
+                <div class="paper-sheet sheet-2"></div>
+                <div class="paper-sheet sheet-1">
+                  <div class="sheet-line"></div>
+                  <div class="sheet-line short"></div>
+                </div>
+              </div>
+              <div class="folder-3d-front">
+                <div class="folder-3d-glass-lip"></div>
+              </div>
+            </div>
+            <span class="folder-3d-title" id="folder-preview-label">Preview Folder</span>
+          </div>
+        </div>
+      </div>
+      <div class="confirm-actions" style="margin-top: 20px;">
+        <button class="btn secondary" id="folder-cancel">Cancel</button>
+        <button class="btn primary" id="folder-ok">Save Folder</button>
       </div>
     </div>
   </dialog>
