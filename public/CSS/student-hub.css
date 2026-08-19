@@ -867,37 +867,41 @@ html[data-theme="minimal-white"] { --calendar-invert: 0.1; }
 }
 
 .flashcard-question-text {
-  font-size: 14px;
-  font-weight: 700;
-  line-height: 1.6;
-  color: var(--text, #0f172a);
-  text-align: center;
-  margin: 0;
-  width: 100%;
-  word-break: normal;
-  overflow-wrap: break-word;
+  font-size: 14.5px !important;
+  font-weight: 600 !important;
+  line-height: 1.65 !important;
+  color: var(--text, #0f172a) !important;
+  text-align: left !important;
+  margin: 0 !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  word-break: normal !important;
+  overflow-wrap: break-word !important;
+  display: block !important;
 }
 
 /* Inline Code Snippets & Tags inside Question Text */
 .flashcard-question-text code,
 .flashcard-question-text pre,
-.flashcard-question-text [class*="bg-"] {
-  display: inline-block !important;
+.flashcard-question-text [class*="bg-"],
+.inline-code-flashcard {
+  display: inline !important;
   white-space: nowrap !important;
   word-break: normal !important;
   overflow-wrap: normal !important;
-  padding: 3px 8px !important;
-  margin: 2px 4px !important;
-  border-radius: 6px !important;
+  padding: 2px 7px !important;
+  margin: 0 3px !important;
+  border-radius: 5px !important;
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace !important;
-  font-size: 12.5px !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
   line-height: 1.4 !important;
-  vertical-align: middle !important;
   background-color: #0f172a !important;
   color: #38bdf8 !important;
-  border: 1px solid rgba(56, 189, 248, 0.25) !important;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15) !important;
-  max-width: 100% !important;
+  border: 1px solid rgba(56, 189, 248, 0.3) !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important;
+  box-decoration-break: clone !important;
+  -webkit-box-decoration-break: clone !important;
 }
 
 .card-footer-info-row {
@@ -997,23 +1001,7 @@ html[data-theme="minimal-white"] { --calendar-invert: 0.1; }
   color: var(--text-muted, #94a3b8);
 }
 
-.flashcard-question-text {
-  font-size: 15px;
-  font-weight: 700;
-  line-height: 1.55;
-  color: var(--text, #0f172a);
-  text-align: center;
-  width: 100%;
-  margin-top: 36px;
-  padding: 0 4px;
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-/* Code snippet styling inside question & answer */
-.flashcard-question-text code,
+/* Code snippet styling inside answer */
 .flashcard-back-content code {
   background: #09090b;
   color: #ec4899;
@@ -2099,19 +2087,9 @@ html[data-theme="minimal-white"] { --calendar-invert: 0.1; }
   font-weight: 500;
 }
 
-/* General Flashcard Question Text Styling */
-.flashcard-question-text {
-  font-size: 14px;
-  font-weight: 600;
-  line-height: 1.5;
-  text-align: center;
-  max-width: 90%;
-  flex-shrink: 0;
-}
-
 /* Custom tall layout for flashcards with code recall input */
 .flashcard.has-recall {
-  height: 340px; /* Taller card to fit code block and input */
+  min-height: 380px;
 }
 
 .flashcard.has-recall .flashcard-front {
