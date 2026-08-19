@@ -72,7 +72,8 @@ const configObj = {
     SUPABASE_ANON_KEY: process.env.SUPABASE_ANON_KEY || "",
     GEMINI_API_KEY: process.env.GEMINI_API_KEY || "",
     GROQ_API_KEY: process.env.GROQ_API_KEY || "",
-    TURNSTILE_SITE_KEY: (process.env.TURNSTILE_SITE_KEY || "0x4AAAAAAEQyiKm40gWQ6_Gx").trim()
+    TURNSTILE_SITE_KEY: (process.env.TURNSTILE_SITE_KEY || "0x4AAAAAAEQyiKm40gWQ6_Gx").trim(),
+    FLASHCARDS_GG_API_KEY: process.env.FLASHCARDS_GG_API_KEY || ""
 };
 
 const configContent = `const config = ${JSON.stringify(configObj, null, 4)};\n\nexport default config;\n`;

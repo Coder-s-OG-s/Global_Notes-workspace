@@ -1,7 +1,8 @@
 import config from './config.js';
 
 /**
- * Calls Gemini 2.5 Flash API or Groq API to generate UI content.
+ * Calls Gemini 2.5 Flash API first, falling back to Groq API.
+ * Used for Quiz Generation.
  * @param {string} prompt The user's prompt or system prompt.
  * @param {string} [customApiKey] Optional custom key from UI.
  * @returns {Promise<string>} The generated text.
@@ -74,4 +75,49 @@ export async function generateTextWithGemini(prompt, customApiKey) {
         console.error('Error calling AI API:', error);
         throw error;
     }
+}
+
+/**
+ * Calls Groq API (llama-3.3-70b-versatile) directly for sub-second ultra-fast generation speed.
+ * Used for Flowchart Generation and Exam Prep Schedule Generation.
+ * Falls back to Gemini 2.5 Flash if Groq fails or key is missing.
+ * @param {string} prompt The user's prompt or system prompt.
+ * @param {string} [customApiKey] Optional custom key from UI.
+ * @returns {Promise<string>} The generated text.
+ */
+export async function generateTextWithGroq(prompt, customApiKey) {
+    const groqKey = customApiKey || config.GROQ_API_KEY || window.localStorage.getItem('GN_CUSTOM_GROQ_KEY');
+
+    // 1. Try Groq API first for ultra-fast Llama-3.3-70b inference
+    if (groqKey && groqKey !== 'YOUR_GROQ_API_KEY' && groqKey.trim() !== '') {
+        try {
+            const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${groqKey.trim()}`
+                },
+                body: JSON.stringify({
+                    model: "llama-3.3-70b-versatile",
+                    messages: [{ role: "user", content: prompt }],
+                    temperature: 0.3,
+                    max_tokens: 4096
+                })
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                if (data.choices && data.choices[0]?.message?.content) {
+                    return data.choices[0].message.content;
+                }
+            } else {
+                console.warn('Groq API status:', response.status, 'Falling back to Gemini...');
+            }
+        } catch (groqErr) {
+            console.warn('Groq API call failed, falling back to Gemini:', groqErr.message);
+        }
+    }
+
+    // 2. Fallback to Gemini API if Groq fails
+    return generateTextWithGemini(prompt, customApiKey);
 }

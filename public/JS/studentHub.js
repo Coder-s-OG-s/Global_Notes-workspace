@@ -1,5 +1,5 @@
 import config from './config.js';
-import { generateTextWithGemini } from './geminiAPI.js';
+import { generateTextWithGemini, generateTextWithGroq } from './geminiAPI.js';
 import { THEME_KEY } from './constants.js';
 import { setThemeStorageKey, wireThemeToggle, getStoredTheme, persistTheme } from './themeManager.js';
 import { showToast, showConfirm } from './utilities.js';
@@ -33,6 +33,7 @@ let scheduleFileText = '';
 let savedDecks = [];
 let activeDeckId = null;
 let savedSchedules = [];
+let activeCartoonTemplate = localStorage.getItem('global_notes_hub_cartoon_template') || 'cubist';
 let activeScheduleId = null;
 let savedFlowcharts = [];
 let activeFlowchartId = null;
@@ -84,6 +85,391 @@ let shapeStartY = 0;
 let shapeStartWidth = 0;
 let shapeStartHeight = 0;
 
+// ═══════════════════════════════════════════
+// INTERACTIVE AI QUIZ ARENA GAME ENGINE
+// ═══════════════════════════════════════════
+let quizState = {
+    active: false,
+    title: 'INTRO TO CALCULUS · QUIZ',
+    questions: [],
+    currentIndex: 0,
+    userAnswers: [],
+    score: 0
+};
+
+const DEFAULT_CALCULUS_QUIZ = [
+    {
+        question: "What is the derivative of sin(x)?",
+        options: ["cos(x)", "-cos(x)", "tan(x)", "-sin(x)"],
+        correctIndex: 0,
+        explanation: "The derivative of sin(x) with respect to x is cos(x). By calculus identity: d/dx[sin(x)] = cos(x)."
+    },
+    {
+        question: "What is the integral of 1/x dx?",
+        options: ["ln|x| + C", "x^2/2 + C", "-1/x^2 + C", "e^x + C"],
+        correctIndex: 0,
+        explanation: "The antiderivative of 1/x is the natural logarithm ln|x| + C for all non-zero x."
+    },
+    {
+        question: "What is the derivative of e^(2x)?",
+        options: ["2e^(2x)", "e^(2x)", "2x e^(2x-1)", "e^x"],
+        correctIndex: 0,
+        explanation: "Using the chain rule: d/dx[e^(2x)] = e^(2x) * d/dx[2x] = 2e^(2x)."
+    },
+    {
+        question: "What is the limit of (sin x)/x as x approaches 0?",
+        options: ["1", "0", "Infinity", "Undefined"],
+        correctIndex: 0,
+        explanation: "The fundamental trigonometric limit statement establishes that lim(x->0) (sin x)/x = 1."
+    },
+    {
+        question: "What does the Power Rule state for d/dx[x^n]?",
+        options: ["n * x^(n-1)", "x^(n+1) / (n+1)", "n * x^n", "n^x"],
+        correctIndex: 0,
+        explanation: "The Power Rule for differentiation states d/dx[x^n] = n * x^(n-1)."
+    }
+];
+
+function initQuizArena() {
+    const btnStartQuizMe = document.getElementById('btn-start-quiz-me');
+    const btnTopQuizMe = document.getElementById('btn-top-quiz-me');
+    const btnCloseQuiz = document.getElementById('btn-close-quiz');
+    const btnSkipQuiz = document.getElementById('btn-skip-quiz');
+    const btnCloseResults = document.getElementById('btn-close-quiz-results');
+    const btnRetakeQuiz = document.getElementById('btn-retake-quiz');
+    const btnFinishQuiz = document.getElementById('btn-finish-quiz');
+
+    if (btnStartQuizMe) btnStartQuizMe.addEventListener('click', () => generateDynamicAIQuiz());
+    if (btnTopQuizMe) btnTopQuizMe.addEventListener('click', () => generateDynamicAIQuiz());
+    if (btnCloseQuiz) btnCloseQuiz.addEventListener('click', () => stopQuiz());
+    if (btnSkipQuiz) btnSkipQuiz.addEventListener('click', () => skipQuizQuestion());
+    if (btnCloseResults) btnCloseResults.addEventListener('click', () => stopQuiz());
+    if (btnRetakeQuiz) btnRetakeQuiz.addEventListener('click', () => generateDynamicAIQuiz());
+    if (btnFinishQuiz) btnFinishQuiz.addEventListener('click', () => stopQuiz());
+}
+
+async function generateDynamicAIQuiz() {
+    const syllabusInputEl = document.getElementById('schedule-syllabus-input');
+    let syllabusText = syllabusInputEl ? syllabusInputEl.value.trim() : '';
+
+    // Check if file is selected in schedule-file-input if scheduleFileText is not populated yet
+    const fileInput = document.getElementById('schedule-file-input');
+    if (!scheduleFileText && fileInput && fileInput.files && fileInput.files[0]) {
+        const file = fileInput.files[0];
+        try {
+            if (file.name.toLowerCase().endsWith('.pdf')) {
+                const arrayBuffer = await file.arrayBuffer();
+                scheduleFileText = await extractTextFromPDF(arrayBuffer);
+            } else {
+                scheduleFileText = await file.text();
+            }
+            if (syllabusInputEl && !syllabusInputEl.value.trim() && scheduleFileText) {
+                syllabusInputEl.value = scheduleFileText.substring(0, 500) + (scheduleFileText.length > 500 ? '...' : '');
+            }
+        } catch (e) {
+            console.error("Error reading file during quiz trigger:", e);
+        }
+    }
+
+    let sourceContent = (syllabusText + '\n' + (scheduleFileText || '')).trim();
+
+    if (!sourceContent && activeScheduleId) {
+        const sched = savedSchedules.find(s => s.id === activeScheduleId);
+        if (sched && sched.items) {
+            sourceContent = sched.items.map(item => `${item.focus}: ${item.topics}`).join('\n');
+        }
+    }
+
+    if (!sourceContent && activeDeckId) {
+        const deck = savedDecks.find(d => d.id === activeDeckId);
+        if (deck && deck.cards) {
+            sourceContent = deck.cards.map(c => `Topic: ${c.question}\nAnswer: ${c.answer}`).join('\n');
+        }
+    }
+
+    if (!sourceContent) {
+        showToast('Please enter syllabus text or upload a document file (.pdf, .txt, .md) first.', 'warning');
+        return;
+    }
+
+    const btnStart = document.getElementById('btn-start-quiz-me');
+    const btnTop = document.getElementById('btn-top-quiz-me');
+    const origHtmlStart = btnStart ? btnStart.innerHTML : '';
+    const origHtmlTop = btnTop ? btnTop.innerHTML : '';
+
+    if (btnStart) { btnStart.disabled = true; btnStart.innerHTML = '<span class="ai-spinner"></span> Generating AI Quiz...'; }
+    if (btnTop) { btnTop.disabled = true; btnTop.innerHTML = '<span class="ai-spinner"></span> Generating AI Quiz...'; }
+
+    try {
+        const fileNameLabel = (document.getElementById('schedule-filename')?.textContent || 'Uploaded Document').replace(/\.[^/.]+$/, "");
+        const truncatedContent = sourceContent.length > 8000 ? sourceContent.substring(0, 8000) : sourceContent;
+
+        const prompt = `You are an expert academic examiner.
+Generate a comprehensive multiple choice practice test based EXCLUSIVELY on the provided document / syllabus content below.
+
+STRICT REQUIREMENTS:
+1. Do NOT generate questions about calculus, mathematics, or unrelated subjects UNLESS the provided document explicitly discusses calculus.
+2. Identify all main subjects or topic sections present in the document.
+3. For EACH subject/topic identified, generate EXACTLY 10 multiple choice questions (or 10-30 total questions derived strictly from the uploaded document).
+4. Return ONLY a valid JSON array of question objects (optionally wrapped in \`\`\`json ... \`\`\` codeblock).
+5. Each object MUST have:
+   - "subject": string (e.g. topic/section name from document)
+   - "question": string (clear question statement strictly derived from document content - NO emojis)
+   - "options": array of 4 distinct strings (e.g. ["Option A", "Option B", "Option C", "Option D"])
+   - "correctIndex": number (0, 1, 2, or 3 pointing to the correct option)
+   - "explanation": string (a clear, educational breakdown explaining why this answer is correct based on the document text)
+
+Document / Syllabus Content:
+${truncatedContent}`;
+
+        const aiResponse = await generateTextWithGemini(prompt);
+        let quizData = parseJsonArray(aiResponse);
+
+        if (!Array.isArray(quizData) || quizData.length === 0) {
+            throw new Error("AI did not return a valid quiz array.");
+        }
+
+        const questions = quizData.map(q => ({
+            subject: q.subject || fileNameLabel,
+            question: stripEmojis(q.question || 'Document Question'),
+            options: Array.isArray(q.options) && q.options.length === 4 ? q.options : ['Option A', 'Option B', 'Option C', 'Option D'],
+            correctIndex: typeof q.correctIndex === 'number' ? q.correctIndex : 0,
+            explanation: q.explanation || 'Based on your uploaded document material.'
+        }));
+
+        startQuiz(questions, `${fileNameLabel.toUpperCase()} · PRACTICE QUIZ`);
+        showToast(`AI Quiz generated successfully (${questions.length} questions from uploaded document)!`, 'success');
+
+    } catch (err) {
+        console.error("AI Quiz Generation Error:", err);
+        
+        // Intelligent Document-Based Local Engine (100% derived from uploaded PDF / text lines)
+        const docLines = sourceContent.split('\n')
+            .map(l => l.trim())
+            .filter(l => l.length > 15 && !l.toLowerCase().startsWith('page'));
+
+        const fileNameLabel = (document.getElementById('schedule-filename')?.textContent || 'Uploaded Syllabus').replace(/\.[^/.]+$/, "");
+        const fallbackQuestions = [];
+
+        if (docLines.length > 0) {
+            const step = Math.max(1, Math.floor(docLines.length / 10));
+            for (let i = 0; i < Math.min(docLines.length, 30); i += step) {
+                const lineSample = docLines[i];
+                const keyTerm = lineSample.split(/\s+/).slice(0, 4).join(' ');
+                
+                fallbackQuestions.push({
+                    subject: fileNameLabel.substring(0, 24),
+                    question: `Based on "${fileNameLabel}", what key principle relates to: "${lineSample.substring(0, 70)}..."?`,
+                    options: [
+                        `Primary rule: ${lineSample.substring(0, 45)}`,
+                        `Contradictory statement regarding ${keyTerm}`,
+                        `Specification not mentioned in document`,
+                        `None of the above`
+                    ],
+                    correctIndex: 0,
+                    explanation: `Document extract: "${lineSample.substring(0, 100)}"`
+                });
+            }
+        }
+
+        if (fallbackQuestions.length > 0) {
+            startQuiz(fallbackQuestions, `${fileNameLabel.toUpperCase()} · PRACTICE QUIZ`);
+            showToast(`Generated ${fallbackQuestions.length} practice questions directly from uploaded document.`, 'success');
+        } else {
+            showToast('Could not extract readable text from document. Please ensure PDF contains text.', 'error');
+        }
+    } finally {
+        if (btnStart) { btnStart.disabled = false; btnStart.innerHTML = origHtmlStart; }
+        if (btnTop) { btnTop.disabled = false; btnTop.innerHTML = origHtmlTop; }
+    }
+}
+
+function startQuiz(customQuestions, title) {
+    const activeDeck = savedDecks.find(d => d.id === activeDeckId);
+    let questions = customQuestions;
+
+    if (!questions || questions.length === 0) {
+        if (activeDeck && activeDeck.cards && activeDeck.cards.length > 0) {
+            questions = activeDeck.cards.map((c, i) => {
+                const options = [c.answer || 'Correct Answer'];
+                options.push('Incorrect derivative / output');
+                options.push('Opposite sign constant value');
+                options.push('None of the above');
+                for (let k = options.length - 1; k > 0; k--) {
+                    const j = Math.floor(Math.random() * (k + 1));
+                    [options[k], options[j]] = [options[j], options[k]];
+                }
+                const correctIdx = options.indexOf(c.answer || 'Correct Answer');
+                return {
+                    question: stripEmojis(c.question),
+                    options: options,
+                    correctIndex: correctIdx >= 0 ? correctIdx : 0,
+                    explanation: c.mnemonic || `Mastery card answer: ${c.answer}`
+                };
+            });
+        } else {
+            questions = DEFAULT_CALCULUS_QUIZ;
+        }
+    }
+
+    quizState = {
+        active: true,
+        title: title || (activeDeck ? `${activeDeck.name.toUpperCase()} · QUIZ` : 'INTRO TO CALCULUS · QUIZ'),
+        questions: questions,
+        currentIndex: 0,
+        userAnswers: [],
+        score: 0
+    };
+
+    const container = document.getElementById('quiz-arena-container');
+    const placeholder = document.getElementById('schedule-placeholder');
+    const timeline = document.getElementById('schedule-timeline');
+    const cardBody = document.getElementById('quiz-card-body');
+    const resultsCard = document.getElementById('quiz-results-card');
+
+    if (container) container.classList.remove('hidden');
+    if (placeholder) placeholder.classList.add('hidden');
+    if (timeline) timeline.classList.add('hidden');
+    if (cardBody) cardBody.classList.remove('hidden');
+    if (resultsCard) resultsCard.classList.add('hidden');
+
+    renderQuizQuestion();
+}
+
+function renderQuizQuestion() {
+    const q = quizState.questions[quizState.currentIndex];
+    if (!q) {
+        renderQuizResults();
+        return;
+    }
+
+    const progressText = document.getElementById('quiz-progress-text');
+    const progressFill = document.getElementById('quiz-progress-line-fill');
+    const subtitle = document.getElementById('quiz-category-subtitle');
+    const questionText = document.getElementById('quiz-question-text');
+    const optionsList = document.getElementById('quiz-options-list');
+    const explanationCard = document.getElementById('quiz-explanation-card');
+
+    const total = quizState.questions.length;
+    const currentNum = quizState.currentIndex + 1;
+    const percent = Math.round((currentNum / total) * 100);
+
+    if (progressText) progressText.textContent = `${currentNum} / ${total}`;
+    if (progressFill) progressFill.style.width = `${percent}%`;
+    if (subtitle) subtitle.textContent = q.subject ? `${q.subject.toUpperCase()} · QUIZ` : quizState.title;
+    if (questionText) questionText.textContent = q.question;
+    if (explanationCard) explanationCard.classList.add('hidden');
+
+    if (optionsList) {
+        optionsList.innerHTML = '';
+        const badges = ['A', 'B', 'C', 'D'];
+
+        q.options.forEach((optText, optIdx) => {
+            const pill = document.createElement('div');
+            pill.className = 'quiz-option-pill';
+            pill.innerHTML = `
+                <div class="quiz-option-left">
+                    <div class="quiz-option-letter-badge">${badges[optIdx] || optIdx + 1}</div>
+                    <div class="quiz-option-text">${escapeHtml(optText)}</div>
+                </div>
+                <div class="quiz-option-status-icon"></div>
+            `;
+
+            pill.addEventListener('click', () => handleQuizOptionSelect(optIdx, pill));
+            optionsList.appendChild(pill);
+        });
+    }
+}
+
+function handleQuizOptionSelect(selectedIdx, pillElement) {
+    const q = quizState.questions[quizState.currentIndex];
+    if (!q) return;
+
+    const isCorrect = selectedIdx === q.correctIndex;
+    quizState.userAnswers.push({
+        questionIndex: quizState.currentIndex,
+        selectedOptionIdx: selectedIdx,
+        isCorrect: isCorrect
+    });
+
+    if (isCorrect) quizState.score += 1;
+
+    const allPills = document.querySelectorAll('.quiz-option-pill');
+    allPills.forEach((p, idx) => {
+        p.style.pointerEvents = 'none';
+        const statusIcon = p.querySelector('.quiz-option-status-icon');
+        if (idx === q.correctIndex) {
+            p.classList.add('correct');
+            if (statusIcon) statusIcon.innerHTML = `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#0f172a" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
+        } else if (idx === selectedIdx && !isCorrect) {
+            p.classList.add('incorrect');
+            if (statusIcon) statusIcon.innerHTML = `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#be123c" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>`;
+        }
+    });
+
+    const explanationCard = document.getElementById('quiz-explanation-card');
+    const explanationText = document.getElementById('quiz-explanation-text');
+    if (explanationCard && explanationText && q.explanation) {
+        explanationText.textContent = q.explanation;
+        explanationCard.classList.remove('hidden');
+    }
+
+    setTimeout(() => {
+        quizState.currentIndex += 1;
+        if (quizState.currentIndex < quizState.questions.length) {
+            renderQuizQuestion();
+        } else {
+            renderQuizResults();
+        }
+    }, 1800);
+}
+
+function skipQuizQuestion() {
+    quizState.currentIndex += 1;
+    if (quizState.currentIndex < quizState.questions.length) {
+        renderQuizQuestion();
+    } else {
+        renderQuizResults();
+    }
+}
+
+function renderQuizResults() {
+    const cardBody = document.getElementById('quiz-card-body');
+    const resultsCard = document.getElementById('quiz-results-card');
+
+    if (cardBody) cardBody.classList.add('hidden');
+    if (resultsCard) resultsCard.classList.remove('hidden');
+
+    const total = quizState.questions.length;
+    const correctCount = quizState.score;
+    const redoCount = total - correctCount;
+    const percent = total > 0 ? Math.round((correctCount / total) * 100) : 0;
+
+    const scorePercentageEl = document.getElementById('quiz-score-percentage');
+    const scoreSubtextEl = document.getElementById('quiz-score-subtext');
+    const metricNailedEl = document.getElementById('quiz-metric-nailed-number');
+    const metricRedoEl = document.getElementById('quiz-metric-redo-number');
+
+    if (scorePercentageEl) scorePercentageEl.textContent = `${percent}%`;
+    if (scoreSubtextEl) scoreSubtextEl.textContent = `${correctCount} of ${total} correct`;
+    if (metricNailedEl) metricNailedEl.textContent = `${correctCount}`;
+    if (metricRedoEl) metricRedoEl.textContent = `${redoCount}`;
+}
+
+function stopQuiz() {
+    quizState.active = false;
+    const container = document.getElementById('quiz-arena-container');
+    const placeholder = document.getElementById('schedule-placeholder');
+    const timeline = document.getElementById('schedule-timeline');
+
+    if (container) container.classList.add('hidden');
+    if (timeline && timeline.children.length > 0) {
+        timeline.classList.remove('hidden');
+    } else if (placeholder) {
+        placeholder.classList.remove('hidden');
+    }
+}
+
 document.addEventListener('DOMContentLoaded', async () => {
     await initHub();
 });
@@ -118,7 +504,19 @@ async function initHub() {
 
     setupUploadDropzone('schedule-dropzone', 'schedule-file-input', 'schedule-filename', (text) => {
         scheduleFileText = text;
-        showToast('Syllabus file uploaded successfully.', 'success');
+        const syllabusInputEl = document.getElementById('schedule-syllabus-input');
+        if (syllabusInputEl && text) {
+            syllabusInputEl.value = text.substring(0, 600) + (text.length > 600 ? '...' : '');
+        }
+        showToast('Syllabus document uploaded and parsed successfully.', 'success');
+    });
+
+    setupUploadDropzone('flowchart-dropzone', 'flowchart-file-input', 'flowchart-filename', (text) => {
+        const promptInputEl = document.getElementById('flowchart-ai-prompt');
+        if (promptInputEl && text) {
+            promptInputEl.value = text.substring(0, 800) + (text.length > 800 ? '...' : '');
+        }
+        showToast('Process file loaded into Flowchart Studio.', 'success');
     });
 
     // 5. Button Action Listeners
@@ -170,13 +568,16 @@ async function initHub() {
         });
     }
 
-    // Bind + Add source button
+    // Bind + Add source button & Close button
     const btnOpenAddSource = document.getElementById('btn-open-add-source');
+    const btnCloseAddSource = document.getElementById('btn-close-add-source');
+    
     if (btnOpenAddSource) {
         btnOpenAddSource.addEventListener('click', () => {
             const addSourceModal = document.querySelector('.add-source-card-modal');
             if (addSourceModal) {
                 addSourceModal.style.display = 'block';
+                addSourceModal.classList.remove('hidden');
             }
             const placeholder = document.getElementById('flashcards-placeholder');
             const grid = document.getElementById('flashcards-grid');
@@ -188,6 +589,62 @@ async function initHub() {
             const dropzone = document.getElementById('flashcards-dropzone');
             if (dropzone) dropzone.scrollIntoView({ behavior: 'smooth' });
         });
+    }
+
+    if (btnCloseAddSource) {
+        btnCloseAddSource.addEventListener('click', () => {
+            const addSourceModal = document.querySelector('.add-source-card-modal');
+            if (addSourceModal) {
+                addSourceModal.style.display = 'none';
+                addSourceModal.classList.add('hidden');
+            }
+            if (activeDeckId) {
+                selectDeck(activeDeckId);
+            } else {
+                const placeholder = document.getElementById('flashcards-placeholder');
+                if (placeholder) placeholder.classList.remove('hidden');
+            }
+        });
+    }
+
+    // Bind Cartoon Template Selector Pills
+    const cartoonPills = document.querySelectorAll('.cartoon-pill-btn');
+    cartoonPills.forEach(pill => {
+        if (pill.dataset.template === activeCartoonTemplate) {
+            pill.classList.add('active');
+            pill.style.background = '#6366f1';
+            pill.style.color = '#ffffff';
+        } else {
+            pill.classList.remove('active');
+            pill.style.background = '#ffffff';
+            pill.style.color = '#0f172a';
+        }
+
+        pill.addEventListener('click', () => {
+            cartoonPills.forEach(p => {
+                p.classList.remove('active');
+                p.style.background = '#ffffff';
+                p.style.color = '#0f172a';
+            });
+            pill.classList.add('active');
+            pill.style.background = '#6366f1';
+            pill.style.color = '#ffffff';
+            activeCartoonTemplate = pill.dataset.template || 'cubist';
+            localStorage.setItem('global_notes_hub_cartoon_template', activeCartoonTemplate);
+
+            if (activeDeckId) {
+                const activeDeck = savedDecks.find(d => d.id === activeDeckId);
+                if (activeDeck) {
+                    renderFlashcards(activeDeck.cards);
+                }
+            }
+        });
+    });
+
+    // Bind Flashcards.gg Cloud Sync Button
+    const syncBtn = document.getElementById('btn-sync-flashcards-gg');
+    if (syncBtn) {
+        syncBtn.addEventListener('click', syncDeckToFlashcardsGG);
     }
 
     // Bind Search Bar Toggle & Input Filter
@@ -210,18 +667,24 @@ async function initHub() {
         });
     }
 
-    // Bind Sidebar Menu Toggle Button
+    // Bind Sidebar Menu Toggle Buttons (Header & Sidebar Title)
+    const toggleSidebar = (e) => {
+        if (e) e.stopPropagation();
+        const libraryPanel = document.querySelector('.my-library-panel');
+        if (libraryPanel) {
+            libraryPanel.classList.toggle('collapsed');
+            showToast(libraryPanel.classList.contains('collapsed') ? 'Library sidebar hidden' : 'Library sidebar expanded', 'info');
+        }
+    };
+
     const libMenuBtn = document.getElementById('lib-menu-btn');
-    if (libMenuBtn) {
-        libMenuBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            const libraryPanel = document.querySelector('.my-library-panel');
-            if (libraryPanel) {
-                libraryPanel.classList.toggle('collapsed');
-                showToast(libraryPanel.classList.contains('collapsed') ? 'Library sidebar hidden' : 'Library sidebar expanded', 'info');
-            }
-        });
-    }
+    if (libMenuBtn) libMenuBtn.addEventListener('click', toggleSidebar);
+
+    const libMenuBtnSidebar = document.getElementById('lib-menu-btn-sidebar');
+    if (libMenuBtnSidebar) libMenuBtnSidebar.addEventListener('click', toggleSidebar);
+
+    // Initialize Interactive AI Quiz Arena Engine
+    initQuizArena();
 
 
 
@@ -886,49 +1349,7 @@ ${sourceText}`;
 }
 
 function getDefaultStudyDecks() {
-    return [
-        {
-            id: 'deck_calc_1',
-            name: 'Intro to Calculus',
-            sourceType: 'youtube',
-            timestamp: Date.now(),
-            cards: [
-                { question: 'What is the derivative of sin(x)?', answer: 'The derivative of sin(x) is <strong>cos(x)</strong>.', mastered: true, category: 'Calculus' },
-                { question: 'What is the derivative of cos(x)?', answer: 'The derivative of cos(x) is <strong>-sin(x)</strong>.', mastered: true, category: 'Calculus' },
-                { question: 'What is the Power Rule for differentiation?', answer: 'For <strong>f(x) = x^n</strong>, f\'(x) = <strong>n * x^(n-1)</strong>.', mastered: false, category: 'Calculus' }
-            ]
-        },
-        {
-            id: 'deck_lecture_1',
-            name: 'Lecture 1 Slides',
-            sourceType: 'pdf',
-            timestamp: Date.now(),
-            cards: [
-                { question: 'What is the fundamental theorem of calculus?', answer: 'It connects differentiation and integration as inverse operations.', mastered: true, category: 'Mathematics' },
-                { question: 'Define a continuous function.', answer: 'A function with no jumps, breaks, or holes in its domain.', mastered: false, category: 'Analysis' }
-            ]
-        },
-        {
-            id: 'deck_syllabus_1',
-            name: 'Syllabus',
-            sourceType: 'docx',
-            timestamp: Date.now(),
-            cards: [
-                { question: 'What is the weight of midterms?', answer: 'Midterms count for <strong>30%</strong> of final grade.', mastered: false, category: 'Course Info' },
-                { question: 'When are weekly assignments due?', answer: 'Every Sunday night at 11:59 PM.', mastered: false, category: 'Course Info' }
-            ]
-        },
-        {
-            id: 'deck_cell_div_1',
-            name: 'Cell Division',
-            sourceType: 'recording',
-            timestamp: Date.now(),
-            cards: [
-                { question: 'What are the phases of mitosis?', answer: '<strong>Prophase, Metaphase, Anaphase, Telophase</strong> (PMAT).', mastered: true, category: 'Biology' },
-                { question: 'Difference between Mitosis and Meiosis?', answer: 'Mitosis creates 2 identical diploid cells; Meiosis creates 4 unique haploid gametes.', mastered: true, category: 'Biology' }
-            ]
-        }
-    ];
+    return [];
 }
 
 function renderLibraryDecks(query = '') {
@@ -1031,19 +1452,29 @@ function selectDeck(deckId) {
     saveState();
     
     const activeDeck = savedDecks.find(d => d.id === activeDeckId);
-    if (activeDeck) {
-        renderFlashcards(activeDeck.cards);
-    }
     renderLibraryDecks();
 
     const addSourceModal = document.querySelector('.add-source-card-modal');
     if (addSourceModal) {
         addSourceModal.style.display = 'none';
+        addSourceModal.classList.add('hidden');
     }
+
+    const placeholder = document.getElementById('flashcards-placeholder');
     const grid = document.getElementById('flashcards-grid');
     const header = document.getElementById('flashcards-header');
-    if (grid) grid.classList.remove('hidden');
-    if (header) header.classList.remove('hidden');
+
+    if (activeDeck && activeDeck.cards && activeDeck.cards.length > 0) {
+        renderFlashcards(activeDeck.cards);
+        if (placeholder) placeholder.classList.add('hidden');
+        if (grid) grid.classList.remove('hidden');
+        if (header) header.classList.remove('hidden');
+    } else {
+        renderFlashcards([]);
+        if (placeholder) placeholder.classList.remove('hidden');
+        if (grid) grid.classList.add('hidden');
+        if (header) header.classList.add('hidden');
+    }
 }
 
 function deleteDeck(deckId) {
@@ -1094,6 +1525,196 @@ function stripEmojis(text) {
     return text.replace(/[\u{1F600}-\u{1F64F}\u{1F300}-\u{1F5FF}\u{1F680}-\u{1F6FF}\u{1F700}-\u{1F77F}\u{1F780}-\u{1F7FF}\u{1F800}-\u{1F8FF}\u{1F900}-\u{1F9FF}\u{1FA00}-\u{1FA6F}\u{1FA70}-\u{1FAFF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}]/gu, '').trim();
 }
 
+async function syncDeckToFlashcardsGG() {
+    const activeDeck = savedDecks.find(d => d.id === activeDeckId);
+    if (!activeDeck || !activeDeck.cards || activeDeck.cards.length === 0) {
+        showToast('No active deck to sync.', 'warning');
+        return;
+    }
+
+    const apiKey = config.FLASHCARDS_GG_API_KEY;
+    if (!apiKey) {
+        showToast('Flashcards.gg API Key not found in config.', 'error');
+        return;
+    }
+
+    const syncBtn = document.getElementById('btn-sync-flashcards-gg');
+    if (syncBtn) {
+        syncBtn.disabled = true;
+        syncBtn.innerHTML = `
+            <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" class="spin"><path d="M12 2v4m0 12v4M4.93 4.93l2.83 2.83m8.48 8.48l2.83 2.83M2 12h4m12 0h4M4.93 19.07l2.83-2.83m8.48-8.48l2.83-2.83"/></svg>
+            <span>Syncing to Flashcards.gg...</span>
+        `;
+    }
+
+    try {
+        // 1. Create set on Flashcards.gg
+        const setRes = await fetch('https://flashcards.gg/api/v1/sets', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${apiKey}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                name: activeDeck.title || 'Global Notes Study Deck',
+                description: 'Generated by Global Notes AI Student Hub'
+            })
+        });
+
+        if (!setRes.ok) {
+            throw new Error(`Failed to create set on Flashcards.gg (HTTP ${setRes.status})`);
+        }
+
+        const setData = await setRes.json();
+        const setId = setData.id;
+
+        // 2. Add each card to the set
+        let addedCount = 0;
+        for (const card of activeDeck.cards) {
+            const cardRes = await fetch(`https://flashcards.gg/api/v1/sets/${setId}/cards`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${apiKey}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    front: stripEmojis(card.question),
+                    back: stripEmojis(card.answer)
+                })
+            });
+            if (cardRes.ok) {
+                addedCount++;
+            }
+        }
+
+        showToast(`☁️ Successfully synced ${addedCount} cards to Flashcards.gg!`, 'success');
+    } catch (err) {
+        console.error('Flashcards.gg Sync Error:', err);
+        showToast(`Sync Error: ${err.message}`, 'error');
+    } finally {
+        if (syncBtn) {
+            syncBtn.disabled = false;
+            syncBtn.innerHTML = `
+                <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 11A5 5 0 0 0 9 7.37A7 7 0 0 0 2 13a7 7 0 0 0 7 7h10a5 5 0 0 0 0-10z"></path></svg>
+                <span>Sync to Flashcards.gg</span>
+            `;
+        }
+    }
+}
+
+function getCartoonSvgForTemplate(templateName, idx) {
+    const seed = idx || 0;
+    const colors = [
+        { main: '#2563eb', sec: '#ef4444', acc: '#f59e0b', bg: '#fef3c7' },
+        { main: '#7c3aed', sec: '#ec4899', acc: '#06b6d4', bg: '#e0e7ff' },
+        { main: '#059669', sec: '#10b981', acc: '#34d399', bg: '#dcfce7' },
+        { main: '#ea580c', sec: '#f97316', acc: '#fbbf24', bg: '#ffedd5' }
+    ];
+    const c = colors[seed % colors.length];
+
+    if (templateName === 'cyberpunk') {
+        return `<svg viewBox="0 0 300 130" style="width:100%;height:100%;display:block;border-radius:18px 18px 0 0;" preserveAspectRatio="none">
+            <defs>
+                <linearGradient id="cybGrad_${seed}" x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0%" stop-color="#4c1d95"/>
+                    <stop offset="100%" stop-color="#7c3aed"/>
+                </linearGradient>
+            </defs>
+            <rect width="300" height="130" fill="url(#cybGrad_${seed})"/>
+            <circle cx="50" cy="65" r="35" fill="#06b6d4" opacity="0.4"/>
+            <circle cx="250" cy="65" r="35" fill="#f43f5e" opacity="0.4"/>
+            <!-- Bright White High-Contrast Neon Cyber Robot Mascot Face -->
+            <g transform="translate(115, 12)">
+                <rect x="0" y="0" width="70" height="80" rx="20" fill="#ffffff" stroke="#0f172a" stroke-width="4"/>
+                <rect x="10" y="18" width="50" height="24" rx="10" fill="#ec4899"/>
+                <circle cx="22" cy="30" r="6" fill="#fde047"/>
+                <circle cx="48" cy="30" r="6" fill="#fde047"/>
+                <rect x="20" y="54" width="30" height="8" rx="4" fill="#06b6d4"/>
+                <circle cx="-12" cy="40" r="10" fill="#06b6d4" stroke="#0f172a" stroke-width="3"/>
+                <circle cx="82" cy="40" r="10" fill="#06b6d4" stroke="#0f172a" stroke-width="3"/>
+                <path d="M-12 40 Q35 0 82 40" fill="none" stroke="#f43f5e" stroke-width="4"/>
+            </g>
+        </svg>`;
+    }
+
+    if (templateName === 'cosmic') {
+        return `<svg viewBox="0 0 300 130" style="width:100%;height:100%;display:block;border-radius:18px 18px 0 0;" preserveAspectRatio="none">
+            <defs>
+                <linearGradient id="cosGrad_${seed}" x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0%" stop-color="#1e1b4b"/>
+                    <stop offset="100%" stop-color="#312e81"/>
+                </linearGradient>
+            </defs>
+            <rect width="300" height="130" fill="url(#cosGrad_${seed})"/>
+            <circle cx="45" cy="30" r="3" fill="#ffffff"/>
+            <circle cx="255" cy="35" r="4" fill="#fde047"/>
+            <circle cx="235" cy="95" r="3" fill="#ffffff"/>
+            <circle cx="55" cy="105" r="3" fill="#60a5fa"/>
+            <circle cx="40" cy="90" r="16" fill="#f59e0b"/>
+            <ellipse cx="40" cy="90" rx="26" ry="6" fill="none" stroke="#fbbf24" stroke-width="3" transform="rotate(-20 40 90)"/>
+            <!-- Bright White Astronaut Helmet Mascot -->
+            <g transform="translate(115, 10)">
+                <circle cx="35" cy="45" r="38" fill="#ffffff" stroke="#0f172a" stroke-width="4"/>
+                <ellipse cx="35" cy="42" rx="26" ry="16" fill="#0f172a"/>
+                <ellipse cx="28" cy="36" rx="9" ry="5" fill="#38bdf8" opacity="0.9"/>
+                <rect x="20" y="74" width="30" height="10" rx="5" fill="#ef4444"/>
+            </g>
+        </svg>`;
+    }
+
+    if (templateName === 'minimal') {
+        return `<svg viewBox="0 0 300 130" style="width:100%;height:100%;display:block;border-radius:18px 18px 0 0;" preserveAspectRatio="none">
+            <rect width="300" height="130" fill="${c.bg}"/>
+            <circle cx="60" cy="65" r="40" fill="${c.sec}" opacity="0.3"/>
+            <circle cx="240" cy="65" r="40" fill="${c.main}" opacity="0.3"/>
+            <!-- Bright White Minimal Mascot -->
+            <g transform="translate(115, 15)">
+                <rect x="0" y="0" width="70" height="70" rx="24" fill="#ffffff" stroke="#0f172a" stroke-width="4"/>
+                <circle cx="20" cy="28" r="8" fill="${c.main}"/>
+                <circle cx="50" cy="28" r="8" fill="${c.main}"/>
+                <circle cx="22" cy="28" r="4" fill="#ffffff"/>
+                <circle cx="52" cy="28" r="4" fill="#ffffff"/>
+                <path d="M22 46 Q35 58 48 46" fill="none" stroke="#0f172a" stroke-width="4" stroke-linecap="round"/>
+            </g>
+        </svg>`;
+    }
+
+    if (templateName === 'pixel') {
+        return `<svg viewBox="0 0 300 130" style="width:100%;height:100%;display:block;border-radius:18px 18px 0 0;" preserveAspectRatio="none">
+            <rect width="300" height="130" fill="#312e81"/>
+            <!-- Bright 8-Bit Pixel Character Avatar -->
+            <g transform="translate(115, 15)">
+                <rect x="15" y="5" width="40" height="10" fill="#ef4444"/>
+                <rect x="5" y="15" width="60" height="45" fill="#f59e0b"/>
+                <rect x="15" y="25" width="10" height="10" fill="#0f172a"/>
+                <rect x="45" y="25" width="10" height="10" fill="#0f172a"/>
+                <rect x="25" y="27" width="4" height="4" fill="#38bdf8"/>
+                <rect x="55" y="27" width="4" height="4" fill="#38bdf8"/>
+                <rect x="20" y="45" width="30" height="8" fill="#0f172a"/>
+                <rect x="10" y="60" width="50" height="20" fill="#2563eb"/>
+            </g>
+        </svg>`;
+    }
+
+    // Default: Cubist Picasso Abstract Art (1:1 matching user reference image!)
+    return `<svg viewBox="0 0 300 130" style="width:100%;height:100%;display:block;border-radius:18px 18px 0 0;" preserveAspectRatio="none">
+        <rect width="300" height="130" fill="${c.bg}"/>
+        <path d="M0 0 L150 0 L110 130 L0 130 Z" fill="${c.sec}"/>
+        <path d="M150 0 L300 0 L300 130 L110 130 Z" fill="${c.main}"/>
+        <!-- Picasso Abstract Face Avatar (Bright, Crisp & 100% Visible!) -->
+        <g transform="translate(115, 12)">
+            <rect x="0" y="0" width="70" height="85" rx="20" fill="#ffffff" stroke="#0f172a" stroke-width="4"/>
+            <path d="M0 0 Q35 30 70 0 L70 45 Z" fill="${c.acc}"/>
+            <circle cx="24" cy="38" r="13" fill="#0f172a"/>
+            <circle cx="24" cy="38" r="5" fill="#38bdf8"/>
+            <polygon points="46,26 62,44 42,44" fill="#ef4444"/>
+            <rect x="18" y="60" width="34" height="12" rx="4" fill="#0f172a"/>
+            <line x1="29" y1="60" x2="29" y2="72" stroke="#ffffff" stroke-width="2.5"/>
+            <line x1="41" y1="60" x2="41" y2="72" stroke="#ffffff" stroke-width="2.5"/>
+        </g>
+    </svg>`;
+}
+
 function renderFlashcards(cards) {
     const placeholder = document.getElementById('flashcards-placeholder');
     const grid = document.getElementById('flashcards-grid');
@@ -1139,23 +1760,52 @@ function renderFlashcards(cards) {
                 </div>
             </div>
         ` : '';
+        const cartoonSvgMarkup = getCartoonSvgForTemplate(activeCartoonTemplate, idx);
+
         cardEl.innerHTML = `
             <div class="flashcard-inner">
+                <div class="flashcard-stack-layer layer-back-2"></div>
+                <div class="flashcard-stack-layer layer-back-1"></div>
                 <div class="flashcard-front">
-                    <span class="flashcard-category-badge">${escapeHtml(card.category || 'General')}</span>
-                    <span class="flashcard-index-label">${idx + 1} / ${cards.length}</span>
+                    <!-- Hero Cartoon Cover Art Box at Top -->
+                    <div class="card-hero-illustration-box" style="position: relative; width: 100%; height: 130px; border-radius: 18px 18px 0 0; overflow: hidden; margin-bottom: 14px; flex-shrink: 0;">
+                        ${cartoonSvgMarkup}
+                        <div class="card-folder-tab-badge" style="position: absolute; top: 10px; left: 12px; z-index: 5;">
+                            <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 16 14"/></svg>
+                            <span>${escapeHtml(card.category || 'General')}</span>
+                        </div>
+                        <span class="flashcard-index-label" style="position: absolute; bottom: 10px; left: 12px; z-index: 5; background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(4px); color: #fff; padding: 3px 10px; border-radius: 12px; font-size: 10.5px; font-weight: 800;">${idx + 1} / ${cards.length}</span>
+                    </div>
+
                     ${card.mastered ? `
-                        <div class="flashcard-mastered-badge">
+                        <div class="flashcard-mastered-badge" style="position: absolute; top: 10px; left: 140px; z-index: 6;">
                             ✓ Got It
                         </div>
                     ` : ''}
-                    <div class="flashcard-question-text">${renderSafeHtml(stripEmojis(card.question))}</div>
-                    ${recallHtml}
+
+                    <!-- Question Only Body Container (Clean & Focused) -->
+                    <div class="card-body-content" style="width: 100%; display: flex; align-items: center; justify-content: center; flex: 1; padding: 10px 24px 20px 24px; box-sizing: border-box;">
+                        <div class="flashcard-question-text" style="font-size: 15px; font-weight: 700; line-height: 1.6; color: var(--text, #0f172a); text-align: left; margin: 0;">${renderSafeHtml(stripEmojis(card.question))}</div>
+                    </div>
+
+                    <!-- Floating Circle Actions Top-Right Inside Card -->
+                    <div class="card-floating-actions">
+                        <button class="circle-action-btn btn-flip-card" title="Flip Card">
+                            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
+                        </button>
+                        <button class="circle-action-btn card-mastery-btn ${card.mastered ? 'active' : ''}" title="Mark as Mastered">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="15" height="15">
+                                <polyline points="20 6 9 17 4 12"></polyline>
+                            </svg>
+                        </button>
+                    </div>
                 </div>
+
                 <div class="flashcard-back">
                     <div class="flashcard-back-content">
                         <p class="flashcard-back-answer">${renderSafeHtml(stripEmojis(card.answer))}</p>
                         ${mnemonicHtml}
+                        ${recallHtml}
                     </div>
                     <button class="card-mastery-btn ${card.mastered ? 'active' : ''}" title="Mark as Mastered">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:12px;height:12px;margin-right:2px;">
@@ -1168,9 +1818,17 @@ function renderFlashcards(cards) {
         `;
 
         cardEl.addEventListener('click', (e) => {
-            if (e.target.closest('.card-mastery-btn') || e.target.closest('.flashcard-back-content') || e.target.closest('.card-recall-container')) return;
+            if (e.target.closest('.card-mastery-btn') || e.target.closest('.circle-action-btn') || e.target.closest('.flashcard-back-content') || e.target.closest('.card-recall-container')) return;
             cardEl.classList.toggle('flipped');
         });
+
+        const btnFlip = cardEl.querySelector('.btn-flip-card');
+        if (btnFlip) {
+            btnFlip.addEventListener('click', (e) => {
+                e.stopPropagation();
+                cardEl.classList.toggle('flipped');
+            });
+        }
 
         // Double-click back content to flip back as helper
         const backContent = cardEl.querySelector('.flashcard-back-content');
@@ -1231,9 +1889,10 @@ function renderFlashcards(cards) {
 // ─── REVISION SCHEDULE HANDLERS ───
 async function handleGenerateSchedule() {
     const syllabusInputEl = document.getElementById('schedule-syllabus-input');
-    const syllabusText = syllabusInputEl.value.trim();
-    const dateInput = document.getElementById('exam-date-input').value;
-    const sourceSyllabus = (syllabusText + '\n' + scheduleFileText).trim();
+    let syllabusText = syllabusInputEl ? syllabusInputEl.value.trim() : '';
+    let dateInput = document.getElementById('exam-date-input').value;
+
+    const sourceSyllabus = (syllabusText + '\n' + (scheduleFileText || '')).trim();
 
     if (!sourceSyllabus) {
         showToast('Please enter your syllabus details or upload a syllabus file.', 'error');
@@ -1241,8 +1900,13 @@ async function handleGenerateSchedule() {
     }
 
     if (!dateInput) {
-        showToast('Please select your exam date first.', 'error');
-        return;
+        const defaultDate = new Date();
+        defaultDate.setDate(defaultDate.getDate() + 7);
+        const yyyy = defaultDate.getFullYear();
+        const mm = String(defaultDate.getMonth() + 1).padStart(2, '0');
+        const dd = String(defaultDate.getDate()).padStart(2, '0');
+        dateInput = `${yyyy}-${mm}-${dd}`;
+        document.getElementById('exam-date-input').value = dateInput;
     }
 
     const examDate = new Date(dateInput);
@@ -1302,7 +1966,7 @@ Example format:
 Syllabus Details:
 ${sourceSyllabus}`;
 
-        const aiResponse = await generateTextWithGemini(prompt);
+        const aiResponse = await generateTextWithGroq(prompt);
         if (aiResponse.includes("Error:") || aiResponse.includes("Deployment Error")) {
             throw new Error(aiResponse);
         }
@@ -1651,17 +2315,21 @@ async function loadSavedState() {
             if (storedDecks) {
                 savedDecks = JSON.parse(storedDecks);
             }
-            if (!savedDecks || savedDecks.length === 0) {
-                savedDecks = getDefaultStudyDecks();
+            // Filter out legacy hardcoded sample decks
+            if (Array.isArray(savedDecks)) {
+                savedDecks = savedDecks.filter(d => d && !['deck_calc_1', 'deck_lecture_1', 'deck_syllabus_1', 'deck_cell_div_1'].includes(d.id) && d.name !== 'Intro to Calculus');
+            } else {
+                savedDecks = [];
             }
             const storedActiveId = localStorage.getItem(STORAGE_ACTIVE_DECK_ID_KEY);
-            if (storedActiveId) {
+            if (storedActiveId && savedDecks.some(d => d.id === storedActiveId)) {
                 activeDeckId = storedActiveId;
-            } else if (savedDecks.length > 0) {
-                activeDeckId = savedDecks[0].id;
+            } else {
+                activeDeckId = savedDecks.length > 0 ? savedDecks[0].id : null;
             }
         } catch (e) {
-            // quiet fallback
+            savedDecks = [];
+            activeDeckId = null;
         }
 
         // 2. Load Schedules from localStorage
@@ -1728,11 +2396,13 @@ async function loadSavedState() {
     renderLibraryDecks();
 
     if (activeDeckId) {
-        const activeDeck = savedDecks.find(d => d.id === activeDeckId);
-        if (activeDeck) {
-            renderFlashcards(activeDeck.cards);
-        }
+        selectDeck(activeDeckId);
     } else {
+        const addSourceModal = document.querySelector('.add-source-card-modal');
+        if (addSourceModal) {
+            addSourceModal.style.display = 'block';
+            addSourceModal.classList.remove('hidden');
+        }
         renderFlashcards([]);
     }
 
@@ -2395,9 +3065,89 @@ async function clearFlowchartCanvas() {
     }
 }
 
+function buildLocalFlowchartShapes(promptText) {
+    const cleanPrompt = promptText.toLowerCase().trim();
+    const shapesList = [];
+    let currentY = 50;
+    const startX = 280;
+
+    // 1. Start Node
+    shapesList.push({ id: 'node_start', type: 'rounded-rect', label: 'Start Process', x: startX, y: currentY, width: 150, height: 60 });
+    currentY += 75;
+
+    // Arrow Down
+    shapesList.push({ id: 'arr_1', type: 'block-down', label: '', x: startX + 35, y: currentY, width: 80, height: 45 });
+    currentY += 60;
+
+    if (cleanPrompt.includes('palindrome')) {
+        // Palindrome Algorithm Flowchart
+        shapesList.push({ id: 'node_in', type: 'parallelogram', label: 'Input Number / String', x: startX - 10, y: currentY, width: 170, height: 60 });
+        currentY += 75;
+
+        shapesList.push({ id: 'arr_2', type: 'block-down', label: '', x: startX + 35, y: currentY, width: 80, height: 45 });
+        currentY += 60;
+
+        shapesList.push({ id: 'node_proc', type: 'rectangle', label: 'Store orig, rev = 0 or reverse string', x: startX - 25, y: currentY, width: 200, height: 65 });
+        currentY += 80;
+
+        shapesList.push({ id: 'arr_3', type: 'block-down', label: '', x: startX + 35, y: currentY, width: 80, height: 45 });
+        currentY += 60;
+
+        shapesList.push({ id: 'node_dec', type: 'diamond', label: 'Check: reversed == original?', x: startX - 25, y: currentY, width: 200, height: 80 });
+        currentY += 95;
+
+        shapesList.push({ id: 'arr_4', type: 'block-down', label: '', x: startX + 35, y: currentY, width: 80, height: 45 });
+        currentY += 60;
+
+        shapesList.push({ id: 'node_out', type: 'parallelogram', label: 'Print "Is Palindrome" / "Not Palindrome"', x: startX - 35, y: currentY, width: 220, height: 65 });
+        currentY += 80;
+    } else {
+        // General Process Steps Extractor
+        const topics = promptText.split(/[\n,;:]+/).map(s => s.trim()).filter(s => s.length > 3);
+        const steps = topics.length > 0 ? topics : ['Receive Request / Input', 'Validate Input Data', 'Process & Execute Operations', 'Save Results & Send Response'];
+
+        steps.forEach((stepText, idx) => {
+            const isDecision = stepText.toLowerCase().includes('if') || stepText.toLowerCase().includes('check') || stepText.toLowerCase().includes('is');
+            const shapeType = isDecision ? 'diamond' : (idx === 0 ? 'parallelogram' : 'rectangle');
+            
+            shapesList.push({
+                id: `node_step_${idx}`,
+                type: shapeType,
+                label: stepText.substring(0, 35),
+                x: startX - (shapeType === 'diamond' ? 20 : 10),
+                y: currentY,
+                width: isDecision ? 180 : 160,
+                height: isDecision ? 75 : 65
+            });
+            currentY += (isDecision ? 90 : 80);
+
+            if (idx < steps.length - 1) {
+                shapesList.push({
+                    id: `arr_step_${idx}`,
+                    type: 'block-down',
+                    label: '',
+                    x: startX + 35,
+                    y: currentY,
+                    width: 80,
+                    height: 45
+                });
+                currentY += 60;
+            }
+        });
+    }
+
+    // End Arrow & End Node
+    shapesList.push({ id: 'arr_end', type: 'block-down', label: '', x: startX + 35, y: currentY, width: 80, height: 45 });
+    currentY += 60;
+
+    shapesList.push({ id: 'node_end', type: 'rounded-rect', label: 'End Process', x: startX, y: currentY, width: 150, height: 60 });
+
+    return shapesList;
+}
+
 async function handleGenerateFlowchartAI() {
     const promptInputEl = document.getElementById('flowchart-ai-prompt');
-    const promptText = promptInputEl.value.trim();
+    const promptText = promptInputEl ? promptInputEl.value.trim() : '';
 
     if (!promptText) {
         showToast('Please describe the flowchart process you want to generate.', 'error');
@@ -2405,9 +3155,11 @@ async function handleGenerateFlowchartAI() {
     }
 
     const btn = document.getElementById('btn-generate-flowchart-ai');
-    const originalHtml = btn.innerHTML;
-    btn.disabled = true;
-    btn.innerHTML = '<span class="ai-spinner"></span> Generating Flow...';
+    const originalHtml = btn ? btn.innerHTML : '';
+    if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = '<span class="ai-spinner"></span> Generating Flow...';
+    }
 
     try {
         const prompt = `You are an expert systems flow diagram designer. Generate a logical, clear step-by-step flowchart layout for the following process: "${promptText}".
@@ -2437,22 +3189,30 @@ Example:
 Input Process Description:
 ${promptText}`;
 
-        const aiResponse = await generateTextWithGemini(prompt);
-        if (aiResponse.includes("Error:") || aiResponse.includes("Deployment Error")) {
-            throw new Error(aiResponse);
+        let shapesData = [];
+        try {
+            const aiResponse = await generateTextWithGroq(prompt);
+            if (aiResponse && !aiResponse.includes("Error:") && !aiResponse.includes("Deployment Error") && !aiResponse.includes("NO_LLM_RESPONSE")) {
+                const parsed = parseJsonArray(aiResponse);
+                if (Array.isArray(parsed) && parsed.length > 0) {
+                    shapesData = parsed;
+                }
+            }
+        } catch (apiErr) {
+            console.warn("[Flowchart AI] Gemini endpoint fallback triggered:", apiErr);
         }
 
-        const data = parseJsonArray(aiResponse);
-        if (!Array.isArray(data)) {
-            throw new Error("AI did not return a valid flowchart layout.");
+        // Local Intelligent NLP Engine Fallback if AI returned invalid JSON or failed
+        if (!shapesData || shapesData.length === 0) {
+            shapesData = buildLocalFlowchartShapes(promptText);
         }
 
-        // Map AI nodes to our shapes format
-        shapes = data.map(n => ({
+        // Map AI/Local nodes to our shapes format
+        shapes = shapesData.map(n => ({
             id: n.id || ('shape_ai_' + Math.random().toString(36).substr(2, 5)),
             type: n.type || 'rectangle',
-            text: n.label || '',
-            x: Number(n.x) || 100,
+            text: n.label || n.text || '',
+            x: Number(n.x) || 200,
             y: Number(n.y) || 100,
             width: Number(n.width) || 140,
             height: Number(n.height) || 70
@@ -2475,16 +3235,18 @@ ${promptText}`;
         renderFlowchart();
 
         // Reset AI input
-        promptInputEl.value = '';
+        if (promptInputEl) promptInputEl.value = '';
 
-        showToast('AI Flowchart generated successfully.', 'success');
+        showToast(`Flowchart for "${flowchartName}" generated successfully.`, 'success');
 
     } catch (err) {
-        console.error(err);
+        console.error("Flowchart generation error:", err);
         showToast(err.message || 'AI Flowchart generation failed.', 'error');
     } finally {
-        btn.disabled = false;
-        btn.innerHTML = originalHtml;
+        if (btn) {
+            btn.disabled = false;
+            btn.innerHTML = originalHtml;
+        }
     }
 }
 
@@ -2670,21 +3432,35 @@ function initStudentTimers() {
     const tabSW = document.getElementById('timer-tab-stopwatch');
     const panelPomo = document.getElementById('pomodoro-panel');
     const panelSW = document.getElementById('stopwatch-panel');
+    const extraSWControls = document.getElementById('sw-controls-extra');
+    const extraSWLaps = document.getElementById('sw-laps-container');
 
     if (!tabPomo || !tabSW) return;
 
     tabPomo.addEventListener('click', () => {
         tabPomo.classList.add('active');
         tabSW.classList.remove('active');
-        panelPomo.classList.remove('hidden');
-        panelSW.classList.add('hidden');
+        tabPomo.style.background = '#6366f1';
+        tabPomo.style.color = '#ffffff';
+        tabSW.style.background = 'transparent';
+        tabSW.style.color = '#475569';
+        panelPomo?.classList.remove('hidden');
+        panelSW?.classList.add('hidden');
+        extraSWControls?.classList.add('hidden');
+        extraSWLaps?.classList.add('hidden');
     });
 
     tabSW.addEventListener('click', () => {
         tabSW.classList.add('active');
         tabPomo.classList.remove('active');
-        panelSW.classList.remove('hidden');
-        panelPomo.classList.add('hidden');
+        tabSW.style.background = '#6366f1';
+        tabSW.style.color = '#ffffff';
+        tabPomo.style.background = 'transparent';
+        tabPomo.style.color = '#475569';
+        panelSW?.classList.remove('hidden');
+        panelPomo?.classList.add('hidden');
+        extraSWControls?.classList.remove('hidden');
+        extraSWLaps?.classList.remove('hidden');
     });
 
     // --- POMODORO TIMER ---

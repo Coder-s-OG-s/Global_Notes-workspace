@@ -653,28 +653,37 @@ html[data-theme="minimal-white"] { --calendar-invert: 0.1; }
 /* --- Flashcards Workspace Grid --- */
 .flashcards-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-  gap: 24px;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 22px;
   animation: fadeIn 0.4s ease both;
 }
 
-/* --- 3D Flippable Flashcard Layout --- */
+/* --- 3D Flippable Stacked Folder Deck Flashcard Layout --- */
+.flashcards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(330px, 1fr));
+  gap: 32px;
+  animation: fadeIn 0.4s ease both;
+  padding-top: 12px;
+}
+
 .flashcard {
   perspective: 1200px;
-  height: 190px;
+  min-height: 380px;
+  height: 100%;
   cursor: pointer;
   position: relative;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .flashcard-inner {
   position: relative;
   width: 100%;
+  min-height: 380px;
   height: 100%;
   text-align: center;
   transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
   transform-style: preserve-3d;
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow);
 }
 
 .flashcard.flipped .flashcard-inner {
@@ -682,8 +691,42 @@ html[data-theme="minimal-white"] { --calendar-invert: 0.1; }
 }
 
 .flashcard:hover {
-  transform: translateY(-4px);
-  transition: transform var(--transition-smooth);
+  transform: translateY(-6px) scale(1.01);
+}
+
+/* Stacked Card Sheets Behind Main Card (Folder Deck Effect) */
+.flashcard-stack-layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 100%;
+  border-radius: 24px;
+  background-color: var(--surface, #ffffff);
+  border: 1px solid var(--border, #e2e8f0);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+  pointer-events: none;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.layer-back-2 {
+  transform: translate(12px, -12px) rotate(2.5deg);
+  opacity: 0.6;
+  z-index: 1;
+}
+
+.layer-back-1 {
+  transform: translate(6px, -6px) rotate(1.2deg);
+  opacity: 0.85;
+  z-index: 2;
+}
+
+.flashcard:hover .layer-back-2 {
+  transform: translate(16px, -16px) rotate(4deg);
+}
+
+.flashcard:hover .layer-back-1 {
+  transform: translate(8px, -8px) rotate(2deg);
 }
 
 .flashcard-front,
@@ -693,76 +736,91 @@ html[data-theme="minimal-white"] { --calendar-invert: 0.1; }
   left: 0;
   width: 100%;
   height: 100%;
+  min-height: 380px;
   -webkit-backface-visibility: hidden;
   backface-visibility: hidden;
-  border-radius: var(--radius-lg);
-  padding: 20px;
+  border-radius: 24px;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  align-items: center;
+  justify-content: space-between;
+  align-items: stretch;
   overflow: hidden;
+  z-index: 3;
+  box-shadow: 0 10px 32px rgba(0, 0, 0, 0.08);
 }
 
 .flashcard-front {
-  background-color: var(--surface);
-  color: var(--text);
-  border: 1px solid var(--border);
-  border-top: 4px solid var(--card-color, var(--primary));
-  font-weight: 600;
-  font-size: 14px;
-  line-height: 1.6;
-  transition: opacity 0.3s ease, filter 0.3s ease;
+  background-color: var(--surface, #ffffff);
+  color: var(--text, #0f172a);
+  border: 1px solid var(--border, #e2e8f0);
+  border-top: 6px solid var(--card-color, #13b5b1);
+  padding: 0 0 16px 0;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
 .flashcard-back {
   background: var(--card-gradient, linear-gradient(135deg, var(--primary), var(--primary-light)));
   color: #ffffff !important;
   transform: rotateY(180deg);
-  font-size: 13px;
+  font-size: 14px;
   line-height: 1.6;
   border: none;
   font-weight: 400;
   text-align: left;
+  padding: 24px 22px 20px 22px;
 }
 
 .flashcard-back-content {
   flex-grow: 1;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 10px;
   width: 100%;
   overflow-y: auto;
   padding-right: 4px;
-  margin-bottom: 6px;
+  margin-bottom: 8px;
 }
 
 .flashcard-back-answer {
-  font-size: 12.5px;
-  line-height: 1.5;
+  font-size: 13.5px;
+  line-height: 1.6;
   margin: 0;
   color: #ffffff;
 }
 
 .flashcard-back-answer strong {
-  font-weight: 700;
+  font-weight: 800;
   text-shadow: 0 0 1px rgba(255,255,255,0.4);
 }
 
-/* Category & index badge elements on front */
-.flashcard-category-badge {
+/* Hero Cartoon Cover Box at Top */
+.card-hero-illustration-box {
+  position: relative;
+  width: 100%;
+  height: 125px;
+  border-radius: 18px 18px 0 0;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.card-folder-tab-badge {
   position: absolute;
   top: 10px;
   left: 12px;
-  font-size: 9px;
-  font-weight: 700;
+  z-index: 5;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 10px;
+  font-weight: 800;
   text-transform: uppercase;
-  background-color: var(--surface-3);
-  border: 1px solid var(--border);
-  color: var(--text-dim);
-  padding: 2px 8px;
-  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(4px);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  color: #0f172a;
+  padding: 4px 10px;
+  border-radius: 12px;
   letter-spacing: 0.5px;
 }
 
@@ -770,30 +828,262 @@ html[data-theme="minimal-white"] { --calendar-invert: 0.1; }
   position: absolute;
   top: 10px;
   right: 12px;
-  font-size: 10px;
-  font-weight: 600;
-  color: var(--text-muted);
+  z-index: 5;
+  background: rgba(15, 23, 42, 0.85);
+  backdrop-filter: blur(4px);
+  color: #ffffff;
+  font-size: 10.5px;
+  font-weight: 800;
+  padding: 3px 10px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
 }
 
-.flashcard-front p {
-  font-size: 14px;
+.flashcard-mastered-badge {
+  position: absolute;
+  top: 132px;
+  right: 14px;
+  z-index: 6;
+  background: #10b981;
+  color: #ffffff;
+  font-size: 10px;
+  font-weight: 800;
+  padding: 3px 9px;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(16, 185, 129, 0.3);
+}
+
+.card-body-content {
+  width: 100%;
+  padding: 12px 18px 12px 18px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex-grow: 1;
+  overflow-y: auto;
+  max-height: 220px;
+}
+
+.flashcard-question-text {
+  font-size: 14.5px !important;
+  font-weight: 600 !important;
+  line-height: 1.65 !important;
+  color: var(--text, #0f172a) !important;
+  text-align: left !important;
+  margin: 0 !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  word-break: normal !important;
+  overflow-wrap: break-word !important;
+  display: block !important;
+}
+
+/* Inline Code Snippets & Tags inside Question Text */
+.flashcard-question-text code,
+.flashcard-question-text pre,
+.flashcard-question-text [class*="bg-"],
+.inline-code-flashcard {
+  display: inline !important;
+  white-space: nowrap !important;
+  word-break: normal !important;
+  overflow-wrap: normal !important;
+  padding: 2px 7px !important;
+  margin: 0 3px !important;
+  border-radius: 5px !important;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  line-height: 1.4 !important;
+  background-color: #0f172a !important;
+  color: #38bdf8 !important;
+  border: 1px solid rgba(56, 189, 248, 0.3) !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important;
+  box-decoration-break: clone !important;
+  -webkit-box-decoration-break: clone !important;
+}
+
+.card-footer-info-row {
+  width: 100%;
+  padding: 10px 20px 0 20px;
+  box-sizing: border-box;
+  border-top: 1px solid var(--border, #e2e8f0);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: auto;
+}
+
+.card-footer-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-muted, #64748b);
+}
+
+.card-footer-status-text {
+  font-weight: 800;
+}
+
+.card-mini-progress-track {
+  height: 6px;
+  background: var(--border, #e2e8f0);
+  border-radius: 10px;
+  overflow: hidden;
+  width: 100%;
+}
+
+.card-mini-progress-fill {
+  height: 100%;
+  border-radius: 10px;
+  transition: width 0.3s ease;
+}
+
+/* Floating Circle Action Buttons Top-Right Inside Card Boundaries */
+.card-floating-actions {
+  position: absolute;
+  right: 10px;
+  top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  z-index: 25;
+}
+
+.circle-action-btn {
+  width: 36px !important;
+  height: 36px !important;
+  border-radius: 50% !important;
+  background: rgba(255, 255, 255, 0.95) !important;
+  color: #0f172a !important;
+  border: 1px solid rgba(0, 0, 0, 0.12) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  cursor: pointer !important;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  backdrop-filter: blur(4px) !important;
+}
+
+.circle-action-btn:hover {
+  transform: scale(1.12) !important;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.22) !important;
+  background: #6366f1 !important;
+  color: #ffffff !important;
+}
+
+.circle-action-btn.card-mastery-btn.active {
+  background: #10b981 !important;
+  color: #ffffff !important;
+  border-color: #10b981 !important;
+}
+  left: 16px;
+  font-size: 10.5px;
+  font-weight: 800;
+  text-transform: uppercase;
+  background-color: var(--surface-3, #f1f5f9);
+  border: 1px solid var(--border, #e2e8f0);
+  color: var(--text-dim, #475569);
+  padding: 4px 12px;
+  border-radius: 12px;
+  letter-spacing: 0.5px;
+}
+
+.flashcard-index-label {
+  position: absolute;
+  top: 14px;
+  right: 16px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-muted, #94a3b8);
+}
+
+/* Code snippet styling inside answer */
+.flashcard-back-content code {
+  background: #09090b;
+  color: #ec4899;
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-family: 'JetBrains Mono', Consolas, monospace;
+  font-size: 12.5px;
   font-weight: 600;
-  line-height: 1.5;
-  margin: 0;
-  text-align: center;
-  max-width: 90%;
+}
+
+.flashcard-question-text pre,
+.flashcard-back-content pre {
+  background: #09090b;
+  color: #38bdf8;
+  padding: 10px 14px;
+  border-radius: 10px;
+  font-family: 'JetBrains Mono', Consolas, monospace;
+  font-size: 12px;
+  text-align: left;
+  width: 100%;
+  box-sizing: border-box;
+  margin: 8px 0;
+  overflow-x: auto;
+}
+
+/* Recall Input Card Styling (Matching Pink Interactive Input in user screenshot!) */
+.card-recall-container {
+  width: 100%;
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.card-recall-input {
+  padding: 10px 14px !important;
+  border-radius: 10px !important;
+  border: 2px solid #ec4899 !important;
+  background: #ffffff !important;
+  color: #0f172a !important;
+  font-family: 'JetBrains Mono', monospace !important;
+  font-size: 13px !important;
+  outline: none !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease !important;
+}
+
+.card-recall-input:focus {
+  border-color: #f43f5e !important;
+  box-shadow: 0 0 0 3px rgba(244, 63, 94, 0.2) !important;
+}
+
+.card-recall-check-btn {
+  padding: 8px 18px !important;
+  background: #ec4899 !important;
+  color: #ffffff !important;
+  border: none !important;
+  border-radius: 10px !important;
+  font-weight: 800 !important;
+  cursor: pointer !important;
+  font-size: 13px !important;
+  box-shadow: 0 4px 12px rgba(236, 72, 153, 0.35) !important;
+  transition: transform 0.15s ease, background 0.15s ease !important;
+}
+
+.card-recall-check-btn:hover {
+  background: #f43f5e !important;
+  transform: translateY(-1px) !important;
 }
 
 /* Mnemonic Aid box styling */
 .card-mnemonic-box {
   background-color: rgba(0, 0, 0, 0.18);
   border-left: 3px solid rgba(255, 255, 255, 0.6);
-  border-radius: 4px;
-  padding: 8px 10px;
-  font-size: 11px;
+  border-radius: 6px;
+  padding: 8px 12px;
+  font-size: 11.5px;
   line-height: 1.4;
   color: rgba(255, 255, 255, 0.95);
-  margin-top: 4px;
+  margin-top: 6px;
 }
 
 .card-mnemonic-box strong {
@@ -802,21 +1092,20 @@ html[data-theme="minimal-white"] { --calendar-invert: 0.1; }
 
 /* Mastery status styles */
 .flashcard.mastered .flashcard-front {
-  opacity: 0.65;
-  filter: grayscale(30%);
-  box-shadow: 0 0 12px rgba(63, 185, 80, 0.15);
+  opacity: 0.75;
+  box-shadow: 0 0 12px rgba(63, 185, 80, 0.25);
 }
 
 .flashcard-mastered-badge {
   position: absolute;
-  top: 36px;
-  right: 12px;
-  background-color: var(--success);
+  top: 14px;
+  right: 56px;
+  background-color: #10b981;
   color: #fff;
-  font-size: 9px;
-  font-weight: 700;
+  font-size: 9.5px;
+  font-weight: 800;
   text-transform: uppercase;
-  padding: 2px 6px;
+  padding: 3px 8px;
   border-radius: 10px;
   display: flex;
   align-items: center;
@@ -1386,19 +1675,20 @@ html[data-theme="minimal-white"] { --calendar-invert: 0.1; }
 .shapes-dropdown-panel {
   position: absolute;
   top: calc(100% + 8px);
-  left: 0;
-  width: 340px;
-  max-height: 70vh;
+  right: 0;
+  left: auto;
+  width: 320px;
+  max-height: 460px;
   overflow-y: auto;
-  background-color: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-lg);
-  padding: 12px;
-  z-index: 10000;
+  background-color: var(--surface, #ffffff);
+  border: 1px solid var(--border, #e2e8f0);
+  border-radius: 16px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15);
+  padding: 14px;
+  z-index: 100000;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 12px;
   animation: dropdownFadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
@@ -1410,11 +1700,11 @@ html[data-theme="minimal-white"] { --calendar-invert: 0.1; }
   background: transparent;
 }
 .shapes-dropdown-panel::-webkit-scrollbar-thumb {
-  background: var(--border);
+  background: var(--border, #cbd5e1);
   border-radius: 3px;
 }
 .shapes-dropdown-panel::-webkit-scrollbar-thumb:hover {
-  background: var(--text-muted);
+  background: var(--text-muted, #94a3b8);
 }
 
 .shapes-dropdown-panel.hidden {
@@ -1425,8 +1715,8 @@ html[data-theme="minimal-white"] { --calendar-invert: 0.1; }
   display: flex;
   flex-direction: column;
   gap: 6px;
-  padding-bottom: 8px;
-  border-bottom: 1px solid var(--border);
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border, #e2e8f0);
 }
 
 .shapes-dropdown-section:last-child {
@@ -1436,50 +1726,50 @@ html[data-theme="minimal-white"] { --calendar-invert: 0.1; }
 
 .shapes-section-title {
   font-size: 11px;
-  font-weight: 700;
+  font-weight: 800;
   text-transform: uppercase;
-  color: var(--primary);
+  color: #6366f1;
   letter-spacing: 0.6px;
   padding: 2px 0;
 }
 
 .shapes-grid {
   display: grid;
-  grid-template-columns: repeat(8, 1fr);
-  gap: 4px;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 6px;
 }
 
 .shapes-dropdown-panel .shape-btn {
-  background: var(--surface-2) !important;
-  border: 1px solid transparent !important;
-  border-radius: var(--radius-sm) !important;
-  color: var(--text) !important;
-  padding: 4px !important;
+  background: var(--surface-2, #f8fafc) !important;
+  border: 1px solid var(--border, #e2e8f0) !important;
+  border-radius: 10px !important;
+  color: var(--text, #0f172a) !important;
+  padding: 6px !important;
   cursor: pointer !important;
   display: flex !important;
   flex-direction: row !important;
   align-items: center !important;
   justify-content: center !important;
   gap: 0 !important;
-  transition: all var(--transition-fast) !important;
-  width: 34px !important;
-  height: 34px !important;
+  transition: all 0.15s ease !important;
+  width: 42px !important;
+  height: 42px !important;
   box-sizing: border-box !important;
 }
 
 .shapes-dropdown-panel .shape-btn:hover {
-  background-color: var(--primary-glow) !important;
-  border-color: var(--primary) !important;
-  color: var(--primary) !important;
-  transform: scale(1.1) !important;
+  background-color: rgba(99, 102, 241, 0.12) !important;
+  border-color: #6366f1 !important;
+  color: #6366f1 !important;
+  transform: scale(1.08) !important;
 }
 
 .shapes-dropdown-panel .shape-btn svg {
-  width: 20px !important;
-  height: 20px !important;
+  width: 22px !important;
+  height: 22px !important;
   fill: none !important;
   stroke: currentColor !important;
-  stroke-width: 1.5px !important;
+  stroke-width: 1.6px !important;
   flex-shrink: 0 !important;
 }
 
@@ -1798,19 +2088,9 @@ html[data-theme="minimal-white"] { --calendar-invert: 0.1; }
   font-weight: 500;
 }
 
-/* General Flashcard Question Text Styling */
-.flashcard-question-text {
-  font-size: 14px;
-  font-weight: 600;
-  line-height: 1.5;
-  text-align: center;
-  max-width: 90%;
-  flex-shrink: 0;
-}
-
 /* Custom tall layout for flashcards with code recall input */
 .flashcard.has-recall {
-  height: 340px; /* Taller card to fit code block and input */
+  min-height: 380px;
 }
 
 .flashcard.has-recall .flashcard-front {
@@ -2472,18 +2752,25 @@ button,
 }
 
 .menu-icon-btn {
-  width: 38px;
-  height: 38px;
-  border-radius: 50%;
-  background: #0f172a;
-  color: #ffffff;
-  border: none;
-  font-size: 16px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  width: 32px !important;
+  height: 32px !important;
+  border-radius: 8px !important;
+  background: var(--surface-2, #f1f5f9) !important;
+  color: var(--text-primary, #0f172a) !important;
+  border: 1px solid var(--border, #cbd5e1) !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+  box-shadow: none !important;
+  flex-shrink: 0 !important;
+}
+
+.menu-icon-btn:hover {
+  background: #6366f1 !important;
+  color: #ffffff !important;
+  border-color: #6366f1 !important;
 }
 
 .library-heading {
@@ -2682,6 +2969,9 @@ button,
   overflow-y: auto !important;
   display: flex !important;
   flex-direction: column !important;
+  flex: 1 !important;
+  min-width: 0 !important;
+  box-sizing: border-box !important;
 }
 
 .modal-top-bar {
@@ -3164,4 +3454,517 @@ body.dark-mode .menu-icon-btn {
   border-color: #27272a !important;
   color: #f8fafc !important;
 }
+
+/* ═══════════════════════════════════════════
+   INTERACTIVE AI QUIZ ARENA (1:1 Target Mockup Match)
+   ═══════════════════════════════════════════ */
+
+.quiz-arena-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 10px;
+  box-sizing: border-box;
+}
+
+.quiz-header-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.quiz-icon-circle-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  color: #0f172a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.quiz-icon-circle-btn:hover {
+  background: #e2e8f0;
+  transform: scale(1.05);
+}
+
+.quiz-progress-center {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.quiz-step-label {
+  font-size: 14px;
+  font-weight: 800;
+  color: #0f172a;
+  letter-spacing: -0.2px;
+}
+
+.quiz-progress-line-track {
+  width: 100%;
+  max-width: 160px;
+  height: 4px;
+  background: #e2e8f0;
+  border-radius: 9999px;
+  overflow: hidden;
+}
+
+.quiz-progress-line-fill {
+  height: 100%;
+  background: #0f172a;
+  border-radius: 9999px;
+  transition: width 0.3s ease;
+}
+
+.quiz-category-subtitle {
+  font-size: 11px;
+  font-weight: 800;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  text-align: center;
+  margin-bottom: 12px;
+}
+
+/* Purple Question Card */
+.quiz-question-box {
+  background: #c7d2fe;
+  border-radius: 24px;
+  padding: 28px 24px;
+  position: relative;
+  box-shadow: 0 10px 25px rgba(99, 102, 241, 0.15);
+  margin-bottom: 20px;
+}
+
+.quiz-question-subtag {
+  font-size: 12px;
+  font-weight: 700;
+  color: #4338ca;
+  margin-bottom: 8px;
+}
+
+.quiz-question-text {
+  font-size: 22px;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0;
+  line-height: 1.3;
+  padding-right: 40px;
+}
+
+.quiz-speech-bubble-icon {
+  position: absolute;
+  right: 20px;
+  bottom: 20px;
+}
+
+/* Multiple Choice Option Pills */
+.quiz-options-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.quiz-option-pill {
+  background: #f8fafc;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 20px;
+  padding: 14px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.quiz-option-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.quiz-option-letter-badge {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #0f172a;
+  color: #ffffff;
+  font-weight: 800;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.quiz-option-text {
+  font-size: 15px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+/* Selected / Correct / Incorrect States */
+.quiz-option-pill:hover {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+  transform: translateY(-1px);
+}
+
+.quiz-option-pill.correct {
+  background: #facc15 !important;
+  border-color: #eab308 !important;
+  box-shadow: 0 6px 20px rgba(250, 204, 21, 0.35) !important;
+}
+
+.quiz-option-pill.correct .quiz-option-text {
+  color: #0f172a !important;
+}
+
+.quiz-option-pill.incorrect {
+  background: #fecdd3 !important;
+  border-color: #fda4af !important;
+}
+
+/* Quiz Complete Score Summary Card */
+.quiz-results-card {
+  background: #ffffff;
+  border-radius: 32px;
+  padding: 32px 28px;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.08);
+  text-align: center;
+}
+
+.quiz-results-top-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.quiz-complete-sublabel {
+  font-size: 12px;
+  font-weight: 800;
+  color: #64748b;
+  text-transform: lowercase;
+  letter-spacing: 0.05em;
+}
+
+.quiz-score-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.quiz-score-percentage {
+  font-size: 72px;
+  font-weight: 900;
+  color: #0f172a;
+  margin: 0;
+  line-height: 1;
+  letter-spacing: -2px;
+}
+
+.quiz-score-subtext {
+  font-size: 18px;
+  font-weight: 800;
+  color: #0f172a;
+  margin-bottom: 28px;
+}
+
+/* Stat Metric Circles */
+.quiz-metric-circles-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+}
+
+.quiz-metric-circle {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
+}
+
+.quiz-metric-circle.circle-nailed {
+  background: #c7d2fe;
+  color: #0f172a;
+}
+
+.quiz-metric-circle.circle-redo {
+  background: #2563eb;
+  color: #ffffff;
+}
+
+.metric-circle-number {
+  font-size: 38px;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.metric-circle-label {
+  font-size: 11px;
+  font-weight: 700;
+  margin-top: 4px;
+  letter-spacing: -0.2px;
+}
+
+/* Dark Mode Overrides for Quiz Arena */
+[data-theme="amoled-dark"] .quiz-step-label,
+[data-theme*="dark"] .quiz-step-label,
+body.dark-mode .quiz-step-label {
+  color: #f8fafc !important;
+}
+
+[data-theme="amoled-dark"] .quiz-icon-circle-btn,
+[data-theme*="dark"] .quiz-icon-circle-btn,
+body.dark-mode .quiz-icon-circle-btn {
+  background: #1f2937 !important;
+  border-color: #374151 !important;
+  color: #f8fafc !important;
+}
+
+[data-theme="amoled-dark"] .quiz-question-box,
+[data-theme*="dark"] .quiz-question-box,
+body.dark-mode .quiz-question-box {
+  background: #1e1b4b !important;
+}
+
+[data-theme="amoled-dark"] .quiz-question-text,
+[data-theme*="dark"] .quiz-question-text,
+body.dark-mode .quiz-question-text {
+  color: #f8fafc !important;
+}
+
+[data-theme="amoled-dark"] .quiz-option-pill,
+[data-theme*="dark"] .quiz-option-pill,
+body.dark-mode .quiz-option-pill {
+  background: #121215 !important;
+  border-color: #27272a !important;
+}
+
+[data-theme="amoled-dark"] .quiz-option-text,
+[data-theme*="dark"] .quiz-option-text,
+body.dark-mode .quiz-option-text {
+  color: #f8fafc !important;
+}
+
+[data-theme="amoled-dark"] .quiz-results-card,
+[data-theme*="dark"] .quiz-results-card,
+body.dark-mode .quiz-results-card {
+  background: #09090b !important;
+  border: 1px solid #18181b !important;
+}
+
+[data-theme="amoled-dark"] .quiz-score-percentage,
+[data-theme*="dark"] .quiz-score-percentage,
+body.dark-mode .quiz-score-percentage,
+[data-theme="amoled-dark"] .quiz-score-subtext,
+[data-theme*="dark"] .quiz-score-subtext,
+body.dark-mode .quiz-score-subtext {
+  color: #f8fafc !important;
+}
+
+/* --- Flowchart Options Cards & Studio Design System --- */
+.options-card-box {
+  border-radius: var(--radius-lg, 18px);
+  padding: 16px;
+  margin-bottom: 14px;
+  transition: all 0.2s ease;
+}
+
+.options-card-box.pastel-yellow-card {
+  background: #fef9c3;
+  border: 1px solid #fde047;
+  color: #0f172a;
+}
+
+.options-card-box.pastel-blue-card {
+  background: #e0e7ff;
+  border: 1px solid #c7d2fe;
+  color: #0f172a;
+}
+
+.card-box-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 800;
+  font-size: 11px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+  color: inherit;
+}
+
+/* AMOLED Dark Mode Overrides for Flowchart Maker */
+[data-theme="amoled-dark"] #view-flowcharts .options-panel,
+[data-theme*="dark"] #view-flowcharts .options-panel,
+body.dark-mode #view-flowcharts .options-panel {
+  background: #09090b !important;
+  border-color: #18181b !important;
+}
+
+[data-theme="amoled-dark"] #view-flowcharts .options-card-box.pastel-yellow-card,
+[data-theme*="dark"] #view-flowcharts .options-card-box.pastel-yellow-card,
+body.dark-mode #view-flowcharts .options-card-box.pastel-yellow-card {
+  background: #1c1917 !important;
+  border-color: #44403c !important;
+  color: #f8fafc !important;
+}
+
+[data-theme="amoled-dark"] #view-flowcharts .options-card-box.pastel-blue-card,
+[data-theme*="dark"] #view-flowcharts .options-card-box.pastel-blue-card,
+body.dark-mode #view-flowcharts .options-card-box.pastel-blue-card {
+  background: #1e1b4b !important;
+  border-color: #312e81 !important;
+  color: #f8fafc !important;
+}
+
+[data-theme="amoled-dark"] #view-flowcharts .form-textarea,
+[data-theme*="dark"] #view-flowcharts .form-textarea,
+body.dark-mode #view-flowcharts .form-textarea {
+  background: #09090b !important;
+  color: #f8fafc !important;
+  border-color: #27272a !important;
+}
+
+[data-theme="amoled-dark"] .flowchart-canvas-container,
+[data-theme*="dark"] .flowchart-canvas-container,
+body.dark-mode .flowchart-canvas-container {
+  background-color: #050507 !important;
+  background-image: radial-gradient(rgba(255, 255, 255, 0.15) 1px, transparent 1px) !important;
+  border-color: #18181b !important;
+}
+
+[data-theme="amoled-dark"] .canvas-toolbar,
+[data-theme*="dark"] .canvas-toolbar,
+body.dark-mode .canvas-toolbar {
+  background: #121215 !important;
+  border-color: #27272a !important;
+}
+
+[data-theme="amoled-dark"] .canvas-workspace-title,
+[data-theme*="dark"] .canvas-workspace-title,
+body.dark-mode .canvas-workspace-title {
+  color: #f8fafc !important;
+}
+
+/* AMOLED Dark Mode Overrides for Focus & Study Timers */
+[data-theme="amoled-dark"] #view-timers .options-panel,
+[data-theme*="dark"] #view-timers .options-panel,
+body.dark-mode #view-timers .options-panel {
+  background: #09090b !important;
+  border-color: #18181b !important;
+}
+
+[data-theme="amoled-dark"] .timer-studio-container,
+[data-theme*="dark"] .timer-studio-container,
+body.dark-mode .timer-studio-container {
+  background: #09090b !important;
+  border-color: #18181b !important;
+}
+
+[data-theme="amoled-dark"] #view-timers .options-card-box.pastel-yellow-card,
+[data-theme*="dark"] #view-timers .options-card-box.pastel-yellow-card,
+body.dark-mode #view-timers .options-card-box.pastel-yellow-card {
+  background: #1c1917 !important;
+  border-color: #44403c !important;
+  color: #f8fafc !important;
+}
+
+[data-theme="amoled-dark"] #view-timers .options-card-box.pastel-blue-card,
+[data-theme*="dark"] #view-timers .options-card-box.pastel-blue-card,
+body.dark-mode #view-timers .options-card-box.pastel-blue-card {
+  background: #1e1b4b !important;
+  border-color: #312e81 !important;
+  color: #f8fafc !important;
+}
+
+[data-theme="amoled-dark"] .timer-type-toggle-bar,
+[data-theme*="dark"] .timer-type-toggle-bar,
+body.dark-mode .timer-type-toggle-bar {
+  background: #121215 !important;
+  border-color: #27272a !important;
+}
+
+[data-theme="amoled-dark"] .timer-digits,
+[data-theme*="dark"] .timer-digits,
+body.dark-mode .timer-digits {
+  color: #f8fafc !important;
+}
+
+[data-theme="amoled-dark"] .timer-stat-card,
+[data-theme*="dark"] .timer-stat-card,
+body.dark-mode .timer-stat-card {
+  background: #121215 !important;
+  border-color: #27272a !important;
+  color: #f8fafc !important;
+}
+
+[data-theme="amoled-dark"] .stat-card-number,
+[data-theme*="dark"] .stat-card-number,
+body.dark-mode .stat-card-number {
+  color: #f8fafc !important;
+}
+
+[data-theme="amoled-dark"] #sw-laps-container,
+[data-theme*="dark"] #sw-laps-container,
+body.dark-mode #sw-laps-container {
+  background: #121215 !important;
+  border-color: #27272a !important;
+  color: #f8fafc !important;
+}
+
+/* AMOLED Dark Mode Overrides for Stacked Folder Flashcard Deck */
+[data-theme="amoled-dark"] .flashcard-stack-layer,
+[data-theme*="dark"] .flashcard-stack-layer,
+body.dark-mode .flashcard-stack-layer {
+  background-color: #121215 !important;
+  border-color: #27272a !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5) !important;
+}
+
+[data-theme="amoled-dark"] .card-folder-tab-badge,
+[data-theme*="dark"] .card-folder-tab-badge,
+body.dark-mode .card-folder-tab-badge {
+  background-color: #18181b !important;
+  border-color: #27272a !important;
+  color: #cbd5e1 !important;
+}
+
+[data-theme="amoled-dark"] .circle-action-btn,
+[data-theme*="dark"] .circle-action-btn,
+body.dark-mode .circle-action-btn {
+  background-color: #18181b !important;
+  color: #f8fafc !important;
+  border-color: #27272a !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6) !important;
+}
+
+[data-theme="amoled-dark"] .circle-action-btn:hover,
+[data-theme*="dark"] .circle-action-btn:hover,
+body.dark-mode .circle-action-btn:hover {
+  background-color: #6366f1 !important;
+  color: #ffffff !important;
+}
+
 
