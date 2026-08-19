@@ -661,16 +661,16 @@ html[data-theme="minimal-white"] { --calendar-invert: 0.1; }
 /* --- 3D Flippable Stacked Folder Deck Flashcard Layout --- */
 .flashcards-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  gap: 28px;
+  grid-template-columns: repeat(auto-fill, minmax(330px, 1fr));
+  gap: 32px;
   animation: fadeIn 0.4s ease both;
   padding-top: 12px;
 }
 
 .flashcard {
   perspective: 1200px;
-  min-height: 250px;
-  height: auto;
+  min-height: 380px;
+  height: 100%;
   cursor: pointer;
   position: relative;
   transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
@@ -679,7 +679,7 @@ html[data-theme="minimal-white"] { --calendar-invert: 0.1; }
 .flashcard-inner {
   position: relative;
   width: 100%;
-  min-height: 250px;
+  min-height: 380px;
   height: 100%;
   text-align: center;
   transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
@@ -736,16 +736,15 @@ html[data-theme="minimal-white"] { --calendar-invert: 0.1; }
   left: 0;
   width: 100%;
   height: 100%;
-  min-height: 250px;
+  min-height: 380px;
   -webkit-backface-visibility: hidden;
   backface-visibility: hidden;
   border-radius: 24px;
-  padding: 24px 22px 20px 22px;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  justify-content: flex-start;
-  align-items: center;
+  justify-content: space-between;
+  align-items: stretch;
   overflow: hidden;
   z-index: 3;
   box-shadow: 0 10px 32px rgba(0, 0, 0, 0.08);
@@ -756,9 +755,7 @@ html[data-theme="minimal-white"] { --calendar-invert: 0.1; }
   color: var(--text, #0f172a);
   border: 1px solid var(--border, #e2e8f0);
   border-top: 6px solid var(--card-color, #13b5b1);
-  font-weight: 600;
-  font-size: 15px;
-  line-height: 1.6;
+  padding: 0 0 16px 0;
   transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
@@ -766,11 +763,12 @@ html[data-theme="minimal-white"] { --calendar-invert: 0.1; }
   background: var(--card-gradient, linear-gradient(135deg, var(--primary), var(--primary-light)));
   color: #ffffff !important;
   transform: rotateY(180deg);
-  font-size: 13.5px;
+  font-size: 14px;
   line-height: 1.6;
   border: none;
   font-weight: 400;
   text-align: left;
+  padding: 24px 22px 20px 22px;
 }
 
 .flashcard-back-content {
@@ -785,8 +783,8 @@ html[data-theme="minimal-white"] { --calendar-invert: 0.1; }
 }
 
 .flashcard-back-answer {
-  font-size: 13px;
-  line-height: 1.55;
+  font-size: 13.5px;
+  line-height: 1.6;
   margin: 0;
   color: #ffffff;
 }
@@ -796,39 +794,138 @@ html[data-theme="minimal-white"] { --calendar-invert: 0.1; }
   text-shadow: 0 0 1px rgba(255,255,255,0.4);
 }
 
-/* Folder Tab Badge Top Left */
+/* Hero Cartoon Cover Box at Top */
+.card-hero-illustration-box {
+  position: relative;
+  width: 100%;
+  height: 125px;
+  border-radius: 18px 18px 0 0;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
 .card-folder-tab-badge {
   position: absolute;
-  top: 14px;
-  left: 16px;
+  top: 10px;
+  left: 12px;
+  z-index: 5;
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  font-size: 10.5px;
+  font-size: 10px;
   font-weight: 800;
   text-transform: uppercase;
-  background-color: var(--surface-3, #f1f5f9);
-  border: 1px solid var(--border, #e2e8f0);
-  color: var(--text-dim, #475569);
-  padding: 4px 12px;
-  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(4px);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  color: #0f172a;
+  padding: 4px 10px;
+  border-radius: 12px;
   letter-spacing: 0.5px;
+}
+
+.flashcard-index-label {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  z-index: 5;
+  background: rgba(15, 23, 42, 0.85);
+  backdrop-filter: blur(4px);
+  color: #ffffff;
+  font-size: 10.5px;
+  font-weight: 800;
+  padding: 3px 10px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.flashcard-mastered-badge {
+  position: absolute;
+  top: 132px;
+  right: 14px;
+  z-index: 6;
+  background: #10b981;
+  color: #ffffff;
+  font-size: 10px;
+  font-weight: 800;
+  padding: 3px 9px;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(16, 185, 129, 0.3);
+}
+
+.card-body-content {
+  width: 100%;
+  padding: 14px 20px 10px 20px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: flex-start;
+  flex-grow: 1;
+  gap: 12px;
+}
+
+.flashcard-question-text {
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.55;
+  color: var(--text, #0f172a);
+  text-align: center;
+  margin: 0;
+}
+
+.card-footer-info-row {
+  width: 100%;
+  padding: 10px 20px 0 20px;
+  box-sizing: border-box;
+  border-top: 1px solid var(--border, #e2e8f0);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: auto;
+}
+
+.card-footer-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-muted, #64748b);
+}
+
+.card-footer-status-text {
+  font-weight: 800;
+}
+
+.card-mini-progress-track {
+  height: 6px;
+  background: var(--border, #e2e8f0);
+  border-radius: 10px;
+  overflow: hidden;
+  width: 100%;
+}
+
+.card-mini-progress-fill {
+  height: 100%;
+  border-radius: 10px;
+  transition: width 0.3s ease;
 }
 
 /* Floating Circle Action Buttons Overlapping Right Side */
 .card-floating-actions {
   position: absolute;
   right: -12px;
-  bottom: 20px;
+  top: 135px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 8px;
   z-index: 10;
 }
 
 .circle-action-btn {
-  width: 44px;
-  height: 44px;
+  width: 42px;
+  height: 42px;
   border-radius: 50%;
   background: #ffffff !important;
   color: #0f172a !important;
