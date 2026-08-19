@@ -150,11 +150,24 @@ function initQuizArena() {
 async function generateDynamicAIQuiz() {
     const syllabusInputEl = document.getElementById('schedule-syllabus-input');
     let syllabusText = syllabusInputEl ? syllabusInputEl.value.trim() : '';
-    
-    // Auto-populate default sample syllabus if user has not typed anything yet
-    if (!syllabusText && !scheduleFileText) {
-        syllabusText = "Calculus: Derivatives of Sin(x) and Cos(x), Integration by Parts, Limits. Chemistry: Organic Chemistry, Acids & Bases. Physics: Kinematics & Laws of Motion.";
-        if (syllabusInputEl) syllabusInputEl.value = syllabusText;
+
+    // Check if file is selected in schedule-file-input if scheduleFileText is not populated yet
+    const fileInput = document.getElementById('schedule-file-input');
+    if (!scheduleFileText && fileInput && fileInput.files && fileInput.files[0]) {
+        const file = fileInput.files[0];
+        try {
+            if (file.name.toLowerCase().endsWith('.pdf')) {
+                const arrayBuffer = await file.arrayBuffer();
+                scheduleFileText = await extractTextFromPDF(arrayBuffer);
+            } else {
+                scheduleFileText = await file.text();
+            }
+            if (syllabusInputEl && !syllabusInputEl.value.trim() && scheduleFileText) {
+                syllabusInputEl.value = scheduleFileText.substring(0, 500) + (scheduleFileText.length > 500 ? '...' : '');
+            }
+        } catch (e) {
+            console.error("Error reading file during quiz trigger:", e);
+        }
     }
 
     let sourceContent = (syllabusText + '\n' + (scheduleFileText || '')).trim();
@@ -173,6 +186,11 @@ async function generateDynamicAIQuiz() {
         }
     }
 
+    if (!sourceContent) {
+        showToast('Please enter syllabus text or upload a document file (.pdf, .txt, .md) first.', 'warning');
+        return;
+    }
+
     const btnStart = document.getElementById('btn-start-quiz-me');
     const btnTop = document.getElementById('btn-top-quiz-me');
     const origHtmlStart = btnStart ? btnStart.innerHTML : '';
@@ -182,22 +200,26 @@ async function generateDynamicAIQuiz() {
     if (btnTop) { btnTop.disabled = true; btnTop.innerHTML = '<span class="ai-spinner"></span> Generating AI Quiz...'; }
 
     try {
-        const prompt = `You are an expert exam quiz creator.
-Create a comprehensive, high-quality multiple choice practice test based EXCLUSIVELY on the provided syllabus text/file content below.
+        const fileNameLabel = (document.getElementById('schedule-filename')?.textContent || 'Uploaded Document').replace(/\.[^/.]+$/, "");
+        const truncatedContent = sourceContent.length > 8000 ? sourceContent.substring(0, 8000) : sourceContent;
 
-CRITICAL INSTRUCTIONS:
-1. Parse the syllabus into distinct subjects or major topics (e.g. Mathematics, Chemistry, DSA, Physics, History, etc.).
-2. For EACH detected subject/topic in the syllabus, generate EXACTLY 10 multiple choice questions (if 1 topic is given, generate 10 questions for that topic).
-3. Return ONLY a valid JSON array of question objects (optionally wrapped in \`\`\`json ... \`\`\` codeblock).
-4. Each object MUST have:
-   - "subject": string (e.g. "Calculus", "Organic Chemistry", "Data Structures")
-   - "question": string (clear question statement strictly based on syllabus content - NO emojis)
+        const prompt = `You are an expert academic examiner.
+Generate a comprehensive multiple choice practice test based EXCLUSIVELY on the provided document / syllabus content below.
+
+STRICT REQUIREMENTS:
+1. Do NOT generate questions about calculus, mathematics, or unrelated subjects UNLESS the provided document explicitly discusses calculus.
+2. Identify all main subjects or topic sections present in the document.
+3. For EACH subject/topic identified, generate EXACTLY 10 multiple choice questions (or 10-30 total questions derived strictly from the uploaded document).
+4. Return ONLY a valid JSON array of question objects (optionally wrapped in \`\`\`json ... \`\`\` codeblock).
+5. Each object MUST have:
+   - "subject": string (e.g. topic/section name from document)
+   - "question": string (clear question statement strictly derived from document content - NO emojis)
    - "options": array of 4 distinct strings (e.g. ["Option A", "Option B", "Option C", "Option D"])
    - "correctIndex": number (0, 1, 2, or 3 pointing to the correct option)
-   - "explanation": string (a clear, educational breakdown explaining why this answer is correct)
+   - "explanation": string (a clear, educational breakdown explaining why this answer is correct based on the document text)
 
-Syllabus Content:
-${sourceContent}`;
+Document / Syllabus Content:
+${truncatedContent}`;
 
         const aiResponse = await generateTextWithGemini(prompt);
         let quizData = parseJsonArray(aiResponse);
@@ -207,46 +229,54 @@ ${sourceContent}`;
         }
 
         const questions = quizData.map(q => ({
-            subject: q.subject || 'Syllabus Quiz',
-            question: stripEmojis(q.question || 'Syllabus Question'),
+            subject: q.subject || fileNameLabel,
+            question: stripEmojis(q.question || 'Document Question'),
             options: Array.isArray(q.options) && q.options.length === 4 ? q.options : ['Option A', 'Option B', 'Option C', 'Option D'],
             correctIndex: typeof q.correctIndex === 'number' ? q.correctIndex : 0,
-            explanation: q.explanation || 'Based on your uploaded syllabus material.'
+            explanation: q.explanation || 'Based on your uploaded document material.'
         }));
 
-        startQuiz(questions, 'SYLLABUS PRACTICE QUIZ');
-        showToast(`AI Quiz generated successfully (${questions.length} questions across subjects)!`, 'success');
+        startQuiz(questions, `${fileNameLabel.toUpperCase()} · PRACTICE QUIZ`);
+        showToast(`AI Quiz generated successfully (${questions.length} questions from uploaded document)!`, 'success');
 
     } catch (err) {
         console.error("AI Quiz Generation Error:", err);
-        // Smart subject-wise question builder for local fallback engine:
-        const rawTopics = sourceContent.split(/[\n;.:]+/).map(t => t.trim()).filter(t => t.length > 3);
-        const subjects = [...new Set(rawTopics.map(t => t.split(':')[0].trim()))].filter(s => s.length > 2);
         
-        const fallbackQuestions = [];
-        const targetSubjects = subjects.length > 0 ? subjects : ['Calculus', 'Organic Chemistry', 'Physics'];
+        // Intelligent Document-Based Local Engine (100% derived from uploaded PDF / text lines)
+        const docLines = sourceContent.split('\n')
+            .map(l => l.trim())
+            .filter(l => l.length > 15 && !l.toLowerCase().startsWith('page'));
 
-        targetSubjects.forEach(subjectName => {
-            const topicSubList = rawTopics.filter(t => t.toLowerCase().includes(subjectName.toLowerCase())) || [subjectName];
-            for (let i = 0; i < 10; i++) {
-                const topicItem = topicSubList[i % topicSubList.length] || `${subjectName} Section ${i+1}`;
+        const fileNameLabel = (document.getElementById('schedule-filename')?.textContent || 'Uploaded Syllabus').replace(/\.[^/.]+$/, "");
+        const fallbackQuestions = [];
+
+        if (docLines.length > 0) {
+            const step = Math.max(1, Math.floor(docLines.length / 10));
+            for (let i = 0; i < Math.min(docLines.length, 30); i += step) {
+                const lineSample = docLines[i];
+                const keyTerm = lineSample.split(/\s+/).slice(0, 4).join(' ');
+                
                 fallbackQuestions.push({
-                    subject: subjectName.substring(0, 24),
-                    question: `What is the core principle governing ${topicItem}?`,
+                    subject: fileNameLabel.substring(0, 24),
+                    question: `Based on "${fileNameLabel}", what key principle relates to: "${lineSample.substring(0, 70)}..."?`,
                     options: [
-                        `Primary rule & implementation of ${topicItem}`,
-                        `Inverse mathematical/logical operation`,
-                        `Contradictory syntax rule`,
+                        `Primary rule: ${lineSample.substring(0, 45)}`,
+                        `Contradictory statement regarding ${keyTerm}`,
+                        `Specification not mentioned in document`,
                         `None of the above`
                     ],
                     correctIndex: 0,
-                    explanation: `Key concept in ${subjectName}: ${topicItem}`
+                    explanation: `Document extract: "${lineSample.substring(0, 100)}"`
                 });
             }
-        });
+        }
 
-        startQuiz(fallbackQuestions, 'SYLLABUS REVISION QUIZ');
-        showToast(`Generated ${fallbackQuestions.length} syllabus quiz questions across subjects.`, 'success');
+        if (fallbackQuestions.length > 0) {
+            startQuiz(fallbackQuestions, `${fileNameLabel.toUpperCase()} · PRACTICE QUIZ`);
+            showToast(`Generated ${fallbackQuestions.length} practice questions directly from uploaded document.`, 'success');
+        } else {
+            showToast('Could not extract readable text from document. Please ensure PDF contains text.', 'error');
+        }
     } finally {
         if (btnStart) { btnStart.disabled = false; btnStart.innerHTML = origHtmlStart; }
         if (btnTop) { btnTop.disabled = false; btnTop.innerHTML = origHtmlTop; }
@@ -473,7 +503,11 @@ async function initHub() {
 
     setupUploadDropzone('schedule-dropzone', 'schedule-file-input', 'schedule-filename', (text) => {
         scheduleFileText = text;
-        showToast('Syllabus file uploaded successfully.', 'success');
+        const syllabusInputEl = document.getElementById('schedule-syllabus-input');
+        if (syllabusInputEl && text) {
+            syllabusInputEl.value = text.substring(0, 600) + (text.length > 600 ? '...' : '');
+        }
+        showToast('Syllabus document uploaded and parsed successfully.', 'success');
     });
 
     // 5. Button Action Listeners
@@ -1594,11 +1628,6 @@ async function handleGenerateSchedule() {
     const syllabusInputEl = document.getElementById('schedule-syllabus-input');
     let syllabusText = syllabusInputEl ? syllabusInputEl.value.trim() : '';
     let dateInput = document.getElementById('exam-date-input').value;
-
-    if (!syllabusText && !scheduleFileText) {
-        syllabusText = "Calculus: Derivatives of Sin(x) and Cos(x), Integration by Parts, Limits. Chemistry: Organic Chemistry, Acids & Bases. Physics: Kinematics & Laws of Motion.";
-        if (syllabusInputEl) syllabusInputEl.value = syllabusText;
-    }
 
     const sourceSyllabus = (syllabusText + '\n' + (scheduleFileText || '')).trim();
 
