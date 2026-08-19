@@ -658,26 +658,32 @@ html[data-theme="minimal-white"] { --calendar-invert: 0.1; }
   animation: fadeIn 0.4s ease both;
 }
 
-/* --- 3D Flippable Flashcard Layout --- */
+/* --- 3D Flippable Stacked Folder Deck Flashcard Layout --- */
+.flashcards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 28px;
+  animation: fadeIn 0.4s ease both;
+  padding-top: 12px;
+}
+
 .flashcard {
   perspective: 1200px;
-  min-height: 240px;
+  min-height: 250px;
   height: auto;
   cursor: pointer;
   position: relative;
-  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .flashcard-inner {
   position: relative;
   width: 100%;
-  min-height: 240px;
+  min-height: 250px;
   height: 100%;
   text-align: center;
   transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
   transform-style: preserve-3d;
-  border-radius: 18px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
 }
 
 .flashcard.flipped .flashcard-inner {
@@ -685,8 +691,42 @@ html[data-theme="minimal-white"] { --calendar-invert: 0.1; }
 }
 
 .flashcard:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.1);
+  transform: translateY(-6px) scale(1.01);
+}
+
+/* Stacked Card Sheets Behind Main Card (Folder Deck Effect) */
+.flashcard-stack-layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 100%;
+  border-radius: 24px;
+  background-color: var(--surface, #ffffff);
+  border: 1px solid var(--border, #e2e8f0);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+  pointer-events: none;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.layer-back-2 {
+  transform: translate(12px, -12px) rotate(2.5deg);
+  opacity: 0.6;
+  z-index: 1;
+}
+
+.layer-back-1 {
+  transform: translate(6px, -6px) rotate(1.2deg);
+  opacity: 0.85;
+  z-index: 2;
+}
+
+.flashcard:hover .layer-back-2 {
+  transform: translate(16px, -16px) rotate(4deg);
+}
+
+.flashcard:hover .layer-back-1 {
+  transform: translate(8px, -8px) rotate(2deg);
 }
 
 .flashcard-front,
@@ -696,24 +736,26 @@ html[data-theme="minimal-white"] { --calendar-invert: 0.1; }
   left: 0;
   width: 100%;
   height: 100%;
-  min-height: 240px;
+  min-height: 250px;
   -webkit-backface-visibility: hidden;
   backface-visibility: hidden;
-  border-radius: 18px;
-  padding: 24px 20px 20px 20px;
+  border-radius: 24px;
+  padding: 24px 22px 20px 22px;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
   align-items: center;
   overflow: hidden;
+  z-index: 3;
+  box-shadow: 0 10px 32px rgba(0, 0, 0, 0.08);
 }
 
 .flashcard-front {
   background-color: var(--surface, #ffffff);
   color: var(--text, #0f172a);
   border: 1px solid var(--border, #e2e8f0);
-  border-top: 5px solid var(--card-color, #13b5b1);
+  border-top: 6px solid var(--card-color, #13b5b1);
   font-weight: 600;
   font-size: 15px;
   line-height: 1.6;
@@ -754,10 +796,63 @@ html[data-theme="minimal-white"] { --calendar-invert: 0.1; }
   text-shadow: 0 0 1px rgba(255,255,255,0.4);
 }
 
-/* Category & index badge elements on front */
-.flashcard-category-badge {
+/* Folder Tab Badge Top Left */
+.card-folder-tab-badge {
   position: absolute;
   top: 14px;
+  left: 16px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 10.5px;
+  font-weight: 800;
+  text-transform: uppercase;
+  background-color: var(--surface-3, #f1f5f9);
+  border: 1px solid var(--border, #e2e8f0);
+  color: var(--text-dim, #475569);
+  padding: 4px 12px;
+  border-radius: 14px;
+  letter-spacing: 0.5px;
+}
+
+/* Floating Circle Action Buttons Overlapping Right Side */
+.card-floating-actions {
+  position: absolute;
+  right: -12px;
+  bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  z-index: 10;
+}
+
+.circle-action-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: #ffffff !important;
+  color: #0f172a !important;
+  border: 1px solid rgba(0, 0, 0, 0.08) !important;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  cursor: pointer !important;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.circle-action-btn:hover {
+  transform: scale(1.14) !important;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.2) !important;
+  background: #6366f1 !important;
+  color: #ffffff !important;
+}
+
+.circle-action-btn.card-mastery-btn.active {
+  background: #10b981 !important;
+  color: #ffffff !important;
+  border-color: #10b981 !important;
+}
   left: 16px;
   font-size: 10.5px;
   font-weight: 800;
@@ -3735,6 +3830,39 @@ body.dark-mode #sw-laps-container {
   background: #121215 !important;
   border-color: #27272a !important;
   color: #f8fafc !important;
+}
+
+/* AMOLED Dark Mode Overrides for Stacked Folder Flashcard Deck */
+[data-theme="amoled-dark"] .flashcard-stack-layer,
+[data-theme*="dark"] .flashcard-stack-layer,
+body.dark-mode .flashcard-stack-layer {
+  background-color: #121215 !important;
+  border-color: #27272a !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5) !important;
+}
+
+[data-theme="amoled-dark"] .card-folder-tab-badge,
+[data-theme*="dark"] .card-folder-tab-badge,
+body.dark-mode .card-folder-tab-badge {
+  background-color: #18181b !important;
+  border-color: #27272a !important;
+  color: #cbd5e1 !important;
+}
+
+[data-theme="amoled-dark"] .circle-action-btn,
+[data-theme*="dark"] .circle-action-btn,
+body.dark-mode .circle-action-btn {
+  background-color: #18181b !important;
+  color: #f8fafc !important;
+  border-color: #27272a !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6) !important;
+}
+
+[data-theme="amoled-dark"] .circle-action-btn:hover,
+[data-theme*="dark"] .circle-action-btn:hover,
+body.dark-mode .circle-action-btn:hover {
+  background-color: #6366f1 !important;
+  color: #ffffff !important;
 }
 
 

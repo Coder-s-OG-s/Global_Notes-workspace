@@ -1531,8 +1531,13 @@ function renderFlashcards(cards) {
         ` : '';
         cardEl.innerHTML = `
             <div class="flashcard-inner">
+                <div class="flashcard-stack-layer layer-back-2"></div>
+                <div class="flashcard-stack-layer layer-back-1"></div>
                 <div class="flashcard-front">
-                    <span class="flashcard-category-badge">${escapeHtml(card.category || 'General')}</span>
+                    <div class="card-folder-tab-badge">
+                        <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                        <span>${escapeHtml(card.category || 'General')}</span>
+                    </div>
                     <span class="flashcard-index-label">${idx + 1} / ${cards.length}</span>
                     ${card.mastered ? `
                         <div class="flashcard-mastered-badge">
@@ -1541,6 +1546,17 @@ function renderFlashcards(cards) {
                     ` : ''}
                     <div class="flashcard-question-text">${renderSafeHtml(stripEmojis(card.question))}</div>
                     ${recallHtml}
+                    <!-- Floating Circle Actions Overlapping Right Side -->
+                    <div class="card-floating-actions">
+                        <button class="circle-action-btn btn-flip-card" title="Flip Card">
+                            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
+                        </button>
+                        <button class="circle-action-btn card-mastery-btn ${card.mastered ? 'active' : ''}" title="Mark as Mastered">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="16" height="16">
+                                <polyline points="20 6 9 17 4 12"></polyline>
+                            </svg>
+                        </button>
+                    </div>
                 </div>
                 <div class="flashcard-back">
                     <div class="flashcard-back-content">
@@ -1558,9 +1574,17 @@ function renderFlashcards(cards) {
         `;
 
         cardEl.addEventListener('click', (e) => {
-            if (e.target.closest('.card-mastery-btn') || e.target.closest('.flashcard-back-content') || e.target.closest('.card-recall-container')) return;
+            if (e.target.closest('.card-mastery-btn') || e.target.closest('.circle-action-btn') || e.target.closest('.flashcard-back-content') || e.target.closest('.card-recall-container')) return;
             cardEl.classList.toggle('flipped');
         });
+
+        const btnFlip = cardEl.querySelector('.btn-flip-card');
+        if (btnFlip) {
+            btnFlip.addEventListener('click', (e) => {
+                e.stopPropagation();
+                cardEl.classList.toggle('flipped');
+            });
+        }
 
         // Double-click back content to flip back as helper
         const backContent = cardEl.querySelector('.flashcard-back-content');
