@@ -3015,34 +3015,6 @@ body.dark-mode .flashcard-workspace-panel {
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8) !important;
 }
 
-/* Add Source Workspace Layout & Boundary Fixes */
-.add-source-workspace {
-  overflow-y: auto !important;
-  padding: 24px 28px 80px 28px !important;
-  max-height: calc(100vh - 85px) !important;
-}
-
-.add-source-card-modal {
-  max-width: 820px;
-  margin: 0 auto;
-  padding-bottom: 40px;
-}
-
-.empty-library-prompt {
-  background: #f8fafc !important;
-  border: 1.5px dashed #cbd5e1 !important;
-  color: #0f172a !important;
-}
-
-[data-theme="amoled-dark"] .empty-library-prompt,
-[data-theme="corporate-gray"] .empty-library-prompt,
-[data-theme*="dark"] .empty-library-prompt,
-body.dark-mode .empty-library-prompt {
-  background: #121215 !important;
-  border: 1.5px dashed #27272a !important;
-  color: #f8fafc !important;
-}
-
 /* Inner Component Dropzones, Cards & Inputs */
 [data-theme="amoled-dark"] .mockup-dropzone,
 [data-theme="corporate-gray"] .mockup-dropzone,

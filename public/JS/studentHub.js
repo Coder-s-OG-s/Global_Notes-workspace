@@ -2003,24 +2003,24 @@ async function loadSavedState() {
         }
     }
 
+    if (!loadedFromDb) {
         // 1. Load Decks from localStorage
         try {
             const storedDecks = localStorage.getItem(STORAGE_DECKS_KEY);
             if (storedDecks) {
                 savedDecks = JSON.parse(storedDecks);
-                // Purge legacy hardcoded mock sample decks
-                savedDecks = savedDecks.filter(d => d.id !== 'deck_calc_1' && d.id !== 'deck_lecture_1' && d.id !== 'deck_syllabus_1' && d.id !== 'deck_cell_div_1');
             }
-            if (!savedDecks) {
+            // Filter out legacy hardcoded sample decks
+            if (Array.isArray(savedDecks)) {
+                savedDecks = savedDecks.filter(d => d && !['deck_calc_1', 'deck_lecture_1', 'deck_syllabus_1', 'deck_cell_div_1'].includes(d.id) && d.name !== 'Intro to Calculus');
+            } else {
                 savedDecks = [];
             }
             const storedActiveId = localStorage.getItem(STORAGE_ACTIVE_DECK_ID_KEY);
             if (storedActiveId && savedDecks.some(d => d.id === storedActiveId)) {
                 activeDeckId = storedActiveId;
-            } else if (savedDecks.length > 0) {
-                activeDeckId = savedDecks[0].id;
             } else {
-                activeDeckId = null;
+                activeDeckId = savedDecks.length > 0 ? savedDecks[0].id : null;
             }
         } catch (e) {
             savedDecks = [];
