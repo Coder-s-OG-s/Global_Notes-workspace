@@ -194,8 +194,14 @@
 
                     <!-- Study Mastery Progress Bar & Cartoon Template Selector -->
                     <div class="workspace-header hidden" id="flashcards-header" style="margin-top: 20px; display: flex; flex-direction: column; gap: 14px;">
-                        <div class="progress-info" style="display: flex; justify-content: space-between; align-items: center;">
-                            <span class="progress-title" style="font-size: 14px; font-weight: 800;">Study Mastery</span>
+                        <div class="progress-info" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <span class="progress-title" style="font-size: 14px; font-weight: 800;">Study Mastery</span>
+                                <button id="btn-sync-flashcards-gg" title="Sync current deck to Flashcards.gg cloud" style="display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; border-radius: 12px; font-size: 11px; font-weight: 800; border: 1px solid rgba(99,102,241,0.3); background: rgba(99,102,241,0.1); color: #6366f1; cursor: pointer; transition: all 0.2s;">
+                                    <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 11A5 5 0 0 0 9 7.37A7 7 0 0 0 2 13a7 7 0 0 0 7 7h10a5 5 0 0 0 0-10z"></path></svg>
+                                    <span>Sync to Flashcards.gg</span>
+                                </button>
+                            </div>
                             <span class="progress-value" id="flashcards-progress-text" style="font-size: 12px; font-weight: 700; color: #6366f1;">0% Mastered (0/0 cards)</span>
                         </div>
                         <div class="progress-track" style="height: 8px; background: var(--border, #e2e8f0); border-radius: 10px; overflow: hidden;">
