@@ -3335,6 +3335,7 @@ body.dark-mode .output-workspace,
 body.dark-mode .flashcard-workspace-panel {
   background-color: #0f172a !important;
   border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  border-radius: 24px !important;
   color: #f8fafc !important;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4) !important;
 }
@@ -3937,6 +3938,8 @@ body.dark-mode .flowchart-canvas-container {
   background-color: #0b0f19 !important;
   background-image: radial-gradient(rgba(255, 255, 255, 0.12) 1px, transparent 1px) !important;
   border-color: rgba(255, 255, 255, 0.08) !important;
+  border-radius: 20px !important;
+  overflow: hidden !important;
 }
 
 [data-theme="amoled-dark"] .canvas-toolbar,
@@ -3944,6 +3947,7 @@ body.dark-mode .flowchart-canvas-container {
 body.dark-mode .canvas-toolbar {
   background: #1e293b !important;
   border-color: rgba(255, 255, 255, 0.12) !important;
+  border-radius: 14px !important;
 }
 
 [data-theme="amoled-dark"] .canvas-workspace-title,
@@ -3958,6 +3962,7 @@ body.dark-mode .canvas-workspace-title {
 body.dark-mode #view-timers .options-panel {
   background: #0f172a !important;
   border-color: rgba(255, 255, 255, 0.08) !important;
+  border-radius: 24px !important;
 }
 
 [data-theme="amoled-dark"] .timer-studio-container,
@@ -3965,6 +3970,7 @@ body.dark-mode #view-timers .options-panel {
 body.dark-mode .timer-studio-container {
   background: #0f172a !important;
   border-color: rgba(255, 255, 255, 0.08) !important;
+  border-radius: 20px !important;
 }
 
 [data-theme="amoled-dark"] #view-timers .options-card-box.pastel-yellow-card,
