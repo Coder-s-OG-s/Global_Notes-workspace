@@ -1,180 +1,181 @@
 /**
  * folderManager.js
- * Refactored to use the local Express backend with MongoDB Atlas
+ * Database-only storage: Manages folders exclusively via MongoDB Atlas backend.
+ * Removes LocalStorage folder persistence.
  */
 
 import { showToast } from "./utilities.js";
 
-// Folder Storage Keys
-const FOLDERS_STORAGE_KEY = "notesWorkspace.folders";
+// In-memory runtime folder cache per session
+let inMemoryFolders = [];
 
 /**
- * Get all folders for current user (from localStorage)
+ * Get all folders for current user (from Database)
  */
 export function getFolders(activeUser) {
-  try {
-    const key = `${FOLDERS_STORAGE_KEY}.${activeUser || "guest"}`;
-    const raw = localStorage.getItem(key);
-    if (!raw) return [];
-    const parsed = JSON.parse(raw);
-    return Array.isArray(parsed) ? parsed : [];
-  } catch {
+  if (!activeUser || activeUser === "guest") {
+    inMemoryFolders = [];
     return [];
   }
+  return inMemoryFolders;
 }
 
 /**
- * Save folders to localStorage and sync to MongoDB
+ * Save / sync folders to MongoDB Database
  */
 export async function saveFolders(activeUser, folders) {
-  try {
-    const key = `${FOLDERS_STORAGE_KEY}.${activeUser || "guest"}`;
-    localStorage.setItem(key, JSON.stringify(folders));
+  if (!activeUser || activeUser === "guest") {
+    inMemoryFolders = [];
+    return;
+  }
 
-    // Sync each folder to MongoDB
-    if (activeUser && activeUser !== 'guest') {
-      const syncPromises = folders.map(async (folder) => {
-        const method = folder._id ? 'PUT' : 'POST';
-        const url = folder._id ? `/api/folders/${folder._id}` : '/api/folders';
-        
-        return fetch(url, {
-          method,
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(folder)
-        });
+  inMemoryFolders = folders || [];
+
+  try {
+    const syncPromises = inMemoryFolders.map(async (folder) => {
+      const method = folder._id ? "PUT" : "POST";
+      const url = folder._id ? `/api/folders/${folder._id}` : "/api/folders";
+
+      return fetch(url, {
+        method,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(folder),
       });
-      
-      const responses = await Promise.allSettled(syncPromises);
-      
-      // Update local folders if the server returned a new _id
-      let storageUpdated = false;
-      for (let i = 0; i < responses.length; i++) {
-        const res = responses[i];
-        if (res.status === 'fulfilled' && res.value.ok) {
-          const serverFolder = await res.value.json();
-          if (serverFolder._id && folders[i] && !folders[i]._id) {
-            folders[i]._id = serverFolder._id;
-            storageUpdated = true;
-          }
+    });
+
+    const responses = await Promise.allSettled(syncPromises);
+
+    for (let i = 0; i < responses.length; i++) {
+      const res = responses[i];
+      if (res.status === "fulfilled" && res.value.ok) {
+        const serverFolder = await res.value.json();
+        if (serverFolder._id && inMemoryFolders[i]) {
+          inMemoryFolders[i]._id = serverFolder._id;
+          inMemoryFolders[i].id = serverFolder._id;
         }
-      }
-      if (storageUpdated) {
-        localStorage.setItem(key, JSON.stringify(folders));
       }
     }
   } catch (err) {
-    showToast("Failed to sync folders", "warning");
+    showToast("Failed to sync folders to database", "warning");
   }
 }
 
 /**
- * Create new folder
+ * Create new folder directly in Database
  */
-export function createNewFolder(activeUser, folderName, folderColor = "blue") {
-  const folders = getFolders(activeUser);
+export async function createNewFolder(activeUser, folderName, folderColor = "blue") {
+  if (!activeUser || activeUser === "guest") {
+    showToast("Please sign in to create folders", "warning");
+    return null;
+  }
+
   const newFolder = {
-    id: crypto.randomUUID ? crypto.randomUUID() : String(Date.now() + Math.random()),
     name: folderName || "New Folder",
     color: folderColor || "blue",
     createdAt: new Date().toISOString(),
   };
-  folders.push(newFolder);
-  saveFolders(activeUser, folders);
-  return newFolder;
-}
 
-/**
- * Delete folder
- */
-export function deleteFolder(activeUser, folderId, notes) {
-  const folders = getFolders(activeUser);
-  const updatedFolders = folders.filter((f) => f.id !== folderId && f._id !== folderId);
-  saveFolders(activeUser, updatedFolders);
+  try {
+    const res = await fetch("/api/folders", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(newFolder),
+    });
 
-  // Delete from MongoDB
-  if (activeUser && activeUser !== 'guest') {
-    fetch(`/api/folders/${folderId}`, { method: 'DELETE' })
-      .catch(() => showToast("Cloud folder deletion failed", "warning"));
+    if (res.ok) {
+      const created = await res.json();
+      const folderObj = {
+        ...created,
+        id: created._id || created.id,
+      };
+      inMemoryFolders.push(folderObj);
+      return folderObj;
+    }
+  } catch (err) {
+    console.error("Failed to create folder in database:", err);
   }
 
-  // Move notes to root
-  notes.forEach((note) => {
-    if (note.folderId === folderId) {
-      note.folderId = null;
-    }
-  });
+  return null;
 }
 
 /**
- * Rename or update folder properties (name, color)
+ * Delete folder directly from Database
  */
-export function renameFolder(activeUser, folderId, newName, newColor) {
-  const folders = getFolders(activeUser);
-  const folder = folders.find((f) => f.id === folderId || f._id === folderId);
+export async function deleteFolder(activeUser, folderId, notes = []) {
+  if (!activeUser || activeUser === "guest" || !folderId) return;
+
+  inMemoryFolders = inMemoryFolders.filter(
+    (f) => f.id !== folderId && f._id !== folderId
+  );
+
+  try {
+    await fetch(`/api/folders/${folderId}`, { method: "DELETE" });
+  } catch (err) {
+    showToast("Cloud folder deletion failed", "warning");
+  }
+
+  if (Array.isArray(notes)) {
+    notes.forEach((note) => {
+      if (note.folderId === folderId) {
+        note.folderId = null;
+      }
+    });
+  }
+}
+
+/**
+ * Rename or update folder properties directly in Database
+ */
+export async function renameFolder(activeUser, folderId, newName, newColor) {
+  if (!activeUser || activeUser === "guest") return;
+
+  const folder = inMemoryFolders.find((f) => f.id === folderId || f._id === folderId);
   if (folder) {
     if (newName !== undefined && newName !== null) folder.name = newName;
     if (newColor !== undefined && newColor !== null) folder.color = newColor;
-    saveFolders(activeUser, folders);
+    await saveFolders(activeUser, inMemoryFolders);
   }
 }
 
 /**
  * Update color of an existing folder
  */
-export function updateFolderColor(activeUser, folderId, newColor, currentFolders = null) {
-  const folders = currentFolders || getFolders(activeUser);
+export async function updateFolderColor(activeUser, folderId, newColor, currentFolders = null) {
+  if (!activeUser || activeUser === "guest") return;
+
+  const folders = currentFolders || inMemoryFolders;
   const folder = folders.find((f) => f.id === folderId || f._id === folderId);
   if (folder) {
     folder.color = newColor || "blue";
-    saveFolders(activeUser, folders);
+    await saveFolders(activeUser, folders);
   }
 }
 
 /**
- * Fetches folders from MongoDB and merges with local
+ * Fetches folders directly from MongoDB database
  */
 export async function syncFoldersFromCloud(activeUser) {
-  if (!activeUser || activeUser === 'guest') return getFolders(activeUser);
+  if (!activeUser || activeUser === "guest") {
+    inMemoryFolders = [];
+    return [];
+  }
 
   try {
-    const response = await fetch('/api/folders');
-    if (!response.ok) return getFolders(activeUser);
+    const response = await fetch("/api/folders");
+    if (!response.ok) {
+      return inMemoryFolders;
+    }
 
     const cloudFolders = await response.json();
-    const localFolders = getFolders(activeUser);
-
-    const foldersMap = new Map();
-    cloudFolders.forEach(f => {
-      const key = f.id || f._id;
-      foldersMap.set(key, { ...f, id: key });
-    });
-    
-    localFolders.forEach(f => {
-      // 1. Try to find by ID/ObjectId
-      const matchById = foldersMap.get(f.id) || foldersMap.get(f._id);
-      
-      // 2. Try to find by Name (Migration helper to prevent duplicates)
-      const matchByName = Array.from(foldersMap.values()).find(cf => cf.name === f.name);
-
-      if (matchById) {
-        if (f.color) matchById.color = f.color;
-      } else if (matchByName) {
-        const key = f.id || f._id;
-        foldersMap.set(key, { ...matchByName, id: key, color: f.color || matchByName.color });
-      } else {
-        foldersMap.set(f.id, f);
-      }
-    });
-
-    const merged = Array.from(foldersMap.values());
-    merged.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-    const key = `${FOLDERS_STORAGE_KEY}.${activeUser}`;
-    localStorage.setItem(key, JSON.stringify(merged));
-
-    return merged;
+    inMemoryFolders = cloudFolders.map((f) => ({
+      ...f,
+      id: f.id || f._id,
+    }));
+    inMemoryFolders.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+    return inMemoryFolders;
   } catch (err) {
-    console.error("Failed to sync folders from cloud:", err);
-    return getFolders(activeUser);
+    console.error("Failed to sync folders from database:", err);
+    return inMemoryFolders;
   }
 }
 
@@ -182,5 +183,6 @@ export async function syncFoldersFromCloud(activeUser) {
  * Get notes in a specific folder
  */
 export function getNotesByFolder(notes, folderId) {
+  if (!Array.isArray(notes)) return [];
   return notes.filter((note) => note.folderId === folderId);
 }

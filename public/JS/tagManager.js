@@ -9,20 +9,23 @@ const $all = (selector) => Array.from(document.querySelectorAll(selector));
 let stateRef = null;
 let callbacksRef = null;
 
-// Helper to get custom tags from localStorage for the session
+// Helper to get custom tags for the session (in-memory only, no LocalStorage)
+let inMemoryCustomTags = [];
+
 function getCustomTags(username) {
-    const key = `gnw.custom_tags.${username || 'guest'}`;
-    const raw = localStorage.getItem(key);
-    try {
-        return raw ? JSON.parse(raw) : [];
-    } catch (e) {
+    if (!username || username === 'guest') {
+        inMemoryCustomTags = [];
         return [];
     }
+    return inMemoryCustomTags;
 }
 
 function saveCustomTags(username, tags) {
-    const key = `gnw.custom_tags.${username || 'guest'}`;
-    localStorage.setItem(key, JSON.stringify(tags));
+    if (!username || username === 'guest') {
+        inMemoryCustomTags = [];
+        return;
+    }
+    inMemoryCustomTags = tags || [];
 }
 
 // Predefined palette for the color picker

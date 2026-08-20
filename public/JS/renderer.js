@@ -356,6 +356,29 @@ export function renderNotesDashboard(notes, folders, activeFolderId, activeLibra
         <span class="folder-3d-title">${escapeHtml(folder.name)}</span>
       `;
 
+      // Folder Drag and Drop Target
+      card.addEventListener("dragover", (e) => {
+        e.preventDefault();
+        if (e.dataTransfer) e.dataTransfer.dropEffect = "move";
+        card.classList.add("drag-over");
+      });
+
+      card.addEventListener("dragleave", () => {
+        card.classList.remove("drag-over");
+      });
+
+      card.addEventListener("drop", (e) => {
+        e.preventDefault();
+        card.classList.remove("drag-over");
+        const noteId = e.dataTransfer ? e.dataTransfer.getData("text/plain") : null;
+        if (noteId) {
+          const moveEvent = new CustomEvent("move-note-to-folder", {
+            detail: { noteId, folderId }
+          });
+          document.dispatchEvent(moveEvent);
+        }
+      });
+
       // Main Folder Click -> Navigate
       const wrapper = card.querySelector('.folder-3d-wrapper');
       wrapper.addEventListener('click', (e) => {
@@ -422,6 +445,17 @@ export function renderNotesDashboard(notes, folders, activeFolderId, activeLibra
     card.className = "note-card";
     card.dataset.color = noteColor;
     card.dataset.id = note.id || note._id;
+    card.setAttribute("draggable", "true");
+    card.addEventListener("dragstart", (e) => {
+      if (e.dataTransfer) {
+        e.dataTransfer.setData("text/plain", note.id || note._id);
+        e.dataTransfer.effectAllowed = "move";
+      }
+      card.classList.add("dragging");
+    });
+    card.addEventListener("dragend", () => {
+      card.classList.remove("dragging");
+    });
 
     const rawContent = (note.content || "");
     const plainContent = rawContent.replace(/<[^>]*>/g, " ");
@@ -522,6 +556,9 @@ export function renderNotesDashboard(notes, folders, activeFolderId, activeLibra
 
       <!-- Quick Hover Actions -->
       <div class="note-card-hover-actions">
+        <button type="button" class="note-card-action-btn note-folder-trigger" title="Move to Folder">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+        </button>
         <button type="button" class="note-card-action-btn note-color-trigger" title="Change Color">
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M12 2a10 10 0 0 0 0 20z"/></svg>
         </button>
@@ -544,14 +581,48 @@ export function renderNotesDashboard(notes, folders, activeFolderId, activeLibra
         <button type="button" class="swatch swatch-teal ${noteColor==='teal'?'active':''}" data-color="teal" title="Teal"></button>
         <button type="button" class="swatch swatch-slate ${noteColor==='slate'?'active':''}" data-color="slate" title="Slate"></button>
       </div>
+
+      <!-- Move to Folder Popover -->
+      <div class="note-card-folder-popover hidden">
+        <div class="popover-folder-option ${!note.folderId ? 'active' : ''}" data-folder-id="">
+          <span>Root Workspace</span>
+        </div>
+        ${folders.map(f => `
+          <div class="popover-folder-option ${(note.folderId === f.id || note.folderId === f._id) ? 'active' : ''}" data-folder-id="${f.id || f._id}">
+            <span>${escapeHtml(f.name)}</span>
+          </div>
+        `).join('')}
+      </div>
     `;
 
     card.addEventListener("click", (e) => {
-      if (e.target.closest('.note-card-hover-actions') || e.target.closest('.note-card-color-popover')) {
+      if (e.target.closest('.note-card-hover-actions') || e.target.closest('.note-card-color-popover') || e.target.closest('.note-card-folder-popover')) {
         return;
       }
       setActiveNote(note.id || note._id);
     });
+
+    // Move to Folder Trigger
+    const folderTrigger = card.querySelector('.note-folder-trigger');
+    const folderPopover = card.querySelector('.note-card-folder-popover');
+    if (folderTrigger && folderPopover) {
+      folderTrigger.addEventListener('click', (e) => {
+        e.stopPropagation();
+        folderPopover.classList.toggle('hidden');
+      });
+
+      folderPopover.querySelectorAll('.popover-folder-option').forEach(opt => {
+        opt.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const targetFolderId = opt.dataset.folderId || null;
+          folderPopover.classList.add('hidden');
+          const moveEvent = new CustomEvent('move-note-to-folder', {
+            detail: { noteId: note.id || note._id, folderId: targetFolderId }
+          });
+          document.dispatchEvent(moveEvent);
+        });
+      });
+    }
 
     // Quick Color Trigger Button
     const colorBtn = card.querySelector('.note-color-trigger');

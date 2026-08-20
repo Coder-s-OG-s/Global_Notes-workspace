@@ -1,5 +1,6 @@
-import { getTagColor, formatDate, showConfirm, showPrompt, showFolderModal } from "./utilities.js";
+import { getTagColor, formatDate, showConfirm, showPrompt, showFolderModal, showToast } from "./utilities.js";
 import { getSelectedDate } from "./filterSearchSort.js";
+import { saveSingleNote } from "./storage.js";
 import {
   handleNewNote,
   handleSaveNote,
@@ -113,14 +114,16 @@ export function wireFolderButtons(state, callbacks) {
     try {
       const folderData = await showFolderModal("Create New Folder", "", "blue", "Create");
       if (folderData && folderData.name) {
-        const newFolder = createNewFolder(state.activeUser, folderData.name, folderData.color);
-        const folderId = newFolder.id || newFolder._id;
-        const exists = state.folders.some(f => (f.id && f.id === folderId) || (f._id && f._id === folderId));
-        if (!exists) {
-          state.folders.push(newFolder);
+        const newFolder = await createNewFolder(state.activeUser, folderData.name, folderData.color);
+        if (newFolder) {
+          const folderId = newFolder.id || newFolder._id;
+          const exists = state.folders.some(f => (f.id && f.id === folderId) || (f._id && f._id === folderId));
+          if (!exists) {
+            state.folders.push(newFolder);
+          }
+          callbacks.renderFolders();
+          callbacks.renderNotesDashboard();
         }
-        callbacks.renderFolders();
-        callbacks.renderNotesDashboard();
       }
     } finally {
       isCreating = false;
@@ -152,7 +155,7 @@ export function wireFolderButtons(state, callbacks) {
     );
     if (!confirmed) return;
 
-    deleteFolder(state.activeUser, folderId, state.notes);
+    await deleteFolder(state.activeUser, folderId, state.notes);
     state.folders = state.folders.filter((f) => f.id !== folderId && f._id !== folderId);
 
     if (state.activeFolderId === folderId) {
@@ -175,7 +178,7 @@ export function wireFolderButtons(state, callbacks) {
     const folderData = await showFolderModal("Edit Folder", currentName, currentColor, "Save");
     if (!folderData || !folderData.name) return;
 
-    renameFolder(state.activeUser, folderId, folderData.name, folderData.color);
+    await renameFolder(state.activeUser, folderId, folderData.name, folderData.color);
     if (currentFolder) {
       currentFolder.name = folderData.name;
       currentFolder.color = folderData.color;
@@ -211,14 +214,40 @@ export function wireFolderButtons(state, callbacks) {
       callbacks.renderNotesDashboard();
     }
   });
+
+  document.addEventListener("move-note-to-folder", async (event) => {
+    const { noteId, folderId } = event.detail;
+    if (!noteId) return;
+
+    const note = state.notes.find((n) => n.id === noteId || n._id === noteId);
+    if (note) {
+      note.folderId = folderId || null;
+      note.updatedAt = new Date().toISOString();
+      if (state.activeUser && state.activeUser !== 'guest') {
+        await saveSingleNote(state.activeUser, note);
+      }
+      showToast(folderId ? "Moved note to folder" : "Moved note to root workspace", "success");
+      callbacks.renderNotesDashboard();
+      callbacks.renderFolders();
+      callbacks.renderNotesList();
+    }
+  });
 }
 
 // Moves a note to a specified folder and updates its timestamp
-export function moveNoteToFolder(noteId, folderId, notes) {
-  const note = notes.find((n) => n.id === noteId);
+export async function moveNoteToFolder(noteId, folderId, notes, activeUser, callbacks) {
+  const note = notes.find((n) => n.id === noteId || n._id === noteId);
   if (note) {
-    note.folderId = folderId;
+    note.folderId = folderId || null;
     note.updatedAt = new Date().toISOString();
+    if (activeUser && activeUser !== 'guest') {
+      await saveSingleNote(activeUser, note);
+    }
+    if (callbacks) {
+      if (callbacks.renderNotesList) callbacks.renderNotesList();
+      if (callbacks.renderNotesDashboard) callbacks.renderNotesDashboard();
+      if (callbacks.renderFolders) callbacks.renderFolders();
+    }
   }
 }
 

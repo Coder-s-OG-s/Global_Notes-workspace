@@ -154,10 +154,30 @@ export function showConfirm(title, message, confirmLabel = 'Delete') {
     const okBtn = document.getElementById('confirm-ok');
     const cancelBtn = document.getElementById('confirm-cancel');
     const closeBtn = dialog ? dialog.querySelector('.confirm-close') : null;
+    const badgeEl = document.getElementById('confirm-icon-badge');
 
     if (!dialog || !okBtn || !cancelBtn) { 
       resolve(confirm(message)); 
       return; 
+    }
+
+    const isDanger = (confirmLabel.toLowerCase().includes('delete') || confirmLabel.toLowerCase().includes('remove') || title.toLowerCase().includes('delete'));
+
+    dialog.classList.remove('alert-danger', 'alert-primary', 'alert-error', 'alert-info');
+    if (isDanger) {
+      dialog.classList.add('alert-danger');
+      okBtn.className = 'btn danger';
+      if (badgeEl) {
+        badgeEl.className = 'dialog-icon-badge danger';
+        badgeEl.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 6h18"></path><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>`;
+      }
+    } else {
+      dialog.classList.add('alert-primary');
+      okBtn.className = 'btn primary';
+      if (badgeEl) {
+        badgeEl.className = 'dialog-icon-badge primary';
+        badgeEl.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>`;
+      }
     }
 
     if (titleEl) titleEl.textContent = title;
@@ -274,15 +294,18 @@ function ensureFolderDialogExists() {
   let dialog = document.getElementById('folder-dialog');
   if (!dialog) {
     dialog = document.createElement('dialog');
-    dialog.className = 'confirm-dialog folder-modal-dialog';
+    dialog.className = 'confirm-dialog folder-modal-dialog alert-primary';
     dialog.id = 'folder-dialog';
     dialog.innerHTML = `
       <div class="confirm-content folder-modal-content">
         <button type="button" class="confirm-close" aria-label="Close dialog">✕</button>
+        <div class="dialog-icon-badge primary">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path><line x1="12" y1="11" x2="12" y2="17"></line><line x1="9" y1="14" x2="15" y2="14"></line></svg>
+        </div>
         <h3 class="confirm-title" id="folder-dialog-title">Create Folder</h3>
-        <div class="folder-modal-body">
+        <div class="folder-modal-body" style="width: 100%;">
           <label class="folder-modal-label" for="folder-name-input">Folder Name</label>
-          <input type="text" id="folder-name-input" class="prompt-input-field" placeholder="e.g. 2024, Recepies, Italian..." autocomplete="off">
+          <input type="text" id="folder-name-input" class="prompt-input-field" placeholder="e.g. 2024, Recipes, Italian..." autocomplete="off">
           
           <label class="folder-modal-label" style="margin-top: 16px;">Choose Theme Color</label>
           <div class="folder-color-selector" id="folder-color-selector">
@@ -316,7 +339,8 @@ function ensureFolderDialogExists() {
             </div>
           </div>
         </div>
-        <div class="confirm-actions" style="margin-top: 20px;">
+        <div class="dialog-divider"></div>
+        <div class="confirm-actions">
           <button type="button" class="btn secondary" id="folder-cancel">Cancel</button>
           <button type="button" class="btn primary" id="folder-ok">Save Folder</button>
         </div>
@@ -464,16 +488,40 @@ export function stripHtml(html) {
  * Shows a custom alert dialog. Returns a promise that resolves when closed.
  * @param {string} title - Dialog title.
  * @param {string} message - Dialog message.
- * @param {string} btnLabel - Label for the OK button.
+ * @param {string} btnLabel - Label for the OK button or status type.
+ * @param {string} [type] - Optional explicit status type ('success'|'error'|'warning'|'info').
  * @returns {Promise<void>}
  */
-export function showAlert(title, message, btnLabel = 'OK') {
+export function showAlert(title, message, btnLabel = 'OK', type = null) {
+  let finalType = 'info';
+  let finalBtnLabel = 'OK';
+
+  if (typeof btnLabel === 'string' && ['success', 'error', 'danger', 'warning', 'info'].includes(btnLabel.toLowerCase())) {
+    finalType = btnLabel.toLowerCase();
+    finalBtnLabel = 'OK';
+  } else {
+    if (btnLabel) finalBtnLabel = btnLabel;
+    if (type) {
+      finalType = type.toLowerCase();
+    } else {
+      const text = (title + ' ' + message).toLowerCase();
+      if (text.includes('error') || text.includes('fail') || text.includes('unable') || text.includes('invalid') || text.includes('could not')) {
+        finalType = 'error';
+      } else if (text.includes('success') || text.includes('saved') || text.includes('created') || text.includes('completed')) {
+        finalType = 'success';
+      } else if (text.includes('warn') || text.includes('caution') || text.includes('attention')) {
+        finalType = 'warning';
+      }
+    }
+  }
+
   return new Promise((resolve) => {
     const dialog = document.getElementById('alert-dialog');
     const titleEl = document.getElementById('alert-title');
     const messageEl = document.getElementById('alert-message');
     const okBtn = document.getElementById('alert-ok');
     const closeBtn = dialog ? dialog.querySelector('.confirm-close') : null;
+    const badgeEl = document.getElementById('alert-icon-badge');
 
     if (!dialog || !okBtn) {
       if (window._nativeAlert) {
@@ -485,9 +533,25 @@ export function showAlert(title, message, btnLabel = 'OK') {
       return;
     }
 
+    dialog.classList.remove('alert-success', 'alert-error', 'alert-warning', 'alert-info', 'alert-danger');
+    dialog.classList.add(`alert-${finalType}`);
+
+    if (badgeEl) {
+      badgeEl.className = `dialog-icon-badge ${finalType}`;
+      if (finalType === 'success') {
+        badgeEl.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
+      } else if (finalType === 'error' || finalType === 'danger') {
+        badgeEl.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>`;
+      } else if (finalType === 'warning') {
+        badgeEl.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>`;
+      } else {
+        badgeEl.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>`;
+      }
+    }
+
     if (titleEl) titleEl.textContent = title;
     if (messageEl) messageEl.textContent = message;
-    okBtn.textContent = btnLabel;
+    okBtn.textContent = finalBtnLabel;
 
     const onOk = () => {
       cleanup();

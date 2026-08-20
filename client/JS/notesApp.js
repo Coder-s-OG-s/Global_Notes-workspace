@@ -200,22 +200,17 @@ async function initApp() {
     setActiveUser(username);
     state.activeUser = username;
 
-    // Merge any Guest notes that might exist locally
-    const didMerge = mergeGuestNotes(username);
-
-    // Load notes for current user
+    // Load notes for current user directly from Database
     await callbacks.loadNotesForCurrentUser();
-
-    // If we successfully merged guest notes, sync them to cloud immediately
-    if (didMerge) {
-      console.log("Syncing merged guest notes to cloud...");
-      await callbacks.persistNotes();
-    }
   } else {
-    // Fallback to local storage (e.g. if offline or guest)
-    state.activeUser = getActiveUser();
-    // Load notes for current user (guest)
-    await callbacks.loadNotesForCurrentUser();
+    // Unauthenticated / guest mode: clear all local storage and display 0 data
+    clearActiveUser();
+    state.activeUser = null;
+    state.notes = [];
+    state.folders = [];
+    callbacks.renderNotesList();
+    callbacks.renderFolders();
+    callbacks.renderNotesDashboard();
   }
 
   // Restore last active note if it exists, otherwise default to null

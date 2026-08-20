@@ -196,6 +196,10 @@ export function promptCreateNote() {
 
 // Creates a new note with optional initial tags and folder assignment after requesting title and theme
 export async function handleNewNote(notes, activeUser, getActiveFilter, getSelectedDate, callbacks, activeFolderId) {
+  if (!activeUser || activeUser === "guest") {
+    showToast("Please sign in to create and save notes", "warning");
+    return;
+  }
   const noteDetails = await promptCreateNote();
   if (!noteDetails) return; // User cancelled
 
@@ -213,8 +217,8 @@ export async function handleNewNote(notes, activeUser, getActiveFilter, getSelec
     folderId: activeFolderId // Assign to current folder
   });
   notes.unshift(newNote);
-  persistNotes(activeUser, notes);
-  callbacks.setActiveNote(newNote.id);
+  await saveSingleNote(activeUser, newNote);
+  callbacks.setActiveNote(newNote.id || newNote._id);
 }
 
 // Handles deletion of any note with a professional confirmation dialog.
