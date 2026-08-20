@@ -3322,10 +3322,6 @@ body.dark-mode .my-library-panel,
 [data-theme="corporate-gray"] .add-source-workspace,
 [data-theme*="dark"] .add-source-workspace,
 body.dark-mode .add-source-workspace,
-[data-theme="amoled-dark"] .add-source-card-modal,
-[data-theme="corporate-gray"] .add-source-card-modal,
-[data-theme*="dark"] .add-source-card-modal,
-body.dark-mode .add-source-card-modal,
 [data-theme="amoled-dark"] .output-workspace,
 [data-theme="corporate-gray"] .output-workspace,
 [data-theme*="dark"] .output-workspace,
@@ -3338,6 +3334,14 @@ body.dark-mode .flashcard-workspace-panel {
   border: 1px solid rgba(255, 255, 255, 0.08) !important;
   color: #f8fafc !important;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4) !important;
+}
+
+.add-source-card-modal {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
 }
 
 /* Inner Component Dropzones, Cards & Inputs */
@@ -3896,23 +3900,23 @@ body.dark-mode .quiz-score-subtext {
 [data-theme="amoled-dark"] #view-flowcharts .options-panel,
 [data-theme*="dark"] #view-flowcharts .options-panel,
 body.dark-mode #view-flowcharts .options-panel {
-  background: #09090b !important;
-  border-color: #18181b !important;
+  background: #0f172a !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
 }
 
 [data-theme="amoled-dark"] #view-flowcharts .options-card-box.pastel-yellow-card,
 [data-theme*="dark"] #view-flowcharts .options-card-box.pastel-yellow-card,
 body.dark-mode #view-flowcharts .options-card-box.pastel-yellow-card {
-  background: #1c1917 !important;
-  border-color: #44403c !important;
+  background: #1e293b !important;
+  border-color: rgba(250, 204, 21, 0.25) !important;
   color: #f8fafc !important;
 }
 
 [data-theme="amoled-dark"] #view-flowcharts .options-card-box.pastel-blue-card,
 [data-theme*="dark"] #view-flowcharts .options-card-box.pastel-blue-card,
 body.dark-mode #view-flowcharts .options-card-box.pastel-blue-card {
-  background: #1e1b4b !important;
-  border-color: #312e81 !important;
+  background: #1e293b !important;
+  border-color: rgba(255, 255, 255, 0.12) !important;
   color: #f8fafc !important;
 }
 
