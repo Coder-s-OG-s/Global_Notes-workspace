@@ -3049,17 +3049,38 @@ button,
   border-color: #facc15 !important;
 }
 
-.mockup-source-grid .source-card-btn.active {
-  background: rgba(250, 204, 21, 0.16) !important;
-  border: 1.5px solid #facc15 !important;
+.mockup-source-grid .source-card-btn.active,
+.source-card-btn.active {
+  background: linear-gradient(135deg, rgba(250, 204, 21, 0.22) 0%, rgba(234, 179, 8, 0.12) 100%) !important;
+  border: 2px solid #facc15 !important;
+  box-shadow: 0 4px 16px rgba(250, 204, 21, 0.25) !important;
+}
+
+.mockup-source-grid .source-card-btn.active .source-card-title,
+.source-card-btn.active .source-card-title {
+  color: #fde047 !important;
+  font-weight: 800 !important;
+}
+
+.mockup-source-grid .source-card-btn.active .source-card-desc,
+.source-card-btn.active .source-card-desc {
+  color: #fef08a !important;
+  font-weight: 600 !important;
+}
+
+.mockup-source-grid .source-card-btn.active .source-icon-badge,
+.source-card-btn.active .source-icon-badge {
+  background: #facc15 !important;
+  color: #0f172a !important;
+  box-shadow: 0 2px 8px rgba(250, 204, 21, 0.4) !important;
 }
 
 .youtube-paste-bar {
   display: flex;
   gap: 8px;
   margin-top: 14px;
-  background: #f1f5f9;
-  border: 1px solid #e2e8f0;
+  background: var(--surface-2, #1e293b);
+  border: 1px solid var(--border-light, rgba(255, 255, 255, 0.12));
   border-radius: 9999px;
   padding: 4px 6px 4px 16px;
   align-items: center;
@@ -3070,8 +3091,8 @@ button,
   background: transparent;
   border: none;
   outline: none;
-  font-size: 13.5px;
-  color: #0f172a;
+  font-size: 12.5px;
+  color: #f8fafc;
 }
 
 .youtube-input::placeholder {
@@ -3079,20 +3100,21 @@ button,
 }
 
 .btn-go-black {
-  background: #0f172a;
-  color: #ffffff;
-  font-size: 13px;
-  font-weight: 700;
-  border: none;
-  padding: 8px 20px;
-  border-radius: 9999px;
-  cursor: pointer;
-  transition: transform 0.2s ease, background 0.2s ease;
+  background: #facc15 !important;
+  color: #0f172a !important;
+  font-size: 12px !important;
+  font-weight: 800 !important;
+  border: none !important;
+  padding: 6px 16px !important;
+  border-radius: 9999px !important;
+  cursor: pointer !important;
+  box-shadow: 0 2px 8px rgba(250, 204, 21, 0.3) !important;
+  transition: transform 0.2s ease, background 0.2s ease !important;
 }
 
 .btn-go-black:hover {
-  background: #1e293b;
-  transform: scale(1.05);
+  background: #eab308 !important;
+  transform: scale(1.04) !important;
 }
 
 /* ==========================================================================
@@ -3346,6 +3368,36 @@ body.dark-mode .study-mastery-bar {
   background-color: #1e293b !important;
   border-color: rgba(255, 255, 255, 0.12) !important;
   color: #f8fafc !important;
+}
+
+[data-theme="amoled-dark"] .source-card-btn.active,
+[data-theme*="dark"] .source-card-btn.active,
+body.dark-mode .source-card-btn.active {
+  background: linear-gradient(135deg, rgba(250, 204, 21, 0.22) 0%, rgba(234, 179, 8, 0.12) 100%) !important;
+  border: 2px solid #facc15 !important;
+  box-shadow: 0 4px 16px rgba(250, 204, 21, 0.3) !important;
+}
+
+[data-theme="amoled-dark"] .source-card-btn.active .source-card-title,
+[data-theme*="dark"] .source-card-btn.active .source-card-title,
+body.dark-mode .source-card-btn.active .source-card-title {
+  color: #fde047 !important;
+  font-weight: 800 !important;
+}
+
+[data-theme="amoled-dark"] .source-card-btn.active .source-card-desc,
+[data-theme*="dark"] .source-card-btn.active .source-card-desc,
+body.dark-mode .source-card-btn.active .source-card-desc {
+  color: #fef08a !important;
+  font-weight: 600 !important;
+}
+
+[data-theme="amoled-dark"] .source-card-btn.active .source-icon-badge,
+[data-theme*="dark"] .source-card-btn.active .source-icon-badge,
+body.dark-mode .source-card-btn.active .source-icon-badge {
+  background: #facc15 !important;
+  color: #0f172a !important;
+  box-shadow: 0 2px 8px rgba(250, 204, 21, 0.4) !important;
 }
 
 /* Pastel Study Cards (Light Pastel Fills) Text Contrast Fix */
