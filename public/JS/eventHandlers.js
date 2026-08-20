@@ -1,5 +1,6 @@
-import { getTagColor, formatDate, showConfirm, showPrompt } from "./utilities.js";
+import { getTagColor, formatDate, showConfirm, showPrompt, showFolderModal, showToast } from "./utilities.js";
 import { getSelectedDate } from "./filterSearchSort.js";
+import { saveSingleNote } from "./storage.js";
 import {
   handleNewNote,
   handleSaveNote,
@@ -103,22 +104,45 @@ export function wireCrudButtons(state, getActiveFilter, callbacks) {
   });
 }
 
-// Handles folder-related operations: create, rename, and delete folders
+// Handles folder-related operations: create, rename, edit color, and delete folders
 export function wireFolderButtons(state, callbacks) {
-  const createFolderBtn = $("#create-folder");
-  const foldersListEl = $("#folders-list");
+  let isCreating = false;
 
-  if (createFolderBtn) {
-    createFolderBtn.addEventListener("click", async () => {
-      const folderName = await showPrompt("Create New Folder", "", "Create");
-      if (folderName && folderName.trim()) {
-        const newFolder = createNewFolder(state.activeUser, folderName.trim());
-        state.folders.push(newFolder);
-        callbacks.renderFolders();
-        callbacks.renderNotesDashboard(); // Ensure grid UI reflects folder addition
+  const handleCreateFolder = async () => {
+    if (isCreating) return;
+    isCreating = true;
+    try {
+      const folderData = await showFolderModal("Create New Folder", "", "blue", "Create");
+      if (folderData && folderData.name) {
+        const newFolder = await createNewFolder(state.activeUser, folderData.name, folderData.color);
+        if (newFolder) {
+          const folderId = newFolder.id || newFolder._id;
+          const exists = state.folders.some(f => (f.id && f.id === folderId) || (f._id && f._id === folderId));
+          if (!exists) {
+            state.folders.push(newFolder);
+          }
+          callbacks.renderFolders();
+          callbacks.renderNotesDashboard();
+        }
       }
-    });
-  }
+    } finally {
+      isCreating = false;
+    }
+  };
+
+  // Listen for clicks on any create folder element across the UI
+  document.addEventListener("click", (e) => {
+    const btn = e.target.closest("#create-folder, .create-folder-btn, [data-action='create-folder'], #header-create-folder, .add-folder-3d-card");
+    if (btn) {
+      e.preventDefault();
+      e.stopPropagation();
+      handleCreateFolder();
+    }
+  });
+
+  document.addEventListener("trigger-create-folder", () => {
+    handleCreateFolder();
+  });
 
   document.addEventListener("delete-folder", async (event) => {
     const folderId = event.detail.id;
@@ -131,8 +155,8 @@ export function wireFolderButtons(state, callbacks) {
     );
     if (!confirmed) return;
 
-    deleteFolder(state.activeUser, folderId, state.notes);
-    state.folders = state.folders.filter((f) => f.id !== folderId);
+    await deleteFolder(state.activeUser, folderId, state.notes);
+    state.folders = state.folders.filter((f) => f.id !== folderId && f._id !== folderId);
 
     if (state.activeFolderId === folderId) {
       callbacks.setActiveFolder(null); // This already calls renderNotesDashboard internally
@@ -147,27 +171,83 @@ export function wireFolderButtons(state, callbacks) {
     const folderId = event.detail.id;
     if (!folderId) return;
 
-    const currentFolder = state.folders.find((f) => f.id === folderId);
+    const currentFolder = state.folders.find((f) => f.id === folderId || f._id === folderId);
     const currentName = currentFolder ? currentFolder.name : "";
-    const newName = await showPrompt("Rename Folder", currentName, "Save");
-    if (!newName || !newName.trim()) return;
+    const currentColor = currentFolder ? currentFolder.color || "blue" : "blue";
 
-    renameFolder(state.activeUser, folderId, newName.trim());
+    const folderData = await showFolderModal("Edit Folder", currentName, currentColor, "Save");
+    if (!folderData || !folderData.name) return;
+
+    await renameFolder(state.activeUser, folderId, folderData.name, folderData.color);
     if (currentFolder) {
-      currentFolder.name = newName.trim();
+      currentFolder.name = folderData.name;
+      currentFolder.color = folderData.color;
     }
     callbacks.renderFolders();
-    callbacks.renderNotesList(); // if it affects the active view title
-    callbacks.renderNotesDashboard(); // ensure grid reflects rename
+    callbacks.renderNotesList();
+    callbacks.renderNotesDashboard();
+  });
+
+  document.addEventListener("update-folder-color", (event) => {
+    const { id, color } = event.detail;
+    if (!id || !color) return;
+
+    const currentFolder = state.folders.find((f) => f.id === id || f._id === id);
+    if (currentFolder) {
+      currentFolder.color = color;
+      updateFolderColor(state.activeUser, id, color, state.folders);
+      callbacks.renderFolders();
+      callbacks.renderNotesDashboard();
+    }
+  });
+
+  document.addEventListener("update-note-color", (event) => {
+    const { id, color } = event.detail;
+    if (!id || !color) return;
+
+    const note = state.notes.find((n) => n.id === id || n._id === id);
+    if (note) {
+      note.color = color;
+      note.theme = color;
+      if (callbacks.persistNotes) callbacks.persistNotes();
+      if (callbacks.saveSingleNote) callbacks.saveSingleNote(note);
+      callbacks.renderNotesDashboard();
+    }
+  });
+
+  document.addEventListener("move-note-to-folder", async (event) => {
+    const { noteId, folderId } = event.detail;
+    if (!noteId) return;
+
+    const note = state.notes.find((n) => n.id === noteId || n._id === noteId);
+    if (note) {
+      note.folderId = folderId || null;
+      note.updatedAt = new Date().toISOString();
+      if (state.activeUser && state.activeUser !== 'guest') {
+        await saveSingleNote(state.activeUser, note);
+      }
+      showToast(folderId ? "Moved note to folder" : "Moved note to root workspace", "success");
+      callbacks.renderNotesDashboard();
+      callbacks.renderFolders();
+      callbacks.renderNotesList();
+    }
   });
 }
 
 // Moves a note to a specified folder and updates its timestamp
-export function moveNoteToFolder(noteId, folderId, notes) {
-  const note = notes.find((n) => n.id === noteId);
+export async function moveNoteToFolder(noteId, folderId, notes, activeUser, callbacks) {
+  const note = notes.find((n) => n.id === noteId || n._id === noteId);
   if (note) {
-    note.folderId = folderId;
+    note.folderId = folderId || null;
     note.updatedAt = new Date().toISOString();
+    if (activeUser && activeUser !== 'guest') {
+      await saveSingleNote(activeUser, note);
+    }
+    if (callbacks) {
+      if (callbacks.renderNotesList) callbacks.renderNotesList();
+      if (callbacks.renderNotesDashboard) callbacks.renderNotesDashboard();
+      if (callbacks.renderFolders) callbacks.renderFolders();
+    }
   }
 }
 

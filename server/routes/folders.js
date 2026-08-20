@@ -26,10 +26,32 @@ router.post('/', ensureAuth, async (req, res) => {
   try {
     const newFolder = new Folder({
       name: req.body.name,
+      color: req.body.color || 'blue',
       id: req.body.id, // Capture client UUID
       userId: req.user.id
     });
     const folder = await newFolder.save();
+    res.json(folder);
+  } catch (err) {
+    res.status(500).send('Server Error');
+  }
+});
+
+// @desc    Update a folder (name and/or color)
+// @route   PUT /api/folders/:id
+router.put('/:id', ensureAuth, async (req, res) => {
+  try {
+    let folder = await Folder.findOne({ id: req.params.id, userId: req.user.id });
+    if (!folder) {
+      folder = await Folder.findById(req.params.id);
+    }
+    if (!folder) return res.status(404).json({ msg: 'Folder not found' });
+    if (folder.userId.toString() !== req.user.id) return res.status(401).json({ msg: 'Not authorized' });
+
+    if (req.body.name !== undefined) folder.name = req.body.name;
+    if (req.body.color !== undefined) folder.color = req.body.color;
+
+    await folder.save();
     res.json(folder);
   } catch (err) {
     res.status(500).send('Server Error');

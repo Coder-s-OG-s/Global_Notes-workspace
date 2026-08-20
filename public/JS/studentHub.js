@@ -39,17 +39,26 @@ let savedFlowcharts = [];
 let activeFlowchartId = null;
 let activeTab = 'flashcards'; // 'flashcards', 'schedule', or 'flowcharts'
 
-async function saveState() {
-    // Write local storage as fallback/guest backup
-    localStorage.setItem(STORAGE_DECKS_KEY, JSON.stringify(savedDecks));
-    localStorage.setItem(STORAGE_ACTIVE_DECK_ID_KEY, activeDeckId || '');
-    localStorage.setItem(STORAGE_SCHEDULES_KEY, JSON.stringify(savedSchedules));
-    localStorage.setItem(STORAGE_ACTIVE_SCHEDULE_ID_KEY, activeScheduleId || '');
-    localStorage.setItem(STORAGE_FLOWCHARTS_LIST_KEY, JSON.stringify(savedFlowcharts));
-    localStorage.setItem(STORAGE_ACTIVE_FLOWCHART_ID_KEY, activeFlowchartId || '');
-    localStorage.setItem(STORAGE_FLOWCHART_SHAPES_KEY, JSON.stringify(shapes));
+function purgeStudentHubLocalStorage() {
+    try {
+        const keys = [
+            STORAGE_DECKS_KEY,
+            STORAGE_ACTIVE_DECK_ID_KEY,
+            STORAGE_SCHEDULES_KEY,
+            STORAGE_ACTIVE_SCHEDULE_ID_KEY,
+            STORAGE_SCHEDULE_KEY,
+            STORAGE_FLOWCHARTS_LIST_KEY,
+            STORAGE_ACTIVE_FLOWCHART_ID_KEY,
+            STORAGE_FLOWCHART_SHAPES_KEY
+        ];
+        keys.forEach(k => localStorage.removeItem(k));
+    } catch (e) {}
+}
 
-    // If authenticated user is logged in, sync state to MongoDB database
+async function saveState() {
+    purgeStudentHubLocalStorage();
+
+    // If authenticated user is logged in, sync state directly to MongoDB database
     if (currentUser) {
         try {
             await fetch('/api/student-hub', {
@@ -1371,12 +1380,12 @@ function renderLibraryDecks(query = '') {
 
     if (!savedDecks || savedDecks.length === 0) {
         gridEl.innerHTML = `
-            <div class="empty-library-prompt" style="grid-column: span 2; padding: 24px; text-align: center; background: #f8fafc; border: 1.5px dashed #cbd5e1; border-radius: 20px;">
+            <div class="empty-library-prompt" style="grid-column: span 2; padding: 24px; text-align: center; background: var(--surface-2, #18181b); border: 1.5px dashed var(--border-light, rgba(255, 255, 255, 0.14)); border-radius: 20px;">
                 <div style="display: flex; justify-content: center; margin-bottom: 8px;">
-                    <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="#6366f1" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+                    <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="#f59e0b" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
                 </div>
-                <div style="font-weight: 800; font-size: 14px; color: #0f172a;">No Study Decks Created Yet</div>
-                <div style="font-size: 12px; color: #64748b; margin-top: 4px;">Upload notes or enter a topic above to generate your first deck!</div>
+                <div style="font-weight: 800; font-size: 14px; color: var(--text, #f8fafc);">No Study Decks Created Yet</div>
+                <div style="font-size: 12px; color: var(--text-dim, #94a3b8); margin-top: 4px;">Upload notes or enter a topic above to generate your first deck!</div>
             </div>
         `;
         if (learnedCardsEl) learnedCardsEl.textContent = '0 cards';
@@ -1386,8 +1395,8 @@ function renderLibraryDecks(query = '') {
 
     if (filteredDecks.length === 0) {
         gridEl.innerHTML = `
-            <div class="empty-library-prompt" style="grid-column: span 2; padding: 20px; text-align: center; background: #f8fafc; border: 1.5px dashed #cbd5e1; border-radius: 20px;">
-                <div style="font-weight: 700; font-size: 13px; color: #64748b;">No decks match "${escapeHtml(query)}"</div>
+            <div class="empty-library-prompt" style="grid-column: span 2; padding: 20px; text-align: center; background: var(--surface-2, #18181b); border: 1.5px dashed var(--border-light, rgba(255, 255, 255, 0.14)); border-radius: 20px;">
+                <div style="font-weight: 700; font-size: 13px; color: var(--text-dim, #94a3b8);">No decks match "${escapeHtml(query)}"</div>
             </div>
         `;
     }
@@ -1602,117 +1611,58 @@ async function syncDeckToFlashcardsGG() {
     }
 }
 
-function getCartoonSvgForTemplate(templateName, idx) {
-    const seed = idx || 0;
-    const colors = [
-        { main: '#2563eb', sec: '#ef4444', acc: '#f59e0b', bg: '#fef3c7' },
-        { main: '#7c3aed', sec: '#ec4899', acc: '#06b6d4', bg: '#e0e7ff' },
-        { main: '#059669', sec: '#10b981', acc: '#34d399', bg: '#dcfce7' },
-        { main: '#ea580c', sec: '#f97316', acc: '#fbbf24', bg: '#ffedd5' }
-    ];
-    const c = colors[seed % colors.length];
-
-    if (templateName === 'cyberpunk') {
-        return `<svg viewBox="0 0 300 130" style="width:100%;height:100%;display:block;border-radius:18px 18px 0 0;" preserveAspectRatio="none">
-            <defs>
-                <linearGradient id="cybGrad_${seed}" x1="0" y1="0" x2="1" y2="1">
-                    <stop offset="0%" stop-color="#4c1d95"/>
-                    <stop offset="100%" stop-color="#7c3aed"/>
-                </linearGradient>
-            </defs>
-            <rect width="300" height="130" fill="url(#cybGrad_${seed})"/>
-            <circle cx="50" cy="65" r="35" fill="#06b6d4" opacity="0.4"/>
-            <circle cx="250" cy="65" r="35" fill="#f43f5e" opacity="0.4"/>
-            <!-- Bright White High-Contrast Neon Cyber Robot Mascot Face -->
-            <g transform="translate(115, 12)">
-                <rect x="0" y="0" width="70" height="80" rx="20" fill="#ffffff" stroke="#0f172a" stroke-width="4"/>
-                <rect x="10" y="18" width="50" height="24" rx="10" fill="#ec4899"/>
-                <circle cx="22" cy="30" r="6" fill="#fde047"/>
-                <circle cx="48" cy="30" r="6" fill="#fde047"/>
-                <rect x="20" y="54" width="30" height="8" rx="4" fill="#06b6d4"/>
-                <circle cx="-12" cy="40" r="10" fill="#06b6d4" stroke="#0f172a" stroke-width="3"/>
-                <circle cx="82" cy="40" r="10" fill="#06b6d4" stroke="#0f172a" stroke-width="3"/>
-                <path d="M-12 40 Q35 0 82 40" fill="none" stroke="#f43f5e" stroke-width="4"/>
-            </g>
-        </svg>`;
-    }
-
-    if (templateName === 'cosmic') {
-        return `<svg viewBox="0 0 300 130" style="width:100%;height:100%;display:block;border-radius:18px 18px 0 0;" preserveAspectRatio="none">
-            <defs>
-                <linearGradient id="cosGrad_${seed}" x1="0" y1="0" x2="1" y2="1">
-                    <stop offset="0%" stop-color="#1e1b4b"/>
-                    <stop offset="100%" stop-color="#312e81"/>
-                </linearGradient>
-            </defs>
-            <rect width="300" height="130" fill="url(#cosGrad_${seed})"/>
-            <circle cx="45" cy="30" r="3" fill="#ffffff"/>
-            <circle cx="255" cy="35" r="4" fill="#fde047"/>
-            <circle cx="235" cy="95" r="3" fill="#ffffff"/>
-            <circle cx="55" cy="105" r="3" fill="#60a5fa"/>
-            <circle cx="40" cy="90" r="16" fill="#f59e0b"/>
-            <ellipse cx="40" cy="90" rx="26" ry="6" fill="none" stroke="#fbbf24" stroke-width="3" transform="rotate(-20 40 90)"/>
-            <!-- Bright White Astronaut Helmet Mascot -->
-            <g transform="translate(115, 10)">
-                <circle cx="35" cy="45" r="38" fill="#ffffff" stroke="#0f172a" stroke-width="4"/>
-                <ellipse cx="35" cy="42" rx="26" ry="16" fill="#0f172a"/>
-                <ellipse cx="28" cy="36" rx="9" ry="5" fill="#38bdf8" opacity="0.9"/>
-                <rect x="20" y="74" width="30" height="10" rx="5" fill="#ef4444"/>
-            </g>
-        </svg>`;
-    }
-
-    if (templateName === 'minimal') {
-        return `<svg viewBox="0 0 300 130" style="width:100%;height:100%;display:block;border-radius:18px 18px 0 0;" preserveAspectRatio="none">
-            <rect width="300" height="130" fill="${c.bg}"/>
-            <circle cx="60" cy="65" r="40" fill="${c.sec}" opacity="0.3"/>
-            <circle cx="240" cy="65" r="40" fill="${c.main}" opacity="0.3"/>
-            <!-- Bright White Minimal Mascot -->
-            <g transform="translate(115, 15)">
-                <rect x="0" y="0" width="70" height="70" rx="24" fill="#ffffff" stroke="#0f172a" stroke-width="4"/>
-                <circle cx="20" cy="28" r="8" fill="${c.main}"/>
-                <circle cx="50" cy="28" r="8" fill="${c.main}"/>
-                <circle cx="22" cy="28" r="4" fill="#ffffff"/>
-                <circle cx="52" cy="28" r="4" fill="#ffffff"/>
-                <path d="M22 46 Q35 58 48 46" fill="none" stroke="#0f172a" stroke-width="4" stroke-linecap="round"/>
-            </g>
-        </svg>`;
-    }
-
-    if (templateName === 'pixel') {
-        return `<svg viewBox="0 0 300 130" style="width:100%;height:100%;display:block;border-radius:18px 18px 0 0;" preserveAspectRatio="none">
-            <rect width="300" height="130" fill="#312e81"/>
-            <!-- Bright 8-Bit Pixel Character Avatar -->
-            <g transform="translate(115, 15)">
-                <rect x="15" y="5" width="40" height="10" fill="#ef4444"/>
-                <rect x="5" y="15" width="60" height="45" fill="#f59e0b"/>
-                <rect x="15" y="25" width="10" height="10" fill="#0f172a"/>
-                <rect x="45" y="25" width="10" height="10" fill="#0f172a"/>
-                <rect x="25" y="27" width="4" height="4" fill="#38bdf8"/>
-                <rect x="55" y="27" width="4" height="4" fill="#38bdf8"/>
-                <rect x="20" y="45" width="30" height="8" fill="#0f172a"/>
-                <rect x="10" y="60" width="50" height="20" fill="#2563eb"/>
-            </g>
-        </svg>`;
-    }
-
-    // Default: Cubist Picasso Abstract Art (1:1 matching user reference image!)
-    return `<svg viewBox="0 0 300 130" style="width:100%;height:100%;display:block;border-radius:18px 18px 0 0;" preserveAspectRatio="none">
-        <rect width="300" height="130" fill="${c.bg}"/>
-        <path d="M0 0 L150 0 L110 130 L0 130 Z" fill="${c.sec}"/>
-        <path d="M150 0 L300 0 L300 130 L110 130 Z" fill="${c.main}"/>
-        <!-- Picasso Abstract Face Avatar (Bright, Crisp & 100% Visible!) -->
-        <g transform="translate(115, 12)">
-            <rect x="0" y="0" width="70" height="85" rx="20" fill="#ffffff" stroke="#0f172a" stroke-width="4"/>
-            <path d="M0 0 Q35 30 70 0 L70 45 Z" fill="${c.acc}"/>
-            <circle cx="24" cy="38" r="13" fill="#0f172a"/>
-            <circle cx="24" cy="38" r="5" fill="#38bdf8"/>
             <polygon points="46,26 62,44 42,44" fill="#ef4444"/>
             <rect x="18" y="60" width="34" height="12" rx="4" fill="#0f172a"/>
             <line x1="29" y1="60" x2="29" y2="72" stroke="#ffffff" stroke-width="2.5"/>
             <line x1="41" y1="60" x2="41" y2="72" stroke="#ffffff" stroke-width="2.5"/>
         </g>
     </svg>`;
+=======
+function getTopicSymbolSvg(category, question, topicName) {
+    const text = `${category || ''} ${question || ''} ${topicName || ''}`.toLowerCase();
+    
+    if (text.match(/ortho|bone|joint|skelet|fracture/)) {
+        return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.5 2.5 0 0 1 2.5 2.5c0 .64-.24 1.22-.64 1.66.4.44.64 1.02.64 1.66A2.5 2.5 0 0 1 17 11.5L7 21.5a2.5 2.5 0 0 1-3.5-3.5L13.5 8c-.4-.44-.64-1.02-.64-1.66A2.5 2.5 0 0 1 15.36 3.86C15.8 3.46 16.38 3 17 3z"/></svg>`;
+    }
+    if (text.match(/msk|muscle|bicep|workout|fitness|gym/)) {
+        return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 12c-1.5 0-3-1.5-3-3s1.5-3 3-3c2 0 4 1 5 3 1-2 3-3 5-3 1.5 0 3 1.5 3 3s-1.5 3-3 3M6 12v6a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2v-6"/></svg>`;
+    }
+    if (text.match(/cardio|heart|pulse|ecg|blood|vascul/)) {
+        return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/><path d="M3.5 12h4l2.5-4 3 8 2.5-4h5"/></svg>`;
+    }
+    if (text.match(/respirat|lung|breath|asthma|oxygen/)) {
+        return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v8M12 12c-2.5-2.5-6-3-8-1s-1 6.5 1.5 9c2.5 2.5 6.5 2 6.5-1v-7ZM12 12c2.5-2.5 6-3 8-1s1 6.5-1.5 9-6.5 2-6.5-1v-7Z"/></svg>`;
+    }
+    if (text.match(/neuro|brain|mind|nerve|psych|synapse/)) {
+        return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-4.96.44 2.5 2.5 0 0 1-2.96-3.08 3 3 0 0 1-.34-5.58 2.5 2.5 0 0 1 1.32-4.24 2.5 2.5 0 0 1 4.44-4.04Z"/><path d="M14.5 2A2.5 2.5 0 0 0 12 4.5v15a2.5 2.5 0 0 0 4.96.44 2.5 2.5 0 0 0 2.96-3.08 3 3 0 0 0 .34-5.58 2.5 2.5 0 0 0-1.32-4.24 2.5 2.5 0 0 0-4.44-4.04Z"/></svg>`;
+    }
+    if (text.match(/pharm|drug|pill|capsule|medicin|dose/)) {
+        return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m10.5 20.5 10-10a4.95 4.95 0 1 0-7-7l-10 10a4.95 4.95 0 1 0 7 7Z"/><path d="m8.5 8.5 7 7"/></svg>`;
+    }
+    if (text.match(/paediatr|pediatr|baby|child|infant/)) {
+        return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 0 0-16 0"/><path d="M12 13v3"/></svg>`;
+    }
+    if (text.match(/\bgi\b|stomach|gastro|digest|gut/)) {
+        return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v6c0 3.5 2 6 5.5 6 3 0 4.5-2 4.5-5V7c0-2-1.5-3.5-3.5-3.5H16M12 2v4c-3.5 0-6 2.5-6 6 0 4.5 3 8 7.5 8 4 0 6.5-2.5 6.5-6v-2"/></svg>`;
+    }
+    if (text.match(/renal|kidney|nephro|urine/)) {
+        return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3C4.2 3 2 5.5 2 8.5c0 4.5 4 8.5 7 12 1.5 1.7 3.5 1.7 5 0 3-3.5 7-7.5 7-12C21 5.5 18.8 3 16 3c-2.2 0-4 1.5-5 3.5C10 4.5 8.2 3 7 3Z"/></svg>`;
+    }
+    if (text.match(/bio|photo|plant|leaf|cell|organism|gene|dna/)) {
+        return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg>`;
+    }
+    if (text.match(/math|calc|algebra|trig|equation|number|stat/)) {
+        return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19h6M14 5h6M7 5l10 14M17 5L7 19"/></svg>`;
+    }
+    if (text.match(/code|js|python|dev|program|script|function|html|css/)) {
+        return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>`;
+    }
+    if (text.match(/physic|chem|atom|matter|electron|force|energy/)) {
+        return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="2"/><ellipse cx="12" cy="12" rx="10" ry="4"/><ellipse cx="12" cy="12" rx="10" ry="4" transform="rotate(60 12 12)"/><ellipse cx="12" cy="12" rx="10" ry="4" transform="rotate(120 12 12)"/></svg>`;
+    }
+
+    return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3z"/></svg>`;
+>>>>>>> official/main
 }
 
 function renderFlashcards(cards) {
@@ -1732,6 +1682,9 @@ function renderFlashcards(cards) {
     placeholder.classList.add('hidden');
     grid.classList.remove('hidden');
     header.classList.remove('hidden');
+
+    const activeDeck = savedDecks.find(d => d.id === activeDeckId);
+    const activeDeckName = activeDeck ? activeDeck.name : 'Study Deck';
 
     cards.forEach((card, idx) => {
         const themeIdx = card.themeIdx !== undefined ? card.themeIdx : (idx % CARD_THEMES.length);
@@ -1760,35 +1713,37 @@ function renderFlashcards(cards) {
                 </div>
             </div>
         ` : '';
-        const cartoonSvgMarkup = getCartoonSvgForTemplate(activeCartoonTemplate, idx);
+        const topicSymbolSvg = getTopicSymbolSvg(card.category, card.question, activeDeckName);
 
         cardEl.innerHTML = `
             <div class="flashcard-inner">
                 <div class="flashcard-stack-layer layer-back-2"></div>
                 <div class="flashcard-stack-layer layer-back-1"></div>
                 <div class="flashcard-front">
-                    <!-- Hero Cartoon Cover Art Box at Top -->
-                    <div class="card-hero-illustration-box" style="position: relative; width: 100%; height: 130px; border-radius: 18px 18px 0 0; overflow: hidden; margin-bottom: 14px; flex-shrink: 0;">
-                        ${cartoonSvgMarkup}
-                        <div class="card-folder-tab-badge" style="position: absolute; top: 10px; left: 12px; z-index: 5;">
-                            <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 16 14"/></svg>
-                            <span>${escapeHtml(card.category || 'General')}</span>
+                    <!-- Top Title Header Row -->
+                    <div class="card-top-header" style="padding: 14px 16px 4px 16px; display: flex; align-items: flex-start; justify-content: space-between; gap: 8px;">
+                        <div class="card-header-titles" style="display: flex; flex-direction: column; gap: 2px; text-align: left;">
+                            <h3 class="card-topic-title" style="margin: 0; font-size: 15px; font-weight: 800; color: #ffffff; letter-spacing: -0.01em; line-height: 1.2;">${escapeHtml(card.category || activeDeckName)}</h3>
+                            <span class="card-meta-subtitle" style="font-size: 11px; font-weight: 600; color: rgba(255, 255, 255, 0.85);">${idx + 1} of ${cards.length} cards</span>
                         </div>
-                        <span class="flashcard-index-label" style="position: absolute; bottom: 10px; left: 12px; z-index: 5; background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(4px); color: #fff; padding: 3px 10px; border-radius: 12px; font-size: 10.5px; font-weight: 800;">${idx + 1} / ${cards.length}</span>
+                        ${card.mastered ? `
+                            <div class="flashcard-mastered-badge" style="background: rgba(255, 255, 255, 0.25); backdrop-filter: blur(8px); color: #ffffff; padding: 2px 8px; border-radius: 10px; font-size: 10px; font-weight: 800; border: 1px solid rgba(255, 255, 255, 0.3);">
+                                ✓ Got it
+                            </div>
+                        ` : ''}
                     </div>
 
-                    ${card.mastered ? `
-                        <div class="flashcard-mastered-badge" style="position: absolute; top: 10px; left: 140px; z-index: 6;">
-                            ✓ Got It
-                        </div>
-                    ` : ''}
-
-                    <!-- Question Only Body Container (Clean & Focused) -->
-                    <div class="card-body-content" style="width: 100%; display: flex; align-items: center; justify-content: center; flex: 1; padding: 10px 24px 20px 24px; box-sizing: border-box;">
-                        <div class="flashcard-question-text" style="font-size: 15px; font-weight: 700; line-height: 1.6; color: var(--text, #0f172a); text-align: left; margin: 0;">${renderSafeHtml(stripEmojis(card.question))}</div>
+                    <!-- Question Body Container -->
+                    <div class="card-body-content" style="width: 100%; display: flex; align-items: center; justify-content: flex-start; flex: 1; padding: 4px 16px 32px 16px; box-sizing: border-box; text-align: left;">
+                        <div class="flashcard-question-text" style="font-size: 13.5px; font-weight: 600; line-height: 1.5; color: #ffffff; margin: 0; text-shadow: 0 1px 2px rgba(0,0,0,0.15);">${renderSafeHtml(stripEmojis(card.question))}</div>
                     </div>
 
-                    <!-- Floating Circle Actions Top-Right Inside Card -->
+                    <!-- Topic 3D Embossed Symbol Icon at Bottom-Right Corner -->
+                    <div class="card-topic-symbol-badge" title="${escapeHtml(card.category || 'Topic')}" style="position: absolute; bottom: 10px; right: 12px; width: 46px; height: 46px; opacity: 0.3; color: #ffffff; pointer-events: none; display: flex; align-items: center; justify-content: center; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));">
+                        ${topicSymbolSvg}
+                    </div>
+
+                    <!-- Floating Circle Actions -->
                     <div class="card-floating-actions">
                         <button class="circle-action-btn btn-flip-card" title="Flip Card">
                             <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
@@ -2230,23 +2185,6 @@ function toggleScheduleTask(itemIdx, lineIdx, isChecked) {
             activeSched.items[itemIdx].checkedTasks[lineIdx] = isChecked;
             saveState();
         }
-    } else {
-        // Fallback for unsaved/legacy items
-        const stored = localStorage.getItem(STORAGE_SCHEDULE_KEY);
-        if (!stored) return;
-        try {
-            const schedule = JSON.parse(stored);
-            if (!schedule[itemIdx]) return;
-            
-            if (!schedule[itemIdx].checkedTasks) {
-                schedule[itemIdx].checkedTasks = [];
-            }
-            schedule[itemIdx].checkedTasks[lineIdx] = isChecked;
-
-            localStorage.setItem(STORAGE_SCHEDULE_KEY, JSON.stringify(schedule));
-        } catch (e) {
-            console.error(e);
-        }
     }
 }
 
@@ -2260,136 +2198,55 @@ function toggleLeetCodeTask(itemIdx, problemIdx, isChecked) {
             activeSched.items[itemIdx].checkedLeetCode[problemIdx] = isChecked;
             saveState();
         }
-    } else {
-        const stored = localStorage.getItem(STORAGE_SCHEDULE_KEY);
-        if (!stored) return;
-        try {
-            const schedule = JSON.parse(stored);
-            if (!schedule[itemIdx]) return;
-            
-            if (!schedule[itemIdx].checkedLeetCode) {
-                schedule[itemIdx].checkedLeetCode = [];
-            }
-            schedule[itemIdx].checkedLeetCode[problemIdx] = isChecked;
-
-            localStorage.setItem(STORAGE_SCHEDULE_KEY, JSON.stringify(schedule));
-        } catch (e) {
-            console.error(e);
-        }
     }
 }
 // ─── LOCAL STORAGE & DATABASE LOADER ───
 async function loadSavedState() {
+    purgeStudentHubLocalStorage();
+
     try {
         currentUser = await getCurrentUser();
     } catch (e) {
         currentUser = null;
     }
 
-    let loadedFromDb = false;
-
     if (currentUser) {
         try {
             const res = await fetch('/api/student-hub');
             if (res.ok) {
                 const data = await res.json();
-                if (data && (data.decks?.length || data.schedules?.length || data.flowcharts?.length)) {
-                    savedDecks = data.decks || [];
-                    activeDeckId = data.activeDeckId || null;
-                    savedSchedules = data.schedules || [];
-                    activeScheduleId = data.activeScheduleId || null;
-                    savedFlowcharts = data.flowcharts || [];
-                    activeFlowchartId = data.activeFlowchartId || null;
-                    loadedFromDb = true;
+                const rawDecks = Array.isArray(data?.decks) ? data.decks : [];
+                // Filter out any legacy hardcoded sample decks (e.g. Photosynthesis, Intro to Calculus)
+                savedDecks = rawDecks.filter(d => d && d.name && !d.name.toLowerCase().includes('photosynthes') && !d.name.toLowerCase().includes('calculus') && !['deck_calc_1', 'deck_lecture_1', 'deck_syllabus_1', 'deck_cell_div_1'].includes(d.id));
+                activeDeckId = data?.activeDeckId && savedDecks.some(d => d.id === data.activeDeckId) ? data.activeDeckId : (savedDecks.length > 0 ? savedDecks[0].id : null);
+
+                savedSchedules = Array.isArray(data?.schedules) ? data.schedules : [];
+                activeScheduleId = data?.activeScheduleId || (savedSchedules.length > 0 ? savedSchedules[0].id : null);
+                savedFlowcharts = Array.isArray(data?.flowcharts) ? data.flowcharts : [];
+                activeFlowchartId = data?.activeFlowchartId || (savedFlowcharts.length > 0 ? savedFlowcharts[0].id : null);
+
+                // If legacy sample data was present in DB, sync cleaned state back to DB immediately
+                if (savedDecks.length !== rawDecks.length) {
+                    saveState();
                 }
             }
         } catch (e) {
-            // quiet fallback
-        }
-    }
-
-    if (!loadedFromDb) {
-        // 1. Load Decks from localStorage
-        try {
-            const storedDecks = localStorage.getItem(STORAGE_DECKS_KEY);
-            if (storedDecks) {
-                savedDecks = JSON.parse(storedDecks);
-            }
-            // Filter out legacy hardcoded sample decks
-            if (Array.isArray(savedDecks)) {
-                savedDecks = savedDecks.filter(d => d && !['deck_calc_1', 'deck_lecture_1', 'deck_syllabus_1', 'deck_cell_div_1'].includes(d.id) && d.name !== 'Intro to Calculus');
-            } else {
-                savedDecks = [];
-            }
-            const storedActiveId = localStorage.getItem(STORAGE_ACTIVE_DECK_ID_KEY);
-            if (storedActiveId && savedDecks.some(d => d.id === storedActiveId)) {
-                activeDeckId = storedActiveId;
-            } else {
-                activeDeckId = savedDecks.length > 0 ? savedDecks[0].id : null;
-            }
-        } catch (e) {
+            console.error("Failed to load Student Hub data from database:", e);
             savedDecks = [];
             activeDeckId = null;
+            savedSchedules = [];
+            activeScheduleId = null;
+            savedFlowcharts = [];
+            activeFlowchartId = null;
         }
-
-        // 2. Load Schedules from localStorage
-        try {
-            console.log("Loading study schedules from localStorage...");
-            const storedSchedules = localStorage.getItem(STORAGE_SCHEDULES_KEY);
-            if (storedSchedules) {
-                savedSchedules = JSON.parse(storedSchedules);
-            }
-            const storedActiveScheduleId = localStorage.getItem(STORAGE_ACTIVE_SCHEDULE_ID_KEY);
-            if (storedActiveScheduleId) {
-                activeScheduleId = storedActiveScheduleId;
-            } else if (savedSchedules.length > 0) {
-                activeScheduleId = savedSchedules[0].id;
-            }
-            if (!activeScheduleId) {
-                const savedSchedule = localStorage.getItem(STORAGE_SCHEDULE_KEY);
-                if (savedSchedule) {
-                    try {
-                        const schedule = JSON.parse(savedSchedule);
-                        if (Array.isArray(schedule) && schedule.length) {
-                            const migratedId = "legacy_" + Date.now().toString();
-                            const migratedSchedule = {
-                                id: migratedId,
-                                name: "Legacy Study Plan",
-                                timestamp: Date.now(),
-                                examDate: "",
-                                items: schedule
-                            };
-                            savedSchedules.push(migratedSchedule);
-                            activeScheduleId = migratedId;
-                            localStorage.setItem(STORAGE_SCHEDULES_KEY, JSON.stringify(savedSchedules));
-                            localStorage.setItem(STORAGE_ACTIVE_SCHEDULE_ID_KEY, activeScheduleId);
-                            localStorage.removeItem(STORAGE_SCHEDULE_KEY);
-                        }
-                    } catch (e) {
-                        console.error("Failed to parse legacy schedule:", e);
-                    }
-                }
-            }
-        } catch (e) {
-            console.error("Failed to load schedules from localStorage:", e);
-        }
-
-        // 3. Load Flowcharts from localStorage
-        try {
-            console.log("Loading flowchart state from localStorage...");
-            const storedFlowcharts = localStorage.getItem(STORAGE_FLOWCHARTS_LIST_KEY);
-            if (storedFlowcharts) {
-                savedFlowcharts = JSON.parse(storedFlowcharts);
-            }
-            const storedActiveFlowchartId = localStorage.getItem(STORAGE_ACTIVE_FLOWCHART_ID_KEY);
-            if (storedActiveFlowchartId) {
-                activeFlowchartId = storedActiveFlowchartId;
-            } else if (savedFlowcharts.length > 0) {
-                activeFlowchartId = savedFlowcharts[0].id;
-            }
-        } catch (e) {
-            console.error("Failed to load flowchart state from localStorage:", e);
-        }
+    } else {
+        // Unauthenticated / Guest state: 0 data, no LocalStorage fallback
+        savedDecks = [];
+        activeDeckId = null;
+        savedSchedules = [];
+        activeScheduleId = null;
+        savedFlowcharts = [];
+        activeFlowchartId = null;
     }
 
     // Render active views based on loaded state

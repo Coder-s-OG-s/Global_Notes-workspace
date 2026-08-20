@@ -29,6 +29,7 @@ function sanitizeNotePayload(body) {
   if (typeof body.content === 'string') allowed.content = body.content.substring(0, 500000); // 500 KB limit per note
   if (Array.isArray(body.tags)) allowed.tags = body.tags.filter(t => typeof t === 'string').map(t => t.substring(0, 50));
   if (body.folderId !== undefined) allowed.folderId = body.folderId ? String(body.folderId) : null;
+  if (typeof body.color === 'string') allowed.color = body.color.substring(0, 50);
   if (typeof body.theme === 'string') allowed.theme = body.theme.substring(0, 50);
   if (typeof body.editorPattern === 'string') allowed.editorPattern = body.editorPattern.substring(0, 50);
   if (typeof body.isFavorite === 'boolean') allowed.isFavorite = body.isFavorite;

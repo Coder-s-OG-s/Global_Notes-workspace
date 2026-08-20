@@ -661,16 +661,16 @@ html[data-theme="minimal-white"] { --calendar-invert: 0.1; }
 /* --- 3D Flippable Stacked Folder Deck Flashcard Layout --- */
 .flashcards-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(330px, 1fr));
-  gap: 32px;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 20px;
   animation: fadeIn 0.4s ease both;
-  padding-top: 12px;
+  padding-top: 8px;
 }
 
 .flashcard {
   perspective: 1200px;
-  min-height: 380px;
-  height: 100%;
+  min-height: 220px;
+  height: 220px;
   cursor: pointer;
   position: relative;
   transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
@@ -679,8 +679,8 @@ html[data-theme="minimal-white"] { --calendar-invert: 0.1; }
 .flashcard-inner {
   position: relative;
   width: 100%;
-  min-height: 380px;
-  height: 100%;
+  min-height: 220px;
+  height: 220px;
   text-align: center;
   transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
   transform-style: preserve-3d;
@@ -691,42 +691,42 @@ html[data-theme="minimal-white"] { --calendar-invert: 0.1; }
 }
 
 .flashcard:hover {
-  transform: translateY(-6px) scale(1.01);
+  transform: translateY(-5px) scale(1.01);
 }
 
-/* Stacked Card Sheets Behind Main Card (Folder Deck Effect) */
+/* Stacked Card Sheets Behind Main Card (3D Folder Deck Effect) */
 .flashcard-stack-layer {
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
   height: 100%;
-  border-radius: 24px;
-  background-color: var(--surface, #ffffff);
-  border: 1px solid var(--border, #e2e8f0);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+  border-radius: 20px;
+  background-color: var(--surface-2, #1e293b);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
   pointer-events: none;
   transition: transform 0.3s ease, opacity 0.3s ease;
 }
 
 .layer-back-2 {
-  transform: translate(12px, -12px) rotate(2.5deg);
-  opacity: 0.6;
+  transform: translateY(-8px) scale(0.94);
+  opacity: 0.5;
   z-index: 1;
 }
 
 .layer-back-1 {
-  transform: translate(6px, -6px) rotate(1.2deg);
-  opacity: 0.85;
+  transform: translateY(-4px) scale(0.97);
+  opacity: 0.8;
   z-index: 2;
 }
 
 .flashcard:hover .layer-back-2 {
-  transform: translate(16px, -16px) rotate(4deg);
+  transform: translateY(-12px) scale(0.95);
 }
 
 .flashcard:hover .layer-back-1 {
-  transform: translate(8px, -8px) rotate(2deg);
+  transform: translateY(-6px) scale(0.98);
 }
 
 .flashcard-front,
@@ -736,10 +736,10 @@ html[data-theme="minimal-white"] { --calendar-invert: 0.1; }
   left: 0;
   width: 100%;
   height: 100%;
-  min-height: 380px;
+  min-height: 220px;
   -webkit-backface-visibility: hidden;
   backface-visibility: hidden;
-  border-radius: 24px;
+  border-radius: 20px;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
@@ -747,28 +747,27 @@ html[data-theme="minimal-white"] { --calendar-invert: 0.1; }
   align-items: stretch;
   overflow: hidden;
   z-index: 3;
-  box-shadow: 0 10px 32px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.2);
 }
 
 .flashcard-front {
-  background-color: var(--surface, #ffffff);
-  color: var(--text, #0f172a);
-  border: 1px solid var(--border, #e2e8f0);
-  border-top: 6px solid var(--card-color, #13b5b1);
-  padding: 0 0 16px 0;
-  transition: background-color 0.3s ease, border-color 0.3s ease;
+  background: var(--card-gradient, linear-gradient(135deg, #3b82f6, #1d4ed8));
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 0 0 10px 0;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .flashcard-back {
-  background: var(--card-gradient, linear-gradient(135deg, var(--primary), var(--primary-light)));
+  background: var(--card-gradient, linear-gradient(135deg, #1e293b, #0f172a));
   color: #ffffff !important;
   transform: rotateY(180deg);
-  font-size: 14px;
-  line-height: 1.6;
-  border: none;
+  font-size: 13px;
+  line-height: 1.5;
+  border: 1px solid rgba(255, 255, 255, 0.2);
   font-weight: 400;
   text-align: left;
-  padding: 24px 22px 20px 22px;
+  padding: 16px 16px 14px 16px;
 }
 
 .flashcard-back-content {
@@ -867,10 +866,10 @@ html[data-theme="minimal-white"] { --calendar-invert: 0.1; }
 }
 
 .flashcard-question-text {
-  font-size: 14.5px !important;
-  font-weight: 600 !important;
-  line-height: 1.65 !important;
-  color: var(--text, #0f172a) !important;
+  font-size: 14px !important;
+  font-weight: 700 !important;
+  line-height: 1.6 !important;
+  color: #ffffff !important;
   text-align: left !important;
   margin: 0 !important;
   width: 100% !important;
@@ -878,6 +877,7 @@ html[data-theme="minimal-white"] { --calendar-invert: 0.1; }
   word-break: normal !important;
   overflow-wrap: break-word !important;
   display: block !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
 }
 
 /* Inline Code Snippets & Tags inside Question Text */
@@ -972,8 +972,8 @@ html[data-theme="minimal-white"] { --calendar-invert: 0.1; }
 .circle-action-btn:hover {
   transform: scale(1.12) !important;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.22) !important;
-  background: #6366f1 !important;
-  color: #ffffff !important;
+  background: #f59e0b !important;
+  color: #0f172a !important;
 }
 
 .circle-action-btn.card-mastery-btn.active {
@@ -2768,9 +2768,9 @@ button,
 }
 
 .menu-icon-btn:hover {
-  background: #6366f1 !important;
-  color: #ffffff !important;
-  border-color: #6366f1 !important;
+  background: #f59e0b !important;
+  color: #0f172a !important;
+  border-color: #f59e0b !important;
 }
 
 .library-heading {
@@ -2842,6 +2842,20 @@ button,
   transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
   position: relative;
+}
+
+.my-library-panel .card-corner-icon {
+  color: #f59e0b;
+}
+
+.my-library-panel .pastel-study-card:hover {
+  transform: translateY(-4px) scale(1.02);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.12);
+}
+
+.my-library-panel .pastel-study-card.active-deck {
+  border-color: #f59e0b !important;
+  color: #f59e0b !important;
 }
 
 .card-tilt-left {
@@ -3400,8 +3414,10 @@ body.dark-mode .source-card-desc {
 [data-theme="corporate-gray"] .tab-btn.active,
 [data-theme*="dark"] .tab-btn.active,
 body.dark-mode .tab-btn.active {
-  background-color: #6366f1 !important;
-  color: #ffffff !important;
+  background-color: #f59e0b !important;
+  color: #0f172a !important;
+  font-weight: 800 !important;
+  box-shadow: 0 4px 14px rgba(245, 158, 11, 0.3) !important;
 }
 
 [data-theme="amoled-dark"] .youtube-paste-bar,
@@ -3963,7 +3979,7 @@ body.dark-mode .circle-action-btn {
 [data-theme="amoled-dark"] .circle-action-btn:hover,
 [data-theme*="dark"] .circle-action-btn:hover,
 body.dark-mode .circle-action-btn:hover {
-  background-color: #6366f1 !important;
+  background-color: #f59e0b !important;
   color: #ffffff !important;
 }
 
