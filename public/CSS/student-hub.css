@@ -2694,9 +2694,11 @@ html[data-theme="nature-green"] {
   background: #ffffff !important;
   border-radius: 28px !important;
   border: 1px solid #e0e7ff !important;
-  padding: 24px !important;
+  padding: 20px !important;
   box-shadow: 0 10px 30px rgba(99, 102, 241, 0.05) !important;
-  max-height: calc(100vh - 100px) !important;
+  height: 100% !important;
+  max-height: 100% !important;
+  box-sizing: border-box !important;
   overflow-y: auto !important;
 }
 
@@ -2977,9 +2979,10 @@ button,
   background: #ffffff !important;
   border-radius: 28px !important;
   border: 1px solid #e0e7ff !important;
-  padding: 24px !important;
+  padding: 20px !important;
   box-shadow: 0 10px 30px rgba(99, 102, 241, 0.05) !important;
-  max-height: calc(100vh - 100px) !important;
+  height: 100% !important;
+  max-height: 100% !important;
   overflow-y: auto !important;
   display: flex !important;
   flex-direction: column !important;
@@ -3034,15 +3037,20 @@ button,
 }
 
 .mockup-source-grid .source-card-btn {
-  background: #f8fafc !important;
-  border: 1px solid #f1f5f9 !important;
+  background: var(--surface-2, #1e293b) !important;
+  border: 1px solid var(--border-light, rgba(255, 255, 255, 0.12)) !important;
   border-radius: 20px !important;
   padding: 16px !important;
 }
 
 .mockup-source-grid .source-card-btn:hover {
-  background: #f1f5f9 !important;
-  border-color: #cbd5e1 !important;
+  background: var(--surface-3, #334155) !important;
+  border-color: #facc15 !important;
+}
+
+.mockup-source-grid .source-card-btn.active {
+  background: rgba(250, 204, 21, 0.16) !important;
+  border: 1.5px solid #facc15 !important;
 }
 
 .youtube-paste-bar {
