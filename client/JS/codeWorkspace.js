@@ -136,7 +136,7 @@ class CodeWorkspace {
                     if (!btn.querySelector('.lock-badge')) {
                         const badge = document.createElement('div');
                         badge.className = 'lock-badge';
-                        badge.innerHTML = '🔒';
+                        badge.innerHTML = '<svg viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>';
                         btn.appendChild(badge);
                     }
                 }
@@ -369,6 +369,26 @@ Provide ONLY the code. Do NOT wrap it in markdown codeblocks (no \`\`\`), do NOT
         const resizer = document.getElementById('ai-panel-resizer');
         resizer.addEventListener('mousedown', (e) => this.startResizing(e));
 
+        // AI Tools Dropdown Toggle
+        const aiToolsBtn = document.getElementById('ai-tools-dropdown-btn');
+        const aiToolsMenu = document.getElementById('ai-tools-menu');
+        if (aiToolsBtn && aiToolsMenu) {
+            aiToolsBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                aiToolsMenu.classList.toggle('hidden');
+            });
+            document.addEventListener('click', (e) => {
+                if (!aiToolsMenu.contains(e.target) && !aiToolsBtn.contains(e.target)) {
+                    aiToolsMenu.classList.add('hidden');
+                }
+            });
+            aiToolsMenu.querySelectorAll('.ai-menu-item').forEach(item => {
+                item.addEventListener('click', () => {
+                    aiToolsMenu.classList.add('hidden');
+                });
+            });
+        }
+
         // AI Feature Buttons
         const suggestBtn = document.getElementById('ai-suggest-btn');
         if (suggestBtn) suggestBtn.addEventListener('click', () => this.handleAIRequest('suggest'));
@@ -376,10 +396,9 @@ Provide ONLY the code. Do NOT wrap it in markdown codeblocks (no \`\`\`), do NOT
         const explainBtn = document.getElementById('ai-explain-btn');
         if (explainBtn) explainBtn.addEventListener('click', () => this.handleAIRequest('explain'));
 
-        
         const docsBtn = document.getElementById('ai-docs-btn');
         if (docsBtn) docsBtn.addEventListener('click', () => this.handleAIRequest('docs'));
-        
+
         const improveBtn = document.getElementById('ai-improve-btn');
         if (improveBtn) improveBtn.addEventListener('click', () => this.handleAIRequest('improve'));
 

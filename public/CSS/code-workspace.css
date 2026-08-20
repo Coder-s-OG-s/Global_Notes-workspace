@@ -24,12 +24,12 @@ body.code-workspace-page {
     --border-light: rgba(255, 255, 255, 0.15);
     --editor-bg: #111827;
     --editor-gutter: #0f172a;
-    --primary: #6366f1;
-    --primary-rgb: 99, 102, 241;
-    --primary-strong: #4f46e5;
-    --primary-light: #818cf8;
-    --primary-glow: rgba(99, 102, 241, 0.25);
-    --active-bg: rgba(99, 102, 241, 0.15);
+    --primary: #f59e0b;
+    --primary-rgb: 245, 158, 11;
+    --primary-strong: #d97706;
+    --primary-light: #fbbf24;
+    --primary-glow: rgba(245, 158, 11, 0.25);
+    --active-bg: rgba(245, 158, 11, 0.15);
     --shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
     --shadow-lg: 0 10px 40px rgba(0, 0, 0, 0.5);
     --header-bg: rgba(15, 23, 42, 0.85);
@@ -224,8 +224,11 @@ body.code-workspace-page {
 .ai-btn {
     position: relative;
     overflow: hidden;
-    transition: all 0.3s ease;
+    transition: all 0.25s ease;
     border: 1px solid transparent;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 700;
 }
 
 .ai-btn:hover {
@@ -235,13 +238,106 @@ body.code-workspace-page {
 }
 
 .ai-btn svg {
-    width: 16px;
-    height: 16px;
-    transition: transform 0.3s ease;
+    width: 14px;
+    height: 14px;
+    transition: transform 0.2s ease;
 }
 
-.ai-btn:hover svg {
-    transform: scale(1.1) rotate(-10deg);
+/* ── AI Tools Dropdown Styles ── */
+.ai-tools-dropdown-container {
+    position: relative;
+    display: inline-block;
+}
+
+.ai-tools-toggle-btn {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    padding: 7px 14px;
+    background: rgba(30, 41, 59, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 10px;
+    color: var(--text, #f8fafc);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.ai-tools-toggle-btn:hover {
+    background: rgba(51, 65, 85, 0.9);
+    border-color: #f59e0b;
+    color: #f59e0b;
+    box-shadow: 0 4px 14px rgba(245, 158, 11, 0.18);
+}
+
+.ai-tools-toggle-btn .dropdown-chevron {
+    transition: transform 0.2s ease;
+    opacity: 0.7;
+}
+
+.ai-tools-menu {
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 0;
+    width: 210px;
+    background: rgba(15, 23, 42, 0.96);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    border-radius: 14px;
+    padding: 8px;
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.6);
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    animation: fadeInDown 0.15s cubic-bezier(0, 0, 0.2, 1);
+}
+
+@keyframes fadeInDown {
+    from { opacity: 0; transform: translateY(-6px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.ai-tools-menu.hidden {
+    display: none !important;
+}
+
+.ai-tools-menu-header {
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    color: #64748b;
+    padding: 6px 10px 4px;
+    text-transform: uppercase;
+}
+
+.ai-menu-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 12px;
+    background: none;
+    border: none;
+    border-radius: 8px;
+    color: #cbd5e1;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    width: 100%;
+    text-align: left;
+}
+
+.ai-menu-item:hover {
+    background: rgba(245, 158, 11, 0.14);
+    color: #f59e0b;
+}
+
+.ai-menu-item svg {
+    color: #f59e0b;
+    flex-shrink: 0;
 }
 
 .btn.primary {
