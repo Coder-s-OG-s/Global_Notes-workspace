@@ -1244,22 +1244,11 @@ Example for a clean vertical process:
         const langObj = languageMap[langKey] || { name: langKey || 'JavaScript' };
         
         if (titleEl) titleEl.textContent = title || 'Untitled Snippet';
-        if (langEl) langEl.textContent = langObj.name;
+        if (langEl) langEl.textContent = langObj.name ? langObj.name.toUpperCase() : 'JAVASCRIPT';
         if (iconEl) {
-            const iconMap = {
-                javascript: '⚡',
-                typescript: '📘',
-                python: '🐍',
-                python3: '🐍',
-                htmlmixed: '🌐',
-                css: '🎨',
-                cpp: '⚙️',
-                java: '☕',
-                sql: '🗄️',
-                rust: '🦀',
-                go: '🐹'
-            };
-            iconEl.textContent = iconMap[langKey] || '💻';
+            iconEl.style.display = 'inline-flex';
+            iconEl.style.alignItems = 'center';
+            iconEl.innerHTML = '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>';
         }
     }
 

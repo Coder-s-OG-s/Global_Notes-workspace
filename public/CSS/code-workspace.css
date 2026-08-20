@@ -142,7 +142,18 @@ body.code-workspace-page {
 .header-right-utils {
     display: flex;
     align-items: center;
-    gap: 16px;
+    gap: 12px;
+}
+
+.header-center {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 10px !important;
+    flex: 1;
+    max-width: 550px;
+    margin: 0 auto;
 }
 
 .header-brand {
