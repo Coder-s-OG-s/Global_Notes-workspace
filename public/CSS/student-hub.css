@@ -319,11 +319,14 @@ html[data-theme="minimal-white"] { --calendar-invert: 0.1; }
 
 /* --- Main Layout --- */
 .hub-main-content {
-  flex-grow: 1;
-  overflow: hidden;
-  position: relative;
-  display: flex;
-  flex-direction: column;
+  flex: 1 !important;
+  min-height: 0 !important;
+  overflow: hidden !important;
+  position: relative !important;
+  display: flex !important;
+  flex-direction: column !important;
+  padding: 18px 20px 20px 20px !important;
+  box-sizing: border-box !important;
 }
 
 .hub-view {
