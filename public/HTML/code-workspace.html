@@ -253,11 +253,15 @@
     </main>
 
     <!-- Confirm Dialog -->
-    <dialog class="confirm-dialog" id="confirm-dialog">
+    <dialog class="confirm-dialog alert-danger" id="confirm-dialog">
         <div class="confirm-content">
             <button class="confirm-close" aria-label="Close dialog">✕</button>
+            <div class="dialog-icon-badge danger">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 6h18"></path><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+            </div>
             <h3 class="confirm-title" id="confirm-title">Delete Snippet</h3>
             <p class="confirm-message" id="confirm-message">Are you sure? This cannot be undone.</p>
+            <div class="dialog-divider"></div>
             <div class="confirm-actions">
                 <button class="btn secondary" id="confirm-cancel">Cancel</button>
                 <button class="btn danger" id="confirm-ok">Delete</button>
@@ -266,13 +270,17 @@
     </dialog>
 
     <!-- Prompt Dialog -->
-    <dialog class="confirm-dialog" id="prompt-dialog">
+    <dialog class="confirm-dialog alert-info" id="prompt-dialog">
         <div class="confirm-content">
             <button class="confirm-close" aria-label="Close dialog">✕</button>
+            <div class="dialog-icon-badge info">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+            </div>
             <h3 class="confirm-title" id="prompt-title">Enter Details</h3>
             <div class="prompt-body">
                 <input type="text" id="prompt-input" class="prompt-input-field" placeholder="Type here..." autocomplete="off">
             </div>
+            <div class="dialog-divider"></div>
             <div class="confirm-actions">
                 <button class="btn secondary" id="prompt-cancel">Cancel</button>
                 <button class="btn primary" id="prompt-ok">OK</button>
@@ -281,11 +289,15 @@
     </dialog>
 
     <!-- Alert Dialog -->
-    <dialog class="confirm-dialog" id="alert-dialog">
+    <dialog class="confirm-dialog alert-success" id="alert-dialog">
         <div class="confirm-content">
             <button class="confirm-close" aria-label="Close dialog">✕</button>
+            <div class="dialog-icon-badge success">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            </div>
             <h3 class="confirm-title" id="alert-title">Alert</h3>
             <p class="confirm-message" id="alert-message">Something happened.</p>
+            <div class="dialog-divider"></div>
             <div class="confirm-actions">
                 <button class="btn primary" id="alert-ok">OK</button>
             </div>

@@ -1100,35 +1100,35 @@
   </dialog>
 
   <!-- Create Note Modal -->
-  <dialog id="create-note-modal" class="modal">
-    <div class="modal-content" style="max-width: 400px;">
-      <div class="modal-header">
-        <h2>Create New Note</h2>
-        <button class="btn-icon close-modal" id="close-create-note-modal" aria-label="Close">
-          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-        </button>
+  <dialog id="create-note-modal" class="confirm-dialog alert-primary">
+    <div class="confirm-content" style="max-width: 440px;">
+      <button class="confirm-close close-modal" id="close-create-note-modal" aria-label="Close dialog">✕</button>
+      <div class="dialog-icon-badge primary">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
       </div>
-      <div class="modal-body">
-        <div class="form-group" style="margin-bottom: 16px;">
-          <label for="new-note-title-input" style="display: block; margin-bottom: 6px; font-weight: 500; font-size: 13px; color: var(--text-dim);">Title</label>
-          <input type="text" id="new-note-title-input" class="form-input" placeholder="Note title..." autocomplete="off" style="width: 100%; height: 36px; padding: 0 12px; border-radius: var(--radius-sm); border: 1px solid var(--border); background: var(--surface-2); color: var(--text); font-size: 13px;">
-        </div>
-        <div class="form-group" style="margin-bottom: 20px;">
-          <label style="display: block; margin-bottom: 8px; font-weight: 500; font-size: 13px; color: var(--text-dim);">Theme Color</label>
-          <div class="color-palette-grid">
-            <button type="button" class="color-plate selected" data-color="classic-blue" title="Classic Blue" aria-label="Classic Blue"></button>
-            <button type="button" class="color-plate" data-color="elegant-purple" title="Elegant Purple" aria-label="Elegant Purple"></button>
-            <button type="button" class="color-plate" data-color="forest-green" title="Forest Green" aria-label="Forest Green"></button>
-            <button type="button" class="color-plate" data-color="sunset-orange" title="Sunset Orange" aria-label="Sunset Orange"></button>
-            <button type="button" class="color-plate" data-color="ocean-teal" title="Ocean Teal" aria-label="Ocean Teal"></button>
-            <button type="button" class="color-plate" data-color="rose-gold" title="Rose Gold" aria-label="Rose Gold"></button>
-            <button type="button" class="color-plate" data-color="slate-gray" title="Slate Gray" aria-label="Slate Gray"></button>
-            <button type="button" class="color-plate" data-color="crimson-red" title="Crimson Red" aria-label="Crimson Red"></button>
-          </div>
-          <input type="hidden" id="new-note-theme-input" value="classic-blue">
-        </div>
+      <h3 class="confirm-title">Create New Note</h3>
+      <p class="confirm-message" style="margin-bottom: 16px;">Choose a title and vibrant color theme for your note.</p>
+      
+      <div class="prompt-body" style="text-align: left; margin-bottom: 16px;">
+        <label for="new-note-title-input" style="display: block; margin-bottom: 6px; font-weight: 600; font-size: 13px; color: var(--text-dim);">Note Title</label>
+        <input type="text" id="new-note-title-input" class="prompt-input-field" placeholder="e.g., Weekly Goals, Meeting Notes..." autocomplete="off" style="text-align: left;">
       </div>
-      <div class="modal-footer" style="display: flex; justify-content: flex-end; gap: 10px;">
+      <div class="prompt-body" style="text-align: left; margin-bottom: 16px;">
+        <label style="display: block; margin-bottom: 8px; font-weight: 600; font-size: 13px; color: var(--text-dim);">Theme Accent</label>
+        <div class="color-palette-grid">
+          <button type="button" class="color-plate selected" data-color="classic-blue" title="Classic Blue" aria-label="Classic Blue"></button>
+          <button type="button" class="color-plate" data-color="elegant-purple" title="Elegant Purple" aria-label="Elegant Purple"></button>
+          <button type="button" class="color-plate" data-color="forest-green" title="Forest Green" aria-label="Forest Green"></button>
+          <button type="button" class="color-plate" data-color="sunset-orange" title="Sunset Orange" aria-label="Sunset Orange"></button>
+          <button type="button" class="color-plate" data-color="ocean-teal" title="Ocean Teal" aria-label="Ocean Teal"></button>
+          <button type="button" class="color-plate" data-color="rose-gold" title="Rose Gold" aria-label="Rose Gold"></button>
+          <button type="button" class="color-plate" data-color="slate-gray" title="Slate Gray" aria-label="Slate Gray"></button>
+          <button type="button" class="color-plate" data-color="crimson-red" title="Crimson Red" aria-label="Crimson Red"></button>
+        </div>
+        <input type="hidden" id="new-note-theme-input" value="classic-blue">
+      </div>
+      <div class="dialog-divider"></div>
+      <div class="confirm-actions">
         <button class="btn secondary" id="create-note-cancel">Cancel</button>
         <button class="btn primary" id="create-note-confirm">Create Note</button>
       </div>
@@ -1201,11 +1201,15 @@
   </dialog>
 
   <!-- Confirm Dialog -->
-  <dialog class="confirm-dialog" id="confirm-dialog">
+  <dialog class="confirm-dialog alert-danger" id="confirm-dialog">
     <div class="confirm-content">
       <button class="confirm-close" aria-label="Close dialog">✕</button>
+      <div class="dialog-icon-badge danger" id="confirm-icon-badge">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 6h18"></path><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+      </div>
       <h3 class="confirm-title" id="confirm-title">Delete Note</h3>
-      <p class="confirm-message" id="confirm-message">Are you sure? This cannot be undone.</p>
+      <p class="confirm-message" id="confirm-message">Are you sure? This action cannot be undone.</p>
+      <div class="dialog-divider"></div>
       <div class="confirm-actions">
         <button class="btn secondary" id="confirm-cancel">Cancel</button>
         <button class="btn danger" id="confirm-ok">Delete</button>
@@ -1214,13 +1218,17 @@
   </dialog>
 
   <!-- Prompt Dialog -->
-  <dialog class="confirm-dialog" id="prompt-dialog">
+  <dialog class="confirm-dialog alert-info" id="prompt-dialog">
     <div class="confirm-content">
       <button class="confirm-close" aria-label="Close dialog">✕</button>
+      <div class="dialog-icon-badge info" id="prompt-icon-badge">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+      </div>
       <h3 class="confirm-title" id="prompt-title">Enter Details</h3>
       <div class="prompt-body">
         <input type="text" id="prompt-input" class="prompt-input-field" placeholder="Type here..." autocomplete="off">
       </div>
+      <div class="dialog-divider"></div>
       <div class="confirm-actions">
         <button class="btn secondary" id="prompt-cancel">Cancel</button>
         <button class="btn primary" id="prompt-ok">OK</button>
@@ -1229,11 +1237,15 @@
   </dialog>
 
   <!-- Alert Dialog -->
-  <dialog class="confirm-dialog" id="alert-dialog">
+  <dialog class="confirm-dialog alert-success" id="alert-dialog">
     <div class="confirm-content">
       <button class="confirm-close" aria-label="Close dialog">✕</button>
-      <h3 class="confirm-title" id="alert-title">Alert</h3>
-      <p class="confirm-message" id="alert-message">Something happened.</p>
+      <div class="dialog-icon-badge success" id="alert-icon-badge">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="20 6 9 17 4 12"></polyline></svg>
+      </div>
+      <h3 class="confirm-title" id="alert-title">Success!</h3>
+      <p class="confirm-message" id="alert-message">Action completed successfully.</p>
+      <div class="dialog-divider"></div>
       <div class="confirm-actions">
         <button class="btn primary" id="alert-ok">OK</button>
       </div>
@@ -1241,13 +1253,16 @@
   </dialog>
 
   <!-- Folder Modal Dialog with Color Swatches -->
-  <dialog class="confirm-dialog folder-modal-dialog" id="folder-dialog">
+  <dialog class="confirm-dialog folder-modal-dialog alert-primary" id="folder-dialog">
     <div class="confirm-content folder-modal-content">
       <button class="confirm-close" aria-label="Close dialog">✕</button>
+      <div class="dialog-icon-badge primary">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path><line x1="12" y1="11" x2="12" y2="17"></line><line x1="9" y1="14" x2="15" y2="14"></line></svg>
+      </div>
       <h3 class="confirm-title" id="folder-dialog-title">Create Folder</h3>
-      <div class="folder-modal-body">
+      <div class="folder-modal-body" style="width: 100%;">
         <label class="folder-modal-label" for="folder-name-input">Folder Name</label>
-        <input type="text" id="folder-name-input" class="prompt-input-field" placeholder="e.g. 2024, Recepies, Italian..." autocomplete="off">
+        <input type="text" id="folder-name-input" class="prompt-input-field" placeholder="e.g. 2024, Recipes, Italian..." autocomplete="off">
         
         <label class="folder-modal-label" style="margin-top: 16px;">Choose Theme Color</label>
         <div class="folder-color-selector" id="folder-color-selector">
@@ -1281,7 +1296,8 @@
           </div>
         </div>
       </div>
-      <div class="confirm-actions" style="margin-top: 20px;">
+      <div class="dialog-divider"></div>
+      <div class="confirm-actions">
         <button class="btn secondary" id="folder-cancel">Cancel</button>
         <button class="btn primary" id="folder-ok">Save Folder</button>
       </div>
