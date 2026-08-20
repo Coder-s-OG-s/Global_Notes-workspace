@@ -3262,7 +3262,7 @@ button,
 [data-theme*="dark"] .student-hub-page,
 body.dark-mode .student-hub-page,
 .dark-mode .student-hub-page {
-  background-color: #000000 !important;
+  background-color: #0b0f19 !important;
   color: #f8fafc !important;
 }
 
@@ -3270,8 +3270,8 @@ body.dark-mode .student-hub-page,
 [data-theme="corporate-gray"] .hub-header,
 [data-theme*="dark"] .hub-header,
 body.dark-mode .hub-header {
-  background-color: #09090b !important;
-  border-bottom: 1px solid #18181b !important;
+  background-color: #0f172a !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
   color: #f8fafc !important;
 }
 
@@ -3303,10 +3303,10 @@ body.dark-mode .output-workspace,
 [data-theme="corporate-gray"] .flashcard-workspace-panel,
 [data-theme*="dark"] .flashcard-workspace-panel,
 body.dark-mode .flashcard-workspace-panel {
-  background-color: #09090b !important;
-  border: 1px solid #18181b !important;
+  background-color: #0f172a !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
   color: #f8fafc !important;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8) !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4) !important;
 }
 
 /* Inner Component Dropzones, Cards & Inputs */
@@ -3334,8 +3334,8 @@ body.dark-mode .flashcard-inner,
 [data-theme="corporate-gray"] .study-mastery-bar,
 [data-theme*="dark"] .study-mastery-bar,
 body.dark-mode .study-mastery-bar {
-  background-color: #121215 !important;
-  border-color: #27272a !important;
+  background-color: #1e293b !important;
+  border-color: rgba(255, 255, 255, 0.12) !important;
   color: #f8fafc !important;
 }
 
@@ -3424,8 +3424,8 @@ body.dark-mode .tab-btn.active {
 [data-theme="corporate-gray"] .youtube-paste-bar,
 [data-theme*="dark"] .youtube-paste-bar,
 body.dark-mode .youtube-paste-bar {
-  background-color: #121215 !important;
-  border-color: #27272a !important;
+  background-color: #1e293b !important;
+  border-color: rgba(255, 255, 255, 0.12) !important;
 }
 
 [data-theme="amoled-dark"] .youtube-input,
