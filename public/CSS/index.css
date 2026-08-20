@@ -57,11 +57,11 @@ html[data-theme="amoled-dark"] {
   --surface-2-rgb: 30, 41, 59;
   --surface-3: #334155;
   --surface-hover: #374151;
-  --active-bg: rgba(245, 158, 11, 0.15);
-  --primary: #f59e0b;
-  --primary-strong: #d97706;
-  --primary-light: #fbbf24;
-  --primary-glow: rgba(245, 158, 11, 0.2);
+  --active-bg: rgba(250, 204, 21, 0.18);
+  --primary: #facc15;
+  --primary-strong: #eab308;
+  --primary-light: #fef08a;
+  --primary-glow: rgba(250, 204, 21, 0.25);
   --text: #f8fafc;
   --text-dim: #94a3b8;
   --text-muted: #64748b;
@@ -472,13 +472,16 @@ html,
 }
 
 .btn.primary {
-  background: var(--primary);
-  color: #fff;
-  border-color: var(--primary-strong);
+  background: linear-gradient(135deg, #facc15 0%, #eab308 100%);
+  color: #0f172a !important;
+  font-weight: 800;
+  border: none;
+  box-shadow: 0 4px 14px rgba(234, 179, 8, 0.3);
 }
 
 .btn.primary:hover {
-  background: var(--primary-strong);
+  background: linear-gradient(135deg, #fde047 0%, #facc15 100%);
+  box-shadow: 0 6px 18px rgba(234, 179, 8, 0.45);
 }
 
 .btn.secondary {

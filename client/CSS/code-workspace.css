@@ -24,12 +24,12 @@ body.code-workspace-page {
     --border-light: rgba(255, 255, 255, 0.15);
     --editor-bg: #111827;
     --editor-gutter: #0f172a;
-    --primary: #f59e0b;
-    --primary-rgb: 245, 158, 11;
-    --primary-strong: #d97706;
-    --primary-light: #fbbf24;
-    --primary-glow: rgba(245, 158, 11, 0.25);
-    --active-bg: rgba(245, 158, 11, 0.15);
+    --primary: #facc15;
+    --primary-rgb: 250, 204, 21;
+    --primary-strong: #eab308;
+    --primary-light: #fef08a;
+    --primary-glow: rgba(250, 204, 21, 0.25);
+    --active-bg: rgba(250, 204, 21, 0.15);
     --shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
     --shadow-lg: 0 10px 40px rgba(0, 0, 0, 0.5);
     --header-bg: rgba(15, 23, 42, 0.85);
@@ -277,9 +277,9 @@ body.code-workspace-page {
 
 .ai-tools-toggle-btn:hover {
     background: rgba(51, 65, 85, 0.9);
-    border-color: #f59e0b;
-    color: #f59e0b;
-    box-shadow: 0 4px 14px rgba(245, 158, 11, 0.18);
+    border-color: #facc15;
+    color: #facc15;
+    box-shadow: 0 4px 14px rgba(250, 204, 21, 0.2);
 }
 
 .ai-tools-toggle-btn .dropdown-chevron {
@@ -342,24 +342,27 @@ body.code-workspace-page {
 }
 
 .ai-menu-item:hover {
-    background: rgba(245, 158, 11, 0.14);
-    color: #f59e0b;
+    background: rgba(250, 204, 21, 0.14);
+    color: #facc15;
 }
 
 .ai-menu-item svg {
-    color: #f59e0b;
+    color: #facc15;
     flex-shrink: 0;
 }
 
 .btn.primary {
-    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-strong) 100%);
+    background: linear-gradient(135deg, #facc15 0%, #eab308 100%);
+    color: #0f172a !important;
+    font-weight: 800;
     border: none;
-    box-shadow: 0 4px 15px rgba(var(--primary-rgb), 0.2);
+    box-shadow: 0 4px 14px rgba(234, 179, 8, 0.3);
 }
 
 .btn.primary:hover {
+    background: linear-gradient(135deg, #fde047 0%, #facc15 100%);
     transform: translateY(-1px);
-    box-shadow: 0 6px 20px rgba(var(--primary-rgb), 0.3);
+    box-shadow: 0 6px 20px rgba(234, 179, 8, 0.45);
 }
 
 .lang-select-trigger.active {
