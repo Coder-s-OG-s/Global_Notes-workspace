@@ -3002,8 +3002,12 @@ button,
   margin-bottom: 16px;
 }
 
-.btn-close-source {
-  font-weight: 700;
+.btn-close-source,
+.menu-icon-btn,
+#lib-menu-btn,
+#lib-menu-btn-sidebar,
+#btn-close-add-source {
+  display: none !important;
 }
 
 .modal-title {
