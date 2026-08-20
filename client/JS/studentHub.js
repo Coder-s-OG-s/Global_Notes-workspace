@@ -1611,6 +1611,13 @@ async function syncDeckToFlashcardsGG() {
     }
 }
 
+            <polygon points="46,26 62,44 42,44" fill="#ef4444"/>
+            <rect x="18" y="60" width="34" height="12" rx="4" fill="#0f172a"/>
+            <line x1="29" y1="60" x2="29" y2="72" stroke="#ffffff" stroke-width="2.5"/>
+            <line x1="41" y1="60" x2="41" y2="72" stroke="#ffffff" stroke-width="2.5"/>
+        </g>
+    </svg>`;
+=======
 function getTopicSymbolSvg(category, question, topicName) {
     const text = `${category || ''} ${question || ''} ${topicName || ''}`.toLowerCase();
     
@@ -1655,6 +1662,7 @@ function getTopicSymbolSvg(category, question, topicName) {
     }
 
     return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3z"/></svg>`;
+>>>>>>> official/main
 }
 
 function renderFlashcards(cards) {
@@ -1705,7 +1713,6 @@ function renderFlashcards(cards) {
                 </div>
             </div>
         ` : '';
-
         const topicSymbolSvg = getTopicSymbolSvg(card.category, card.question, activeDeckName);
 
         cardEl.innerHTML = `
@@ -2242,12 +2249,17 @@ async function loadSavedState() {
         activeFlowchartId = null;
     }
 
-    // Render active views based on database state
+    // Render active views based on loaded state
     renderLibraryDecks();
 
     if (activeDeckId) {
         selectDeck(activeDeckId);
     } else {
+        const addSourceModal = document.querySelector('.add-source-card-modal');
+        if (addSourceModal) {
+            addSourceModal.style.display = 'block';
+            addSourceModal.classList.remove('hidden');
+        }
         renderFlashcards([]);
     }
 
