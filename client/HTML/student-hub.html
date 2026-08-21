@@ -11,9 +11,9 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
-    <link rel="stylesheet" href="../CSS/index.css">
-    <link rel="stylesheet" href="../CSS/student-hub.css">
-    <link rel="icon" type="image/png" href="../assets/images/logo_workspace.png" />
+    <link rel="stylesheet" href="/CSS/index.css">
+    <link rel="stylesheet" href="/CSS/student-hub.css">
+    <link rel="icon" type="image/png" href="/assets/images/logo_workspace.png" />
     
     <!-- PDF.js CDN -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
@@ -33,7 +33,7 @@
                 </svg>
             </a>
             <div class="header-brand">
-                <img src="../assets/images/logo_workspace.png" alt="Logo" class="logo-img">
+                <img src="/assets/images/logo_workspace.png" alt="Logo" class="logo-img">
                 <h1 class="brand-h1">Student <span class="brand-accent">Hub</span></h1>
             </div>
         </div>
@@ -203,7 +203,14 @@
                     </div>
 
                     <div class="workspace-placeholder" id="flashcards-placeholder">
-                        <div class="placeholder-icon">🃏</div>
+                        <div class="placeholder-icon-glowing" style="width: 64px; height: 64px; border-radius: 20px; background: rgba(245, 158, 11, 0.1); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.25); display: flex; align-items: center; justify-content: center; margin-bottom: 16px;">
+                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                                <rect x="3" y="3" width="18" height="18" rx="3" ry="3"/>
+                                <line x1="8" y1="9" x2="16" y2="9"/>
+                                <line x1="8" y1="13" x2="16" y2="13"/>
+                                <line x1="8" y1="17" x2="13" y2="17"/>
+                            </svg>
+                        </div>
                         <h3>Your Flashcards & Quiz Space</h3>
                         <p>Click any study set on the left or generate new study materials above.</p>
                     </div>
@@ -612,42 +619,90 @@
         <section class="hub-view" id="view-visuals">
             <div class="split-layout">
                 <aside class="options-panel">
+                    <div class="pastel-badge-pill" style="display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; background: rgba(245, 158, 11, 0.14); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.3); border-radius: 20px; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">
+                        <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                        <span>AI VISUALS & INFOGRAPHICS</span>
+                    </div>
+
                     <h2 class="panel-heading">AI Visuals & Image Generator</h2>
                     <p class="panel-subtext">Generate custom educational diagrams, infographics, or visual study aids for complex topics.</p>
 
-                    <div class="form-group">
-                        <label for="visual-prompt-input">Diagram Description / Topic</label>
-                        <textarea id="visual-prompt-input" class="form-textarea" placeholder="E.g. Human heart circulatory system, Photosynthesis cycle, Neural network architecture..."></textarea>
-                    </div>
+                    <div class="options-card-box pastel-yellow-card">
+                        <div class="form-group">
+                            <label for="visual-prompt-input">Diagram Description / Topic</label>
+                            <textarea id="visual-prompt-input" class="form-textarea" placeholder="E.g. Human heart circulatory system, Photosynthesis cycle, Neural network architecture..."></textarea>
+                        </div>
 
-                    <div class="form-group">
-                        <label>Category Preset</label>
-                        <select id="visual-category-select" class="form-input">
-                            <option value="Biology">Biology & Anatomy</option>
-                            <option value="Physics">Physics & Mechanics</option>
-                            <option value="Chemistry">Chemistry & Molecules</option>
-                            <option value="Math">Mathematics & Geometry</option>
-                            <option value="Computer Science">Computer Science & Architecture</option>
-                            <option value="History">History & Timeline</option>
-                        </select>
-                    </div>
+                        <div class="form-group">
+                            <label for="visual-category-select">Category Preset</label>
+                            <select id="visual-category-select" class="form-input">
+                                <option value="Biology">Biology & Anatomy</option>
+                                <option value="Physics">Physics & Mechanics</option>
+                                <option value="Chemistry">Chemistry & Molecules</option>
+                                <option value="Math">Mathematics & Geometry</option>
+                                <option value="Computer Science">Computer Science & Architecture</option>
+                                <option value="History">History & Timeline</option>
+                            </select>
+                        </div>
 
-                    <button class="btn primary full-width" id="btn-generate-visual">
-                        <span>✦ Generate Visual Diagram</span>
-                    </button>
+                        <div class="form-group">
+                            <label>Visual Style</label>
+                            <div class="visual-style-chips" id="visual-style-chips">
+                                <button type="button" class="style-chip active" data-style="Infographic">Infographic</button>
+                                <button type="button" class="style-chip" data-style="2D Diagram">2D Diagram</button>
+                                <button type="button" class="style-chip" data-style="3D Concept">3D Render</button>
+                                <button type="button" class="style-chip" data-style="Mindmap">Mindmap</button>
+                            </div>
+                        </div>
+
+                        <button class="btn primary full-width generate-visual-btn" id="btn-generate-visual">
+                            <span>✦ Generate Visual Diagram</span>
+                        </button>
+                    </div>
                 </aside>
 
                 <div class="output-workspace">
-                    <div class="workspace-placeholder" id="visual-placeholder">
-                        <div class="placeholder-icon"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>
+                    <div class="workspace-placeholder visual-studio-placeholder" id="visual-placeholder">
+                        <div class="placeholder-icon-glowing">
+                            <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                                <rect x="3" y="3" width="18" height="18" rx="3" ry="3"/>
+                                <circle cx="8.5" cy="8.5" r="2"/>
+                                <path d="M21 15l-5-5L5 21"/>
+                            </svg>
+                        </div>
                         <h3>Student Visual Generator</h3>
                         <p>Enter a study topic to generate an interactive educational diagram or graphic visual aid.</p>
+
+                        <div class="preset-topic-section">
+                            <span class="preset-topic-title">Try Quick Topic Presets</span>
+                            <div class="preset-topic-chips">
+                                <button type="button" class="preset-chip" onclick="document.getElementById('visual-prompt-input').value='Human Heart Circulatory System & Valves';">
+                                    <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                                    <span>Heart Circulation</span>
+                                </button>
+                                <button type="button" class="preset-chip" onclick="document.getElementById('visual-prompt-input').value='Photosynthesis Light & Dark Reactions';">
+                                    <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg>
+                                    <span>Photosynthesis</span>
+                                </button>
+                                <button type="button" class="preset-chip" onclick="document.getElementById('visual-prompt-input').value='Convolutional Neural Network Architecture';">
+                                    <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="8" height="8" rx="2"/><rect x="14" y="2" width="8" height="8" rx="2"/><rect x="8" y="14" width="8" height="8" rx="2"/><line x1="6" y1="10" x2="10" y2="14"/><line x1="18" y1="10" x2="14" y2="14"/></svg>
+                                    <span>CNN Architecture</span>
+                                </button>
+                                <button type="button" class="preset-chip" onclick="document.getElementById('visual-prompt-input').value='Solar System & Planetary Orbits';">
+                                    <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M3.6 9a9 9 0 0 1 16.8 6"/><path d="M20.4 15a9 9 0 0 1-16.8-6"/></svg>
+                                    <span>Solar System</span>
+                                </button>
+                            </div>
+                        </div>
                     </div>
 
                     <div class="visual-output-container hidden" id="visual-output-container">
                         <div class="visual-canvas-card" id="visual-canvas-card"></div>
                         <div class="visual-actions-bar">
-                            <button class="btn secondary" id="btn-download-visual">⬇ Download SVG</button>
+                            <button class="btn secondary" id="btn-download-visual">
+                                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                                <span>Download Graphic</span>
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -778,6 +833,6 @@
     <div class="toast-container" id="toast-container"></div>
 
     <!-- Application Script -->
-    <script type="module" src="../JS/studentHub.js"></script>
+    <script type="module" src="/JS/studentHub.js"></script>
 </body>
 </html>

@@ -1,4 +1,4 @@
-const CACHE_NAME = 'my-note-app-cache-v12';
+const CACHE_NAME = 'my-note-app-cache-v13';
 const urlsToCache = [
   '/',
   '/index.html',
@@ -104,6 +104,6 @@ self.addEventListener('activate', event => {
           }
         })
       );
-    })
+    }).then(() => self.clients.claim())
   );
 });
