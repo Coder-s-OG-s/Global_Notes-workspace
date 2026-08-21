@@ -122,25 +122,9 @@ class CodeWorkspace {
     }
 
     checkAPIKey() {
-        const apiKey = config.GROQ_API_KEY;
-        if (!apiKey || apiKey === "YOUR_GROQ_API_KEY" || apiKey.includes("YOUR")) {
-            document.getElementById('api-warning').classList.remove('hidden');
-            ['ai-explain-btn', 'ai-docs-btn', 'ai-improve-btn', 'ai-analyze-btn', 'ai-debug-btn', 'ai-visualize-flowchart-btn', 'ai-chat-btn'].forEach(id => {
-                const btn = document.getElementById(id);
-                if (btn) {
-                    btn.disabled = true;
-                    btn.classList.add('is-locked');
-                    btn.title = "Add Groq API key to enable AI features";
-
-                    // Add a small lock badge
-                    if (!btn.querySelector('.lock-badge')) {
-                        const badge = document.createElement('div');
-                        badge.className = 'lock-badge';
-                        badge.innerHTML = '<svg viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>';
-                        btn.appendChild(badge);
-                    }
-                }
-            });
+        const warningEl = document.getElementById('api-warning');
+        if (warningEl) {
+            warningEl.classList.add('hidden');
         }
     }
 

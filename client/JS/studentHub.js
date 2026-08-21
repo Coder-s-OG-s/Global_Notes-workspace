@@ -830,9 +830,9 @@ async function initHub() {
 
 // Check API Key status
 function checkAPIKey() {
-    const apiKey = config.GROQ_API_KEY;
-    if (!apiKey || apiKey === 'YOUR_GROQ_API_KEY' || apiKey.includes('YOUR')) {
-        document.getElementById('api-warning').classList.remove('hidden');
+    const warningEl = document.getElementById('api-warning');
+    if (warningEl) {
+        warningEl.classList.add('hidden');
     }
 }
 
