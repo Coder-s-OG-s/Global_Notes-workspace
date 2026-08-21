@@ -14,9 +14,7 @@
 secrets.json
 secrets.yaml
 
-# Generated config with injected API keys
-client/JS/config.js
-public/JS/config.js
+# Note: client/JS/config.js provides safe default JS exports for ESM imports
 
 # ============================================
 # DEPENDENCIES
