@@ -14,8 +14,10 @@ try {
     APPWRITE_SHARED_NOTES_COLLECTION_ID: process.env.APPWRITE_SHARED_NOTES_COLLECTION_ID || "shared_notes",
     SUPABASE_URL: process.env.SUPABASE_URL || "",
     SUPABASE_ANON_KEY: process.env.SUPABASE_ANON_KEY || "",
+    GEMINI_API_KEY: process.env.GEMINI_API_KEY || "",
     GROQ_API_KEY: process.env.GROQ_API_KEY || "",
-    TURNSTILE_SITE_KEY: (process.env.TURNSTILE_SITE_KEY || "0x4AAAAAAEQyiKm40gWQ6_Gx").trim()
+    TURNSTILE_SITE_KEY: (process.env.TURNSTILE_SITE_KEY || "0x4AAAAAAEQyiKm40gWQ6_Gx").trim(),
+    FLASHCARDS_GG_API_KEY: process.env.FLASHCARDS_GG_API_KEY || ""
   };
 
   const configContent = `const config = ${JSON.stringify(configObj, null, 2)};\n\nexport default config;\n`;
@@ -82,6 +84,9 @@ require('../server/config/passport')(passport);
 app.use('/api/auth', require('../server/routes/auth'));
 app.use('/api/notes', require('../server/routes/notes'));
 app.use('/api/folders', require('../server/routes/folders'));
+app.use('/api/student-hub', require('../server/routes/studentHub'));
+app.use('/api/proxy', require('../server/routes/proxy'));
+app.use('/api/ai', require('../server/routes/ai'));
 
 // Serve Static Frontend Assets
 app.use(express.static(path.join(__dirname, '../client')));

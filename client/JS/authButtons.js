@@ -17,7 +17,7 @@ const $ = (selector) => document.querySelector(selector);
 export function wireAuthButtons(state, callbacks) {
   // Handle login button click - redirects to signup page
   $("#login")?.addEventListener("click", () => {
-    window.location.href = "./HTML/signup.html";
+    window.location.href = "/HTML/signup.html";
   });
 
 
@@ -44,6 +44,6 @@ export function wireAuthButtons(state, callbacks) {
     callbacks.renderNotesList();
     callbacks.renderActiveNote();
     // Redirect to signup page
-    window.location.href = "./HTML/signup.html";
+    window.location.href = "/HTML/signup.html";
   });
 }

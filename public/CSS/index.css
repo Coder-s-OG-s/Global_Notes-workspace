@@ -51,17 +51,17 @@ html,
 html[data-theme="amoled-dark"] {
   --bg: #0b0f19;
   --bg-rgb: 11, 15, 25;
-  --surface: #111827;
-  --surface-rgb: 17, 24, 39;
+  --surface: #0f172a;
+  --surface-rgb: 15, 23, 42;
   --surface-2: #1e293b;
   --surface-2-rgb: 30, 41, 59;
   --surface-3: #334155;
   --surface-hover: #374151;
-  --active-bg: rgba(245, 158, 11, 0.15);
-  --primary: #f59e0b;
-  --primary-strong: #d97706;
-  --primary-light: #fbbf24;
-  --primary-glow: rgba(245, 158, 11, 0.2);
+  --active-bg: rgba(250, 204, 21, 0.18);
+  --primary: #facc15;
+  --primary-strong: #eab308;
+  --primary-light: #fef08a;
+  --primary-glow: rgba(250, 204, 21, 0.25);
   --text: #f8fafc;
   --text-dim: #94a3b8;
   --text-muted: #64748b;
@@ -83,9 +83,9 @@ html[data-theme="amoled-dark"] {
   --header-height: 52px;
   
   /* Alerts & Search Custom variables */
-  --dialog-outer-bg: rgba(60, 60, 65, 0.2);
-  --dialog-inner-bg: #0c0c0e;
-  --dialog-border: rgba(255, 255, 255, 0.08);
+  --dialog-outer-bg: rgba(11, 15, 25, 0.6);
+  --dialog-inner-bg: #0f172a;
+  --dialog-border: rgba(255, 255, 255, 0.12);
   --dialog-text: #ececef;
   --dialog-text-dim: #a0a0ab;
   --dialog-btn-sec-bg: #000000;
@@ -472,13 +472,16 @@ html,
 }
 
 .btn.primary {
-  background: var(--primary);
-  color: #fff;
-  border-color: var(--primary-strong);
+  background: linear-gradient(135deg, #facc15 0%, #eab308 100%);
+  color: #0f172a !important;
+  font-weight: 800;
+  border: none;
+  box-shadow: 0 4px 14px rgba(234, 179, 8, 0.3);
 }
 
 .btn.primary:hover {
-  background: var(--primary-strong);
+  background: linear-gradient(135deg, #fde047 0%, #facc15 100%);
+  box-shadow: 0 6px 18px rgba(234, 179, 8, 0.45);
 }
 
 .btn.secondary {

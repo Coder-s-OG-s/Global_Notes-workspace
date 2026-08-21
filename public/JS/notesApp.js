@@ -171,10 +171,10 @@ async function initApp() {
   if (!forceGuest) {
     const lastPage = localStorage.getItem('lastPage');
     if (lastPage === 'code-workspace') {
-      window.location.replace('HTML/code-workspace.html');
+      window.location.replace('/HTML/code-workspace.html');
       return;
     } else if (lastPage === 'student-hub') {
-      window.location.replace('HTML/student-hub.html');
+      window.location.replace('/HTML/student-hub.html');
       return;
     }
   }

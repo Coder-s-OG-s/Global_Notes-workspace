@@ -70,7 +70,7 @@ export function wireCrudButtons(state, getActiveFilter, callbacks) {
         "Log In"
       );
       if (shouldLogin) {
-        window.location.href = "./HTML/signup.html";
+        window.location.href = "/HTML/signup.html";
       }
       return;
     }
