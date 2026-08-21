@@ -86,6 +86,7 @@ app.use('/api/notes', require('../server/routes/notes'));
 app.use('/api/folders', require('../server/routes/folders'));
 app.use('/api/student-hub', require('../server/routes/studentHub'));
 app.use('/api/proxy', require('../server/routes/proxy'));
+app.use('/api/ai', require('../server/routes/ai'));
 // Dynamic config endpoint for front-end JS
 app.get(['/JS/config.js', '/client/JS/config.js'], (req, res) => {
   res.setHeader('Content-Type', 'application/javascript');
