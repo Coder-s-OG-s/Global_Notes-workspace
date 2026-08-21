@@ -1,17 +1,17 @@
 import config from './config.js';
 
 /**
- * Calls Gemini 2.5 Flash API first, falling back to Groq API.
- * Used for Quiz Generation.
+ * Calls Gemini / Groq API directly if client key is present,
+ * or routes securely through server endpoint /api/ai/generate-text using process.env keys.
  * @param {string} prompt The user's prompt or system prompt.
  * @param {string} [customApiKey] Optional custom key from UI.
  * @returns {Promise<string>} The generated text.
  */
 export async function generateTextWithGemini(prompt, customApiKey) {
     const geminiKey = customApiKey || config.GEMINI_API_KEY || window.localStorage.getItem('GN_CUSTOM_GEMINI_KEY');
-    const groqKey = config.GROQ_API_KEY;
+    const groqKey = config.GROQ_API_KEY || window.localStorage.getItem('GN_CUSTOM_GROQ_KEY');
 
-    // 1. Try Google Gemini API if Gemini Key is available
+    // 1. Try Google Gemini API if client-side key is available
     if (geminiKey && geminiKey !== 'YOUR_GEMINI_API_KEY' && geminiKey.trim() !== '') {
         try {
             const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${geminiKey.trim()}`;
@@ -32,63 +32,13 @@ export async function generateTextWithGemini(prompt, customApiKey) {
                 if (data.candidates && data.candidates[0]?.content?.parts[0]?.text) {
                     return data.candidates[0].content.parts[0].text;
                 }
-            } else {
-                console.warn('Gemini API failed with status:', response.status, 'Falling back to Groq...');
             }
         } catch (geminiErr) {
-            console.warn('Gemini API call failed, falling back to Groq:', geminiErr.message);
+            console.warn('Client-side Gemini API call failed, trying server proxy:', geminiErr.message);
         }
     }
 
-    // 2. Fallback to Groq API (llama-3.3-70b-versatile)
-    if (!groqKey || groqKey === '' || groqKey === 'YOUR_GROQ_API_KEY') {
-        return Promise.resolve(`[AI Error]: Missing API Key. Please add GROQ_API_KEY or GEMINI_API_KEY to your .env file.`);
-    }
-
-    try {
-        const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${groqKey}`
-            },
-            body: JSON.stringify({
-                model: "llama-3.3-70b-versatile",
-                messages: [{ role: "user", content: prompt }],
-                temperature: 0.3,
-                max_tokens: 4096
-            })
-        });
-
-        if (!response.ok) {
-            const errorBody = await response.json();
-            throw new Error(`Groq API error ${response.status}: ${errorBody.error?.message || 'Unknown error'}`);
-        }
-
-        const data = await response.json();
-        if (data.choices && data.choices[0]?.message?.content) {
-            return data.choices[0].message.content;
-        } else {
-            return "I couldn't generate a response. Please try again.";
-        }
-    } catch (error) {
-        console.error('Error calling AI API:', error);
-        throw error;
-    }
-}
-
-/**
- * Calls Groq API (llama-3.3-70b-versatile) directly for sub-second ultra-fast generation speed.
- * Used for Flowchart Generation and Exam Prep Schedule Generation.
- * Falls back to Gemini 2.5 Flash if Groq fails or key is missing.
- * @param {string} prompt The user's prompt or system prompt.
- * @param {string} [customApiKey] Optional custom key from UI.
- * @returns {Promise<string>} The generated text.
- */
-export async function generateTextWithGroq(prompt, customApiKey) {
-    const groqKey = customApiKey || config.GROQ_API_KEY || window.localStorage.getItem('GN_CUSTOM_GROQ_KEY');
-
-    // 1. Try Groq API first for ultra-fast Llama-3.3-70b inference
+    // 2. Try Groq API if client-side key is available
     if (groqKey && groqKey !== 'YOUR_GROQ_API_KEY' && groqKey.trim() !== '') {
         try {
             const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
@@ -110,14 +60,41 @@ export async function generateTextWithGroq(prompt, customApiKey) {
                 if (data.choices && data.choices[0]?.message?.content) {
                     return data.choices[0].message.content;
                 }
-            } else {
-                console.warn('Groq API status:', response.status, 'Falling back to Gemini...');
             }
         } catch (groqErr) {
-            console.warn('Groq API call failed, falling back to Gemini:', groqErr.message);
+            console.warn('Client-side Groq API call failed, trying server proxy:', groqErr.message);
         }
     }
 
-    // 2. Fallback to Gemini API if Groq fails
+    // 3. Secure Server Backend Proxy Endpoint (uses server-side .env keys)
+    try {
+        const response = await fetch('/api/ai/generate-text', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ prompt, customApiKey })
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            if (data.success && data.text) {
+                return data.text;
+            }
+        }
+        
+        const errData = await response.json().catch(() => ({}));
+        throw new Error(errData.error || `Server AI Proxy HTTP ${response.status}`);
+    } catch (serverErr) {
+        console.error('Server AI proxy call error:', serverErr);
+        throw serverErr;
+    }
+}
+
+/**
+ * Calls Groq API or routes through secure server AI proxy /api/ai/generate-text.
+ * @param {string} prompt The user's prompt or system prompt.
+ * @param {string} [customApiKey] Optional custom key from UI.
+ * @returns {Promise<string>} The generated text.
+ */
+export async function generateTextWithGroq(prompt, customApiKey) {
     return generateTextWithGemini(prompt, customApiKey);
 }
