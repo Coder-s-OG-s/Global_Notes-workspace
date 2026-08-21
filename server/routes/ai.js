@@ -327,6 +327,24 @@ async function callLLM(promptText, customApiKey, maxTokens = 4096) {
 }
 
 /**
+ * Generic AI Text Generation Endpoint
+ * Calls server-side Groq / Gemini with process.env keys
+ */
+router.post('/generate-text', async (req, res) => {
+  try {
+    const { prompt, maxTokens } = req.body;
+    if (!prompt) {
+      return res.status(400).json({ error: 'Prompt is required.' });
+    }
+    const text = await callLLM(prompt, req.body.customApiKey, maxTokens || 4096);
+    res.json({ success: true, text });
+  } catch (err) {
+    console.error('Generate text AI error:', err.message);
+    res.status(500).json({ error: err.message || 'AI generation failed.' });
+  }
+});
+
+/**
  * Smart Tags Endpoint — processes ONLY the active single note content
  */
 router.post('/suggest-tags', async (req, res) => {
