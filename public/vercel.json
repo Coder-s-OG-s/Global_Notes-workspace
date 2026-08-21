@@ -3,6 +3,14 @@
   "rewrites": [
     { "source": "/api/(.*)", "destination": "/api/index.js" },
     { "source": "/(CSS|JS|HTML|assets)/(.*)", "destination": "/client/$1/$2" },
+    { "source": "/student-hub", "destination": "/client/HTML/student-hub.html" },
+    { "source": "/student-hub.html", "destination": "/client/HTML/student-hub.html" },
+    { "source": "/code-workspace", "destination": "/client/HTML/code-workspace.html" },
+    { "source": "/code-workspace.html", "destination": "/client/HTML/code-workspace.html" },
+    { "source": "/ui-designer", "destination": "/client/HTML/ui-designer.html" },
+    { "source": "/ui-designer.html", "destination": "/client/HTML/ui-designer.html" },
+    { "source": "/signup", "destination": "/client/HTML/signup.html" },
+    { "source": "/signup.html", "destination": "/client/HTML/signup.html" },
     { "source": "/(app.html|index.html|sw.js|manifest.json|robots.txt|sitemap.xml)", "destination": "/client/$1" },
     { "source": "/(.*)", "destination": "/api/index.js" }
   ]

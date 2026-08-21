@@ -737,7 +737,7 @@ Example for a clean vertical process:
             
             this.showToast('Flowchart generated! Redirecting...');
             setTimeout(() => {
-                window.location.href = 'student-hub.html#flowcharts';
+                window.location.href = '/HTML/student-hub.html#flowcharts';
             }, 1000);
 
         } catch (err) {

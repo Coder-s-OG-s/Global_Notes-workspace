@@ -23,7 +23,7 @@ export function wireShareFeature(state, callbacks) {
                     "Log In"
                 );
                 if (shouldLogin) {
-                    window.location.href = "./HTML/signup.html";
+                    window.location.href = "/HTML/signup.html";
                 }
                 return;
             }

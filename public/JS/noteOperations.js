@@ -51,7 +51,7 @@ export async function handleSaveNote(notes, activeNoteId, activeUser, getActiveF
       "Log In"
     );
     if (shouldLogin) {
-      window.location.href = "./HTML/signup.html";
+      window.location.href = "/HTML/signup.html";
     }
     return;
   }
