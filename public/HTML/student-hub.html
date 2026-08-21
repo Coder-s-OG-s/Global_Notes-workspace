@@ -612,42 +612,75 @@
         <section class="hub-view" id="view-visuals">
             <div class="split-layout">
                 <aside class="options-panel">
+                    <div class="pastel-badge-pill" style="display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; background: rgba(245, 158, 11, 0.14); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.3); border-radius: 20px; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">
+                        <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                        <span>AI VISUALS & INFOGRAPHICS</span>
+                    </div>
+
                     <h2 class="panel-heading">AI Visuals & Image Generator</h2>
                     <p class="panel-subtext">Generate custom educational diagrams, infographics, or visual study aids for complex topics.</p>
 
-                    <div class="form-group">
-                        <label for="visual-prompt-input">Diagram Description / Topic</label>
-                        <textarea id="visual-prompt-input" class="form-textarea" placeholder="E.g. Human heart circulatory system, Photosynthesis cycle, Neural network architecture..."></textarea>
-                    </div>
+                    <div class="options-card-box pastel-yellow-card">
+                        <div class="form-group">
+                            <label for="visual-prompt-input">Diagram Description / Topic</label>
+                            <textarea id="visual-prompt-input" class="form-textarea" placeholder="E.g. Human heart circulatory system, Photosynthesis cycle, Neural network architecture..."></textarea>
+                        </div>
 
-                    <div class="form-group">
-                        <label>Category Preset</label>
-                        <select id="visual-category-select" class="form-input">
-                            <option value="Biology">Biology & Anatomy</option>
-                            <option value="Physics">Physics & Mechanics</option>
-                            <option value="Chemistry">Chemistry & Molecules</option>
-                            <option value="Math">Mathematics & Geometry</option>
-                            <option value="Computer Science">Computer Science & Architecture</option>
-                            <option value="History">History & Timeline</option>
-                        </select>
-                    </div>
+                        <div class="form-group">
+                            <label for="visual-category-select">Category Preset</label>
+                            <select id="visual-category-select" class="form-input">
+                                <option value="Biology">Biology & Anatomy</option>
+                                <option value="Physics">Physics & Mechanics</option>
+                                <option value="Chemistry">Chemistry & Molecules</option>
+                                <option value="Math">Mathematics & Geometry</option>
+                                <option value="Computer Science">Computer Science & Architecture</option>
+                                <option value="History">History & Timeline</option>
+                            </select>
+                        </div>
 
-                    <button class="btn primary full-width" id="btn-generate-visual">
-                        <span>✦ Generate Visual Diagram</span>
-                    </button>
+                        <div class="form-group">
+                            <label>Visual Style</label>
+                            <div class="visual-style-chips" id="visual-style-chips">
+                                <button type="button" class="style-chip active" data-style="Infographic">Infographic</button>
+                                <button type="button" class="style-chip" data-style="2D Diagram">2D Diagram</button>
+                                <button type="button" class="style-chip" data-style="3D Concept">3D Render</button>
+                                <button type="button" class="style-chip" data-style="Mindmap">Mindmap</button>
+                            </div>
+                        </div>
+
+                        <button class="btn primary full-width generate-visual-btn" id="btn-generate-visual">
+                            <span>✦ Generate Visual Diagram</span>
+                        </button>
+                    </div>
                 </aside>
 
                 <div class="output-workspace">
-                    <div class="workspace-placeholder" id="visual-placeholder">
-                        <div class="placeholder-icon"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>
+                    <div class="workspace-placeholder visual-studio-placeholder" id="visual-placeholder">
+                        <div class="placeholder-icon-glowing">
+                            <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                                <rect x="3" y="3" width="18" height="18" rx="3" ry="3"/>
+                                <circle cx="8.5" cy="8.5" r="2"/>
+                                <path d="M21 15l-5-5L5 21"/>
+                            </svg>
+                        </div>
                         <h3>Student Visual Generator</h3>
                         <p>Enter a study topic to generate an interactive educational diagram or graphic visual aid.</p>
+
+                        <div class="preset-topic-section">
+                            <span class="preset-topic-title">Try Quick Topic Presets</span>
+                            <div class="preset-topic-chips">
+                                <button type="button" class="preset-chip" onclick="document.getElementById('visual-prompt-input').value='Human Heart Circulatory System & Valves';">❤️ Heart Circulation</button>
+                                <button type="button" class="preset-chip" onclick="document.getElementById('visual-prompt-input').value='Photosynthesis Light & Dark Reactions';">🌱 Photosynthesis</button>
+                                <button type="button" class="preset-chip" onclick="document.getElementById('visual-prompt-input').value='Convolutional Neural Network Architecture';">🧠 CNN Architecture</button>
+                                <button type="button" class="preset-chip" onclick="document.getElementById('visual-prompt-input').value='Solar System & Planetary Orbits';">🪐 Solar System</button>
+                            </div>
+                        </div>
                     </div>
 
                     <div class="visual-output-container hidden" id="visual-output-container">
                         <div class="visual-canvas-card" id="visual-canvas-card"></div>
                         <div class="visual-actions-bar">
-                            <button class="btn secondary" id="btn-download-visual">⬇ Download SVG</button>
+                            <button class="btn secondary" id="btn-download-visual">⬇ Download Graphic</button>
                         </div>
                     </div>
                 </div>
