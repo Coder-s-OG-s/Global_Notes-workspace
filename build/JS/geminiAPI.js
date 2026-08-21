@@ -3,7 +3,7 @@
 // Do not expose it in client-side code in a production environment.
 // Consider using a backend proxy or a serverless function to handle API calls securely.
 
-const API_KEY = 'AIzaSyCqXDZVyFZh0u2ZYCL4MrvPlsL8YNqNw70'; // <-- IMPORTANT: Replace with your API key
+const API_KEY = 'YOUR_GEMINI_API_KEY'; // <-- Injected dynamically via .env config
 const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemma-3-4b-it:generateContent?key=${API_KEY}`;
 
 /**

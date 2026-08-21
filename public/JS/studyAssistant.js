@@ -460,11 +460,11 @@ function renderSuggestions(concepts, deadlines) {
                         <div class="card-title-text">${escapeHtml(concept)}</div>
                         <div class="card-desc">Linked to snippet: "${escapeHtml(match.title)}"</div>
                         <div class="card-actions">
-                            <a href="HTML/code-workspace.html" class="card-action-btn" target="_blank">Open Workspace</a>
+                            <a href="/HTML/code-workspace.html" class="card-action-btn" target="_blank">Open Workspace</a>
                         </div>
                     `;
                 } else {
-                    const createUrl = `HTML/code-workspace.html?createSnippet=${encodeURIComponent(concept)}`;
+                    const createUrl = `/HTML/code-workspace.html?createSnippet=${encodeURIComponent(concept)}`;
                     card.innerHTML = `
                         <div class="card-title-text">${escapeHtml(concept)}</div>
                         <div class="card-desc">Concept detected. Create a matching snippet in Code Workspace.</div>
@@ -486,7 +486,7 @@ function renderSuggestions(concepts, deadlines) {
             deadlines.forEach(item => {
                 const card = document.createElement("div");
                 card.className = "suggestion-card";
-                const scheduleUrl = `HTML/student-hub.html?addDeadline=${encodeURIComponent(item.title)}&date=${item.ymd}`;
+                const scheduleUrl = `/HTML/student-hub.html?addDeadline=${encodeURIComponent(item.title)}&date=${item.ymd}`;
 
                 card.innerHTML = `
                     <div class="card-title-text">${escapeHtml(item.title)}</div>

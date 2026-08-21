@@ -1,4 +1,4 @@
-const CACHE_NAME = 'my-note-app-cache-v11';
+const CACHE_NAME = 'my-note-app-cache-v12';
 const urlsToCache = [
   '/',
   '/index.html',
@@ -7,13 +7,20 @@ const urlsToCache = [
   '/CSS/index.css',
   '/CSS/signup.css',
   '/CSS/styles.css',
+  '/CSS/student-hub.css',
+  '/CSS/code-workspace.css',
+  '/CSS/ui-designer.css',
   '/HTML/signup.html',
+  '/HTML/student-hub.html',
+  '/HTML/code-workspace.html',
+  '/HTML/ui-designer.html',
   '/JS/vendor/lz-string.min.js',
   '/JS/vendor/qrcode.min.js',
   '/JS/aiAssistant.js',
   '/JS/audioRecorder.js',
   '/JS/authButtons.js',
   '/JS/authPage.js',
+  '/JS/authService.js',
   '/JS/constants.js',
   '/JS/db.js',
   '/JS/eventHandlers.js',
@@ -35,6 +42,9 @@ const urlsToCache = [
   '/JS/sketchPad.js',
   '/JS/slashCommands.js',
   '/JS/storage.js',
+  '/JS/studentHub.js',
+  '/JS/codeWorkspace.js',
+  '/JS/uiDesigner.js',
   '/JS/themeManager.js',
   '/JS/themePresets.js',
   '/JS/utilities.js',
@@ -63,12 +73,14 @@ self.addEventListener('fetch', event => {
           return response;
         }
 
-        // Cache API only supports GET requests
-        if (event.request.method === 'GET') {
+        // Cache API only supports GET requests with http/https scheme
+        if (event.request.method === 'GET' && (event.request.url.startsWith('http://') || event.request.url.startsWith('https://'))) {
           var responseToCache = response.clone();
           caches.open(CACHE_NAME)
             .then(cache => {
-              cache.put(event.request, responseToCache);
+              cache.put(event.request, responseToCache).catch(err => {
+                console.warn('Cache put error:', err);
+              });
             });
         }
 
