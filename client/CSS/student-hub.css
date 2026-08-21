@@ -543,13 +543,16 @@ html[data-theme="minimal-white"] { --calendar-invert: 0.1; }
 
 .date-input-container .form-input[type="date"]::-webkit-calendar-picker-indicator {
   cursor: pointer;
-  filter: invert(var(--calendar-invert)) hue-rotate(180deg) brightness(1.2);
-  opacity: 0.6;
-  transition: opacity var(--transition-fast);
+  filter: invert(0.95) opacity(0.85);
+  padding: 4px;
+  border-radius: 6px;
+  transition: all var(--transition-fast);
 }
 
 .date-input-container .form-input[type="date"]::-webkit-calendar-picker-indicator:hover {
   opacity: 1;
+  filter: invert(1) opacity(1);
+  background: rgba(255, 255, 255, 0.1);
 }
 
 /* File upload dropzones */
