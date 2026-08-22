@@ -2,7 +2,7 @@ import config from './config.js';
 import { generateTextWithGemini } from './geminiAPI.js';
 import { wireThemeToggle, setThemeStorageKey } from './themeManager.js';
 import { CODE_THEME_KEY } from './constants.js';
-import { showConfirm, showPrompt } from './utilities.js';
+import { showConfirm, showPrompt, wireAppsDropdown } from './utilities.js';
 import { initSearchDropdown } from './searchDropdown.js';
 
 const STORAGE_KEY = 'antigravity_snippets';
@@ -37,17 +37,33 @@ class CodeWorkspace {
         this.snippets = this.loadSnippets();
         this.activeSnippetId = null;
         this.editor = null;
+        this.copilotModes = {
+            general: {
+                name: 'General Copilot',
+                systemPrompt: `You are a Senior Staff Software Engineer and Expert Programming Tutor at Global Code Workspace.
+Your goal is to provide elite-level, production-grade assistance.`
+            },
+            optimizer: {
+                name: 'Performance Optimizer',
+                systemPrompt: `You are an Expert Algorithmic & Performance Optimization Engineer.
+Focus on analyzing Big-O time and space complexity, memory reduction, and execution speed.`
+            },
+            debugger: {
+                name: 'Security & Bug Hunter',
+                systemPrompt: `You are a Lead Application Security & Bug Hunting Specialist.
+Focus on finding edge cases, null pointers, race conditions, memory leaks, and vulnerability vectors.`
+            },
+            testGen: {
+                name: 'Unit Test Architect',
+                systemPrompt: `You are a Senior Test Automation Architect.
+Focus on writing clean, comprehensive unit and integration test suites covering edge cases and boundary conditions.`
+            }
+        };
+        this.activeCopilotMode = 'general';
         this.chatHistory = [
             {
                 role: "system",
-                content: `You are a Senior Staff Software Engineer and Expert Programming Tutor at Global Code Workspace.
-                Your goal is to provide elite-level, production-grade assistance.
-                Rules for your responses:
-                1. Code-First Approach: If the user asks for code or a solution, prioritize providing the code block immediately. Keep explanations extremely minimal, technical, and high-level.
-                2. Structure: Use clear headings (###) and bolding. Ensure there is a logic gap between text and code.
-                3. Depth: Only include complexity analysis if specifically relevant or manually requested for algorithms.
-                4. Tone: Technical, direct, and professional. Avoid "Sure!", "I can help", or polite filler.
-                5. Spacing: Use double newlines between different sections of your answer.`
+                content: this.copilotModes.general.systemPrompt
             }
         ];
         this.isCustomHeight = false;
@@ -69,6 +85,7 @@ class CodeWorkspace {
 
         setThemeStorageKey(CODE_THEME_KEY);
         wireThemeToggle();
+        wireAppsDropdown();
         this.initEditor();
         this.renderSnippetList();
         this.attachEventListeners();
@@ -946,20 +963,93 @@ Example for a clean vertical process:
             const escaped = this.escapeHtml(cleanCode);
             codeBlocks.push(`
                 <div class="code-block-container" style="position: relative; margin: 10px 0; page-break-inside: avoid;">
-                    ${forPDF ? '' : '<button class="chat-copy-btn" onclick="window.workspace.copyChatCode(this)">Copy</button>'}
+                    ${forPDF ? '' : `
+                        <div class="code-block-actions" style="position: absolute; top: 6px; right: 6px; display: flex; gap: 6px; z-index: 10;">
+                            <button class="chat-apply-btn" onclick="window.workspace.applyCodeToEditor(this)"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:3px; vertical-align:-1px;"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg> Apply to Editor</button>
+                            <button class="chat-copy-btn" onclick="window.workspace.copyChatCode(this)">Copy</button>
+                        </div>
+                    `}
                     <pre><code>${escaped}</code></pre>
                 </div>
             `);
             return placeholder(codeBlocks.length - 1);
         });
 
-        // 2. Escape non-code text and format
-        processed = this.escapeHtml(processed)
-            .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-            .replace(/\n\n/g, '<div style="margin-bottom: 24px;"></div>')
-            .replace(/\n/g, '<br>');
+        // 2. Escape non-code text
+        processed = this.escapeHtml(processed);
 
-        // 3. Re-insert code blocks with guaranteed vertical gaps
+        // Helper for inline formatting (bold, italics, inline code)
+        const formatInline = (str) => {
+            return str
+                .replace(/`([^`]+)`/g, '<code style="background: rgba(255,255,255,0.1); padding: 2px 6px; border-radius: 4px; font-family: monospace;">$1</code>')
+                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                .replace(/__(.*?)__/g, '<strong>$1</strong>')
+                .replace(/\*(.*?)\*/g, '<em>$1</em>')
+                .replace(/_(.*?)_/g, '<em>$1</em>');
+        };
+
+        // 3. Process line by line for headers, bullet lists, and paragraphs
+        const lines = processed.split('\n');
+        const outputLines = [];
+        let inList = false;
+
+        for (let i = 0; i < lines.length; i++) {
+            const line = lines[i];
+            const trimmed = line.trim();
+
+            // Skip code block placeholders from line-level formatting
+            if (/___CODEBLOCK_\d+___/.test(line)) {
+                if (inList) {
+                    outputLines.push('</ul>');
+                    inList = false;
+                }
+                outputLines.push(line);
+                continue;
+            }
+
+            // Bullet list item (*, -, +)
+            const listMatch = line.match(/^(\s*)([\*\-\+])\s+(.*)$/);
+            if (listMatch) {
+                if (!inList) {
+                    inList = true;
+                    outputLines.push('<ul style="margin: 8px 0; padding-left: 20px;">');
+                }
+                const content = formatInline(listMatch[3]);
+                outputLines.push(`<li>${content}</li>`);
+                continue;
+            }
+
+            if (inList) {
+                outputLines.push('</ul>');
+                inList = false;
+            }
+
+            // Header (# Header, ## Header, ### Header, etc.)
+            const headerMatch = line.match(/^(#{1,6})\s+(.*)$/);
+            if (headerMatch) {
+                const level = headerMatch[1].length;
+                const content = formatInline(headerMatch[2]);
+                outputLines.push(`<h${level} style="margin: 12px 0 6px 0; font-weight: 600;">${content}</h${level}>`);
+                continue;
+            }
+
+            // Blank line
+            if (!trimmed) {
+                outputLines.push('<div style="margin-bottom: 12px;"></div>');
+                continue;
+            }
+
+            // Normal line
+            outputLines.push(formatInline(line) + '<br>');
+        }
+
+        if (inList) {
+            outputLines.push('</ul>');
+        }
+
+        processed = outputLines.join('\n');
+
+        // 4. Re-insert code blocks with guaranteed vertical gaps
         codeBlocks.forEach((block, i) => {
             const blockWithGap = `<div style="margin: 20px 0;">${block}</div>`;
             processed = processed.replace(placeholder(i), blockWithGap);
@@ -983,7 +1073,7 @@ Example for a clean vertical process:
         const trigger = document.createElement('button');
         trigger.id = 'ai-chat-btn';
         trigger.className = 'ai-chat-trigger';
-        trigger.innerHTML = '✦';
+        trigger.innerHTML = '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l2.4 6.6L21 11l-6.6 2.4L12 20l-2.4-6.6L3 11l6.6-2.4z"></path></svg>';
         trigger.onclick = () => this.toggleChat();
         document.body.appendChild(trigger);
 
@@ -997,40 +1087,72 @@ Example for a clean vertical process:
             <div class="ai-status-dot"></div>
             <div style="font-size: 14px; font-weight:700; color:#fff; letter-spacing: 0.5px;">Global AI Copilot</div>
           </div>
-          <div style="display:flex; gap:8px;">
+          <div style="display:flex; gap:6px; align-items:center;">
+            <button class="panel-close-btn" id="clear-chat" title="Clear Chat Thread" style="font-size:12px; padding: 2px 8px; display: inline-flex; align-items: center; gap: 4px;">
+              <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg> Clear
+            </button>
             <button class="panel-close-btn" id="minimize-chat" style="font-size:16px;">−</button>
             <button class="panel-close-btn" id="close-chat">×</button>
           </div>
         </div>
+        <div class="copilot-mode-bar" id="copilot-mode-bar">
+          <button class="copilot-mode-btn active" data-mode="general">
+            <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="10" rx="2"></rect><circle cx="12" cy="5" r="2"></circle><path d="M12 7v4"></path><line x1="8" y1="15" x2="8" y2="17"></line><line x1="16" y1="15" x2="16" y2="17"></line></svg>
+            General
+          </button>
+          <button class="copilot-mode-btn" data-mode="optimizer">
+            <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+            Optimizer
+          </button>
+          <button class="copilot-mode-btn" data-mode="debugger">
+            <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><rect x="8" y="6" width="8" height="14" rx="4"></rect><line x1="6" y1="18" x2="8" y2="16"></line><line x1="18" y1="18" x2="16" y2="16"></line><line x1="6" y1="11" x2="18" y2="11"></line><line x1="6" y1="6" x2="8" y2="8"></line><line x1="18" y1="6" x2="16" y2="8"></line></svg>
+            Bug Hunter
+          </button>
+          <button class="copilot-mode-btn" data-mode="testGen">
+            <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"></path><polyline points="14 2 14 8 20 8"></polyline><path d="M9 15l2 2 4-4"></path></svg>
+            Unit Tests
+          </button>
+        </div>
         <div class="chat-messages" id="chat-messages">
           <div class="message assistant welcome-card">
-            <div class="welcome-title">✦ Intelligent Code Assistant</div>
+            <div class="welcome-title">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:4px; vertical-align:-2px;"><path d="M12 2l2.4 6.6L21 11l-6.6 2.4L12 20l-2.4-6.6L3 11l6.6-2.4z"></path></svg>
+              Intelligent Code Assistant
+            </div>
             <div class="welcome-desc">Ask questions, analyze logic, or optimize your code workspace in real-time.</div>
             
             <div class="quick-actions-grid">
               <div class="quick-action-card prompt-chip" data-prompt="Explain my current code">
-                <div class="action-icon">💡</div>
+                <div class="action-icon">
+                  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                </div>
                 <div class="action-details">
                   <div class="action-title">Explain Code</div>
                   <div class="action-desc">Walkthrough execution logic</div>
                 </div>
               </div>
               <div class="quick-action-card prompt-chip" data-prompt="How do I optimize my current code for time and space complexity?">
-                <div class="action-icon">⚡</div>
+                <div class="action-icon">
+                  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+                </div>
                 <div class="action-details">
                   <div class="action-title">Optimize Performance</div>
                   <div class="action-desc">Refine time & space Big-O</div>
                 </div>
               </div>
               <div class="quick-action-card prompt-chip" data-prompt="Scan my current code for bugs, logic errors, or edge cases.">
-                <div class="action-icon">🔍</div>
+                <div class="action-icon">
+                  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                </div>
                 <div class="action-details">
                   <div class="action-title">Find & Fix Bugs</div>
                   <div class="action-desc">Identify errors & leaks</div>
                 </div>
               </div>
               <div class="quick-action-card prompt-chip" data-prompt="Write comprehensive unit tests for my current code.">
-                <div class="action-icon">🧪</div>
+                <div class="action-icon">
+                  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"></path><polyline points="14 2 14 8 20 8"></polyline><path d="M9 15l2 2 4-4"></path></svg>
+                </div>
                 <div class="action-details">
                   <div class="action-title">Generate Tests</div>
                   <div class="action-desc">Write robust test cases</div>
@@ -1040,7 +1162,7 @@ Example for a clean vertical process:
           </div>
         </div>
         <div class="chat-input-area">
-          <input type="text" id="chat-input" class="chat-input" placeholder="Type a question...">
+          <input type="text" id="chat-input" class="chat-input" placeholder="Ask General Copilot...">
           <button id="send-chat" class="btn primary" style="padding: 0 12px; height: 35px;">▶</button>
         </div>
       `;
@@ -1054,10 +1176,32 @@ Example for a clean vertical process:
         document.getElementById('close-chat').onclick = () => this.toggleChat(false);
         const minimizeBtn = document.getElementById('minimize-chat');
         if (minimizeBtn) minimizeBtn.onclick = () => this.toggleChat(false);
+        const clearBtn = document.getElementById('clear-chat');
+        if (clearBtn) clearBtn.onclick = () => this.clearChat();
+
         document.getElementById('send-chat').onclick = () => this.sendChatMessage();
         document.getElementById('chat-input').onkeydown = (e) => {
             if (e.key === 'Enter') this.sendChatMessage();
         };
+
+        // Copilot Mode Selector listeners
+        const modeBar = win.querySelector('#copilot-mode-bar');
+        if (modeBar) {
+            modeBar.addEventListener('click', (e) => {
+                const btn = e.target.closest('.copilot-mode-btn');
+                if (btn && btn.dataset.mode) {
+                    modeBar.querySelectorAll('.copilot-mode-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    this.activeCopilotMode = btn.dataset.mode;
+                    const modeObj = this.copilotModes[this.activeCopilotMode];
+                    const chatInput = document.getElementById('chat-input');
+                    if (chatInput && modeObj) {
+                        chatInput.placeholder = `Ask ${modeObj.name}...`;
+                    }
+                    this.showToast(`Switched mode to ${modeObj ? modeObj.name : 'Copilot'}`);
+                }
+            });
+        }
 
         // Chips listener
         win.addEventListener('click', (e) => {
@@ -1065,7 +1209,7 @@ Example for a clean vertical process:
             if (chip) {
                 let prompt = chip.dataset.prompt;
                 if (prompt.includes("code") || prompt.includes("this")) {
-                    prompt += `\n\nCode context:\n${this.editor.getValue()}`;
+                    prompt += `\n\nCode context:\n${this.editor ? this.editor.getValue() : ''}`;
                 }
                 this.sendChatMessage(prompt);
             }
@@ -1105,8 +1249,8 @@ Example for a clean vertical process:
         this.addMessageToChat('assistant', '<div class="ai-typing-indicator"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>', loadingId);
 
         try {
-            // Build the prompt with clear role distinction and context
-            const systemRule = this.chatHistory.find(m => m.role === 'system')?.content || '';
+            const modeObj = this.copilotModes[this.activeCopilotMode] || this.copilotModes.general;
+            const systemRule = modeObj.systemPrompt;
             let fullPrompt = `${systemRule}\n\nCONVERSATION HISTORY:\n`;
 
             this.chatHistory.filter(m => m.role !== 'system').forEach(msg => {
@@ -1114,10 +1258,18 @@ Example for a clean vertical process:
                 fullPrompt += `[${label}]: ${msg.content}\n`;
             });
 
-            // If user mentioned current code, add it to prompt context explicitly
-            const currentCode = this.editor.getValue();
-            fullPrompt += `\n[CURRENT_CODE_IN_EDITOR]:\n${currentCode}\n`;
-            fullPrompt += `\n[ASSISTANT_NEXT_RESPONSE]: Provide a highly structured, professional answer focusing on clean patterns and architectural insights.`;
+            // Context: Check if user selected code in editor
+            let selectedCode = '';
+            if (this.editor && typeof this.editor.getSelection === 'function') {
+                selectedCode = this.editor.getSelection().trim();
+            }
+
+            const currentCode = this.editor ? this.editor.getValue() : '';
+            if (selectedCode) {
+                fullPrompt += `\n[SELECTED_CODE_IN_EDITOR]:\n${selectedCode}\n`;
+            }
+            fullPrompt += `\n[FULL_CODE_IN_EDITOR]:\n${currentCode}\n`;
+            fullPrompt += `\n[ASSISTANT_NEXT_RESPONSE]: Provide a highly structured, professional answer with clean code snippets when applicable.`;
 
             const aiMsg = await generateTextWithGemini(fullPrompt);
             const loadingEl = document.getElementById(loadingId);
@@ -1129,7 +1281,7 @@ Example for a clean vertical process:
 
             this.chatHistory.push({ role: "assistant", content: aiMsg });
 
-            // Render with the new markdown helper
+            // Render with markdown helper
             loadingEl.innerHTML = this.renderMarkdown(aiMsg, false);
 
             const messagesContainer = document.getElementById('chat-messages');
@@ -1147,6 +1299,90 @@ Example for a clean vertical process:
         msgDiv.innerHTML = content;
         container.appendChild(msgDiv);
         container.scrollTop = container.scrollHeight;
+    }
+
+    applyCodeToEditor(btn) {
+        const container = btn.closest('.code-block-container');
+        if (!container) return;
+        const code = container.querySelector('code').textContent;
+        if (this.editor) {
+            const selection = this.editor.getSelection ? this.editor.getSelection() : '';
+            if (selection && selection.trim().length > 0) {
+                this.editor.replaceSelection(code);
+                this.showToast('Replaced selection with AI code!');
+            } else {
+                this.editor.setValue(code);
+                this.showToast('Applied AI code to editor!');
+            }
+            const original = btn.textContent;
+            btn.textContent = 'Applied! ✓';
+            btn.classList.add('copied');
+            setTimeout(() => {
+                btn.textContent = original;
+                btn.classList.remove('copied');
+            }, 2000);
+        }
+    }
+
+    clearChat() {
+        this.chatHistory = [
+            {
+                role: "system",
+                content: this.copilotModes[this.activeCopilotMode]?.systemPrompt || this.copilotModes.general.systemPrompt
+            }
+        ];
+        const container = document.getElementById('chat-messages');
+        if (container) {
+            container.innerHTML = `
+            <div class="message assistant welcome-card">
+                <div class="welcome-title">
+                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:4px; vertical-align:-2px;"><path d="M12 2l2.4 6.6L21 11l-6.6 2.4L12 20l-2.4-6.6L3 11l6.6-2.4z"></path></svg>
+                  Intelligent Code Assistant
+                </div>
+                <div class="welcome-desc">Ask questions, analyze logic, or optimize your code workspace in real-time.</div>
+                
+                <div class="quick-actions-grid">
+                  <div class="quick-action-card prompt-chip" data-prompt="Explain my current code">
+                    <div class="action-icon">
+                      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                    </div>
+                    <div class="action-details">
+                      <div class="action-title">Explain Code</div>
+                      <div class="action-desc">Walkthrough execution logic</div>
+                    </div>
+                  </div>
+                  <div class="quick-action-card prompt-chip" data-prompt="How do I optimize my current code for time and space complexity?">
+                    <div class="action-icon">
+                      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+                    </div>
+                    <div class="action-details">
+                      <div class="action-title">Optimize Performance</div>
+                      <div class="action-desc">Refine time & space Big-O</div>
+                    </div>
+                  </div>
+                  <div class="quick-action-card prompt-chip" data-prompt="Scan my current code for bugs, logic errors, or edge cases.">
+                    <div class="action-icon">
+                      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                    </div>
+                    <div class="action-details">
+                      <div class="action-title">Find & Fix Bugs</div>
+                      <div class="action-desc">Identify errors & leaks</div>
+                    </div>
+                  </div>
+                  <div class="quick-action-card prompt-chip" data-prompt="Write comprehensive unit tests for my current code.">
+                    <div class="action-icon">
+                      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"></path><polyline points="14 2 14 8 20 8"></polyline><path d="M9 15l2 2 4-4"></path></svg>
+                    </div>
+                    <div class="action-details">
+                      <div class="action-title">Generate Tests</div>
+                      <div class="action-desc">Write robust test cases</div>
+                    </div>
+                  </div>
+                </div>
+            </div>
+            `;
+        }
+        this.showToast('Chat history cleared!');
     }
 
     // --- Snippet Core Logic ---

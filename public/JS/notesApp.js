@@ -167,18 +167,6 @@ async function initApp() {
   const urlParams = new URLSearchParams(window.location.search);
   const forceGuest = urlParams.get('guest') === 'true';
 
-  // Redirect check to restore last visited page on reload/refresh
-  if (!forceGuest) {
-    const lastPage = localStorage.getItem('lastPage');
-    if (lastPage === 'code-workspace') {
-      window.location.replace('/HTML/code-workspace.html');
-      return;
-    } else if (lastPage === 'student-hub') {
-      window.location.replace('/HTML/student-hub.html');
-      return;
-    }
-  }
-
   // Render skeletal loaders immediately while fetching user session and notes
   renderDashboardSkeletons(null, 'all');
 

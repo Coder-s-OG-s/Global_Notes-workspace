@@ -1,4 +1,4 @@
-import { getTagColor, formatDate, showConfirm, showPrompt, showFolderModal, showToast } from "./utilities.js";
+import { getTagColor, formatDate, showConfirm, showPrompt, showFolderModal, showToast, wireAppsDropdown } from "./utilities.js";
 import { getSelectedDate } from "./filterSearchSort.js";
 import { saveSingleNote } from "./storage.js";
 import {
@@ -293,7 +293,7 @@ export function wireDropdowns() {
     });
   };
 
-  toggleDropdown("apps-dropdown-wrapper", "apps-menu");
+  wireAppsDropdown();
   toggleDropdown("preferences-dropdown-wrapper", "preferences-menu");
   toggleDropdown("user-pill", "profile-menu");
 

@@ -92,6 +92,94 @@ export function escapeHtml(str = "") {
 }
 
 // ========================================
+// UNIFIED APPS & TOOLS DROPDOWN WIRING
+// ========================================
+export function wireAppsDropdown() {
+    const toggle = document.getElementById("apps-dropdown-toggle");
+    const menu = document.getElementById("apps-menu");
+    const wrapper = document.getElementById("apps-dropdown-wrapper");
+
+    if (!toggle || !menu) return;
+
+    // Highlight current active tool page
+    const highlightActiveTool = () => {
+        const currentPath = window.location.pathname;
+        const items = menu.querySelectorAll("a.dropdown-item");
+        items.forEach(item => {
+            const href = item.getAttribute("href");
+            let isActive = false;
+
+            if (href === "/app.html" && (currentPath === "/app.html" || currentPath === "/" || currentPath === "/index.html" || currentPath.endsWith("/app.html"))) {
+                isActive = true;
+            } else if (href && href !== "/app.html") {
+                const cleanHref = href.replace("/HTML/", "").replace("/", "");
+                if (currentPath.includes(cleanHref)) {
+                    isActive = true;
+                }
+            }
+
+            if (isActive) {
+                item.classList.add("active");
+            } else {
+                item.classList.remove("active");
+            }
+        });
+    };
+
+    highlightActiveTool();
+
+    if (toggle.dataset.wired === "true") return;
+    toggle.dataset.wired = "true";
+
+    toggle.addEventListener("click", (e) => {
+        e.stopPropagation();
+        highlightActiveTool();
+        document.querySelectorAll(".dropdown-menu").forEach(el => {
+            if (el !== menu) el.classList.add("hidden");
+        });
+        document.querySelectorAll(".overflow-menu").forEach(el => el.classList.add("hidden"));
+        menu.classList.toggle("hidden");
+    });
+
+    document.addEventListener("click", (e) => {
+        if (wrapper && !wrapper.contains(e.target)) {
+            menu.classList.add("hidden");
+        }
+    });
+
+    menu.addEventListener("click", (e) => {
+        const link = e.target.closest("a.dropdown-item");
+        if (link) {
+            const href = link.getAttribute("href");
+            if (href) {
+                e.preventDefault();
+                e.stopPropagation();
+                menu.classList.add("hidden");
+
+                if (href === "/app.html") {
+                    localStorage.setItem('lastPage', 'dashboard');
+                } else if (href.includes("code-workspace")) {
+                    localStorage.setItem('lastPage', 'code-workspace');
+                } else if (href.includes("student-hub")) {
+                    localStorage.setItem('lastPage', 'student-hub');
+                } else if (href.includes("ui-designer")) {
+                    localStorage.setItem('lastPage', 'ui-designer');
+                } else if (href.includes("pdf-editor")) {
+                    localStorage.setItem('lastPage', 'pdf-editor');
+                }
+
+                const currentPath = window.location.pathname;
+                if (currentPath === href || (href === "/app.html" && (currentPath === "/app.html" || currentPath === "/"))) {
+                    window.location.reload();
+                } else {
+                    window.location.href = href;
+                }
+            }
+        }
+    });
+}
+
+// ========================================
 // TOAST NOTIFICATIONS
 // ========================================
 /**

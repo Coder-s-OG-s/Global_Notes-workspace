@@ -5,6 +5,7 @@
  */
 
 import { generateTextWithGemini } from './geminiAPI.js';
+import { parseMarkdownToHtml } from './aiAssistant.js';
 
 export function wireEditorQuickTools() {
     // ── Popover toggle logic ──────────────────────────────────────────────────
@@ -174,23 +175,20 @@ function isValidEmail(email) {
 function insertTextAtCursor(text, contentEditor) {
     if (!contentEditor) return;
     contentEditor.focus();
-    const paragraphs = text.split('\n').filter(p => p.trim() !== '');
+    const formattedHtml = parseMarkdownToHtml(text);
     try {
-        if (paragraphs.length <= 1) {
-            document.execCommand('insertText', false, text);
-        } else {
-            document.execCommand('insertHTML', false, paragraphs.join('<br>'));
-        }
+        document.execCommand('insertHTML', false, formattedHtml);
     } catch (e) {
         const selection = window.getSelection();
         if (!selection.rangeCount) return;
         const range = selection.getRangeAt(0);
         range.deleteContents();
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = formattedHtml;
         const fragment = document.createDocumentFragment();
-        paragraphs.forEach((p, i) => {
-            fragment.appendChild(document.createTextNode(p));
-            if (i < paragraphs.length - 1) fragment.appendChild(document.createElement('br'));
-        });
+        while (tempDiv.firstChild) {
+            fragment.appendChild(tempDiv.firstChild);
+        }
         range.insertNode(fragment);
     }
 }

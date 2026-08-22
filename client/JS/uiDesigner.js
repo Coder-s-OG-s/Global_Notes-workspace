@@ -1,6 +1,8 @@
 import { generateTextWithGemini } from './geminiAPI.js';
+import { wireAppsDropdown } from './utilities.js';
 
 document.addEventListener('DOMContentLoaded', () => {
+  wireAppsDropdown();
   // DOM Elements
   const setApiKeyBtn = document.getElementById('set-api-key-btn');
   const openPasteModalBtn = document.getElementById('open-paste-modal-btn');
@@ -37,34 +39,34 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const STARTER_TEMPLATES = {
     hero: `
-<div style="padding: 48px 24px; text-align: center; background: #0f172a; color: #f8fafc; font-family: system-ui, sans-serif; border-radius: 16px; margin: 20px;">
-  <span data-element-id="node-1" style="background: rgba(249, 115, 22, 0.15); color: #f97316; padding: 4px 14px; border-radius: 20px; font-size: 12px; font-weight: 600; display: inline-block;">✨ Next-Gen Workspace</span>
+<div style="padding: 48px 24px; text-align: center; background: #0f172a; color: #f8fafc; font-family: system-ui, sans-serif; border-radius: 16px; margin: 20px; border: 1px solid rgba(59, 130, 246, 0.2);">
+  <span data-element-id="node-1" style="background: rgba(59, 130, 246, 0.15); color: #3b82f6; padding: 4px 14px; border-radius: 20px; font-size: 12px; font-weight: 600; display: inline-block;">Next-Gen Workspace</span>
   <h1 data-element-id="node-2" style="font-size: 36px; font-weight: 800; margin: 16px 0; background: linear-gradient(135deg, #ffffff 0%, #38bdf8 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Build Stunning UI Components with AI</h1>
   <p data-element-id="node-3" style="color: #94a3b8; font-size: 16px; max-width: 500px; margin: 0 auto 24px; line-height: 1.6;">Transform any target HTML component into a modern glassmorphic interface instantly with AI.</p>
-  <button data-element-id="node-4" style="background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); color: #ffffff; border: none; padding: 12px 28px; border-radius: 8px; font-weight: 600; font-size: 14px; cursor: pointer; box-shadow: 0 4px 16px rgba(249,115,22,0.4);">Get Started Free →</button>
+  <button data-element-id="node-4" style="background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); color: #ffffff; border: 1px solid #3b82f6; padding: 12px 28px; border-radius: 8px; font-weight: 600; font-size: 14px; cursor: pointer; box-shadow: 0 4px 16px rgba(37,99,235,0.4);">Get Started Free</button>
 </div>
     `.trim(),
 
     pricing: `
-<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; padding: 24px; background: #0f172a; font-family: system-ui, sans-serif; border-radius: 16px; margin: 20px;">
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; padding: 24px; background: #0f172a; font-family: system-ui, sans-serif; border-radius: 16px; margin: 20px; border: 1px solid rgba(59, 130, 246, 0.2);">
   <div data-element-id="node-10" style="background: #1e293b; border: 1px solid #334155; border-radius: 12px; padding: 24px; color: #f8fafc;">
     <h3 data-element-id="node-11" style="margin: 0; font-size: 18px; color: #94a3b8;">Starter</h3>
     <div data-element-id="node-12" style="font-size: 32px; font-weight: 800; margin: 12px 0;">$0 <span style="font-size: 14px; color: #64748b;">/mo</span></div>
     <p style="color: #94a3b8; font-size: 12px; margin-bottom: 16px;">Essential note features for solo developers.</p>
     <button data-element-id="node-13" style="width: 100%; background: #334155; color: #fff; border: none; padding: 10px; border-radius: 6px; font-weight: 600; cursor: pointer;">Start Free</button>
   </div>
-  <div data-element-id="node-20" style="background: #1e293b; border: 2px solid #f97316; border-radius: 12px; padding: 24px; color: #f8fafc; position: relative;">
-    <span data-element-id="node-21" style="background: #f97316; color: #fff; font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 10px; position: absolute; top: -10px; right: 16px;">POPULAR</span>
-    <h3 data-element-id="node-22" style="margin: 0; font-size: 18px; color: #f97316;">Pro Plan</h3>
+  <div data-element-id="node-20" style="background: #1e293b; border: 2px solid #3b82f6; border-radius: 12px; padding: 24px; color: #f8fafc; position: relative;">
+    <span data-element-id="node-21" style="background: #3b82f6; color: #fff; font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 10px; position: absolute; top: -10px; right: 16px;">POPULAR</span>
+    <h3 data-element-id="node-22" style="margin: 0; font-size: 18px; color: #60a5fa;">Pro Plan</h3>
     <div data-element-id="node-23" style="font-size: 32px; font-weight: 800; margin: 12px 0;">$19 <span style="font-size: 14px; color: #64748b;">/mo</span></div>
     <p style="color: #94a3b8; font-size: 12px; margin-bottom: 16px;">Full AI Refiner, PDF Editor & Cross-Note Search.</p>
-    <button data-element-id="node-24" style="width: 100%; background: linear-gradient(135deg, #f97316, #ea580c); color: #fff; border: none; padding: 10px; border-radius: 6px; font-weight: 600; cursor: pointer;">Upgrade Now</button>
+    <button data-element-id="node-24" style="width: 100%; background: linear-gradient(135deg, #2563eb, #1d4ed8); color: #fff; border: 1px solid #3b82f6; padding: 10px; border-radius: 6px; font-weight: 600; cursor: pointer;">Upgrade Now</button>
   </div>
 </div>
     `.trim(),
 
     card: `
-<div data-element-id="node-30" style="max-width: 380px; margin: 24px auto; background: #1e293b; border-radius: 16px; padding: 24px; color: #f8fafc; font-family: system-ui, sans-serif; border: 1px solid #334155; box-shadow: 0 10px 25px rgba(0,0,0,0.3);">
+<div data-element-id="node-30" style="max-width: 380px; margin: 24px auto; background: #1e293b; border-radius: 16px; padding: 24px; color: #f8fafc; font-family: system-ui, sans-serif; border: 1px solid rgba(59, 130, 246, 0.2); box-shadow: 0 10px 25px rgba(0,0,0,0.3);">
   <div data-element-id="node-31" style="font-size: 11px; font-weight: 700; color: #38bdf8; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px;">Analytics Overview</div>
   <h2 data-element-id="node-32" style="margin: 0 0 12px; font-size: 20px;">Active Subscriptions</h2>
   <div data-element-id="node-33" style="font-size: 36px; font-weight: 800; color: #f8fafc;">$48,290 <span style="font-size: 14px; color: #4ade80; font-weight: 600;">+14.2%</span></div>

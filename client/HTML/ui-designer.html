@@ -21,20 +21,86 @@
     <!-- Top Header Navigation -->
     <header class="designer-header">
         <div style="display: flex; align-items: center; gap: 14px;">
-            <a href="/app.html" class="btn-secondary-gn" style="padding: 5px 10px; font-size: 12px; text-decoration: none;" title="Return to Notes Workspace">
-                ← Back to Workspace
+            <a href="/app.html" class="btn-secondary-gn" style="padding: 6px 12px; font-size: 12px; text-decoration: none; display: flex; align-items: center; gap: 6px;" title="Return to Notes Workspace">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+                Back to Workspace
             </a>
             <a href="/app.html" class="designer-brand">
                 <img src="/assets/images/logo_workspace.png" alt="Logo" class="logo-img">
                 <h1>Global UI <span class="brand-accent">Designer AI</span></h1>
             </a>
+
+            <!-- Apps & Tools Dropdown -->
+            <div class="dropdown-wrapper" id="apps-dropdown-wrapper" style="margin-left: 6px;">
+              <button class="nav-feature-pill nav-apps-pill" id="apps-dropdown-toggle" title="Workspace Apps & Tools">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+                  stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;">
+                  <rect x="3" y="3" width="7" height="7" rx="1.5"></rect>
+                  <rect x="14" y="3" width="7" height="7" rx="1.5"></rect>
+                  <rect x="14" y="14" width="7" height="7" rx="1.5"></rect>
+                  <rect x="3" y="14" width="7" height="7" rx="1.5"></rect>
+                </svg>
+                <span class="nav-pill-text">Apps & Tools</span>
+                <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                  style="width:12px;height:12px;margin-left:2px;">
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+              </button>
+
+              <div class="dropdown-menu hidden" id="apps-menu" style="width: 220px; text-align: left;">
+                <div class="dropdown-header">Workspace Tools</div>
+                <a href="/app.html" class="dropdown-item" id="nav-notes-app" title="Notes & Workspace">
+                  <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round" style="width:15px;height:15px;">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                    <polyline points="14 2 14 8 20 8"></polyline>
+                    <line x1="16" y1="13" x2="8" y2="13"></line>
+                    <line x1="16" y1="17" x2="8" y2="17"></line>
+                  </svg>
+                  <span>Notes App</span>
+                </a>
+                <a href="/HTML/code-workspace.html" class="dropdown-item" id="nav-code" title="Code Workspace">
+                  <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round" style="width:15px;height:15px;">
+                    <polyline points="16 18 22 12 16 6"></polyline>
+                    <polyline points="8 6 2 12 8 18"></polyline>
+                  </svg>
+                  <span>Code Workspace</span>
+                </a>
+                <a href="/HTML/student-hub.html" class="dropdown-item" id="nav-student" title="Student Hub">
+                  <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round" style="width:15px;height:15px;">
+                    <path d="M22 10v6M2 10l10-5 10 5-10 5z"></path>
+                    <path d="M6 12v5c0 2 2.67 3 6 3s6-1 6-3v-5"></path>
+                  </svg>
+                  <span>Student Hub</span>
+                </a>
+                <a href="/HTML/ui-designer.html" class="dropdown-item" id="nav-ui-designer" title="UI Designer AI">
+                  <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round" style="width:15px;height:15px;">
+                    <rect x="3" y="3" width="18" height="18" rx="2"></rect>
+                    <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                    <polyline points="21 15 16 10 5 21"></polyline>
+                  </svg>
+                  <span>UI Designer AI</span>
+                </a>
+                <a href="/HTML/pdf-editor.html" class="dropdown-item" id="nav-pdf-editor" title="PDF Editor & Annotator">
+                  <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round" style="width:15px;height:15px;">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                    <polyline points="14 2 14 8 20 8"></polyline>
+                  </svg>
+                  <span>PDF Editor</span>
+                </a>
+              </div>
+            </div>
         </div>
 
         <!-- Header Actions -->
         <div class="header-actions">
             <div class="custom-select-wrapper" style="position: relative;">
                 <select id="starter-templates-select" class="btn-secondary-gn" style="appearance: none; padding-right: 24px; cursor: pointer;" title="Load Starter UI Templates">
-                    <option value="" disabled selected>Starter Templates ▾</option>
+                    <option value="" disabled selected>Starter Templates</option>
                     <option value="hero">Landing Hero Section</option>
                     <option value="pricing">Pricing Cards Grid</option>
                     <option value="card">Analytics Metrics Card</option>
@@ -114,8 +180,6 @@
                 </div>
             </div>
 
-
-
             <iframe id="preview-iframe" class="preview-iframe" sandbox="allow-same-origin allow-scripts"></iframe>
         </section>
 
@@ -146,7 +210,6 @@
 
                 <!-- Code Preview Snippet -->
                 <div class="element-code-preview" id="element-code-preview">
-                    <!-- Targeted outerHTML snippet appears here -->
                     // Click an element in the live preview window to isolate its HTML...
                 </div>
 
@@ -172,7 +235,6 @@
 
                 <!-- Targeted Prompt Input -->
                 <textarea id="ai-prompt-input" class="prompt-textarea" placeholder="Describe changes (e.g. 'Make this card modern with rounded corners, subtle border, and shadow')"></textarea>
-
 
                 <button class="btn-primary-gn" id="refine-ai-btn" disabled style="width: 100%; justify-content: center; padding: 10px;">
                     <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3z"></path></svg>
