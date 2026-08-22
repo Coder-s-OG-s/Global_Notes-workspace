@@ -34,33 +34,116 @@ export function wireAIAssistant(state, callbacks) {
         if (!contentEditor) return;
         contentEditor.focus();
 
-        const paragraphs = text.split('\n').filter(p => p.trim() !== '');
+        const formattedHtml = parseMarkdownToHtml(text);
 
-        // Use insertText (safe) for single lines, safe HTML insertion for multi-line
         try {
-            if (paragraphs.length <= 1) {
-                document.execCommand('insertText', false, text);
-            } else {
-                // Escape HTML entities in each paragraph to prevent XSS
-                const safeHtml = paragraphs.map(p => escapeHtml(p)).join('<br>');
-                document.execCommand('insertHTML', false, safeHtml);
-            }
+            document.execCommand('insertHTML', false, formattedHtml);
         } catch (e) {
-            // Fallback: DOM-based insertion with text nodes (inherently safe)
             const selection = window.getSelection();
             if (!selection.rangeCount) return;
 
             const range = selection.getRangeAt(0);
             range.deleteContents();
 
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = formattedHtml;
             const fragment = document.createDocumentFragment();
-            paragraphs.forEach((p, index) => {
-                fragment.appendChild(document.createTextNode(p));
-                if (index < paragraphs.length - 1) {
-                    fragment.appendChild(document.createElement('br'));
-                }
-            });
+            while (tempDiv.firstChild) {
+                fragment.appendChild(tempDiv.firstChild);
+            }
             range.insertNode(fragment);
         }
     }
+}
+
+export function parseMarkdownToHtml(text) {
+    if (!text) return '';
+
+    // Extract code blocks with unique placeholders
+    const codeBlocks = [];
+    const placeholder = (i) => `___CODEBLOCK_${i}___`;
+
+    let processed = text.replace(/```([\s\S]*?)```/g, (match, code) => {
+        const lines = code.split('\n');
+        let cleanCode = code;
+        if (lines.length > 0 && /^[a-z#]+$/i.test(lines[0].trim())) {
+            lines.shift();
+            cleanCode = lines.join('\n');
+        }
+        const escaped = escapeHtml(cleanCode);
+        codeBlocks.push(`<pre style="background: rgba(0,0,0,0.05); padding: 10px; border-radius: 6px; font-family: monospace; overflow-x: auto;"><code>${escaped}</code></pre>`);
+        return placeholder(codeBlocks.length - 1);
+    });
+
+    processed = escapeHtml(processed);
+
+    const formatInline = (str) => {
+        return str
+            .replace(/`([^`]+)`/g, '<code style="background: rgba(0,0,0,0.05); padding: 2px 4px; border-radius: 3px; font-family: monospace;">$1</code>')
+            .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+            .replace(/__(.*?)__/g, '<strong>$1</strong>')
+            .replace(/\*(.*?)\*/g, '<em>$1</em>')
+            .replace(/_(.*?)_/g, '<em>$1</em>');
+    };
+
+    const lines = processed.split('\n');
+    const outputLines = [];
+    let inList = false;
+
+    for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+        const trimmed = line.trim();
+
+        if (/___CODEBLOCK_\d+___/.test(line)) {
+            if (inList) {
+                outputLines.push('</ul>');
+                inList = false;
+            }
+            outputLines.push(line);
+            continue;
+        }
+
+        const listMatch = line.match(/^(\s*)([\*\-\+])\s+(.*)$/);
+        if (listMatch) {
+            if (!inList) {
+                inList = true;
+                outputLines.push('<ul style="margin: 8px 0; padding-left: 20px;">');
+            }
+            const content = formatInline(listMatch[3]);
+            outputLines.push(`<li>${content}</li>`);
+            continue;
+        }
+
+        if (inList) {
+            outputLines.push('</ul>');
+            inList = false;
+        }
+
+        const headerMatch = line.match(/^(#{1,6})\s+(.*)$/);
+        if (headerMatch) {
+            const level = headerMatch[1].length;
+            const content = formatInline(headerMatch[2]);
+            outputLines.push(`<h${level} style="margin: 10px 0 4px 0; font-weight: 600;">${content}</h${level}>`);
+            continue;
+        }
+
+        if (!trimmed) {
+            outputLines.push('<br>');
+            continue;
+        }
+
+        outputLines.push(formatInline(line) + '<br>');
+    }
+
+    if (inList) {
+        outputLines.push('</ul>');
+    }
+
+    processed = outputLines.join('');
+
+    codeBlocks.forEach((block, i) => {
+        processed = processed.replace(placeholder(i), block);
+    });
+
+    return processed;
 }

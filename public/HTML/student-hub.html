@@ -36,6 +36,71 @@
                 <img src="/assets/images/logo_workspace.png" alt="Logo" class="logo-img">
                 <h1 class="brand-h1">Student <span class="brand-accent">Hub</span></h1>
             </div>
+
+            <!-- Apps & Tools Dropdown -->
+            <div class="dropdown-wrapper" id="apps-dropdown-wrapper" style="margin-left: 8px;">
+              <button class="nav-feature-pill nav-apps-pill" id="apps-dropdown-toggle" title="Workspace Apps & Tools">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+                  stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;">
+                  <rect x="3" y="3" width="7" height="7" rx="1.5"></rect>
+                  <rect x="14" y="3" width="7" height="7" rx="1.5"></rect>
+                  <rect x="14" y="14" width="7" height="7" rx="1.5"></rect>
+                  <rect x="3" y="14" width="7" height="7" rx="1.5"></rect>
+                </svg>
+                <span class="nav-pill-text">Apps & Tools ✦</span>
+                <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                  style="width:12px;height:12px;margin-left:2px;">
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+              </button>
+
+              <div class="dropdown-menu hidden" id="apps-menu" style="width: 220px;">
+                <div class="dropdown-header">Workspace Tools</div>
+                <a href="/app.html" class="dropdown-item" id="nav-notes-app" title="Notes & Workspace">
+                  <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round" style="width:15px;height:15px;">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                    <polyline points="14 2 14 8 20 8"></polyline>
+                    <line x1="16" y1="13" x2="8" y2="13"></line>
+                    <line x1="16" y1="17" x2="8" y2="17"></line>
+                  </svg>
+                  <span>Notes App</span>
+                </a>
+                <a href="/HTML/code-workspace.html" class="dropdown-item" id="nav-code" title="Code Workspace">
+                  <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round" style="width:15px;height:15px;">
+                    <polyline points="16 18 22 12 16 6"></polyline>
+                    <polyline points="8 6 2 12 8 18"></polyline>
+                  </svg>
+                  <span>Code Workspace</span>
+                </a>
+                <a href="/HTML/student-hub.html" class="dropdown-item" id="nav-student" title="Student Hub">
+                  <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round" style="width:15px;height:15px;">
+                    <path d="M22 10v6M2 10l10-5 10 5-10 5z"></path>
+                    <path d="M6 12v5c0 2 2.67 3 6 3s6-1 6-3v-5"></path>
+                  </svg>
+                  <span>Student Hub</span>
+                </a>
+                <a href="/HTML/ui-designer.html" class="dropdown-item" id="nav-ui-designer" title="UI Designer AI">
+                  <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round" style="width:15px;height:15px;">
+                    <rect x="3" y="3" width="18" height="18" rx="2"></rect>
+                    <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                    <polyline points="21 15 16 10 5 21"></polyline>
+                  </svg>
+                  <span>UI Designer AI</span>
+                </a>
+                <a href="/HTML/pdf-editor.html" class="dropdown-item" id="nav-pdf-editor" title="PDF Editor & Annotator">
+                  <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round" style="width:15px;height:15px;">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                    <polyline points="14 2 14 8 20 8"></polyline>
+                  </svg>
+                  <span>PDF Editor</span>
+                </a>
+              </div>
+            </div>
         </div>
 
         <div class="header-center">
@@ -828,9 +893,6 @@
         </section>
     </main>
 
-
-    <!-- Toast Container for floating messages -->
-    <div class="toast-container" id="toast-container"></div>
 
     <!-- Application Script -->
     <script type="module" src="/JS/studentHub.js"></script>

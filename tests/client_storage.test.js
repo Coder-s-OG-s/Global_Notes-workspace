@@ -26,4 +26,26 @@ test('CLIENT STORAGE & INTEGRITY SUITE', async (t) => {
     assert.ok(fs.existsSync(publicHtmlPath), 'public/index.html must exist for production builds');
   });
 
+  await t.test('3. Verify Markdown asterisk & header rendering logic across client files', () => {
+    const codeWsPath = path.join(__dirname, '../client/JS/codeWorkspace.js');
+    const aiAssistantPath = path.join(__dirname, '../client/JS/aiAssistant.js');
+    const studentHubPath = path.join(__dirname, '../client/JS/studentHub.js');
+
+    const codeWsContent = fs.readFileSync(codeWsPath, 'utf8');
+    const aiAssistantContent = fs.readFileSync(aiAssistantPath, 'utf8');
+    const studentHubContent = fs.readFileSync(studentHubPath, 'utf8');
+
+    // Ensure codeWorkspace.js has bullet and header parsing
+    assert.ok(codeWsContent.includes('listMatch'), 'codeWorkspace.js must handle bullet list matching');
+    assert.ok(codeWsContent.includes('headerMatch'), 'codeWorkspace.js must handle header matching');
+
+    // Ensure aiAssistant.js exports parseMarkdownToHtml
+    assert.ok(aiAssistantContent.includes('export function parseMarkdownToHtml'), 'aiAssistant.js must export parseMarkdownToHtml');
+    assert.ok(aiAssistantContent.includes('formattedHtml'), 'aiAssistant.js insertTextAtCursor must use formatted HTML');
+
+    // Ensure studentHub.js renderSafeHtml has list & header handling
+    assert.ok(studentHubContent.includes('formatInline'), 'studentHub.js must format inline markdown');
+    assert.ok(studentHubContent.includes('listMatch'), 'studentHub.js must handle bullet list items');
+  });
+
 });

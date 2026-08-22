@@ -265,8 +265,15 @@ export function renderNotesDashboard(notes, folders, activeFolderId, activeLibra
     filteredNotes = notes.filter(n => n.isArchived);
     if (titleEl) titleEl.textContent = "Archived Notes";
   } else if (activeFolderId) {
-    filteredNotes = notes.filter(n => (n.folderId === activeFolderId || n.folderId === String(activeFolderId)) && !n.isArchived);
-    const folder = folders.find(f => f.id === activeFolderId || f._id === activeFolderId);
+    const folder = folders.find(f => f.id === activeFolderId || f._id === activeFolderId || String(f.id) === String(activeFolderId) || String(f._id) === String(activeFolderId));
+    const targetFolderIds = new Set();
+    if (folder) {
+      if (folder.id) targetFolderIds.add(String(folder.id));
+      if (folder._id) targetFolderIds.add(String(folder._id));
+    } else {
+      targetFolderIds.add(String(activeFolderId));
+    }
+    filteredNotes = notes.filter(n => n.folderId && targetFolderIds.has(String(n.folderId)) && !n.isArchived);
     if (titleEl) titleEl.textContent = folder ? `Folder: ${folder.name}` : "Folder Notes";
   } else {
     filteredNotes = notes.filter(n => !n.folderId && !n.isArchived);
@@ -310,7 +317,10 @@ export function renderNotesDashboard(notes, folders, activeFolderId, activeLibra
     folders.forEach(folder => {
       const folderId = folder.id || folder._id;
       const folderColor = folder.color || "blue";
-      const notesInFolder = notes.filter(n => (n.folderId === folderId || n.folderId === String(folderId)) && !n.isArchived);
+      const targetFolderIds = new Set();
+      if (folder.id) targetFolderIds.add(String(folder.id));
+      if (folder._id) targetFolderIds.add(String(folder._id));
+      const notesInFolder = notes.filter(n => n.folderId && targetFolderIds.has(String(n.folderId)) && !n.isArchived);
       const noteCount = notesInFolder.length;
 
       const card = document.createElement("div");
@@ -420,7 +430,7 @@ export function renderNotesDashboard(notes, folders, activeFolderId, activeLibra
     const card = document.createElement("div");
     
     // Determine card color theme (Amber, Emerald, Coral, Purple, Rose, Teal, Slate, Blue)
-    const folderObj = note.folderId ? folders.find(f => f.id === note.folderId || f._id === note.folderId) : null;
+    const folderObj = note.folderId ? folders.find(f => f.id === note.folderId || f._id === note.folderId || String(f.id) === String(note.folderId) || String(f._id) === String(note.folderId)) : null;
     const colorList = ['amber', 'emerald', 'coral', 'purple', 'rose', 'teal', 'slate', 'blue'];
     let noteColor = note.color || note.theme;
     

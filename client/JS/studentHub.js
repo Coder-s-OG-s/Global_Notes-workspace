@@ -2,7 +2,7 @@ import config from './config.js';
 import { generateTextWithGemini, generateTextWithGroq } from './geminiAPI.js';
 import { THEME_KEY } from './constants.js';
 import { setThemeStorageKey, wireThemeToggle, getStoredTheme, persistTheme } from './themeManager.js';
-import { showToast, showConfirm } from './utilities.js';
+import { showToast, showConfirm, wireAppsDropdown } from './utilities.js';
 import { getCurrentUser } from './authService.js';
 
 // --- Local Storage Keys ---
@@ -498,6 +498,7 @@ async function initHub() {
     // 1. Sync Theme
     setThemeStorageKey(THEME_KEY);
     wireThemeToggle();
+    wireAppsDropdown();
 
     // 2. Tab Navigation Setup
     initTabs();
@@ -2312,25 +2313,103 @@ function escapeHtml(str) {
 
 function renderSafeHtml(str) {
     if (!str) return '';
-    let escaped = escapeHtml(str);
-    
-    // Parse markdown multi-line code blocks (e.g. ```javascript ... ```)
-    escaped = escaped.replace(/```(?:[a-zA-Z0-9+#]+)?\n?([\s\S]*?)```/g, (match, code) => {
-        return `<pre class="code-block-flashcard"><code>${code.trim()}</code></pre>`;
+
+    // 1. Extract code blocks with unique placeholders
+    const codeBlocks = [];
+    const placeholder = (i) => `___CODEBLOCK_${i}___`;
+
+    let processed = str.replace(/```(?:[a-zA-Z0-9+#]+)?\n?([\s\S]*?)```/g, (match, code) => {
+        const escapedCode = escapeHtml(code.trim());
+        codeBlocks.push(`<pre class="code-block-flashcard"><code>${escapedCode}</code></pre>`);
+        return placeholder(codeBlocks.length - 1);
     });
 
-    // Parse inline code (e.g. `code`)
-    escaped = escaped.replace(/`([^`]+)`/g, '<code class="inline-code-flashcard">$1</code>');
+    // 2. Escape non-code text
+    processed = escapeHtml(processed);
 
-    escaped = escaped
+    // Unescape basic pre-sanitized HTML tags if passed
+    processed = processed
         .replace(/&lt;strong&gt;/g, '<strong>')
         .replace(/&lt;\/strong&gt;/g, '</strong>')
         .replace(/&lt;b&gt;/g, '<b>')
         .replace(/&lt;\/b&gt;/g, '</b>')
         .replace(/&lt;em&gt;/g, '<em>')
-        .replace(/&lt;\/em&gt;/g, '</em>')
-        .replace(/\*\*([\s\S]*?)\*\*/g, '<strong>$1</strong>'); // Parse bold markdown fallbacks
-    return escaped;
+        .replace(/&lt;\/em&gt;/g, '</em>');
+
+    // Inline formatting helper
+    const formatInline = (text) => {
+        return text
+            .replace(/`([^`]+)`/g, '<code class="inline-code-flashcard">$1</code>')
+            .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+            .replace(/__(.*?)__/g, '<strong>$1</strong>')
+            .replace(/\*(.*?)\*/g, '<em>$1</em>')
+            .replace(/_(.*?)_/g, '<em>$1</em>');
+    };
+
+    // 3. Process line by line for headers and bullet lists
+    const lines = processed.split('\n');
+    const outputLines = [];
+    let inList = false;
+
+    for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+        const trimmed = line.trim();
+
+        if (/___CODEBLOCK_\d+___/.test(line)) {
+            if (inList) {
+                outputLines.push('</ul>');
+                inList = false;
+            }
+            outputLines.push(line);
+            continue;
+        }
+
+        // Bullet list item (*, -, +)
+        const listMatch = line.match(/^(\s*)([\*\-\+])\s+(.*)$/);
+        if (listMatch) {
+            if (!inList) {
+                inList = true;
+                outputLines.push('<ul style="margin: 6px 0; padding-left: 20px;">');
+            }
+            const content = formatInline(listMatch[3]);
+            outputLines.push(`<li>${content}</li>`);
+            continue;
+        }
+
+        if (inList) {
+            outputLines.push('</ul>');
+            inList = false;
+        }
+
+        // Header (# Header, ## Header, ### Header, etc.)
+        const headerMatch = line.match(/^(#{1,6})\s+(.*)$/);
+        if (headerMatch) {
+            const level = headerMatch[1].length;
+            const content = formatInline(headerMatch[2]);
+            outputLines.push(`<h${level} style="margin: 8px 0 4px 0; font-weight: 600;">${content}</h${level}>`);
+            continue;
+        }
+
+        if (!trimmed) {
+            outputLines.push('<br>');
+            continue;
+        }
+
+        outputLines.push(formatInline(line) + '<br>');
+    }
+
+    if (inList) {
+        outputLines.push('</ul>');
+    }
+
+    processed = outputLines.join('');
+
+    // 4. Re-insert code blocks
+    codeBlocks.forEach((block, i) => {
+        processed = processed.replace(placeholder(i), block);
+    });
+
+    return processed;
 }
 
 // ─── FLOWCHART MAKER FUNCTIONS ───
