@@ -22,6 +22,21 @@ async function initAuthPage() {
     console.warn("Notice: config.js not found or ignored. Using production fallback config.", err);
   }
 
+  // --- Handle Redirect Parameter ---
+  const urlParams = new URLSearchParams(window.location.search);
+  const redirectTarget = urlParams.get("redirect");
+
+  if (redirectTarget) {
+    sessionStorage.setItem("postLoginRedirect", redirectTarget);
+    const guestLink = document.querySelector(".guest-link");
+    if (guestLink) {
+      const targetPath = redirectTarget.startsWith("HTML/") || redirectTarget.startsWith("/")
+        ? (redirectTarget.startsWith("/") ? redirectTarget : `/${redirectTarget}`)
+        : `/HTML/${redirectTarget}`;
+      guestLink.href = targetPath;
+    }
+  }
+
   // Displays a message to the user with optional type (info/error/success)
   const setMessage = (text, type = "info") => {
     if (!messageEl) return;

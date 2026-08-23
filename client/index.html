@@ -4,24 +4,24 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Global Notes Workspace — Persistent Knowledge Base</title>
+  <title>Global Notes Workspace — Kinetic Knowledge Base</title>
   <meta name="description"
-    content="Global Notes Workspace: The professional, offline-capable workspace for your notes, ideas, and code. Features a rich markdown editor, integrated code workspace, and AI assistant.">
-  <meta name="keywords" content="notes app, code snippets editor, knowledge management, second brain, productivity workspace, markdown editor, AI writing assistant">
+    content="Global Notes Workspace: The professional, offline-capable workspace for your notes, ideas, and code. Kinetic typography design system powered by Dark Navy and Electric Acid Yellow.">
+  <meta name="keywords" content="notes app, code snippets editor, kinetic typography, knowledge management, second brain, productivity workspace, markdown editor, AI writing assistant">
   <meta name="robots" content="index, follow">
   <link rel="canonical" href="https://global-notes.com">
 
   <!-- Open Graph / Facebook -->
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://global-notes.com">
-  <meta property="og:title" content="Global Notes Workspace — Persistent Knowledge Base">
-  <meta property="og:description" content="A refined workspace where your notes, code, and ideas live in perfect harmony. Free, offline-first, and professional.">
+  <meta property="og:title" content="Global Notes Workspace — Kinetic Knowledge Base">
+  <meta property="og:description" content="A refined workspace where your notes, code, and ideas live in perfect kinetic harmony. Free, offline-first, and professional.">
   <meta property="og:image" content="https://global-notes.com/assets/images/logo_workspace.png">
 
   <!-- Twitter -->
   <meta property="twitter:card" content="summary_large_image">
   <meta property="twitter:url" content="https://global-notes.com">
-  <meta property="twitter:title" content="Global Notes Workspace — Persistent Knowledge Base">
+  <meta property="twitter:title" content="Global Notes Workspace — Kinetic Knowledge Base">
   <meta property="twitter:description" content="The professional workspace for your notes, ideas, and code. Built for students, developers, and writers.">
   <meta property="twitter:image" content="https://global-notes.com/assets/images/logo_workspace.png">
 
@@ -47,20 +47,29 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link
-    href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Instrument+Serif:ital,wght@0,400;0,700;1,400;1,700&family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;700;800;900&display=swap"
+    href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Inter:wght@400;500;600;700&family=Outfit:wght@400;700;900&family=Space+Grotesk:wght@500;700&display=swap"
     rel="stylesheet">
 
   <!-- Styles -->
-  <link rel="stylesheet" href="CSS/landing.css?v=4.7">
+  <link rel="stylesheet" href="CSS/index.css?v=5.0">
+  <link rel="stylesheet" href="CSS/landing.css?v=5.0">
   <link rel="icon" type="image/png" href="assets/images/logo_workspace.png" />
 </head>
 
 <body>
 
+  <!-- SVG Noise Filter Overlay -->
+  <svg class="noise-overlay" aria-hidden="true">
+    <filter id="noiseFilter">
+      <feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="4" stitchTiles="stitch"/>
+    </filter>
+    <rect width="100%" height="100%" filter="url(#noiseFilter)"/>
+  </svg>
+
   <!-- Dot Matrix Grid Overlay -->
   <div class="dot-grid-overlay"></div>
 
-  <!-- Subtle Ambient Glow -->
+  <!-- Ambient Glow -->
   <div class="radial-glow glow-1"></div>
   <div class="radial-glow glow-2"></div>
 
@@ -69,25 +78,23 @@
     <div class="container nav-content">
       <a href="#" class="brand">
         <img src="assets/images/logo_workspace.png" alt="Global Notes Logo" class="nav-logo">
-        <span class="brand-name">Global <span class="brand-accent">Notes</span></span>
+        <span class="brand-name">GLOBAL <span class="brand-accent">NOTES</span></span>
       </a>
       
       <!-- Nav Links -->
       <div class="nav-links">
-        <a href="#features">Features</a>
-        <a href="#workspaces">Workspaces</a>
-        <a href="#code-spotlight">Code IDE</a>
-        <a href="#ui-designer-spotlight">UI Designer AI</a>
-        <a href="#student-spotlight">Student Hub</a>
+        <a href="#features">FEATURES</a>
+        <a href="#spotlights">WORKSPACES</a>
+        <a href="#faq">FAQ</a>
         <div class="mobile-nav-ctas">
-          <a href="app.html?guest=true" class="btn-pill-primary sm">Open Workspace</a>
-          <a href="HTML/signup.html" class="btn-pill-secondary sm">Sign In</a>
+          <a href="app.html?guest=true" class="btn-pill-primary sm">OPEN WORKSPACE</a>
+          <a href="HTML/signup.html" class="btn-pill-secondary sm">SIGN IN</a>
         </div>
       </div>
 
       <div class="nav-ctas">
-        <a href="/HTML/signup.html" class="btn-pill-secondary sm">Sign In</a>
-        <a href="/app.html?guest=true" class="btn-pill-primary sm">Open Workspace</a>
+        <a href="HTML/signup.html" class="btn-pill-secondary sm">SIGN IN</a>
+        <a href="app.html?guest=true" class="btn-pill-primary sm">OPEN WORKSPACE</a>
       </div>
 
       <button class="menu-toggle" id="menu-toggle" aria-label="Toggle Menu">
@@ -101,7 +108,7 @@
   <main>
 
     <!-- =====================================================
-         ANIMATED HERO HEADLINE SECTION
+         KINETIC HERO HEADLINE SECTION
          ===================================================== -->
     <section class="hero" id="hero">
       <div class="container">
@@ -110,13 +117,13 @@
           <!-- Live Badge -->
           <div class="badge-pill">
             <span class="pulse-dot"></span>
-            <span>v2.0 · Now with AI Smart Tags</span>
+            <span>v2.0 · KINETIC AI WORKSPACE</span>
           </div>
 
-          <!-- Animated Typewriter Headline -->
+          <!-- Giant Viewport Fluid Headline -->
           <h1 class="hero-headline">
-            The Workspace<br>
-            Built for
+            THE WORKSPACE<br>
+            BUILT FOR
             <span class="typewriter-wrapper">
               <span id="typewriter-word" class="typewriter-word"></span><span class="typewriter-cursor">|</span>
             </span>
@@ -124,928 +131,345 @@
 
           <!-- Subtext -->
           <p class="hero-subtext">
-            One offline-first workspace for your notes, code snippets, and AI UI component designs.
-            Instantly searchable. 100% private. No subscriptions required.
+            One high-contrast offline workspace for your notes, code snippets, and AI UI components.
+            Instantly searchable. 100% private. Zero subscriptions required.
           </p>
 
           <!-- CTA Buttons -->
           <div class="hero-actions">
-            <a href="/app.html?guest=true" class="btn-pill-primary lg">
-              Open Workspace
-              <svg class="btn-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
-            </a>
-            <a href="/HTML/ui-designer.html" class="btn-pill-secondary lg" style="border-color: rgba(249, 115, 22, 0.4); color: #f97316;">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 6px;"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
-              Try UI Designer AI
+            <a href="app.html?guest=true" class="btn-pill-primary lg">
+              OPEN WORKSPACE
+              <svg class="btn-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
             </a>
           </div>
 
           <!-- Social Proof Meta -->
           <div class="hero-meta">
-            <span>Free forever</span>
+            <span>LOCAL ARCHITECTURE</span>
             <span class="meta-dot"></span>
-            <span>Offline-first · No cloud required</span>
+            <span>OFFLINE-FIRST · NO CLOUD REQUIRED</span>
             <span class="meta-dot"></span>
-            <span>SQLite-powered engine</span>
+            <span>SQLITE-POWERED ENGINE</span>
           </div>
 
         </div>
       </div>
     </section>
 
-    <!-- Unified Virtual Desktop OS Environment -->
-    <section class="desktop-env-section" id="desktop-env-section">
-      
-      <!-- OS Top Menu Bar -->
-      <div class="os-menu-bar">
-        <div class="menu-bar-left">
-          <span class="menu-item logo-item">✦ GlobalOS</span>
-          <span class="menu-item">File</span>
-          <span class="menu-item">Edit</span>
-          <span class="menu-item">View</span>
-          <span class="menu-item">Go</span>
-          <span class="menu-item">Window</span>
-          <span class="menu-item">Help</span>
-        </div>
-        <div class="menu-bar-right">
-          <span class="menu-item clock-item" id="system-clock"></span>
-          <script>
-            (function() {
-              const clock = document.getElementById('system-clock');
-              if (clock) {
-                const update = () => {
-                  const now = new Date();
-                  let hours = now.getHours();
-                  const minutes = String(now.getMinutes()).padStart(2, '0');
-                  const ampm = hours >= 12 ? 'PM' : 'AM';
-                  hours = hours % 12;
-                  hours = hours ? hours : 12;
-                  clock.textContent = hours + ':' + minutes + ' ' + ampm;
-                };
-                update();
-              }
-            })();
-          </script>
-        </div>
+    <!-- =====================================================
+         MARQUEE TICKER STRIP #1 (GOLD YELLOW)
+         ===================================================== -->
+    <div class="marquee-container">
+      <div class="marquee-content">
+        <span class="marquee-item"><span class="marquee-star">✦</span> 100% OFFLINE ARCHITECTURE</span>
+        <span class="marquee-item"><span class="marquee-num">0.0ms</span> SEARCH LATENCY</span>
+        <span class="marquee-item"><span class="marquee-star">✦</span> INTELLIGENT SEARCH TAGS</span>
+        <span class="marquee-item"><span class="marquee-star">✦</span> END-TO-END DATA CONTROL</span>
+        <span class="marquee-item"><span class="marquee-num">5X</span> WORKFLOW SPEED</span>
+        <span class="marquee-item"><span class="marquee-star">✦</span> MARKDOWN + CODE IDE</span>
+
+        <!-- Duplicated strip for seamless infinite animation loop -->
+        <span class="marquee-item"><span class="marquee-star">✦</span> 100% OFFLINE ARCHITECTURE</span>
+        <span class="marquee-item"><span class="marquee-num">0.0ms</span> SEARCH LATENCY</span>
+        <span class="marquee-item"><span class="marquee-star">✦</span> INTELLIGENT SEARCH TAGS</span>
+        <span class="marquee-item"><span class="marquee-star">✦</span> END-TO-END DATA CONTROL</span>
+        <span class="marquee-item"><span class="marquee-num">5X</span> WORKFLOW SPEED</span>
+        <span class="marquee-item"><span class="marquee-star">✦</span> MARKDOWN + CODE IDE</span>
       </div>
+    </div>
 
-      <!-- Main Desktop Area -->
-      <div class="desktop-workspace">
-        
-        <!-- Live Sandbox Interactive Cue Indicator -->
-        <div class="interactive-demo-hint-badge" id="demo-interactive-hint">
-          <span class="pulse-ring"></span>
-          <span class="hint-icon">💡</span>
-          <span class="hint-text">Interactive Demo Sandbox: Type, use format toolbar or switch apps to test!</span>
-          <button class="close-hint-btn" id="btn-close-demo-hint" title="Dismiss Hint">&times;</button>
+    <!-- =====================================================
+         BRUTALIST STICKY CARDS FEATURE SECTION
+         ===================================================== -->
+    <section id="features" class="section">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-tag">ENGINEERED SPECS</span>
+          <h2 class="section-title">BUILT FOR ABSOLUTE PERFORMANCE & SPEED</h2>
         </div>
 
-        <!-- Desktop Grid Shortcuts (Icons) -->
-        <div class="desktop-icons-grid">
-          <div class="desktop-icon-item" data-app="notes">
-            <div class="icon-wrapper notes-app-icon">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
-            </div>
-            <span class="icon-label">Notes.app</span>
-          </div>
-          <div class="desktop-icon-item" data-app="code">
-            <div class="icon-wrapper code-app-icon">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>
-            </div>
-            <span class="icon-label">CodeIDE.app</span>
-          </div>
-          <div class="desktop-icon-item" data-app="student">
-            <div class="icon-wrapper student-app-icon">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"></path><path d="M6 12v5c0 2 2 3 6 3s6-1 6-3v-5"></path></svg>
-            </div>
-            <span class="icon-label">StudentHub.app</span>
-          </div>
-          <div class="desktop-icon-item" data-app="uidesigner">
-            <div class="icon-wrapper uidesigner-app-icon" style="background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); color: #fff; box-shadow: 0 4px 14px rgba(249, 115, 22, 0.4);">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
-            </div>
-            <span class="icon-label">UIDesigner.app</span>
-          </div>
-          <a href="/HTML/signup.html" class="desktop-icon-item" style="text-decoration: none;">
-            <div class="icon-wrapper register-app-icon">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"></path></svg>
-            </div>
-            <span class="icon-label">Register.app</span>
-          </a>
-        </div>
-
-        <!-- Onboarding Quest/Missions Widget Dashboard Panel -->
-        <div class="quest-missions-panel">
-          <div class="panel-header">
-            <h4>Quick Start Missions</h4>
-            <span class="mission-counter" id="mission-progress">0/4</span>
-          </div>
-          <div class="panel-body">
-            <p class="mission-intro">Complete all system tasks to unlock your Pro AI credits Reward!</p>
-            <ul class="missions-list">
-              <li class="mission-item" id="mission-notes">
-                <span class="checkbox"></span>
-                <span>Type in the Notes editor</span>
-              </li>
-              <li class="mission-item" id="mission-toolbar">
-                <span class="checkbox"></span>
-                <span>Click Bold in Notes toolbar</span>
-              </li>
-              <li class="mission-item" id="mission-code">
-                <span class="checkbox"></span>
-                <span>Select a code snippet in IDE</span>
-              </li>
-              <li class="mission-item" id="mission-latency">
-                <span class="checkbox"></span>
-                <span>Run Cache Latency Sync</span>
-              </li>
-            </ul>
-          </div>
-        </div>
-
-        <!-- Bento Stage Wrapper holding the floating windows -->
-        <div class="bento-stage-container" id="bento-stage-container">
+        <div class="sticky-card-stack">
           
-          <!-- Notes Workspace Window Card -->
-          <div class="bento-window active" id="window-notes" data-window="notes">
-            <div class="window-header">
-              <div class="window-controls">
-                <span class="dot dot-close" data-win-close="notes"></span>
-                <span class="dot dot-minimize" data-win-minimize="notes"></span>
-                <span class="dot dot-expand" data-win-expand="notes"></span>
-              </div>
-              <div class="window-title">global-notes://workspace/notes</div>
-              <div class="window-status-pill">Online</div>
-            </div>
-            <div class="window-body">
-              <div class="mock-workspace">
-                <aside class="mock-sidebar">
-                  <div class="sidebar-sec">
-                    <span class="sec-title">Folders</span>
-                    <ul class="sidebar-list" id="trial-folders-list">
-                      <!-- Filled dynamically by JS -->
-                    </ul>
-                    <button class="btn-new-folder-mock" id="trial-add-folder-btn">+ Add Folder</button>
-                  </div>
-                  <div class="sidebar-sec">
-                    <span class="sec-title">Search Tags</span>
-                    <div class="sidebar-tags" id="trial-tags-list">
-                      <span class="mock-tag">#welcome</span>
-                      <span class="mock-tag">#features</span>
-                      <span class="mock-tag">#notes</span>
-                    </div>
-                  </div>
-                </aside>
-                
-                <!-- MIDDLE PANE: Notes List -->
-                <div class="mock-notes-list">
-                  <div class="notes-list-header">
-                    <button class="btn-new-note-mock" id="trial-add-note-btn">+ New Note</button>
-                    <input type="text" class="trial-search-input" id="trial-search-notes" placeholder="Search notes...">
-                  </div>
-                  <div class="notes-list-scroll" id="trial-notes-list-container">
-                    <!-- Note items dynamically populated -->
-                  </div>
-                </div>
-
-                <!-- RIGHT PANE: Note Editor -->
-                <div class="mock-editor">
-                  <div class="editor-header">
-                    <input type="text" id="trial-editor-title" class="trial-editor-title-input" placeholder="Note Title">
-                    <div class="editor-meta" id="trial-editor-meta">Last synced just now &bull; #welcome</div>
-                  </div>
-                  <div class="editor-content-wrap">
-                    <div class="trial-editor-toolbar">
-                      <button class="toolbar-btn" data-action="bold" title="Bold"><b>B</b></button>
-                      <button class="toolbar-btn" data-action="italic" title="Italic"><i>I</i></button>
-                      <button class="toolbar-btn" data-action="header" title="Heading">H</button>
-                      <button class="toolbar-btn" data-action="list" title="Bullet List">&bull; List</button>
-                      <button class="toolbar-btn" data-action="quote" title="Quote Block">&ldquo; Quote</button>
-                      <span class="toolbar-divider"></span>
-                      <button class="toolbar-btn trial-ai-lock-btn" data-action="ai-summary" title="AI Summary (Premium)">✦ AI Summary</button>
-                      <button class="toolbar-btn trial-ai-lock-btn" data-action="ai-expand" title="AI Expand (Premium)">✦ Ask AI</button>
-                    </div>
-                    <textarea id="trial-editor-body" class="trial-editor-body-textarea" placeholder="Start typing..."></textarea>
-                    
-                    <!-- Dynamic Visual Widgets based on active note -->
-                    <div id="trial-editor-visual-widget">
-                      <!-- Rendered dynamically by JS (diagrams, quotes, etc.) -->
-                    </div>
-                  </div>
-                </div>
+          <!-- Sticky Card 01 -->
+          <div class="kinetic-card">
+            <div class="kinetic-card-num">01</div>
+            <div class="kinetic-card-body">
+              <h3 class="kinetic-card-title">TACTILE FOLDER ARCHITECTURE</h3>
+              <p class="kinetic-card-desc">
+                Organize documents with deeply nested directory trees. Search across millions of words in 0.0ms through native SQLite indices cached locally in your browser memory.
+              </p>
+              <div class="kinetic-card-tags">
+                <span class="kinetic-tag">SQLITE INDEX</span>
+                <span class="kinetic-tag">NESTABLE TREES</span>
+                <span class="kinetic-tag">ZERO LATENCY</span>
               </div>
             </div>
           </div>
 
-          <!-- Code Workspace Window Card -->
-          <div class="bento-window" id="window-code" data-window="code">
-            <div class="window-header">
-              <div class="window-controls">
-                <span class="dot dot-close" data-win-close="code"></span>
-                <span class="dot dot-minimize" data-win-minimize="code"></span>
-                <span class="dot dot-expand" data-win-expand="code"></span>
-              </div>
-              <div class="window-title">global-notes://workspace/developer-ide</div>
-              <div class="window-status-pill">IDE Mode</div>
-            </div>
-            <div class="window-body">
-              <div class="mock-code-workspace">
-                <div class="code-sidebar">
-                  <button class="btn-new-snippet-mock" id="trial-add-snippet-btn">+ New Snippet</button>
-                  <div class="search-wrapper-mock">
-                    <input type="text" class="search-input-mock" id="trial-search-snippets" placeholder="Search snippets...">
-                  </div>
-                  <div class="sidebar-sec">
-                    <span class="sec-title">My Snippets</span>
-                    <ul class="sidebar-list" id="trial-snippets-list">
-                      <!-- Loaded by JS -->
-                    </ul>
-                  </div>
-                </div>
-                <div class="code-editor-pane">
-                  <div class="editor-tabs" id="trial-snippet-tabs">
-                    <!-- Tabs dynamically loaded -->
-                  </div>
-                  <div class="code-body-split">
-                    <div class="code-container" style="position: relative; display: flex; flex-direction: column; flex: 1.25; background: #1e1e1e; padding: 0;">
-                      <div class="code-editor-wrapper" style="display: flex; flex-grow: 1; min-height: 380px;">
-                        <div class="code-line-numbers">
-                          <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span><span>11</span><span>12</span><span>13</span><span>14</span>
-                        </div>
-                        <textarea id="trial-code-editor" class="trial-code-textarea" spellcheck="false"></textarea>
-                      </div>
-                    </div>
-                    <div class="mock-ai-panel">
-                      <div class="ai-panel-header">
-                        <span>AI Assistant</span>
-                        <button class="btn-terminal-run" id="btn-run-code">✦ Explain Code</button>
-                      </div>
-                      <div class="ai-panel-content" id="terminal-output">
-                        <div class="log-line">Select code and click "Explain Code" to see Gemini's explanation report.</div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+          <!-- Sticky Card 02 -->
+          <div class="kinetic-card">
+            <div class="kinetic-card-num">02</div>
+            <div class="kinetic-card-body">
+              <h3 class="kinetic-card-title">TARGETED UI DESIGNER AI ENGINE</h3>
+              <p class="kinetic-card-desc">
+                Click any HTML element in the visual inspector canvas. Prompts AI directly to transform DOM node subtrees into glassmorphic surfaces, brutalist layouts, or custom responsive widgets.
+              </p>
+              <div class="kinetic-card-tags">
+                <span class="kinetic-tag">VISUAL DOM INSPECTOR</span>
+                <span class="kinetic-tag">GEMINI AI</span>
+                <span class="kinetic-tag">REALTIME PREVIEWS</span>
               </div>
             </div>
           </div>
 
-          <!-- Student Hub Window Card -->
-          <div class="bento-window" id="window-student" data-window="student">
-            <div class="window-header">
-              <div class="window-controls">
-                <span class="dot dot-close" data-win-close="student"></span>
-                <span class="dot dot-minimize" data-win-minimize="student"></span>
-                <span class="dot dot-expand" data-win-expand="student"></span>
-              </div>
-              <div class="window-title">global-notes://workspace/student-hub</div>
-              <div class="window-status-pill">Study Mode</div>
-            </div>
-            <div class="window-body">
-              <div class="mock-student-hub">
-                <div class="hub-header-widgets">
-                  <div class="hub-widget bg-glass">
-                    <span class="widget-label">Study Deck</span>
-                    <span class="widget-value text-gradient-purple" id="trial-deck-name">Algorithms v1</span>
-                    <span class="widget-meta" id="trial-deck-meta">15 Cards Generated</span>
-                  </div>
-                  <div class="hub-widget bg-glass">
-                    <span class="widget-label">Exam Prep Plan</span>
-                    <span class="widget-value text-gradient-pink" id="trial-plan-name">Final Schedule</span>
-                    <span class="widget-meta" id="trial-plan-meta">8 Days to Revision</span>
-                  </div>
-                  <div class="hub-widget bg-glass">
-                    <span class="widget-label">Flowchart Maker</span>
-                    <span class="widget-value text-gradient-gold">Active Diagram</span>
-                    <span class="widget-meta">Vector canvas ready</span>
-                  </div>
-                </div>
-                
-                <div class="hub-grid-layout">
-                  <!-- Left side: Interactive Flashcard Flip Widget -->
-                  <div class="hub-block student-widget-block">
-                    <h3>Interactive Flashcard Simulator</h3>
-                    <div class="mock-flashcard-container" id="mock-flashcard">
-                      <div class="mock-flashcard-inner">
-                        <div class="mock-flashcard-front">
-                          <div class="card-tag">Topic: Computer Science</div>
-                          <p class="card-question" id="trial-card-question">What is the time complexity of building a heap with Floyd's heap construction method?</p>
-                          <span class="click-hint">Click Card to Flip</span>
-                        </div>
-                        <div class="mock-flashcard-back">
-                          <div class="card-tag">Answer</div>
-                          <p class="card-answer" id="trial-card-answer">The time complexity is O(N) linear time, because the work decreases exponentially at higher levels.</p>
-                          <span class="click-hint">Click Card to Flip</span>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="flashcard-controls" style="margin-top: 12px; display: flex; align-items: center; justify-content: center; gap: 12px;">
-                      <button class="btn-card-ctrl" id="btn-prev-card" style="padding: 4px 10px; font-size: 0.75rem; background: var(--bg-secondary); border: 1px solid var(--border-glass-hover); border-radius: 4px; cursor: pointer;">&larr; Prev</button>
-                      <span id="trial-card-indicator" style="font-size: 0.75rem; color: var(--text-secondary);">1 / 4</span>
-                      <button class="btn-card-ctrl" id="btn-next-card" style="padding: 4px 10px; font-size: 0.75rem; background: var(--bg-secondary); border: 1px solid var(--border-glass-hover); border-radius: 4px; cursor: pointer;">Next &rarr;</button>
-                    </div>
-                  </div>
-                  
-                  <!-- Right side: Revision Plan Scheduler list -->
-                  <div class="hub-block schedule-block">
-                    <h3>Exam Revision Planner</h3>
-                    <div class="scheduler-input-row" style="margin-bottom: 12px; display: flex; gap: 8px;">
-                      <input type="text" id="trial-schedule-subject" placeholder="Subject (e.g. History)" style="flex: 1; padding: 6px 10px; border: 1px solid var(--border-glass-hover); border-radius: 6px; font-size: 0.75rem; background: var(--bg-secondary); color: var(--text-primary);">
-                      <button class="btn-pill-primary" id="btn-generate-schedule" style="padding: 6px 12px; font-size: 0.7rem; border-radius: 6px; cursor: pointer;">Generate</button>
-                    </div>
-                    <div class="mock-timeline-list" id="trial-timeline-list">
-                      <div class="timeline-item active">
-                        <span class="timeline-day">Day 1</span>
-                        <div class="timeline-info">
-                          <strong>Binary Search Trees</strong>
-                          <p>Review insertion, deletion, and balancing rotations</p>
-                        </div>
-                      </div>
-                      <div class="timeline-item">
-                        <span class="timeline-day">Day 2</span>
-                        <div class="timeline-info">
-                          <strong>Dijkstra's Algorithm</strong>
-                          <p>Shortest path proofs and priority queue runs</p>
-                        </div>
-                      </div>
-                      <div class="timeline-item">
-                        <span class="timeline-day">Day 3</span>
-                        <div class="timeline-info">
-                          <strong>Dynamic Programming</strong>
-                          <p>Solve memoization knapsack and edit distance</p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+          <!-- Sticky Card 03 -->
+          <div class="kinetic-card">
+            <div class="kinetic-card-num">03</div>
+            <div class="kinetic-card-body">
+              <h3 class="kinetic-card-title">100% OFFLINE DATABASE ENGINE</h3>
+              <p class="kinetic-card-desc">
+                Runs completely offline inside your browser runtime. Your data never leaves your device unless you explicitly trigger cloud synchronization.
+              </p>
+              <div class="kinetic-card-tags">
+                <span class="kinetic-tag">SANDBOXED STORAGE</span>
+                <span class="kinetic-tag">PRIVACY FIRST</span>
+                <span class="kinetic-tag">ENCRYPTED CACHE</span>
               </div>
             </div>
           </div>
 
-          <!-- UI Designer Window Card -->
-          <div class="bento-window" id="window-uidesigner" data-window="uidesigner">
-            <div class="window-header">
-              <div class="window-controls">
-                <span class="dot dot-close" data-win-close="uidesigner"></span>
-                <span class="dot dot-minimize" data-win-minimize="uidesigner"></span>
-                <span class="dot dot-expand" data-win-expand="uidesigner"></span>
-              </div>
-              <div class="window-title" style="color: #f97316;">global-notes://workspace/ui-designer-ai</div>
-              <div class="window-status-pill" style="background: rgba(249, 115, 22, 0.2); color: #f97316; border-color: rgba(249, 115, 22, 0.4);">UI Designer Mode</div>
-            </div>
-            <div class="window-body" style="padding: 0; background: #111113;">
-              <div class="mock-uidesigner-workspace" style="display: flex; gap: 14px; padding: 14px; background: #111113; color: #ececef; font-family: 'Inter', sans-serif; height: 100%; box-sizing: border-box;">
-                
-                <!-- Left Preview Area -->
-                <div style="flex: 1.2; background: #1a1a1d; border: 1px solid #27272b; border-radius: 12px; padding: 14px; display: flex; flex-direction: column; gap: 10px;">
-                  <div style="font-size: 11px; color: #a0a0ab; display: flex; align-items: center; justify-content: space-between;">
-                    <span>Live Visual Preview Canvas</span>
-                    <span style="color: #10b981; font-weight: 600;">● Inspector Active</span>
-                  </div>
-                  
-                  <div id="trial-uidesigner-preview-card" style="background: #232326; border: 2px dashed #f97316; border-radius: 12px; padding: 18px; text-align: center; cursor: pointer; transition: all 0.3s ease;">
-                    <span style="font-size: 10px; color: #f97316; font-family: monospace; display: block; margin-bottom: 6px; font-weight: 600;">Target Node: &lt;div#demo-card&gt; [node-01]</span>
-                    <h4 id="trial-uidesigner-title" style="margin: 0 0 6px 0; font-size: 15px; font-weight: 700; color: #ffffff;">Interactive Component Sandbox</h4>
-                    <p id="trial-uidesigner-desc" style="margin: 0 0 12px 0; font-size: 12px; color: #a0a0ab;">Click preset chips on the right to transform this element live!</p>
-                    <button id="trial-uidesigner-btn" style="background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); color: #fff; border: none; padding: 7px 16px; border-radius: 18px; font-weight: 600; font-size: 11px; cursor: pointer; box-shadow: 0 4px 12px rgba(249,115,22,0.4);">
-                      Sample Button &rarr;
-                    </button>
-                  </div>
-                  
-                  <div style="font-size: 10px; color: #a0a0ab; text-align: center;">
-                    💡 Click preset chips on the right to test real-time visual transformations.
-                  </div>
-                </div>
-
-                <!-- Right AI Refiner Panel -->
-                <div style="flex: 1; background: #141416; border: 1px solid #27272b; border-radius: 12px; padding: 12px; display: flex; flex-direction: column; gap: 8px;">
-                  <div style="font-size: 11px; font-weight: 700; color: #f97316; display: flex; align-items: center; justify-content: space-between;">
-                    <span>Targeted AI Editor</span>
-                    <span style="font-size: 10px; background: rgba(16, 185, 129, 0.2); color: #10b981; padding: 2px 6px; border-radius: 10px; font-weight: 600;">Gemini 2.5 Flash</span>
-                  </div>
-
-                  <div style="display: flex; gap: 4px; flex-wrap: wrap;">
-                    <button class="trial-preset-chip" data-preset="glassmorphic" style="background: rgba(249, 115, 22, 0.15); color: #f97316; border: 1px solid rgba(249, 115, 22, 0.3); border-radius: 12px; padding: 3px 8px; font-size: 10px; font-weight: 600; cursor: pointer;">Glassmorphic</button>
-                    <button class="trial-preset-chip" data-preset="neon-glow" style="background: rgba(249, 115, 22, 0.15); color: #f97316; border: 1px solid rgba(249, 115, 22, 0.3); border-radius: 12px; padding: 3px 8px; font-size: 10px; font-weight: 600; cursor: pointer;">Neon Glow</button>
-                    <button class="trial-preset-chip" data-preset="hover-anim" style="background: rgba(249, 115, 22, 0.15); color: #f97316; border: 1px solid rgba(249, 115, 22, 0.3); border-radius: 12px; padding: 3px 8px; font-size: 10px; font-weight: 600; cursor: pointer;">Hover Effect</button>
-                    <button class="trial-preset-chip" data-preset="pill-shape" style="background: rgba(249, 115, 22, 0.15); color: #f97316; border: 1px solid rgba(249, 115, 22, 0.3); border-radius: 12px; padding: 3px 8px; font-size: 10px; font-weight: 600; cursor: pointer;">Pill Shape</button>
-                  </div>
-
-
-                  <textarea id="trial-uidesigner-prompt" style="width: 100%; background: #1e1e24; border: 1px solid #27272b; border-radius: 6px; padding: 6px 8px; color: #ececef; font-size: 10px; resize: none; height: 42px; font-family: inherit;" placeholder="Select a preset chip or type instructions..."></textarea>
-
-                  <button id="btn-trial-refine-ai" style="background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); color: #fff; border: none; padding: 7px; border-radius: 6px; font-size: 10px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 4px;">
-                    ✨ Refine Target Component with AI
-                  </button>
-
-                  <a href="/HTML/ui-designer.html" class="btn-pill-secondary sm" style="text-align: center; text-decoration: none; padding: 5px; font-size: 10px; margin-top: auto; border-color: rgba(249, 115, 22, 0.3); color: #f97316;">
-                    Launch Full Standalone Tool &rarr;
-                  </a>
-                </div>
-
-              </div>
-            </div>
-          </div>
-
-          <!-- TRIAL SIGN-IN UPGRADE MODAL OVERLAY -->
-          <div class="trial-modal-overlay hidden" id="trial-upgrade-modal">
-            <div class="trial-modal-card">
-              <div class="trial-modal-icon">✦</div>
-              <h3>Unlock Premium AI Features</h3>
-              <p id="trial-modal-message">Sign in or create a free account to explain, refactor, and summarize documents instantly with our integrated AI companion.</p>
-              <div class="trial-modal-actions">
-                <a href="/HTML/signup.html" class="btn-pill-primary">Sign In Now</a>
-                <button class="btn-pill-secondary" id="btn-close-trial-modal">Cancel</button>
+          <!-- Sticky Card 04 -->
+          <div class="kinetic-card">
+            <div class="kinetic-card-num">04</div>
+            <div class="kinetic-card-body">
+              <h3 class="kinetic-card-title">SMART RECALL & REVISION SCHEDULER</h3>
+              <p class="kinetic-card-desc">
+                Transform notes into interactive flashcards and day-by-day exam timetables with one click. Master concepts faster with algorithmic spaced repetition.
+              </p>
+              <div class="kinetic-card-tags">
+                <span class="kinetic-tag">STUDENT HUB</span>
+                <span class="kinetic-tag">FLASHCARDS</span>
+                <span class="kinetic-tag">TIMETABLE GENERATOR</span>
               </div>
             </div>
           </div>
 
         </div>
-
-        <!-- macOS style bottom dock -->
-        <div class="os-dock-container">
-          <div class="os-dock">
-            <div class="dock-item active" data-app="notes" title="Notes Workspace">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
-            </div>
-            <div class="dock-item" data-app="code" title="Code IDE">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>
-            </div>
-            <div class="dock-item" data-app="student" title="Student Hub">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"></path><path d="M6 12v5c0 2 2 3 6 3s6-1 6-3v-5"></path></svg>
-            </div>
-            <div class="dock-item" data-app="uidesigner" title="UI Designer AI">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
-            </div>
-            <span class="dock-divider"></span>
-            <a href="/HTML/signup.html" class="dock-item" title="Register Account" style="text-decoration: none;">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"></path></svg>
-            </a>
-          </div>
-        </div>
-
       </div>
     </section>
 
-    <!-- Core Features Grid Section -->
-    <section id="features" class="features">
+    <!-- =====================================================
+         MARQUEE TICKER STRIP #2 (DARK NAVY TESTIMONIAL TICKER)
+         ===================================================== -->
+    <div class="marquee-container dark-strip">
+      <div class="marquee-content">
+        <span class="marquee-item"><span class="marquee-star">✦</span> "REPLACED 3 SEPARATE APPS WITH GLOBAL NOTES." — SENIOR ENGINEER</span>
+        <span class="marquee-item"><span class="marquee-star">✦</span> "ZERO SUBSCRIPTION FEES & 100% OFFLINE PRIVACY." — RESEARCHER</span>
+        <span class="marquee-item"><span class="marquee-star">✦</span> "THE ACADEMIC FLASHCARD ENGINE IS UNBEATABLE." — CS STUDENT</span>
+
+        <!-- Duplicated strip for seamless infinite animation loop -->
+        <span class="marquee-item"><span class="marquee-star">✦</span> "REPLACED 3 SEPARATE APPS WITH GLOBAL NOTES." — SENIOR ENGINEER</span>
+        <span class="marquee-item"><span class="marquee-star">✦</span> "ZERO SUBSCRIPTION FEES & 100% OFFLINE PRIVACY." — RESEARCHER</span>
+        <span class="marquee-item"><span class="marquee-star">✦</span> "THE ACADEMIC FLASHCARD ENGINE IS UNBEATABLE." — CS STUDENT</span>
+      </div>
+    </div>
+
+    <!-- =====================================================
+         WORKSPACES SHOWCASE (HAIRLINE GAP-PX GRID CARDS)
+         ===================================================== -->
+    <section id="spotlights" class="section">
       <div class="container">
-        <div class="section-header text-center">
-          <span class="eyebrow">Suite Features</span>
-          <h2>Engineered for productivity without the overhead</h2>
-          <p class="section-desc text-center">A high-performance offline database coupled with dedicated client runtimes.</p>
+        <div class="section-header">
+          <span class="section-tag">INTEGRATED WORKSPACES</span>
+          <h2 class="section-title">THREE POWERFUL SUITES IN ONE PLATFORM</h2>
         </div>
 
-        <div class="features-grid">
-          <!-- Card 1: Nestable Folders (bento-wide) -->
-          <div class="feature-card bento-wide glass-panel" style="--card-index: 1;">
-            <div class="bento-content">
-              <div class="icon-box icon-accent">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
+        <div class="spotlight-grid">
+          
+          <!-- Workspace 1: Code IDE -->
+          <div class="spotlight-card">
+            <div>
+              <div class="spotlight-icon-box">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 26px; height: 26px;"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>
               </div>
-              <h3>Tactile Folder Organization</h3>
-              <p>Arrange your research and docs with deep nestable directory trees. Explore the tree on the right and load articles instantly from SQLite cache.</p>
+              <h3 class="spotlight-title">DEVELOPER IDE</h3>
+              <p class="spotlight-desc">
+                Full code sandbox with syntax highlighting, snippet managers, and integrated AI code explanation.
+              </p>
             </div>
-            <div class="bento-visual folder-explorer-visual">
-              <div class="explorer-sidebar">
-                <div class="tree-folder expanded" data-target="tree-docs">
-                  <span class="tree-toggle">▼</span>
-                  <svg class="folder-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
-                  <span class="tree-label">Documents</span>
-                </div>
-                <div class="tree-sub-items" id="tree-docs">
-                  <div class="tree-file active" data-content="readme">
-                    <svg class="file-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
-                    <span class="tree-label">read_me.md</span>
-                  </div>
-                  <div class="tree-file" data-content="roadmap">
-                    <svg class="file-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
-                    <span class="tree-label">project_plan.md</span>
-                  </div>
-                </div>
-                
-                <div class="tree-folder" data-target="tree-research">
-                  <span class="tree-toggle">▶</span>
-                  <svg class="folder-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
-                  <span class="tree-label">Research Logs</span>
-                </div>
-                <div class="tree-sub-items hidden" id="tree-research">
-                  <div class="tree-file" data-content="quantum">
-                    <svg class="file-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
-                    <span class="tree-label">quantum_notes.md</span>
-                  </div>
-                </div>
-
-                <div class="tree-folder" data-target="tree-code">
-                  <span class="tree-toggle">▶</span>
-                  <svg class="folder-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
-                  <span class="tree-label">Code Snippets</span>
-                </div>
-                <div class="tree-sub-items hidden" id="tree-code">
-                  <div class="tree-file" data-content="server">
-                    <svg class="file-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
-                    <span class="tree-label">server.js</span>
-                  </div>
-                </div>
-              </div>
-              
-              <!-- File Preview Area -->
-              <div class="explorer-preview">
-                <div class="preview-header">
-                  <span class="preview-title" id="explorer-preview-title">read_me.md</span>
-                  <span class="preview-badge">SQLite Cached</span>
-                </div>
-                <div class="preview-body" id="explorer-preview-body">
-                  <p>Welcome to Global Notes! This document outlines your persistent offline knowledge base environment.</p>
-                </div>
-              </div>
-            </div>
+            <a href="HTML/signup.html?redirect=code-workspace.html" class="btn-pill-secondary sm">
+              LAUNCH CODE IDE &rarr;
+            </a>
           </div>
 
-          <!-- Featured Card: Targeted UI Designer AI Engine -->
-          <div class="feature-card bento-wide glass-panel ui-designer-card" style="--card-index: 2;">
-            <div class="bento-content">
-              <div class="icon-box icon-accent">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+          <!-- Workspace 2: UI Designer AI -->
+          <div class="spotlight-card">
+            <div>
+              <div class="spotlight-icon-box">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 26px; height: 26px;"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
               </div>
-              <span class="badge-pill" style="margin-bottom: 12px; color: #ea580c; border-color: rgba(249, 115, 22, 0.3); background: rgba(249, 115, 22, 0.08);">
-                <span class="pulse-dot" style="background: #f97316;"></span>
-                <span>NEW FEATURE &bull; Targeted AI Component Editor</span>
-              </span>
-              <h3>Targeted UI Designer AI Engine</h3>
-              <p>Paste any web HTML code or import from Stitch/Figma. Click any element in the live visual preview to isolate its node tree and prompt AI to refine, transform into glassmorphic/neon surfaces, or add smooth micro-interactions in real-time.</p>
-              <div style="margin-top: 18px;">
-                <a href="#ui-designer-spotlight" class="btn-pill-primary sm" style="background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); color: #ffffff; text-decoration: none; box-shadow: 0 4px 14px rgba(249, 115, 22, 0.35);">
-                  Launch UI Designer AI &rarr;
-                </a>
-              </div>
+              <h3 class="spotlight-title">UI DESIGNER AI</h3>
+              <p class="spotlight-desc">
+                Inspect visual components live, isolate DOM nodes, and prompt AI to refine surfaces and micro-interactions.
+              </p>
             </div>
-            <div class="bento-visual ui-designer-bento-visual">
-              <div class="ui-designer-visual-header">
-                <span class="target-tag">Target: &lt;button#cta-btn&gt; [node-22]</span>
-                <span class="status-active">
-                  <span class="status-dot"></span>
-                  AI Engine Active
-                </span>
-              </div>
-              <div class="ui-designer-chips-preview">
-                <span class="ui-designer-chip-badge">🥞 Glassmorphic</span>
-                <span class="ui-designer-chip-badge">⚙ Neon Glow</span>
-                <span class="ui-designer-chip-badge">⚡ Hover Animation</span>
-              </div>
-              <div class="ui-designer-code-box">
-                &lt;button class="btn-glassmorphic-orange"&gt;Get Started &rarr;&lt;/button&gt;
-              </div>
-            </div>
+            <a href="HTML/signup.html?redirect=ui-designer.html" class="btn-pill-secondary sm">
+              LAUNCH UI DESIGNER &rarr;
+            </a>
           </div>
 
-          <!-- Card 2: Offline SQLite Sync (standard width) -->
-          <div class="feature-card glass-panel" style="--card-index: 2;" id="sync-bento-card">
-            <div class="bento-card-main-content">
-              <div class="icon-box icon-accent">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"></path></svg>
+          <!-- Workspace 3: Student Hub -->
+          <div class="spotlight-card">
+            <div>
+              <div class="spotlight-icon-box">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 26px; height: 26px;"><path d="M22 10v6M2 10l10-5 10 5-10 5z"></path><path d="M6 12v5c0 2 2 3 6 3s6-1 6-3v-5"></path></svg>
               </div>
-              <h3>Offline SQLite Latency</h3>
-              <p>Runs a full SQL database locally inside the sandbox. Write edits instantly, and trigger sync caches with zero network latencies.</p>
+              <h3 class="spotlight-title">STUDENT HUB</h3>
+              <p class="spotlight-desc">
+                Generate active recall decks, day-by-day revision timetables, and interactive concept flowcharts.
+              </p>
             </div>
-            
-            <div class="bento-visual-gauge">
-              <div class="gauge-wrapper">
-                <svg class="gauge-ring" width="100" height="100">
-                  <circle class="gauge-ring-bg" cx="50" cy="50" r="42"></circle>
-                  <circle class="gauge-ring-fill" cx="50" cy="50" r="42" id="gauge-progress"></circle>
-                </svg>
-                <div class="gauge-value" id="gauge-latency">0ms</div>
-              </div>
-              <button class="btn-gauge-trigger" id="btn-sync-gauge">⚡ Trigger Cache Sync</button>
-            </div>
+            <a href="HTML/signup.html?redirect=student-hub.html" class="btn-pill-secondary sm">
+              LAUNCH STUDENT HUB &rarr;
+            </a>
           </div>
 
-          <!-- Card 3: Tag-Search Querying (standard width) -->
-          <div class="feature-card glass-panel" style="--card-index: 3;">
-            <div class="bento-card-main-content">
-              <div class="icon-box icon-accent">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-              </div>
-              <h3>Active Tag Filtering</h3>
-              <p>Filter large archives with real-time SQLite queries. Click tag filters below to test indices performance.</p>
-            </div>
-            
-            <div class="bento-visual-search">
-              <div class="search-tags-row">
-                <span class="bento-tag active" data-filter="all">#all</span>
-                <span class="bento-tag" data-filter="code">#code</span>
-                <span class="bento-tag" data-filter="ideas">#ideas</span>
-                <span class="bento-tag" data-filter="todo">#todo</span>
-              </div>
-              <div class="search-results-list" id="bento-search-list">
-                <div class="search-result-item" data-tags="code ideas">
-                  <strong>My Snippet Workspace</strong>
-                  <span>#code &bull; #ideas</span>
-                </div>
-                <div class="search-result-item" data-tags="todo">
-                  <strong>Weekly Sprint Goals</strong>
-                  <span>#todo</span>
-                </div>
-                <div class="search-result-item" data-tags="code">
-                  <strong>Dijkstra Algorithm Notes</strong>
-                  <span>#code</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Card 4: Preset Theme Switcher (bento-wide) -->
-          <div class="feature-card bento-wide glass-panel" style="--card-index: 4;" id="theme-bento-card">
-            <div class="bento-content">
-              <div class="icon-box icon-accent">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z"></path><path d="M12 16V12"></path><path d="M8 12H16"></path></svg>
-              </div>
-              <h3>Integrated Fluid Themes</h3>
-              <p>Experience different aesthetics instantly. Select a preset circle swatch on the right to trigger smooth local theme transitions for this card.</p>
-            </div>
-            <div class="bento-visual theme-picker-visual">
-              <div class="theme-swatch active" data-theme="linen" style="background: #FAF9F6; border: 2px solid #09090B;" title="Linen White"></div>
-              <div class="theme-swatch" data-theme="nature" style="background: #E8F5E9; border: 2px solid #2E7D32;" title="Nature Green"></div>
-              <div class="theme-swatch" data-theme="midnight" style="background: #09090B; border: 2px solid #FAF9F6;" title="Midnight Dark"></div>
-              <div class="theme-swatch" data-theme="warm" style="background: #FFF8E1; border: 2px solid #FF8F00;" title="Warm Amber"></div>
-            </div>
-          </div>
         </div>
       </div>
     </section>
 
-    <!-- Code Workspace Spotlight Section -->
-    <section class="spotlight-section" id="code-spotlight">
-      <div class="container grid-50-50">
-        <div class="spotlight-text scroll-reveal-left">
-          <span class="eyebrow">Developer IDE</span>
-          <h2>A full development sandbox, built right in</h2>
-          <p>Develop, debug, and document in perfect harmony. Global Code Workspace provides a dedicated editor panel for organizing code snippets with integrated AI code assistance.</p>
-          <ul class="check-list">
-            <li>Syntax highlighting for JavaScript, Python, C++, HTML, and more</li>
-            <li>Gemini AI snippet commands: Explain, Improve, and Debug code</li>
-            <li>Flowchart Visualizer to diagram complex program logic</li>
-            <li>Personalized snippets sidebar search and local organization</li>
-          </ul>
-          <a href="/HTML/code-workspace.html" class="btn-pill-primary">
-            <span>Launch Code IDE</span>
-            <svg class="btn-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
-          </a>
-        </div>
-        <div class="spotlight-visual scroll-reveal-right">
-          <div class="glowing-wrapper">
-            <div class="browser-mockup-wrapper">
-              <div class="browser-mockup-header">
-                <div class="browser-mockup-dots">
-                  <span class="dot close"></span>
-                  <span class="dot minimize"></span>
-                  <span class="dot expand"></span>
-                </div>
-                <div class="browser-mockup-address">global-notes://workspace/code-ide</div>
-              </div>
-              <!-- Live Interactive Mini-IDE Code & Terminal widget -->
-              <div class="spotlight-mini-ide">
-                <div class="spotlight-ide-header">
-                  <span class="ide-tab active">index.js</span>
-                  <span class="ide-tab">database.sql</span>
-                </div>
-                <div class="spotlight-ide-editor-container">
-                  <div class="spotlight-ide-lines">
-                    <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span>
-                  </div>
-                  <pre class="spotlight-ide-code"><code><span class="token-keyword">async function</span> <span class="token-function">queryNotes</span>() {
-  <span class="token-keyword">const</span> db = <span class="token-keyword">await</span> sqlite.<span class="token-function">open</span>();
-  <span class="token-keyword">const</span> list = <span class="token-keyword">await</span> db.<span class="token-function">query</span>(<span class="token-string">"SELECT * FROM notes"</span>);
-  <span class="token-keyword">return</span> list;
-}</code></pre>
-                </div>
-                <div class="spotlight-ide-actions">
-                  <button class="btn-spotlight-run-code" id="btn-spotlight-run-code">⚡ Run Code Block</button>
-                </div>
-                <div class="spotlight-ide-terminal" id="spotlight-ide-terminal">
-                  <div class="terminal-row ready-state">// Console output ready. Click 'Run Code Block' above.</div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- UI Designer AI Spotlight Section -->
-    <section class="spotlight-section dark-spotlight" id="ui-designer-spotlight" style="background: linear-gradient(180deg, #111113 0%, #17171a 100%); padding: 80px 0; border-top: 1px solid #27272b; border-bottom: 1px solid #27272b;">
-      <div class="container grid-50-50 reverse-layout">
-        <div class="spotlight-visual scroll-reveal-left">
-          <div class="glowing-wrapper" style="box-shadow: 0 0 40px rgba(249, 115, 22, 0.25);">
-            <div class="browser-mockup-wrapper" style="border-color: rgba(249, 115, 22, 0.3);">
-              <div class="browser-mockup-header" style="background: #141416;">
-                <div class="browser-mockup-dots">
-                  <span class="dot close"></span>
-                  <span class="dot minimize"></span>
-                  <span class="dot expand"></span>
-                </div>
-                <div class="browser-mockup-address" style="color: #f97316; font-family: 'JetBrains Mono', monospace;">global-notes://workspace/ui-designer-ai</div>
-              </div>
-              
-              <!-- Live Interactive UI Designer Preview Card -->
-              <div style="background: #111113; padding: 24px; color: #ececef; font-family: 'Inter', sans-serif;">
-                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid #27272b;">
-                  <span style="font-weight: 700; font-size: 14px; color: #f97316; display: flex; align-items: center; gap: 8px;">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
-                    Visual Component Inspector
-                  </span>
-                  <span style="font-size: 11px; background: rgba(16, 185, 129, 0.15); color: #10b981; padding: 2px 8px; border-radius: 12px; font-weight: 600;">Cheerio DOM Tagged</span>
-                </div>
-
-                <div style="background: rgba(255,255,255,0.03); border: 1px dashed #f97316; border-radius: 12px; padding: 20px; text-align: center; margin-bottom: 16px;">
-                  <div style="font-size: 11px; color: #f97316; font-family: monospace; margin-bottom: 8px; font-weight: 600;">Selected Target Node: &lt;div#feature-card&gt; [node-14]</div>
-                  <div style="background: linear-gradient(135deg, rgba(249, 115, 22, 0.2) 0%, rgba(234, 88, 12, 0.1) 100%); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(249, 115, 22, 0.4); border-radius: 16px; padding: 20px; box-shadow: 0 8px 32px rgba(0,0,0,0.4); color: #ffffff;">
-                    <h4 style="margin: 0 0 6px 0; font-size: 16px; font-weight: 700; color: #ffffff;">Refined Glassmorphic Component</h4>
-                    <p style="margin: 0; font-size: 12px; color: rgba(255,255,255,0.85);">Surgically edited via server-side Gemini 2.5 Flash / Groq LLM</p>
-                  </div>
-                </div>
-
-                <div style="display: flex; gap: 8px; justify-content: center;">
-                  <a href="/HTML/ui-designer.html" class="btn-pill-primary sm" style="background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); padding: 8px 18px; text-decoration: none; box-shadow: 0 4px 14px rgba(249, 115, 22, 0.4);">Try Live UI Designer AI &rarr;</a>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="spotlight-text scroll-reveal-right">
-          <span class="eyebrow" style="color: #f97316;">NEW &bull; AI UI/UX ARCHITECT</span>
-          <h2>Targeted Component Redesign with Server-Side AI</h2>
-          <p>Import your web app design from Stitch or paste raw HTML. Select any element to isolate its node tree and prompt AI to refine, transform into glassmorphic/neon surfaces, or add smooth micro-interactions in real-time.</p>
-          <ul class="check-list">
-            <li><strong>1-Click HTML Import & Paste</strong> — Load designs from authenticated tools like Stitch with 100% fidelity</li>
-            <li><strong>Targeted Visual Element Inspector</strong> — Hover & click any button, card, or container to edit it in isolation</li>
-            <li><strong>Instant Styling Presets</strong> — Apply Glassmorphic, Neon Glow, Hover Animations, or Pill Shapes with 1 click</li>
-            <li><strong>Protected Server AI & Local Storage</strong> — Secure API keys on backend & auto-save work across browser refreshes</li>
-          </ul>
-          <a href="/HTML/ui-designer.html" class="btn-pill-primary" style="background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); box-shadow: 0 4px 14px rgba(249, 115, 22, 0.4); text-decoration: none;">
-            <span>Open UI Designer AI</span>
-            <svg class="btn-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
-          </a>
-        </div>
-      </div>
-    </section>
-
-    <!-- Student Hub Spotlight Section -->
-    <section class="spotlight-section dark-spotlight" id="student-spotlight">
-      <div class="container grid-50-50 reverse-layout">
-        <div class="spotlight-visual scroll-reveal-left">
-          <div class="glowing-wrapper">
-            <div class="browser-mockup-wrapper">
-              <div class="browser-mockup-header">
-                <div class="browser-mockup-dots">
-                  <span class="dot close"></span>
-                  <span class="dot minimize"></span>
-                  <span class="dot expand"></span>
-                </div>
-                <div class="browser-mockup-address">global-notes://workspace/student-hub</div>
-              </div>
-              <!-- Live Interactive Mini-Student Hub widget -->
-              <div class="spotlight-mini-student">
-                <div class="spotlight-student-left">
-                  <h4>Interactive Recall Deck</h4>
-                  <div class="spotlight-flashcard" id="spotlight-flashcard">
-                    <div class="spotlight-card-inner">
-                      <div class="spotlight-card-front">
-                        <span class="card-title">Flashcard Question</span>
-                        <p>What is the time complexity of Dijkstra's Algorithm using a binary heap?</p>
-                        <span class="flip-hint">Click card to reveal answer</span>
-                      </div>
-                      <div class="spotlight-card-back">
-                        <span class="card-title">Answer</span>
-                        <p class="answer-highlight">O((V + E) log V)</p>
-                        <p class="answer-desc">Where V is vertices and E is edges. Relax operations are completed efficiently.</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div class="spotlight-student-right">
-                  <h4>Revision Generator</h4>
-                  <button class="btn-spotlight-generate-schedule" id="btn-spotlight-generate-schedule">🔄 Refresh Study Plan</button>
-                  <div class="spotlight-schedule-list" id="spotlight-schedule-list">
-                    <div class="schedule-row active">
-                      <span class="day-badge">Day 1</span>
-                      <span class="subject-title">Priority Queues Setup</span>
-                    </div>
-                    <div class="schedule-row">
-                      <span class="day-badge">Day 2</span>
-                      <span class="subject-title">Graph Edge Relaxations</span>
-                    </div>
-                    <div class="schedule-row">
-                      <span class="day-badge">Day 3</span>
-                      <span class="subject-title">Shortest Paths Proof</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="spotlight-text scroll-reveal-right">
-          <span class="eyebrow">Academic Center</span>
-          <h2>Master academics in Student Mode</h2>
-          <p>Activate Student Mode to streamline your academic workflow. Generate interactive revision cards, plan day-by-day exam schedules, and build diagram outlines using the built-in AI Study Hub.</p>
-          <ul class="check-list">
-            <li>Generate custom flashcards from topics or text documents (.txt, .md, .pdf)</li>
-            <li>Plan day-by-day revision timelines by entering a syllabus and exam date</li>
-            <li>Design flowchart diagrams with draggable shape nodes on a vector canvas</li>
-          </ul>
-          <a href="/HTML/student-hub.html" class="btn-pill-primary">
-            <span>Launch Student Hub</span>
-            <svg class="btn-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
-          </a>
-        </div>
-      </div>
-    </section>
-
-    <!-- Futuristic CTA Banner -->
-    <section class="cta-banner">
+    <!-- =====================================================
+         BRUTALIST FAQ ACCORDION SECTION
+         ===================================================== -->
+    <section id="faq" class="section">
       <div class="container">
-        <div class="cta-glass-box text-center">
-          <h2 class="cta-title">Upgrade Your Workspace Today</h2>
-          <p class="cta-desc text-center">Enter your workspace securely via cloud authorization or start instantly as a guest in offline mode. Absolutely no setup friction.</p>
-          <div class="cta-actions text-center">
-            <a href="/HTML/signup.html" class="btn-pill-primary lg">
-              <span>Open Workspace</span>
-              <svg class="btn-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
-            </a>
-            <a href="app.html?guest=true" class="btn-pill-secondary lg">
-              <span>Start Guest Session</span>
-            </a>
+        <div class="section-header">
+          <span class="section-tag">FREQUENTLY ASKED QUESTIONS</span>
+          <h2 class="section-title">EVERYTHING YOU NEED TO KNOW</h2>
+        </div>
+
+        <div class="faq-list">
+          
+          <div class="faq-item">
+            <button class="faq-trigger">
+              <span>IS GLOBAL NOTES COMPLETELY OFFLINE & PRIVATE?</span>
+              <span class="faq-toggle-icon">+</span>
+            </button>
+            <div class="faq-content">
+              <p class="faq-text">
+                Yes. Global Notes operates entirely offline using local SQLite in-browser storage engines. You can create, edit, search, and manage unlimited notes and code snippets with complete data privacy and zero cloud dependencies.
+              </p>
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <button class="faq-trigger">
+              <span>HOW DOES THE TARGETED UI DESIGNER AI ENGINE WORK?</span>
+              <span class="faq-toggle-icon">+</span>
+            </button>
+            <div class="faq-content">
+              <p class="faq-text">
+                You can paste raw HTML or import web components. Clicking any element in the visual inspector isolates its exact DOM subtree. You can then select instant presets (Glassmorphic, Neon Glow, Brutalist) or send targeted AI prompts to generate updated code live.
+              </p>
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <button class="faq-trigger">
+              <span>CAN I SYNC MY NOTES ACROSS MULTIPLE DEVICES?</span>
+              <span class="faq-toggle-icon">+</span>
+            </button>
+            <div class="faq-content">
+              <p class="faq-text">
+                Yes! While the workspace is offline-first, signing in allows you to securely sync your notes and snippets via backend cloud synchronization across desktop, mobile, and web.
+              </p>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- =====================================================
+         ACTION CTA & EXTRA TALL BRUTALIST FORM
+         ===================================================== -->
+    <section class="section" style="border-bottom: none;">
+      <div class="container">
+        <div class="cta-box">
+          <div class="cta-grid">
+            <div>
+              <h2 class="cta-headline">START BUILDING YOUR SECOND BRAIN</h2>
+              <p class="cta-subtext">
+                No credit card required. Experience kinetic productivity in less than 5 seconds.
+              </p>
+            </div>
+            <div class="kinetic-form">
+              <div class="kinetic-input-group">
+                <input type="email" class="kinetic-input" placeholder="ENTER YOUR EMAIL..." aria-label="Enter email">
+              </div>
+              <a href="app.html?guest=true" class="btn-pill-primary lg" style="width: 100%; text-align: center;">
+                LAUNCH WORKSPACE NOW &rarr;
+              </a>
+            </div>
           </div>
         </div>
       </div>
     </section>
+
   </main>
 
-  <!-- Footer -->
+  <!-- =====================================================
+         FOOTER WITH GIANT WATERMARK BRANDING
+         ===================================================== -->
   <footer class="footer">
     <div class="container">
       <div class="footer-grid">
-        <div class="footer-col brand-col">
-          <a href="#" class="brand">
-            <img src="assets/images/logo_workspace.png" alt="Global Notes Logo" class="footer-logo">
-            <span class="brand-name white">Global <span class="brand-accent">Notes</span></span>
-          </a>
-          <p class="footer-desc">The high-performance workspace for thinkers and builders. Storing notes and code offline, securely, and elegantly.</p>
-          
-          <!-- Live System Console Indicators Panel -->
-          <div class="footer-system-status">
-            <div class="status-node">
-              <span class="status-indicator online"></span>
-              <span class="status-label">SQLite Engine: <b>Active</b></span>
-            </div>
-            <div class="status-node">
-              <span class="status-indicator online"></span>
-              <span class="status-label">Local Sync Node: <b>Online</b></span>
-            </div>
-            <div class="status-node">
-              <span class="status-indicator warning" id="footer-sync-indicator"></span>
-              <span class="status-label">Last Sync Latency: <b id="footer-latency-val">0.38ms</b></span>
-            </div>
+        <div class="footer-brand-col">
+          <h3 class="footer-brand-title">GLOBAL NOTES</h3>
+          <p class="footer-brand-desc">
+            The high-performance kinetic workspace for developers, students, and thinkers. Storing notes and code securely and offline.
+          </p>
+        </div>
+        <div>
+          <h4 class="footer-col-title">WORKSPACES</h4>
+          <div class="footer-links">
+            <span>NOTES APP</span>
+            <span>CODE IDE</span>
+            <span>UI DESIGNER AI</span>
+            <span>STUDENT HUB</span>
           </div>
         </div>
-        <div class="footer-col">
-          <h4>Features</h4>
-          <ul>
-            <li><a href="#features">Smart Editor</a></li>
-            <li><a href="#code-spotlight">Code Workspace</a></li>
-            <li><a href="#ui-designer-spotlight">UI Designer AI</a></li>
-            <li><a href="#student-spotlight">Student Hub</a></li>
-          </ul>
+        <div>
+          <h4 class="footer-col-title">RESOURCES</h4>
+          <div class="footer-links">
+            <a href="#" class="modal-link" data-modal="Documentation">DOCUMENTATION</a>
+            <a href="#" class="modal-link" data-modal="Help Center">HELP CENTER</a>
+            <a href="#" class="modal-link" data-modal="Security">SECURITY</a>
+          </div>
         </div>
-        <div class="footer-col">
-          <h4>Resources</h4>
-          <ul>
-            <li><a href="#" class="modal-link" data-modal="Documentation">Documentation</a></li>
-            <li><a href="#" class="modal-link" data-modal="Help Center">Help Center</a></li>
-          </ul>
-        </div>
-        <div class="footer-col">
-          <h4>Legal & Security</h4>
-          <ul>
-            <li><a href="#" class="modal-link" data-modal="Security">Security</a></li>
-            <li><a href="#" class="modal-link" data-modal="Privacy">Privacy Policy</a></li>
-            <li><a href="#" class="modal-link" data-modal="Terms">Terms of Service</a></li>
-            <li><a href="#" class="modal-link" data-modal="Roadmap">Roadmap</a></li>
-            <li><a href="#" class="modal-link" data-modal="Contact">Contact</a></li>
-          </ul>
+        <div>
+          <h4 class="footer-col-title">LEGAL</h4>
+          <div class="footer-links">
+            <a href="#" class="modal-link" data-modal="Privacy">PRIVACY POLICY</a>
+            <a href="#" class="modal-link" data-modal="Terms">TERMS OF SERVICE</a>
+            <a href="#" class="modal-link" data-modal="Contact">CONTACT US</a>
+          </div>
         </div>
       </div>
+
+      <!-- Giant Watermark Text -->
+      <div class="footer-watermark">
+        GLOBAL NOTES
+      </div>
+
       <div class="footer-bottom">
-        <p>&copy; 2026 Global Notes Workspace. All rights reserved.</p>
-        <a href="#top" class="back-to-top">Back to top ↑</a>
+        <p>&copy; 2026 GLOBAL NOTES WORKSPACE. ALL RIGHTS RESERVED.</p>
+        <a href="#hero" style="color: var(--accent-yellow); text-decoration: none; font-weight: 700;">BACK TO TOP ↑</a>
       </div>
     </div>
   </footer>
 
-  <!-- Information Modal -->
+  <!-- Modal Component -->
   <div id="info-modal" class="landing-modal">
     <div class="modal-backdrop"></div>
     <div class="modal-content-wrapper">

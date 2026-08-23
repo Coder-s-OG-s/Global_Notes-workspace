@@ -29,10 +29,12 @@ export async function signOut() {
  * @param {string} provider - 'google' or 'github'
  */
 export function signInWithProvider(provider) {
+    const redirect = sessionStorage.getItem("postLoginRedirect");
+    const redirectQuery = redirect ? `?redirect=${encodeURIComponent(redirect)}` : '';
     if (provider === 'google') {
-        window.location.href = '/api/auth/google';
+        window.location.href = `/api/auth/google${redirectQuery}`;
     } else if (provider === 'github') {
-        window.location.href = '/api/auth/github';
+        window.location.href = `/api/auth/github${redirectQuery}`;
     }
 }
 
