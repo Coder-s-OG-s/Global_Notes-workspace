@@ -49,24 +49,24 @@ ol {
 :root,
 html,
 html[data-theme="amoled-dark"] {
-  --bg: #0b0f19;
-  --bg-rgb: 11, 15, 25;
-  --surface: #0f172a;
-  --surface-rgb: 15, 23, 42;
-  --surface-2: #1e293b;
-  --surface-2-rgb: 30, 41, 59;
-  --surface-3: #334155;
-  --surface-hover: #374151;
-  --active-bg: rgba(250, 204, 21, 0.18);
-  --primary: #facc15;
-  --primary-strong: #eab308;
-  --primary-light: #fef08a;
-  --primary-glow: rgba(250, 204, 21, 0.25);
-  --text: #f8fafc;
-  --text-dim: #94a3b8;
-  --text-muted: #64748b;
-  --border: rgba(255, 255, 255, 0.08);
-  --border-light: rgba(255, 255, 255, 0.14);
+  --bg: #000000;
+  --bg-rgb: 0, 0, 0;
+  --surface: #0d0d0d;
+  --surface-rgb: 13, 13, 13;
+  --surface-2: #181818;
+  --surface-2-rgb: 24, 24, 24;
+  --surface-3: #262626;
+  --surface-hover: #262626;
+  --active-bg: rgba(255, 243, 223, 0.18);
+  --primary: #fff3df;
+  --primary-strong: #e6c594;
+  --primary-light: #fff8eb;
+  --primary-glow: rgba(255, 243, 223, 0.25);
+  --text: #ffffff;
+  --text-dim: #d4c9bf;
+  --text-muted: #888077;
+  --border: rgba(255, 255, 255, 0.14);
+  --border-light: rgba(255, 255, 255, 0.22);
   --accent: #10b981;
   --danger: #f43f5e;
   --success: #10b981;
@@ -82,9 +82,23 @@ html[data-theme="amoled-dark"] {
   --sidebar-width: 260px;
   --header-height: 52px;
   
+  /* ── Kinetic Typography Tokens (Pitch Black & Warm Cream) ── */
+  --kinetic-bg: #000000;
+  --kinetic-surface: #0D0D0D;
+  --kinetic-surface-2: #181818;
+  --kinetic-accent: #FFF3DF;
+  --kinetic-accent-strong: #E6C594;
+  --kinetic-accent-fg: #000000;
+  --kinetic-text: #FFFFFF;
+  --kinetic-text-muted: #D4C9BF;
+  --kinetic-border: #262626;
+  --kinetic-border-active: #FFF3DF;
+  --kinetic-font-display: 'Space Grotesk', 'Outfit', sans-serif;
+  --kinetic-font-body: 'Inter', sans-serif;
+
   /* Alerts & Search Custom variables */
-  --dialog-outer-bg: rgba(11, 15, 25, 0.6);
-  --dialog-inner-bg: #0f172a;
+  --dialog-outer-bg: rgba(0, 0, 0, 0.7);
+  --dialog-inner-bg: #0d0d0d;
   --dialog-border: rgba(255, 255, 255, 0.12);
   --dialog-text: #ececef;
   --dialog-text-dim: #a0a0ab;
@@ -2121,7 +2135,7 @@ html,
 
 [data-theme="dark"] .note-card-color-popover,
 .dark-mode .note-card-color-popover {
-  background: #0f172a;
+  background: var(--surface-2, #181818);
   border-color: rgba(255, 255, 255, 0.18);
   box-shadow: 0 12px 28px rgba(0, 0, 0, 0.6);
 }
@@ -2402,21 +2416,36 @@ html,
   --n-card-shadow-hover: rgba(30, 64, 175, 0.28);
 }
 [data-theme="dark"] .note-card[data-color="blue"],
-.dark-mode .note-card[data-color="blue"],
-[data-theme="dark"] .note-card:not([data-color]):not([data-theme]),
-.dark-mode .note-card:not([data-color]):not([data-theme]) {
-  --n-card-bg: #172554;
-  --n-card-border: #1e3a8a;
-  --n-card-text: #dbeafe;
-  --n-card-text-muted: #93c5fd;
-  --n-preview-bg: #0c1433;
-  --n-preview-border: rgba(59, 130, 246, 0.3);
-  --n-card-accent: #60a5fa;
+.dark-mode .note-card[data-color="blue"] {
+  --n-card-bg: #121212;
+  --n-card-border: #262626;
+  --n-card-text: #ffffff;
+  --n-card-text-muted: #d4c9bf;
+  --n-preview-bg: #181818;
+  --n-preview-border: rgba(255, 255, 255, 0.14);
+  --n-card-accent: #fff3df;
   --n-badge-bg: rgba(255, 255, 255, 0.12);
-  --n-badge-border: #2563eb;
-  --n-badge-icon-color: #60a5fa;
+  --n-badge-border: #fff3df;
+  --n-badge-icon-color: #fff3df;
   --n-card-shadow: rgba(0, 0, 0, 0.4);
-  --n-card-shadow-hover: rgba(59, 130, 246, 0.35);
+  --n-card-shadow-hover: rgba(255, 243, 223, 0.25);
+}
+
+[data-theme="dark"] .note-card:not([data-color]):not([data-theme]),
+.dark-mode .note-card:not([data-color]):not([data-theme]),
+.note-card:not([data-color]):not([data-theme]) {
+  --n-card-bg: var(--surface, #0d0d0d);
+  --n-card-border: var(--border, rgba(255, 255, 255, 0.14));
+  --n-card-text: var(--text, #ffffff);
+  --n-card-text-muted: var(--text-dim, #d4c9bf);
+  --n-preview-bg: var(--surface-2, #181818);
+  --n-preview-border: var(--border, rgba(255, 255, 255, 0.14));
+  --n-card-accent: var(--primary, #fff3df);
+  --n-badge-bg: var(--surface-2, #181818);
+  --n-badge-border: var(--border, rgba(255, 255, 255, 0.14));
+  --n-badge-icon-color: var(--primary, #fff3df);
+  --n-card-shadow: rgba(0, 0, 0, 0.4);
+  --n-card-shadow-hover: rgba(255, 243, 223, 0.25);
 }
 
 .empty-dashboard {

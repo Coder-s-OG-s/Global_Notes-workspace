@@ -2,26 +2,21 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
 :root {
-  /* Dark Theme Palette (Grey/Black) */
-  --bg-body: #141414;
-  /* Very dark grey/black background */
-  --bg-card: #1f1f1f;
-  /* Lighter grey for the card/right panel */
-  --bg-input: #2a2a2a;
-  /* Input fields */
-  --bg-brand: #0f0f0f;
-  /* Left panel branding bg */
+  /* Kinetic Typography Pitch Black & Warm Cream Palette */
+  --bg-body: #000000;
+  --bg-card: #0D0D0D;
+  --bg-input: #181818;
+  --bg-brand: #000000;
 
-  --text-primary: #ffffff;
-  --text-secondary: #a0a0a0;
-  --text-tertiary: #666666;
+  --text-primary: #FFFFFF;
+  --text-secondary: #D4C9BF;
+  --text-tertiary: #888077;
 
-  --primary-color: #6366f1;
-  /* Vibrant Indigo/Purple Accent */
-  --primary-hover: #4f46e5;
+  --primary-color: #FFF3DF;
+  --primary-hover: #E6C594;
 
-  --border-color: #333333;
-  --border-focus: #6366f1;
+  --border-color: #262626;
+  --border-focus: #FFF3DF;
 
   --danger: #ef4444;
 }

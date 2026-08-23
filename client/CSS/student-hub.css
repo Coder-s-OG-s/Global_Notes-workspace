@@ -3297,23 +3297,25 @@ button,
   display: none !important;
 }
 
-/* Dark Mode Student Hub AMOLED Pure Black Overrides */
+/* Dark Mode Student Hub Pitch Black Overrides */
+:root .student-hub-page,
 [data-theme="amoled-dark"] .student-hub-page,
 [data-theme="corporate-gray"] .student-hub-page,
 [data-theme*="dark"] .student-hub-page,
 body.dark-mode .student-hub-page,
 .dark-mode .student-hub-page {
-  background-color: #0b0f19 !important;
-  color: #f8fafc !important;
+  background-color: #000000 !important;
+  color: #ffffff !important;
 }
 
+:root .hub-header,
 [data-theme="amoled-dark"] .hub-header,
 [data-theme="corporate-gray"] .hub-header,
 [data-theme*="dark"] .hub-header,
 body.dark-mode .hub-header {
-  background-color: #0f172a !important;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
-  color: #f8fafc !important;
+  background-color: #0d0d0d !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.14) !important;
+  color: #ffffff !important;
 }
 
 [data-theme="amoled-dark"] .brand-h1,
@@ -3324,27 +3326,59 @@ body.dark-mode .brand-h1 {
 }
 
 /* Outer Panels / Workspaces */
+:root .my-library-panel,
 [data-theme="amoled-dark"] .my-library-panel,
 [data-theme="corporate-gray"] .my-library-panel,
 [data-theme*="dark"] .my-library-panel,
 body.dark-mode .my-library-panel,
+:root .add-source-workspace,
 [data-theme="amoled-dark"] .add-source-workspace,
 [data-theme="corporate-gray"] .add-source-workspace,
 [data-theme*="dark"] .add-source-workspace,
 body.dark-mode .add-source-workspace,
+:root .output-workspace,
 [data-theme="amoled-dark"] .output-workspace,
 [data-theme="corporate-gray"] .output-workspace,
 [data-theme*="dark"] .output-workspace,
 body.dark-mode .output-workspace,
+:root .flashcard-workspace-panel,
 [data-theme="amoled-dark"] .flashcard-workspace-panel,
 [data-theme="corporate-gray"] .flashcard-workspace-panel,
 [data-theme*="dark"] .flashcard-workspace-panel,
 body.dark-mode .flashcard-workspace-panel {
-  background-color: #0f172a !important;
-  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  background-color: #0d0d0d !important;
+  border: 1px solid rgba(255, 255, 255, 0.14) !important;
   border-radius: 24px !important;
-  color: #f8fafc !important;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4) !important;
+  color: #ffffff !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6) !important;
+}
+
+/* Light Mode Student Hub Overrides */
+html[data-theme="light"] .student-hub-page,
+html[data-theme="professional-light"] .student-hub-page {
+  background-color: #faf8f5 !important;
+  color: #121212 !important;
+}
+
+html[data-theme="light"] .hub-header,
+html[data-theme="professional-light"] .hub-header {
+  background-color: #ffffff !important;
+  border-bottom: 1px solid #e6dfd5 !important;
+  color: #121212 !important;
+}
+
+html[data-theme="light"] .my-library-panel,
+html[data-theme="professional-light"] .my-library-panel,
+html[data-theme="light"] .add-source-workspace,
+html[data-theme="professional-light"] .add-source-workspace,
+html[data-theme="light"] .output-workspace,
+html[data-theme="professional-light"] .output-workspace,
+html[data-theme="light"] .flashcard-workspace-panel,
+html[data-theme="professional-light"] .flashcard-workspace-panel {
+  background-color: #ffffff !important;
+  border: 1px solid #e6dfd5 !important;
+  color: #121212 !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05) !important;
 }
 
 .add-source-card-modal {

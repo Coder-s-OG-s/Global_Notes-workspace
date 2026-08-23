@@ -1673,4 +1673,54 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     });
+
+    // ==========================================
+    // 6. FAQ ACCORDION INTERACTIVITY ENGINE
+    // ==========================================
+    const faqTriggers = document.querySelectorAll('.faq-trigger');
+    faqTriggers.forEach(trigger => {
+        trigger.addEventListener('click', (e) => {
+            e.preventDefault();
+            const faqItem = trigger.closest('.faq-item');
+            if (!faqItem) return;
+            const isActive = faqItem.classList.contains('active');
+            
+            // Close all active items for clean single accordion state
+            document.querySelectorAll('.faq-item.active').forEach(item => {
+                item.classList.remove('active');
+            });
+
+            if (!isActive) {
+                faqItem.classList.add('active');
+            }
+        });
+    });
+
+    // ==========================================
+    // 7. SMOOTH SCROLLING & MOBILE NAV ENGINE
+    // ==========================================
+    const menuToggleBtn = document.getElementById('menu-toggle');
+    const navbarEl = document.getElementById('navbar');
+    
+    if (menuToggleBtn && navbarEl) {
+        menuToggleBtn.addEventListener('click', () => {
+            navbarEl.classList.toggle('open');
+            menuToggleBtn.classList.toggle('active');
+        });
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function(e) {
+            const targetId = this.getAttribute('href');
+            if (targetId && targetId !== '#') {
+                const targetEl = document.querySelector(targetId);
+                if (targetEl) {
+                    e.preventDefault();
+                    targetEl.scrollIntoView({ behavior: 'smooth' });
+                    if (navbarEl) navbarEl.classList.remove('open');
+                    if (menuToggleBtn) menuToggleBtn.classList.remove('active');
+                }
+            }
+        });
+    });
 });
