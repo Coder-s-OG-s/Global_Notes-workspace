@@ -2,21 +2,21 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
 :root {
-  /* Kinetic Typography Pitch Black & Warm Cream Palette */
+  /* Kinetic Typography Pitch Black & Luminous Rose Coral Palette */
   --bg-body: #000000;
   --bg-card: #0D0D0D;
   --bg-input: #181818;
   --bg-brand: #000000;
 
   --text-primary: #FFFFFF;
-  --text-secondary: #D4C9BF;
-  --text-tertiary: #888077;
+  --text-secondary: #E2D4D8;
+  --text-tertiary: #A38F95;
 
-  --primary-color: #FFF3DF;
-  --primary-hover: #E6C594;
+  --primary-color: #FF5E7E;
+  --primary-hover: #FF3366;
 
   --border-color: #262626;
-  --border-focus: #FFF3DF;
+  --border-focus: #FF5E7E;
 
   --danger: #ef4444;
 }

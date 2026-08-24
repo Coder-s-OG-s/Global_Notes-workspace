@@ -1,28 +1,28 @@
 /* ════════════════════════════════════════════════════════════════
    GLOBAL NOTES WORKSPACE — KINETIC TYPOGRAPHY DESIGN SYSTEM
-   Theme: Pitch Black (#000000) & Warm Vanilla Cream (#FFF3DF)
+   Theme: Pitch Black (#000000) & Luminous Rose Coral (#FF5E7E)
    ════════════════════════════════════════════════════════════════ */
 
 :root {
-  /* Pitch Black & Warm Cream Palette */
+  /* Pitch Black & Luminous Rose Coral Palette */
   --bg-primary: #000000;       /* Pitch Black */
   --bg-secondary: #0D0D0D;     /* Ultra Dark Graphite Surface */
   --bg-card: #121212;          /* Pitch Black Surface Card */
-  --bg-card-hover: #FFF3DF;    /* Hard Color Inversion Warm Cream */
+  --bg-card-hover: #FF5E7E;    /* Hard Color Inversion Rose Coral */
   
   --text-primary: #FFFFFF;     /* Pure Crisp White */
-  --text-secondary: #D4C9BF;   /* Warm Soft Cream Gray (High Contrast) */
-  --text-muted: #888077;       /* Muted Warm Gray */
-  --text-inverse: #000000;     /* Pure Black on Cream hover */
+  --text-secondary: #E2D4D8;   /* Soft Rose Gray (High Contrast) */
+  --text-muted: #A38F95;       /* Muted Rose Gray */
+  --text-inverse: #000000;     /* Pure Black on Coral hover */
   
   /* Kinetic Accents */
-  --accent-yellow: #FFF3DF;    /* Warm Vanilla Cream */
-  --accent-yellow-strong: #E6C594; /* Golden Cream Accent */
-  --accent-glow: rgba(255, 243, 223, 0.2);
+  --accent-yellow: #FF5E7E;    /* Luminous Rose Coral */
+  --accent-yellow-strong: #FF3366; /* Deep Rose Accent */
+  --accent-glow: rgba(255, 94, 126, 0.35);
   
   /* Brutalist Geometry & Hairline Borders */
   --border-color: #262626;     /* Crisp High Contrast Dark Border */
-  --border-active: #FFF3DF;
+  --border-active: #FF5E7E;
   --border-width: 2px;
   --radius: 0px;                /* Brutalist sharp 0px radius */
   
@@ -413,7 +413,7 @@ body {
 .hero-headline-accent {
   color: var(--accent-yellow);
   display: inline-block;
-  background: linear-gradient(180deg, var(--accent-yellow) 0%, #E6C594 100%);
+  background: linear-gradient(180deg, var(--accent-yellow) 0%, #FF3366 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
