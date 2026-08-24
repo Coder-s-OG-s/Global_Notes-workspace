@@ -530,8 +530,8 @@ async function initHub() {
     });
 
     // 5. Button Action Listeners
-    document.getElementById('btn-generate-flashcards').addEventListener('click', handleGenerateFlashcards);
-    document.getElementById('btn-generate-schedule').addEventListener('click', handleGenerateSchedule);
+    document.getElementById('btn-generate-flashcards')?.addEventListener('click', handleGenerateFlashcards);
+    document.getElementById('btn-generate-schedule')?.addEventListener('click', handleGenerateSchedule);
     
     // Bind 2x2 Study Set Cards (Intro to Calculus, Lecture 1 Slides, Syllabus, Cell Division)
     document.querySelectorAll('.pastel-study-card').forEach(card => {
@@ -622,7 +622,7 @@ async function initHub() {
     cartoonPills.forEach(pill => {
         if (pill.dataset.template === activeCartoonTemplate) {
             pill.classList.add('active');
-            pill.style.background = '#6366f1';
+            pill.style.background = '#FF5E7E';
             pill.style.color = '#ffffff';
         } else {
             pill.classList.remove('active');
@@ -637,7 +637,7 @@ async function initHub() {
                 p.style.color = '#0f172a';
             });
             pill.classList.add('active');
-            pill.style.background = '#6366f1';
+            pill.style.background = '#FF5E7E';
             pill.style.color = '#ffffff';
             activeCartoonTemplate = pill.dataset.template || 'cubist';
             localStorage.setItem('global_notes_hub_cartoon_template', activeCartoonTemplate);
@@ -908,6 +908,7 @@ function initTabs() {
 function setupHistoryDropdown() {
     const btnToggle = document.getElementById('btn-history-toggle');
     const dropdown = document.getElementById('history-dropdown');
+    if (!btnToggle || !dropdown) return;
 
     btnToggle.addEventListener('click', (e) => {
         e.stopPropagation();
@@ -967,9 +968,11 @@ async function extractTextFromPDF(arrayBuffer) {
 // Drag & Drop / Input file reader
 function setupUploadDropzone(dropzoneId, inputId, filenameId, onLoaded) {
     const dropzone = document.getElementById(dropzoneId);
+    if (!dropzone) return;
     const fileInput = document.getElementById(inputId);
+    if (!fileInput) return;
     const filenameLabel = document.getElementById(filenameId);
-    const dropzoneText = dropzone.querySelector('.upload-text');
+    const dropzoneText = dropzone.querySelector('.upload-text') || dropzone.querySelector('.dropzone-subtext');
 
     dropzone.addEventListener('dragover', (e) => {
         e.preventDefault();
@@ -1383,7 +1386,7 @@ function renderLibraryDecks(query = '') {
         gridEl.innerHTML = `
             <div class="empty-library-prompt" style="grid-column: span 2; padding: 24px; text-align: center; background: var(--surface-2, #18181b); border: 1.5px dashed var(--border-light, rgba(255, 255, 255, 0.14)); border-radius: 20px;">
                 <div style="display: flex; justify-content: center; margin-bottom: 8px;">
-                    <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="#f59e0b" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+                    <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="#FF5E7E" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
                 </div>
                 <div style="font-weight: 800; font-size: 14px; color: var(--text, #f8fafc);">No Study Decks Created Yet</div>
                 <div style="font-size: 12px; color: var(--text-dim, #94a3b8); margin-top: 4px;">Upload notes or enter a topic above to generate your first deck!</div>
@@ -3359,28 +3362,30 @@ function initStudentTimers() {
     const extraSWControls = document.getElementById('sw-controls-extra');
     const extraSWLaps = document.getElementById('sw-laps-container');
 
-    if (!tabPomo || !tabSW) return;
-
-    tabPomo.addEventListener('click', () => {
+    tabPomo?.addEventListener('click', () => {
         tabPomo.classList.add('active');
-        tabSW.classList.remove('active');
-        tabPomo.style.background = '#6366f1';
+        tabSW?.classList.remove('active');
+        tabPomo.style.background = '#FF5E7E';
         tabPomo.style.color = '#ffffff';
-        tabSW.style.background = 'transparent';
-        tabSW.style.color = '#475569';
+        if (tabSW) {
+            tabSW.style.background = 'transparent';
+            tabSW.style.color = 'var(--text-dim, #595147)';
+        }
         panelPomo?.classList.remove('hidden');
         panelSW?.classList.add('hidden');
         extraSWControls?.classList.add('hidden');
         extraSWLaps?.classList.add('hidden');
     });
 
-    tabSW.addEventListener('click', () => {
+    tabSW?.addEventListener('click', () => {
         tabSW.classList.add('active');
-        tabPomo.classList.remove('active');
-        tabSW.style.background = '#6366f1';
+        tabPomo?.classList.remove('active');
+        tabSW.style.background = '#FF5E7E';
         tabSW.style.color = '#ffffff';
-        tabPomo.style.background = 'transparent';
-        tabPomo.style.color = '#475569';
+        if (tabPomo) {
+            tabPomo.style.background = 'transparent';
+            tabPomo.style.color = 'var(--text-dim, #595147)';
+        }
         panelSW?.classList.remove('hidden');
         panelPomo?.classList.add('hidden');
         extraSWControls?.classList.remove('hidden');
@@ -3405,11 +3410,13 @@ function initStudentTimers() {
     const elTotalFocusTime = document.getElementById('pomo-total-time');
 
     const updatePomoDisplay = () => {
-        const mins = Math.floor(pomoTimeLeft / 60);
-        const secs = pomoTimeLeft % 60;
-        textPomoDigits.textContent = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+        if (textPomoDigits) {
+            const mins = Math.floor(pomoTimeLeft / 60);
+            const secs = pomoTimeLeft % 60;
+            textPomoDigits.textContent = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+        }
 
-        const totalForMode = MODE_TIMES[currentPomoMode];
+        const totalForMode = MODE_TIMES[currentPomoMode] || 1500;
         const fraction = pomoTimeLeft / totalForMode;
         // Total dasharray = 2 * PI * 85 ~= 534
         const dashoffset = 534 * (1 - fraction);
@@ -3419,15 +3426,23 @@ function initStudentTimers() {
     const modePills = document.querySelectorAll('.mode-pill');
     modePills.forEach(pill => {
         pill.addEventListener('click', () => {
-            modePills.forEach(p => p.classList.remove('active'));
+            modePills.forEach(p => {
+                p.classList.remove('active');
+                p.style.background = 'var(--surface-2, #181818)';
+                p.style.color = 'var(--text, #ffffff)';
+                p.style.border = '1px solid var(--border-light, rgba(255, 255, 255, 0.15))';
+            });
             pill.classList.add('active');
+            pill.style.background = '#FF5E7E';
+            pill.style.color = '#ffffff';
+            pill.style.border = 'none';
             currentPomoMode = pill.dataset.mode || 'work';
-            labelPomoStatus.textContent = MODE_LABELS[currentPomoMode];
-            pomoTimeLeft = MODE_TIMES[currentPomoMode];
+            if (labelPomoStatus) labelPomoStatus.textContent = MODE_LABELS[currentPomoMode] || 'Time to Focus';
+            pomoTimeLeft = MODE_TIMES[currentPomoMode] || 1500;
             if (pomoTimerId) {
                 clearInterval(pomoTimerId);
                 pomoTimerId = null;
-                btnPomoStart.textContent = 'Start Session';
+                if (btnPomoStart) btnPomoStart.textContent = 'Start Session';
             }
             updatePomoDisplay();
         });
@@ -3454,12 +3469,12 @@ function initStudentTimers() {
                     playAudioAlert();
                     if (currentPomoMode === 'work') {
                         pomoCompletedSessions++;
-                        elCompletedSessions.textContent = pomoCompletedSessions;
+                        if (elCompletedSessions) elCompletedSessions.textContent = pomoCompletedSessions;
                         showToast('🍅 Great focus session completed! Take a break.', 'success');
                     } else {
                         showToast('🔔 Break time is over! Ready to focus?', 'info');
                     }
-                    elTotalFocusTime.textContent = `${Math.floor(pomoTotalFocusSeconds / 60)}m`;
+                    if (elTotalFocusTime) elTotalFocusTime.textContent = `${Math.floor(pomoTotalFocusSeconds / 60)}m`;
                 }
             }, 1000);
         }
@@ -3470,8 +3485,8 @@ function initStudentTimers() {
             clearInterval(pomoTimerId);
             pomoTimerId = null;
         }
-        pomoTimeLeft = MODE_TIMES[currentPomoMode];
-        btnPomoStart.textContent = 'Start Session';
+        pomoTimeLeft = MODE_TIMES[currentPomoMode] || 1500;
+        if (btnPomoStart) btnPomoStart.textContent = 'Start Session';
         updatePomoDisplay();
     });
 
@@ -3498,6 +3513,7 @@ function initStudentTimers() {
     };
 
     const renderLaps = () => {
+        if (!lapsList) return;
         if (!swLaps.length) {
             lapsList.innerHTML = '<li class="lap-empty">No laps recorded</li>';
             return;
@@ -3522,7 +3538,7 @@ function initStudentTimers() {
             btnSWStart.textContent = 'Pause';
             swTimerId = setInterval(() => {
                 swElapsedTime = Date.now() - swStartTime;
-                textSWDigits.textContent = formatSWTime(swElapsedTime);
+                if (textSWDigits) textSWDigits.textContent = formatSWTime(swElapsedTime);
             }, 30);
         }
     });
@@ -3541,8 +3557,8 @@ function initStudentTimers() {
         }
         swElapsedTime = 0;
         swLaps = [];
-        btnSWStart.textContent = 'Start';
-        textSWDigits.textContent = '00:00.00';
+        if (btnSWStart) btnSWStart.textContent = 'Start';
+        if (textSWDigits) textSWDigits.textContent = '00:00.00';
         renderLaps();
     });
 }
