@@ -13,6 +13,7 @@
   <link rel="stylesheet" href="CSS/footer.css" />
   <link rel="manifest" href="/manifest.json">
   <link rel="icon" type="image/png" href="assets/images/logo_workspace.png" />
+  <script type="module" src="/JS/authGuard.js"></script>
   <meta name="google-site-verification" content="WbUo_0T0kC4YmSlPrwLvwl-ez09WyeheFaD1YThQZqY" />
   <meta name="description"
     content="Global Notes Workspace - A powerful, offline-capable workspace for organizing your thoughts, notes, and ideas.">
@@ -41,9 +42,9 @@
     <nav class="navbar">
       <!-- Left: Toggle + Brand -->
       <div class="navbar-left">
-        <button class="btn ghost icon-only mobile-toggle" id="sidebar-toggle" aria-label="Toggle Menu">
+        <button class="btn ghost icon-only mobile-toggle" id="sidebar-toggle" title="Toggle Sidebar" aria-label="Toggle Sidebar">
           <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-            stroke-linecap="round">
+            stroke-linecap="round" stroke-linejoin="round">
             <line x1="3" y1="12" x2="21" y2="12"></line>
             <line x1="3" y1="6" x2="21" y2="6"></line>
             <line x1="3" y1="18" x2="21" y2="18"></line>
@@ -252,7 +253,7 @@
     <aside class="app-sidebar" id="app-sidebar">
       <div class="sidebar-header">
         <div class="sidebar-top-row">
-          <span class="user-workspace-name">My Workspace</span>
+          <span class="user-workspace-name">File History & Library</span>
           <button class="btn ghost icon-only mobile-close" id="sidebar-close" aria-label="Close sidebar">
             <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
               stroke-linecap="round">

@@ -935,7 +935,7 @@ html,
   gap: 6px;
   height: 32px;
   padding: 0 10px;
-  border-radius: 20px;
+  border-radius: 8px;
   font-size: 11.5px;
   font-weight: 600;
   letter-spacing: 0.2px;
@@ -2502,20 +2502,27 @@ body.dark-mode .note-card[data-theme="classic-blue"] {
   --n-card-shadow-hover: rgba(255, 94, 126, 0.25);
 }
 
-.empty-dashboard {
-  grid-column: 1 / -1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 80px 40px;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px dashed var(--border);
-  border-radius: 12px;
-  text-align: center;
-  color: var(--text-dim);
-  font-size: 15px;
-  pointer-events: none;
+.empty-dashboard,
+.dashboard-grid .empty-dashboard {
+  grid-column: 1 / -1 !important;
+  width: 100% !important;
+  max-width: 480px !important;
+  height: auto !important;
+  min-height: 140px !important;
+  aspect-ratio: auto !important;
+  margin: 40px auto !important;
+  padding: 32px 24px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  text-align: center !important;
+  background: rgba(255, 255, 255, 0.03) !important;
+  border: 1px dashed var(--border, rgba(255, 255, 255, 0.15)) !important;
+  border-radius: 16px !important;
+  color: var(--text-dim, #94a3b8) !important;
+  font-size: 14px !important;
+  box-sizing: border-box !important;
 }
 
 .dashboard-grid .note-title {
@@ -5233,11 +5240,11 @@ body.dark-mode .editor[data-theme="crimson-red"] {
    RESPONSIVE
    ════════════════════════════════════════ */
 /* ════════════════════════════════════════
-   RESPONSIVE & MOBILE OPTIMIZATION
+   RESPONSIVE & MOBILE/TABLET OPTIMIZATION
    ════════════════════════════════════════ */
 
-/* Standard Mobile Support */
-@media (max-width: 768px) {
+/* Tablet & Mobile Support (Up to 1024px) */
+@media (max-width: 1024px) {
   :root {
     --sidebar-width: 280px;
     --header-height: 56px;
@@ -5247,12 +5254,14 @@ body.dark-mode .editor[data-theme="crimson-red"] {
     display: inline-flex !important;
     align-items: center;
     justify-content: center;
+    touch-action: manipulation;
   }
 
   .mobile-close {
     display: inline-flex !important;
     align-items: center;
     justify-content: center;
+    touch-action: manipulation;
   }
 
   .brand-name,
@@ -5280,20 +5289,46 @@ body.dark-mode .editor[data-theme="crimson-red"] {
   }
 
   .navbar-right {
-    gap: 4px;
+    gap: 6px;
     order: 3;
     flex-shrink: 0;
   }
 
-  /* Make search input more compact on mobile */
+  /* Mobile & Tablet Dropdown Overlay Styling */
+  .dropdown-menu {
+    position: fixed !important;
+    top: 60px !important;
+    left: 12px !important;
+    right: 12px !important;
+    width: auto !important;
+    max-width: min(92vw, 360px) !important;
+    margin: 0 auto !important;
+    z-index: 99999 !important;
+    background: var(--surface, #1e1e24) !important;
+    border: 1px solid var(--border, rgba(255, 255, 255, 0.18)) !important;
+    border-radius: 16px !important;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.75), 0 0 0 1px rgba(255, 255, 255, 0.08) !important;
+    padding: 10px !important;
+    backdrop-filter: blur(24px) !important;
+    -webkit-backdrop-filter: blur(24px) !important;
+    animation: mobileSlideDown 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  }
+
+  .dropdown-menu.hidden {
+    display: none !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+  }
+
+  /* Responsive Search & Navigation */
   .search-container {
-    max-width: 140px;
+    max-width: 220px;
+    width: 100%;
   }
 
   .search-input:focus {
-    position: absolute;
-    left: -50px;
-    width: calc(100vw - 120px);
+    position: relative;
+    width: 100%;
     z-index: 10;
   }
 
@@ -5308,7 +5343,7 @@ body.dark-mode .editor[data-theme="crimson-red"] {
     height: calc(100dvh - var(--header-height) - env(safe-area-inset-top, 0px));
   }
 
-  /* Off-canvas mobile drawer sidebar */
+  /* Off-canvas mobile/tablet drawer sidebar */
   .app-sidebar {
     display: flex !important;
     position: fixed !important;
@@ -5386,16 +5421,21 @@ body.dark-mode .editor[data-theme="crimson-red"] {
   }
 
   .editor-toolbar {
-    padding: 8px 16px;
+    padding: 8px 12px;
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
-    gap: 12px;
+    gap: 10px;
     justify-content: flex-start !important;
+    scrollbar-width: none;
+  }
+
+  .editor-toolbar::-webkit-scrollbar {
+    display: none;
   }
 
   .toolbar-controls {
     flex-wrap: nowrap !important;
-    gap: 12px !important;
+    gap: 8px !important;
   }
 
   .editor-body {
@@ -5407,7 +5447,7 @@ body.dark-mode .editor[data-theme="crimson-red"] {
   }
 
   .dashboard-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
     gap: 16px;
     padding-bottom: 80px;
   }
@@ -5417,9 +5457,9 @@ body.dark-mode .editor[data-theme="crimson-red"] {
     min-height: 140px;
   }
 
-  /* Modal Refinement for Mobile */
+  /* Modal Refinement for Mobile/Tablet */
   .modal[open] .modal-content {
-    width: 92% !important;
+    width: min(94vw, 560px) !important;
     margin: env(safe-area-inset-top) auto;
     max-height: calc(100vh - 60px);
     border-radius: var(--radius-lg);
@@ -5444,6 +5484,30 @@ body.dark-mode .editor[data-theme="crimson-red"] {
     padding: 12px 16px;
     border-bottom: 1px solid var(--border);
     margin-bottom: 8px;
+  }
+}
+
+/* Hide UI Designer & Compact Pill Text on Mobile */
+@media (max-width: 767px) {
+  #nav-ui-designer,
+  a[href*="ui-designer.html"],
+  .dropdown-item[href*="ui-designer.html"] {
+    display: none !important;
+  }
+
+  .nav-pill-text {
+    display: none !important;
+  }
+}
+
+/* Smartphone Specific (Up to 600px) */
+@media (max-width: 600px) {
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .search-container {
+    max-width: 120px;
   }
 }
 
@@ -7365,4 +7429,37 @@ body.dark-mode .folder-pill-container[data-color="slate"] {
 .popover-folder-option.active {
   background: var(--primary, #6366f1);
   color: #ffffff;
+}
+
+/* ════════════════════════════════════════
+   MOBILE & TABLET BUTTON SHAPE STANDARDIZATION
+   Replace oval/pill shapes with soft rounded rectangles (8px) or 1:1 circles
+   ════════════════════════════════════════ */
+@media (max-width: 1199px) {
+  .btn,
+  .btn-primary,
+  .btn-secondary,
+  .btn-primary-gn,
+  .btn-secondary-gn,
+  .nav-feature-pill,
+  .nav-apps-pill,
+  .ai-btn,
+  .lang-select,
+  .search-input,
+  .btn-hub-primary,
+  .btn-hub-secondary,
+  .source-pill,
+  .tab-pill,
+  .badge,
+  .lang-badge {
+    border-radius: 8px !important;
+  }
+
+  /* 1:1 Icon Buttons use circular rounding */
+  .btn.icon-only,
+  .icon-only-back,
+  button.icon-only,
+  .btn-icon {
+    border-radius: 50% !important;
+  }
 }

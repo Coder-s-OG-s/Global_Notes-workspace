@@ -1,4 +1,5 @@
 import { THEME_KEY } from "./constants.js";
+import { showToast } from "./utilities.js";
 
 const DEFAULT_THEME = "amoled-dark";
 const VALID_THEMES = ["amoled-dark", "minimal-white"];
@@ -196,7 +197,9 @@ export function wireThemeToggle() {
       persistTheme(target);
       updateButtonState(target);
       if (selector) selector.value = target;
-      showToast(`Switched to ${target === 'amoled-dark' ? 'Dark' : 'Light'} mode`, 'info');
+      if (typeof showToast === 'function') {
+        showToast(`Switched to ${target === 'amoled-dark' ? 'Dark' : 'Light'} mode`, 'info');
+      }
     });
   }
 

@@ -6,11 +6,14 @@ export function wireSidebarToggle() {
 
     if (!layout) return;
 
-    // Mobile Toggle Button (Navbar) - Opens Drawer
+    // Mobile & Tablet Toggle Button (Navbar) - Toggles Drawer
     if (mobileToggleBtn) {
-        mobileToggleBtn.addEventListener("click", () => {
-            if (window.innerWidth <= 768) {
-                layout.classList.add("sidebar-visible");
+        mobileToggleBtn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            if (window.innerWidth <= 1024) {
+                layout.classList.toggle("sidebar-visible");
+            } else {
+                layout.classList.toggle("sidebar-collapsed");
             }
         });
     }
@@ -28,6 +31,13 @@ export function wireSidebarToggle() {
             layout.classList.remove("sidebar-visible");
         });
     }
+
+    // Close sidebar on Escape key
+    document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape" && layout.classList.contains("sidebar-visible")) {
+            layout.classList.remove("sidebar-visible");
+        }
+    });
 }
 
 export function wireToolTabs() {

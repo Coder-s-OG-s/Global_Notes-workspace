@@ -5,7 +5,7 @@
 
 export async function getCurrentUser() {
     try {
-        const response = await fetch('/api/auth/user');
+        const response = await fetch('/api/auth/user', { credentials: 'include' });
         if (response.ok) {
             return await response.json();
         }

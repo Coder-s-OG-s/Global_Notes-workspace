@@ -131,7 +131,8 @@ export function wireAppsDropdown() {
     if (toggle.dataset.wired === "true") return;
     toggle.dataset.wired = "true";
 
-    toggle.addEventListener("click", (e) => {
+    const handleToggle = (e) => {
+        e.preventDefault();
         e.stopPropagation();
         highlightActiveTool();
         document.querySelectorAll(".dropdown-menu").forEach(el => {
@@ -139,7 +140,9 @@ export function wireAppsDropdown() {
         });
         document.querySelectorAll(".overflow-menu").forEach(el => el.classList.add("hidden"));
         menu.classList.toggle("hidden");
-    });
+    };
+
+    toggle.addEventListener("click", handleToggle);
 
     document.addEventListener("click", (e) => {
         if (wrapper && !wrapper.contains(e.target)) {

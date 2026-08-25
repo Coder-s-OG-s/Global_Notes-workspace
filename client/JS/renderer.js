@@ -421,7 +421,7 @@ export function renderNotesDashboard(notes, folders, activeFolderId, activeLibra
   }
 
   if (!visibleNotes.length && (!showFoldersInGrid || !folders.length)) {
-    gridEl.innerHTML = '<div class="note-card empty-dashboard"><p>No items found. Start by creating a note or folder!</p></div>';
+    gridEl.innerHTML = '<div class="empty-dashboard"><p>No items found. Start by creating a note or folder!</p></div>';
     return;
   }
 

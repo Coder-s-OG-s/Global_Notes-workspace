@@ -14,6 +14,7 @@
     <link rel="stylesheet" href="/CSS/index.css">
     <link rel="stylesheet" href="/CSS/ui-designer.css">
     <link rel="icon" type="image/png" href="/assets/images/logo_workspace.png" />
+    <script type="module" src="/JS/authGuard.js"></script>
 </head>
 
 <body class="ui-designer-page">
@@ -21,9 +22,8 @@
     <!-- Top Header Navigation -->
     <header class="designer-header">
         <div style="display: flex; align-items: center; gap: 14px;">
-            <a href="/app.html" class="btn-secondary-gn" style="padding: 6px 12px; font-size: 12px; text-decoration: none; display: flex; align-items: center; gap: 6px;" title="Return to Notes Workspace">
-                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
-                Back to Workspace
+            <a href="/app.html" class="btn-secondary-gn icon-only-back" style="padding: 6px 10px; font-size: 12px; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; width: 34px; height: 34px; border-radius: 8px;" title="Back to Workspace">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
             </a>
             <a href="/app.html" class="designer-brand">
                 <img src="/assets/images/logo_workspace.png" alt="Logo" class="logo-img">
@@ -285,6 +285,16 @@
                 <button class="btn-secondary-gn" id="cancel-paste-btn">Cancel</button>
                 <button class="btn-primary-gn" id="confirm-paste-btn">Import HTML Snippet</button>
             </div>
+        </div>
+    </div>
+
+    <!-- Mobile Unsupported Overlay -->
+    <div class="mobile-unsupported-overlay" id="mobile-unsupported-overlay">
+        <div class="mobile-unsupported-card">
+            <div class="unsupported-icon">🖥️</div>
+            <h2>Tablet & Desktop Feature</h2>
+            <p>UI Designer AI features an interactive visual canvas and inspector optimized exclusively for Tablet and Desktop viewports.</p>
+            <a href="/app.html" class="btn-primary-gn" style="justify-content: center; text-decoration: none; margin-top: 8px;">Return to Notes Workspace</a>
         </div>
     </div>
 

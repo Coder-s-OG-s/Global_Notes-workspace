@@ -347,13 +347,18 @@ Provide ONLY the code. Do NOT wrap it in markdown codeblocks (no \`\`\`), do NOT
                 this.selectSnippet(id);
             }
         });
-
         const toggleSidebarBtn = document.getElementById('toggle-sidebar-btn');
         if (toggleSidebarBtn) {
             toggleSidebarBtn.addEventListener('click', () => {
                 const sidebar = document.querySelector('.code-sidebar');
+                const page = document.querySelector('.code-workspace-page');
                 if (sidebar) {
-                    sidebar.classList.toggle('collapsed');
+                    if (window.innerWidth <= 1024) {
+                        if (page) page.classList.toggle('sidebar-visible');
+                        sidebar.classList.toggle('open');
+                    } else {
+                        sidebar.classList.toggle('collapsed');
+                    }
                     if (this.editor) {
                         setTimeout(() => {
                             this.editor.refresh();
