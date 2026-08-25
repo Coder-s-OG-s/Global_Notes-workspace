@@ -13,53 +13,53 @@ body.code-workspace-page {
     --header-blur: 20px;
     --header-height: 60px;
     
-    --bg: #000000;
-    --surface-rgb: 13, 13, 13;
-    --surface: #0d0d0d;
-    --surface-2: #121212;
-    --surface-3: #181818;
+    --bg: #050914;
+    --surface-rgb: 14, 23, 44;
+    --surface: #0E172C;
+    --surface-2: #162342;
+    --surface-3: #1E2D54;
     --text: #ffffff;
-    --text-dim: #d4c9bf;
-    --text-muted: #888077;
-    --border: rgba(255, 255, 255, 0.14);
-    --border-light: rgba(255, 255, 255, 0.22);
-    --editor-bg: #0d0d0d;
-    --editor-gutter: #000000;
-    --primary: #FF5E7E;
-    --primary-rgb: 255, 94, 126;
-    --primary-strong: #FF3366;
-    --primary-light: #FFEFF2;
-    --primary-glow: rgba(255, 94, 126, 0.35);
-    --active-bg: rgba(255, 94, 126, 0.16);
+    --text-dim: #E2E8F0;
+    --text-muted: #94A3B8;
+    --border: rgba(59, 130, 246, 0.18);
+    --border-light: rgba(59, 130, 246, 0.3);
+    --editor-bg: #0E172C;
+    --editor-gutter: #050914;
+    --primary: #0052FF;
+    --primary-rgb: 0, 82, 255;
+    --primary-strong: #0043D6;
+    --primary-light: #DCE7FF;
+    --primary-glow: rgba(0, 82, 255, 0.35);
+    --active-bg: rgba(0, 82, 255, 0.22);
     --shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
     --shadow-lg: 0 10px 40px rgba(0, 0, 0, 0.7);
-    --header-bg: rgba(0, 0, 0, 0.92);
+    --header-bg: rgba(11, 19, 43, 0.92);
 }
 
 html[data-theme="light"],
 html[data-theme="minimal-white"],
 html[data-theme="professional-light"] {
-    --bg: #faf8f5;
+    --bg: #ffffff;
     --surface-rgb: 255, 255, 255;
     --surface: #ffffff;
-    --surface-2: #f2ece4;
-    --surface-3: #e6dfd5;
-    --text: #121212;
-    --text-dim: #595147;
-    --text-muted: #888077;
-    --border: #e6dfd5;
-    --border-light: #ddd5c8;
+    --surface-2: #f8fafc;
+    --surface-3: #f1f5f9;
+    --text: #0f172a;
+    --text-dim: #475569;
+    --text-muted: #64748b;
+    --border: #e2e8f0;
+    --border-light: #cbd5e1;
     --editor-bg: #ffffff;
-    --editor-gutter: #f2ece4;
-    --primary: #FF5E7E;
-    --primary-rgb: 255, 94, 126;
-    --primary-strong: #FF3366;
-    --primary-light: #FFEFF2;
-    --primary-glow: rgba(255, 94, 126, 0.25);
-    --active-bg: rgba(255, 94, 126, 0.12);
+    --editor-gutter: #f8fafc;
+    --primary: #D86B5A;
+    --primary-rgb: 216, 107, 90;
+    --primary-strong: #C75443;
+    --primary-light: #F6E3E0;
+    --primary-glow: rgba(216, 107, 90, 0.25);
+    --active-bg: rgba(216, 107, 90, 0.12);
     --shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
     --shadow-lg: 0 10px 40px rgba(0, 0, 0, 0.12);
-    --header-bg: rgba(250, 248, 245, 0.92);
+    --header-bg: rgba(255, 255, 255, 0.92);
 }
 
 /* Light Theme CodeMirror Override */
@@ -278,10 +278,10 @@ body.code-workspace-page {
 }
 
 .ai-tools-toggle-btn:hover {
-    background: var(--surface-3, #262626);
-    border-color: var(--primary, #FF5E7E);
-    color: var(--primary, #FF5E7E);
-    box-shadow: 0 4px 14px var(--primary-glow, rgba(255, 94, 126, 0.35));
+    background: var(--surface-3, #334155);
+    border-color: var(--primary, #D86B5A);
+    color: var(--primary, #D86B5A);
+    box-shadow: 0 4px 14px var(--primary-glow, rgba(216, 107, 90, 0.35));
 }
 
 .ai-tools-toggle-btn .dropdown-chevron {
@@ -294,7 +294,7 @@ body.code-workspace-page {
     top: calc(100% + 8px);
     left: 0;
     width: 210px;
-    background: rgba(13, 13, 13, 0.96);
+    background: rgba(17, 24, 39, 0.96);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
     border: 1px solid var(--border, rgba(255, 255, 255, 0.14));
@@ -321,7 +321,7 @@ body.code-workspace-page {
     font-size: 10px;
     font-weight: 800;
     letter-spacing: 0.08em;
-    color: var(--text-muted, #A38F95);
+    color: var(--text-muted, #94A3B8);
     padding: 6px 10px 4px;
     text-transform: uppercase;
 }
@@ -334,7 +334,7 @@ body.code-workspace-page {
     background: none;
     border: none;
     border-radius: 8px;
-    color: var(--text-dim, #E2D4D8);
+    color: var(--text-dim, #E2E8F0);
     font-size: 13px;
     font-weight: 500;
     cursor: pointer;
@@ -344,27 +344,27 @@ body.code-workspace-page {
 }
 
 .ai-menu-item:hover {
-    background: var(--active-bg, rgba(255, 94, 126, 0.16));
-    color: var(--primary, #FF5E7E);
+    background: var(--active-bg, rgba(216, 107, 90, 0.16));
+    color: var(--primary, #D86B5A);
 }
 
 .ai-menu-item svg {
-    color: var(--primary, #FF5E7E);
+    color: var(--primary, #D86B5A);
     flex-shrink: 0;
 }
 
 .btn.primary {
-    background: linear-gradient(135deg, var(--primary, #FF5E7E) 0%, var(--primary-strong, #FF3366) 100%);
-    color: #000000 !important;
+    background: var(--primary, #0052FF) !important;
+    color: #ffffff !important;
     font-weight: 800;
-    border: none;
-    box-shadow: 0 4px 16px rgba(255, 94, 126, 0.4);
+    border: none !important;
+    box-shadow: none !important;
 }
 
 .btn.primary:hover {
-    background: linear-gradient(135deg, #FF758C 0%, var(--primary-strong, #FF3366) 100%);
+    background: var(--primary-strong, #0043D6) !important;
     transform: translateY(-1px);
-    box-shadow: 0 6px 22px rgba(255, 94, 126, 0.55);
+    box-shadow: none !important;
 }
 
 /* Light Mode Overrides for Code Workspace */
@@ -372,42 +372,42 @@ html[data-theme="minimal-white"] .ai-tools-menu,
 html[data-theme="light"] .ai-tools-menu,
 html[data-theme="professional-light"] .ai-tools-menu {
     background: rgba(255, 255, 255, 0.98);
-    border-color: #e6dfd5;
+    border-color: #e2e8f0;
     box-shadow: 0 12px 35px rgba(0, 0, 0, 0.12);
 }
 
 html[data-theme="minimal-white"] .ai-menu-item,
 html[data-theme="light"] .ai-menu-item,
 html[data-theme="professional-light"] .ai-menu-item {
-    color: #595147;
+    color: #475569;
 }
 
 html[data-theme="minimal-white"] .ai-menu-item:hover,
 html[data-theme="light"] .ai-menu-item:hover,
 html[data-theme="professional-light"] .ai-menu-item:hover {
-    background: rgba(255, 94, 126, 0.12);
-    color: #FF5E7E;
+    background: rgba(216, 107, 90, 0.12);
+    color: #D86B5A;
 }
 
 html[data-theme="minimal-white"] .ai-menu-item svg,
 html[data-theme="light"] .ai-menu-item svg,
 html[data-theme="professional-light"] .ai-menu-item svg {
-    color: #FF5E7E;
+    color: #D86B5A;
 }
 
 html[data-theme="minimal-white"] .btn.primary,
 html[data-theme="light"] .btn.primary,
 html[data-theme="professional-light"] .btn.primary {
-    background: linear-gradient(135deg, #FF5E7E 0%, #FF3366 100%);
+    background: linear-gradient(135deg, #D86B5A 0%, #C75443 100%);
     color: #ffffff !important;
-    box-shadow: 0 4px 14px rgba(255, 94, 126, 0.35);
+    box-shadow: 0 4px 14px rgba(216, 107, 90, 0.35);
 }
 
 html[data-theme="minimal-white"] .btn.primary:hover,
 html[data-theme="light"] .btn.primary:hover,
 html[data-theme="professional-light"] .btn.primary:hover {
-    background: linear-gradient(135deg, #FF758C 0%, #FF3366 100%);
-    box-shadow: 0 6px 20px rgba(255, 94, 126, 0.5);
+    background: linear-gradient(135deg, #E28475 0%, #C75443 100%);
+    box-shadow: 0 6px 20px rgba(216, 107, 90, 0.5);
 }
 
 .lang-select-trigger.active {

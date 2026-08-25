@@ -120,6 +120,156 @@ document.addEventListener('DOMContentLoaded', () => {
     if (btnStudentEngine) btnStudentEngine.addEventListener('click', () => activateEngine('student'));
 
     // ==========================================
+    // FRAMER MOTION SWIPE CARDS (VANILLA JS PORT)
+    // ==========================================
+    (function initFramerSwipeCards() {
+        const container = document.getElementById('framer-swipe-container');
+        if (!container) return;
+
+        const cardElements = Array.from(container.querySelectorAll('.framer-card'));
+        if (!cardElements.length) return;
+
+        let cards = cardElements.map((el) => ({
+            id: parseInt(el.getAttribute('data-id'), 10),
+            element: el
+        })).reverse();
+
+        const dots = Array.from(document.querySelectorAll('.framer-dot'));
+        const btnNext = document.getElementById('framer-next-btn');
+        const btnPrev = document.getElementById('framer-prev-btn');
+
+        let currentX = 0;
+        let isDragging = false;
+        let startPointerX = 0;
+
+        function renderStack() {
+            const frontCardId = cards[cards.length - 1].id;
+
+            cards.forEach((card) => {
+                const isFront = card.id === frontCardId;
+                const el = card.element;
+
+                // Framer Motion formula: offset = isFront ? 0 : id % 2 ? 6 : -6
+                const offsetDeg = isFront ? 0 : (card.id % 2 === 1 ? 6 : -6);
+                const scaleVal = isFront ? 1 : 0.98;
+                const zIndexVal = isFront ? cards.length + 10 : card.id;
+
+                el.style.zIndex = zIndexVal;
+                el.style.pointerEvents = isFront ? 'auto' : 'none';
+
+                if (isFront) {
+                    el.classList.add('is-front');
+                    // rotateRaw = map(x, [-150, 150], [-18, 18])
+                    const rotateRaw = (currentX / 150) * 18;
+                    const rotateVal = rotateRaw + offsetDeg;
+                    const absX = Math.abs(currentX);
+                    // opacity = map(x, [-150, 0, 150], [0, 1, 0])
+                    const opacityVal = Math.max(0, 1 - (absX / 150));
+
+                    if (isDragging) {
+                        el.style.transition = 'none';
+                        el.style.transform = `translateX(${currentX}px) rotate(${rotateVal}deg) scale(${scaleVal})`;
+                        el.style.opacity = opacityVal;
+                    } else {
+                        el.style.transition = 'transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.4s ease';
+                        el.style.transform = `translateX(0px) rotate(${offsetDeg}deg) scale(1)`;
+                        el.style.opacity = 1;
+                    }
+                } else {
+                    el.classList.remove('is-front');
+                    el.style.transition = 'transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.4s ease';
+                    el.style.transform = `translateX(0px) rotate(${offsetDeg}deg) scale(${scaleVal})`;
+                    el.style.opacity = 1;
+                }
+            });
+
+            // Update pagination indicator dots
+            const activeCardIdx = cards[cards.length - 1].id - 1;
+            dots.forEach((dot, i) => {
+                if (i === activeCardIdx) {
+                    dot.classList.add('active');
+                } else {
+                    dot.classList.remove('active');
+                }
+            });
+        }
+
+        function cycleNext() {
+            const front = cards.pop();
+            cards.unshift(front);
+            currentX = 0;
+            renderStack();
+        }
+
+        function cyclePrev() {
+            const bottom = cards.shift();
+            cards.push(bottom);
+            currentX = 0;
+            renderStack();
+        }
+
+        if (btnNext) btnNext.addEventListener('click', cycleNext);
+        if (btnPrev) btnPrev.addEventListener('click', cyclePrev);
+
+        dots.forEach((dot, i) => {
+            dot.addEventListener('click', () => {
+                const targetId = i + 1;
+                while (cards[cards.length - 1].id !== targetId) {
+                    const front = cards.pop();
+                    cards.unshift(front);
+                }
+                currentX = 0;
+                renderStack();
+            });
+        });
+
+        function onPointerDown(e) {
+            const frontCardId = cards[cards.length - 1].id;
+            const targetCardEl = e.target.closest('.framer-card');
+            if (!targetCardEl) return;
+
+            const cardId = parseInt(targetCardEl.getAttribute('data-id'), 10);
+            if (cardId !== frontCardId) return;
+
+            isDragging = true;
+            startPointerX = e.clientX || (e.touches && e.touches[0].clientX) || 0;
+            currentX = 0;
+            renderStack();
+        }
+
+        function onPointerMove(e) {
+            if (!isDragging) return;
+            const pointerX = e.clientX || (e.touches && e.touches[0].clientX) || 0;
+            currentX = pointerX - startPointerX;
+            renderStack();
+        }
+
+        function onPointerUp() {
+            if (!isDragging) return;
+            isDragging = false;
+
+            // Framer Motion threshold check: Math.abs(x) > 50
+            if (Math.abs(currentX) > 50) {
+                cycleNext();
+            } else {
+                currentX = 0;
+                renderStack();
+            }
+        }
+
+        container.addEventListener('mousedown', onPointerDown);
+        container.addEventListener('touchstart', onPointerDown, { passive: true });
+
+        window.addEventListener('mousemove', onPointerMove);
+        window.addEventListener('touchmove', onPointerMove, { passive: true });
+
+        window.addEventListener('mouseup', onPointerUp);
+        window.addEventListener('touchend', onPointerUp);
+
+        renderStack();
+    })();
+
+    // ==========================================
     // 1B. MACBOOK LID OPENING SCROLL TRIGGER
     // ==========================================
     const macbookContainer = document.getElementById('macbook-container');
