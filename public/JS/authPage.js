@@ -22,19 +22,13 @@ async function initAuthPage() {
     console.warn("Notice: config.js not found or ignored. Using production fallback config.", err);
   }
 
-  // --- Handle Redirect Parameter ---
+  // --- Handle Redirect & Required Auth Parameter ---
   const urlParams = new URLSearchParams(window.location.search);
   const redirectTarget = urlParams.get("redirect");
+  const isRequired = urlParams.get("required") === "true";
 
   if (redirectTarget) {
     sessionStorage.setItem("postLoginRedirect", redirectTarget);
-    const guestLink = document.querySelector(".guest-link");
-    if (guestLink) {
-      const targetPath = redirectTarget.startsWith("HTML/") || redirectTarget.startsWith("/")
-        ? (redirectTarget.startsWith("/") ? redirectTarget : `/${redirectTarget}`)
-        : `/HTML/${redirectTarget}`;
-      guestLink.href = targetPath;
-    }
   }
 
   // Displays a message to the user with optional type (info/error/success)
@@ -43,6 +37,10 @@ async function initAuthPage() {
     messageEl.textContent = text;
     messageEl.className = `auth-message ${type}`;
   };
+
+  if (isRequired) {
+    setMessage("🔒 Authentication Required: Please sign in with Google or GitHub to access features.", "error");
+  }
 
   // --- Turnstile Setup ---
   const siteKey = appConfig.TURNSTILE_SITE_KEY || "0x4AAAAAAEQyiKm40gWQ6_Gx";
