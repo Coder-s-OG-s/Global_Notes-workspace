@@ -4,37 +4,37 @@
    ═══════════════════════════════════════════ */
 
 :root {
-  --gn-bg-dark: #000000;
-  --gn-card-bg: #0d0d0d;
-  --gn-surface-2: #121212;
-  --gn-surface-3: #181818;
-  --gn-border-color: rgba(255, 255, 255, 0.14);
-  --gn-border-light: rgba(255, 255, 255, 0.22);
-  --gn-accent-indigo: #FF5E7E;
-  --gn-accent-purple: #FF3366;
-  --gn-accent-cyan: #FF5E7E;
-  --gn-accent-gradient: linear-gradient(135deg, #FF5E7E 0%, #FF3366 100%);
+  --gn-bg-dark: #050914;
+  --gn-card-bg: #0E172C;
+  --gn-surface-2: #162342;
+  --gn-surface-3: #1E2D54;
+  --gn-border-color: rgba(59, 130, 246, 0.18);
+  --gn-border-light: rgba(59, 130, 246, 0.3);
+  --gn-accent-indigo: #0052FF;
+  --gn-accent-purple: #2563EB;
+  --gn-accent-cyan: #3B82F6;
+  --gn-accent-gradient: linear-gradient(135deg, #2563EB 0%, #0052FF 100%);
   --gn-text-main: #ffffff;
-  --gn-text-muted: #E2D4D8;
-  --gn-hover-bg: rgba(255, 94, 126, 0.16);
+  --gn-text-muted: #94A3B8;
+  --gn-hover-bg: rgba(0, 82, 255, 0.22);
 }
 
 html[data-theme="light"],
 html[data-theme="minimal-white"],
 html[data-theme="professional-light"] {
-  --gn-bg-dark: #faf8f5;
+  --gn-bg-dark: #ffffff;
   --gn-card-bg: #ffffff;
-  --gn-surface-2: #f2ece4;
-  --gn-surface-3: #e6dfd5;
-  --gn-border-color: #e6dfd5;
-  --gn-border-light: #ddd5c8;
-  --gn-accent-indigo: #FF5E7E;
-  --gn-accent-purple: #FF3366;
-  --gn-accent-cyan: #FF5E7E;
-  --gn-accent-gradient: linear-gradient(135deg, #FF5E7E 0%, #FF3366 100%);
-  --gn-text-main: #121212;
-  --gn-text-muted: #595147;
-  --gn-hover-bg: rgba(0, 0, 0, 0.05);
+  --gn-surface-2: #f8fafc;
+  --gn-surface-3: #f1f5f9;
+  --gn-border-color: #e2e8f0;
+  --gn-border-light: #cbd5e1;
+  --gn-accent-indigo: #D86B5A;
+  --gn-accent-purple: #C75443;
+  --gn-accent-cyan: #D86B5A;
+  --gn-accent-gradient: linear-gradient(135deg, #E28475 0%, #D86B5A 100%);
+  --gn-text-main: #0f172a;
+  --gn-text-muted: #64748b;
+  --gn-hover-bg: rgba(216, 107, 90, 0.08);
 }
 
 body.ui-designer-page {
@@ -96,9 +96,9 @@ body.ui-designer-page {
 }
 
 .btn-primary-gn {
-  background: var(--gn-accent-gradient);
+  background: var(--gn-accent-indigo, #0052FF);
   color: #fff;
-  border: 1px solid var(--gn-accent-indigo);
+  border: 1px solid var(--gn-accent-indigo, #0052FF);
   border-radius: 8px;
   padding: 6px 14px;
   font-size: 13px;
@@ -107,14 +107,15 @@ body.ui-designer-page {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+  box-shadow: none !important;
   transition: all 0.15s ease;
 }
 
 .btn-primary-gn:hover {
-  background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%);
+  background: #0043D6;
   border-color: #60a5fa;
   transform: translateY(-1px);
+  box-shadow: none !important;
 }
 
 .btn-secondary-gn {

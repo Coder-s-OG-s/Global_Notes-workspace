@@ -397,14 +397,13 @@ function ensureFolderDialogExists() {
           
           <label class="folder-modal-label" style="margin-top: 16px;">Choose Theme Color</label>
           <div class="folder-color-selector" id="folder-color-selector">
-            <button type="button" class="color-swatch-btn selected" data-color="blue" title="Blue" style="--swatch-c: #1d4ed8;"></button>
-            <button type="button" class="color-swatch-btn" data-color="amber" title="Amber" style="--swatch-c: #d97706;"></button>
-            <button type="button" class="color-swatch-btn" data-color="coral" title="Coral" style="--swatch-c: #c2410c;"></button>
-            <button type="button" class="color-swatch-btn" data-color="emerald" title="Emerald" style="--swatch-c: #047857;"></button>
-            <button type="button" class="color-swatch-btn" data-color="purple" title="Purple" style="--swatch-c: #6d28d9;"></button>
-            <button type="button" class="color-swatch-btn" data-color="rose" title="Rose" style="--swatch-c: #be123c;"></button>
-            <button type="button" class="color-swatch-btn" data-color="teal" title="Teal" style="--swatch-c: #0f766e;"></button>
-            <button type="button" class="color-swatch-btn" data-color="slate" title="Slate" style="--swatch-c: #475569;"></button>
+            <button type="button" class="color-swatch-btn" data-color="rose" title="Red" style="--swatch-c: #EF4444; background-color: #EF4444;"></button>
+            <button type="button" class="color-swatch-btn" data-color="coral" title="Orange" style="--swatch-c: #F97316; background-color: #F97316;"></button>
+            <button type="button" class="color-swatch-btn" data-color="amber" title="Yellow" style="--swatch-c: #EAB308; background-color: #EAB308;"></button>
+            <button type="button" class="color-swatch-btn" data-color="emerald" title="Green" style="--swatch-c: #10B981; background-color: #10B981;"></button>
+            <button type="button" class="color-swatch-btn selected" data-color="blue" title="Blue" style="--swatch-c: #0052FF; background-color: #0052FF;"></button>
+            <button type="button" class="color-swatch-btn" data-color="purple" title="Purple" style="--swatch-c: #A855F7; background-color: #A855F7;"></button>
+            <button type="button" class="color-swatch-btn" data-color="slate" title="Gray" style="--swatch-c: #64748B; background-color: #64748B;"></button>
           </div>
 
           <div class="folder-modal-preview-wrapper">

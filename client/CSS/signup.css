@@ -2,13 +2,13 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
 
 :root {
-  --bg-body: #000000;
-  --bg-card: #0b0b0b;
+  --bg-body: #0B132B;
+  --bg-card: #1C2541;
   --text-primary: #ffffff;
-  --text-secondary: #e2d4d8;
-  --text-muted: #a38f95;
-  --primary-color: #FF5E7E;
-  --primary-strong: #FF3366;
+  --text-secondary: #e2e8f0;
+  --text-muted: #94a3b8;
+  --primary-color: #D86B5A;
+  --primary-strong: #C75443;
   --border-color: rgba(255, 255, 255, 0.08);
 }
 
@@ -21,7 +21,7 @@
 body {
   font-family: 'Inter', sans-serif;
   background-color: var(--bg-body);
-  background-image: radial-gradient(circle at 30% 50%, rgba(255, 94, 126, 0.14) 0%, #000000 70%);
+  background-image: radial-gradient(circle at 30% 50%, rgba(216, 107, 90, 0.18) 0%, #0B132B 70%);
   color: var(--text-primary);
   min-height: 100vh;
   display: flex;

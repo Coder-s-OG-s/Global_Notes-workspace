@@ -622,7 +622,7 @@ async function initHub() {
     cartoonPills.forEach(pill => {
         if (pill.dataset.template === activeCartoonTemplate) {
             pill.classList.add('active');
-            pill.style.background = '#FF5E7E';
+            pill.style.background = '#D86B5A';
             pill.style.color = '#ffffff';
         } else {
             pill.classList.remove('active');
@@ -637,7 +637,7 @@ async function initHub() {
                 p.style.color = '#0f172a';
             });
             pill.classList.add('active');
-            pill.style.background = '#FF5E7E';
+            pill.style.background = '#D86B5A';
             pill.style.color = '#ffffff';
             activeCartoonTemplate = pill.dataset.template || 'cubist';
             localStorage.setItem('global_notes_hub_cartoon_template', activeCartoonTemplate);
@@ -1386,7 +1386,7 @@ function renderLibraryDecks(query = '') {
         gridEl.innerHTML = `
             <div class="empty-library-prompt" style="grid-column: span 2; padding: 24px; text-align: center; background: var(--surface-2, #18181b); border: 1.5px dashed var(--border-light, rgba(255, 255, 255, 0.14)); border-radius: 20px;">
                 <div style="display: flex; justify-content: center; margin-bottom: 8px;">
-                    <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="#FF5E7E" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+                    <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="#D86B5A" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
                 </div>
                 <div style="font-weight: 800; font-size: 14px; color: var(--text, #f8fafc);">No Study Decks Created Yet</div>
                 <div style="font-size: 12px; color: var(--text-dim, #94a3b8); margin-top: 4px;">Upload notes or enter a topic above to generate your first deck!</div>
@@ -3365,7 +3365,7 @@ function initStudentTimers() {
     tabPomo?.addEventListener('click', () => {
         tabPomo.classList.add('active');
         tabSW?.classList.remove('active');
-        tabPomo.style.background = '#FF5E7E';
+        tabPomo.style.background = '#D86B5A';
         tabPomo.style.color = '#ffffff';
         if (tabSW) {
             tabSW.style.background = 'transparent';
@@ -3380,7 +3380,7 @@ function initStudentTimers() {
     tabSW?.addEventListener('click', () => {
         tabSW.classList.add('active');
         tabPomo?.classList.remove('active');
-        tabSW.style.background = '#FF5E7E';
+        tabSW.style.background = '#D86B5A';
         tabSW.style.color = '#ffffff';
         if (tabPomo) {
             tabPomo.style.background = 'transparent';
@@ -3433,7 +3433,7 @@ function initStudentTimers() {
                 p.style.border = '1px solid var(--border-light, rgba(255, 255, 255, 0.15))';
             });
             pill.classList.add('active');
-            pill.style.background = '#FF5E7E';
+            pill.style.background = '#D86B5A';
             pill.style.color = '#ffffff';
             pill.style.border = 'none';
             currentPomoMode = pill.dataset.mode || 'work';

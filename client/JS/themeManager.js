@@ -1,7 +1,7 @@
 import { THEME_KEY } from "./constants.js";
 
 const DEFAULT_THEME = "amoled-dark";
-const VALID_THEMES = ["amoled-dark", "nature-green", "corporate-gray", "minimal-white"];
+const VALID_THEMES = ["amoled-dark", "minimal-white"];
 
 let currentStorageKey = THEME_KEY; // Default to Notes Workspace theme key
 
