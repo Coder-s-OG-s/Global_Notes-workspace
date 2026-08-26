@@ -55,6 +55,7 @@ async function initAuthPage() {
   }
 
   // --- Handle Redirect & Required Auth Parameter ---
+  const urlParams = new URLSearchParams(window.location.search);
   const redirectTarget = urlParams.get("redirect");
   const isRequired = urlParams.get("required") === "true";
 
@@ -79,60 +80,6 @@ async function initAuthPage() {
   if (isRequired) {
     setMessage("🔒 Authentication Required: Please sign in to access your workspace.", "error");
   }
-
-  // --- UI Mode Switcher (Sign Up <-> Log In) ---
-  const updateUIMode = (mode) => {
-    currentMode = mode;
-    clearFieldErrors();
-    setMessage("");
-
-    if (currentMode === "signup") {
-      if (formTitle) formTitle.textContent = "Register with your e-mail";
-      if (toggleTextContainer) {
-        toggleTextContainer.innerHTML = 'Already a member? <a href="#" id="toggle-auth-mode" class="toggle-link">Log In</a>';
-      }
-      if (nameFieldsRow) nameFieldsRow.style.display = "grid";
-      if (firstNameInput) firstNameInput.required = true;
-      if (confirmPasswordGroup) confirmPasswordGroup.style.display = "block";
-      if (confirmPasswordInput) confirmPasswordInput.required = true;
-      if (forgotPasswordWrapper) forgotPasswordWrapper.style.display = "none";
-      if (passwordHint) passwordHint.style.display = "block";
-      if (termsCheckboxLabel) termsCheckboxLabel.style.display = "flex";
-      if (termsCheck) termsCheck.required = true;
-      if (submitBtnText) submitBtnText.textContent = "SIGN UP";
-      if (socialDividerText) socialDividerText.textContent = "Or register with";
-      if (passwordFieldsRow) passwordFieldsRow.classList.add("two-cols");
-    } else {
-      if (formTitle) formTitle.textContent = "Welcome back";
-      if (toggleTextContainer) {
-        toggleTextContainer.innerHTML = 'Don\'t have an account? <a href="#" id="toggle-auth-mode" class="toggle-link">Sign Up</a>';
-      }
-      if (nameFieldsRow) nameFieldsRow.style.display = "none";
-      if (firstNameInput) firstNameInput.required = false;
-      if (confirmPasswordGroup) confirmPasswordGroup.style.display = "none";
-      if (confirmPasswordInput) confirmPasswordInput.required = false;
-      if (forgotPasswordWrapper) forgotPasswordWrapper.style.display = "block";
-      if (passwordHint) passwordHint.style.display = "none";
-      if (termsCheckboxLabel) termsCheckboxLabel.style.display = "none";
-      if (termsCheck) termsCheck.required = false;
-      if (submitBtnText) submitBtnText.textContent = "LOG IN";
-      if (socialDividerText) socialDividerText.textContent = "Or log in with";
-      if (passwordFieldsRow) passwordFieldsRow.classList.remove("two-cols");
-    }
-
-    // Re-bind click event on toggle link
-    const toggleLink = document.getElementById("toggle-auth-mode");
-    if (toggleLink) {
-      toggleLink.addEventListener("click", (e) => {
-        e.preventDefault();
-        updateUIMode(currentMode === "signup" ? "login" : "signup");
-      });
-    }
-  };
-
-  // Initialize UI state based on mode
-  updateUIMode(currentMode);
-
   // --- Turnstile Setup ---
   const siteKey = appConfig.TURNSTILE_SITE_KEY || "0x4AAAAAAEQyiKm40gWQ6_Gx";
   const turnstileContainer = document.getElementById("turnstile-container");

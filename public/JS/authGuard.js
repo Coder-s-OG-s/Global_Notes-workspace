@@ -4,7 +4,7 @@
  * Notes Workspace, Code Workspace, Student Hub, UI Designer, PDF Editor, and AI Assistant tools.
  */
 
-import { getActiveUser, setActiveUser, clearActiveUser, getAuthHeaders } from "./storage.js";
+import { getActiveUser, setActiveUser, clearActiveUser, getAuthHeaders, getApiUrl } from "./storage.js";
 
 export async function checkAuthAndEnforce() {
   const currentPath = window.location.pathname;
@@ -25,7 +25,7 @@ export async function checkAuthAndEnforce() {
   // Always verify backend session directly from MongoDB Atlas server
   let activeUser = null;
   try {
-    const response = await fetch("/api/auth/user", { 
+    const response = await fetch(getApiUrl("/api/auth/user"), { 
       credentials: "include",
       headers: getAuthHeaders()
     });
@@ -48,9 +48,8 @@ export async function checkAuthAndEnforce() {
 
   // Strictly enforce restriction: If user is not authenticated on backend or locally
   if (!activeUser || activeUser === "guest" || activeUser.trim() === "") {
-    console.warn("🔒 Security Guard: Access Denied. User is unauthenticated. Redirecting to Sign In...");
+    console.warn("🔒 Security Guard: Access Denied. User is unauthenticated. Redirecting to Login...");
     
-    // Purge local storage
     try {
       clearActiveUser();
     } catch (e) {}
