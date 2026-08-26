@@ -7,7 +7,7 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
-  <title>Global Notes Workspace - Sign Up & Sign In</title>
+  <title>Global Notes Workspace - Log In</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Calistoga&family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
@@ -38,20 +38,19 @@
         <img src="/assets/images/logo_light.png" alt="Global Notes Logo" class="brand-logo-img">
         <span class="brand-title">GLOBAL <span class="brand-accent">NOTES</span></span>
       </div>
-      </div>
 
       <div class="form-header">
-        <h2 id="form-title">Register with your e-mail</h2>
+        <h2 id="form-title">Welcome back</h2>
         <p class="toggle-text" id="toggle-text-container">
-          Already a member? <a href="#" id="toggle-auth-mode" class="toggle-link">Log In</a>
+          Don't have an account? <a href="#" id="toggle-auth-mode" class="toggle-link">Sign Up</a>
         </p>
       </div>
 
       <!-- AUTH FORM -->
       <form id="auth-form" class="auth-form" novalidate>
         
-        <!-- Name Fields (Sign Up Mode) -->
-        <div class="form-row two-cols" id="name-fields-row">
+        <!-- Name Fields (Hidden for Log In mode) -->
+        <div class="form-row two-cols" id="name-fields-row" style="display: none;">
           <div class="input-group">
             <input type="text" id="first-name" class="auth-input" placeholder="First Name*" required autocomplete="given-name">
           </div>
@@ -72,30 +71,30 @@
           <div class="input-group" id="password-group">
             <input type="password" id="password" class="auth-input" placeholder="Password*" required autocomplete="current-password">
           </div>
-          <div class="input-group" id="confirm-password-group">
+          <div class="input-group" id="confirm-password-group" style="display: none;">
             <input type="password" id="confirm-password" class="auth-input" placeholder="Confirm Password*" required autocomplete="new-password">
           </div>
         </div>
 
-        <!-- Forgot Password Link (Log In Mode) -->
-        <div class="forgot-pass-wrapper" id="forgot-password-wrapper" style="display: none;">
+        <!-- Forgot Password Link -->
+        <div class="forgot-pass-wrapper" id="forgot-password-wrapper">
           <a href="#" id="forgot-password-link" class="forgot-pass-link">Forgot password?</a>
         </div>
 
         <!-- Password Hint -->
-        <p class="password-hint" id="password-hint">
+        <p class="password-hint" id="password-hint" style="display: none;">
           Please enter at least 8 characters including an uppercase letter, a lowercase letter, a number, and a special character.
         </p>
 
-        <!-- Terms Checkbox (Sign Up Mode) -->
-        <label class="terms-checkbox" id="terms-checkbox-label">
+        <!-- Terms Checkbox -->
+        <label class="terms-checkbox" id="terms-checkbox-label" style="display: none;">
           <input type="checkbox" id="terms-check" required>
           <span>I have read and accept the <a href="#" class="inline-link">Terms and Conditions</a> and <a href="#" class="inline-link">Privacy Policy</a>.</span>
         </label>
 
         <!-- Submit Button -->
         <button type="submit" id="submit-btn" class="auth-submit-btn">
-          <span id="submit-btn-text">SIGN UP</span>
+          <span id="submit-btn-text">LOG IN</span>
           <div class="btn-spinner" id="btn-spinner" style="display: none;"></div>
         </button>
       </form>
@@ -106,7 +105,7 @@
 
       <!-- Social Auth Divider & Options -->
       <div class="social-divider" id="social-divider">
-        <span id="social-divider-text">Or register with</span>
+        <span id="social-divider-text">Or log in with</span>
       </div>
 
       <div class="social-section">

@@ -39,40 +39,40 @@ let savedFlowcharts = [];
 let activeFlowchartId = null;
 let activeTab = 'flashcards'; // 'flashcards', 'schedule', or 'flowcharts'
 
-function purgeStudentHubLocalStorage() {
-    try {
-        const keys = [
-            STORAGE_DECKS_KEY,
-            STORAGE_ACTIVE_DECK_ID_KEY,
-            STORAGE_SCHEDULES_KEY,
-            STORAGE_ACTIVE_SCHEDULE_ID_KEY,
-            STORAGE_SCHEDULE_KEY,
-            STORAGE_FLOWCHARTS_LIST_KEY,
-            STORAGE_ACTIVE_FLOWCHART_ID_KEY,
-            STORAGE_FLOWCHART_SHAPES_KEY
-        ];
-        keys.forEach(k => localStorage.removeItem(k));
-    } catch (e) {}
-}
-
 async function saveState() {
-    purgeStudentHubLocalStorage();
+    try {
+        localStorage.setItem(STORAGE_DECKS_KEY, JSON.stringify(savedDecks));
+        if (activeDeckId) localStorage.setItem(STORAGE_ACTIVE_DECK_ID_KEY, activeDeckId);
+        localStorage.setItem(STORAGE_SCHEDULES_KEY, JSON.stringify(savedSchedules));
+        if (activeScheduleId) localStorage.setItem(STORAGE_ACTIVE_SCHEDULE_ID_KEY, activeScheduleId);
+        localStorage.setItem(STORAGE_FLOWCHARTS_LIST_KEY, JSON.stringify(savedFlowcharts));
+        if (activeFlowchartId) localStorage.setItem(STORAGE_ACTIVE_FLOWCHART_ID_KEY, activeFlowchartId);
+    } catch (e) {
+        console.warn("Failed to write Student Hub state to LocalStorage:", e);
+    }
 
-    // If authenticated user is logged in, sync state directly to MongoDB database
-    if (currentUser) {
+    // Sync state directly to MongoDB database for authenticated users
+    const activeUsername = localStorage.getItem("activeUser");
+    if (currentUser || (activeUsername && activeUsername !== "guest")) {
         try {
-            await fetch('/api/student-hub', {
+            const res = await fetch('/api/student-hub', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
                 body: JSON.stringify({
                     decks: savedDecks,
-                    activeDeckId,
+                    activeDeckId: activeDeckId || '',
                     schedules: savedSchedules,
-                    activeScheduleId,
+                    activeScheduleId: activeScheduleId || '',
                     flowcharts: savedFlowcharts,
-                    activeFlowchartId
+                    activeFlowchartId: activeFlowchartId || ''
                 })
             });
+            if (res.ok) {
+                console.log("✅ Student Hub state successfully persisted to MongoDB database");
+            } else {
+                console.warn("Student Hub DB sync response error:", res.status);
+            }
         } catch (e) {
             console.error("Failed to sync Student Hub state to database:", e);
         }
@@ -622,7 +622,7 @@ async function initHub() {
     cartoonPills.forEach(pill => {
         if (pill.dataset.template === activeCartoonTemplate) {
             pill.classList.add('active');
-            pill.style.background = '#FF5E7E';
+            pill.style.background = '#D86B5A';
             pill.style.color = '#ffffff';
         } else {
             pill.classList.remove('active');
@@ -637,7 +637,7 @@ async function initHub() {
                 p.style.color = '#0f172a';
             });
             pill.classList.add('active');
-            pill.style.background = '#FF5E7E';
+            pill.style.background = '#D86B5A';
             pill.style.color = '#ffffff';
             activeCartoonTemplate = pill.dataset.template || 'cubist';
             localStorage.setItem('global_notes_hub_cartoon_template', activeCartoonTemplate);
@@ -851,9 +851,15 @@ function initTabs() {
     const viewVisuals = document.getElementById('view-visuals');
     const viewTimers = document.getElementById('view-timers');
 
+    const mobileSelect = document.getElementById('mobile-hub-tool-select');
+
     const switchTab = (tab) => {
         activeTab = tab;
         closeDropdown();
+
+        if (mobileSelect && mobileSelect.value !== tab) {
+            mobileSelect.value = tab;
+        }
 
         // Toggle buttons active state
         btnFlashcards?.classList.toggle('active', tab === 'flashcards');
@@ -879,6 +885,10 @@ function initTabs() {
             renderFlowchart();
         }
     };
+
+    if (mobileSelect) {
+        mobileSelect.addEventListener('change', (e) => switchTab(e.target.value));
+    }
 
     btnFlashcards?.addEventListener('click', () => switchTab('flashcards'));
     btnSchedule?.addEventListener('click', () => switchTab('schedule'));
@@ -910,8 +920,11 @@ function setupHistoryDropdown() {
     const dropdown = document.getElementById('history-dropdown');
     if (!btnToggle || !dropdown) return;
 
-    btnToggle.addEventListener('click', (e) => {
-        e.stopPropagation();
+    const toggleDropdown = (e) => {
+        if (e) {
+            e.stopPropagation();
+            e.preventDefault();
+        }
         const isHidden = dropdown.classList.contains('hidden');
         if (isHidden) {
             renderHistoryList();
@@ -919,7 +932,9 @@ function setupHistoryDropdown() {
         } else {
             dropdown.classList.add('hidden');
         }
-    });
+    };
+
+    btnToggle.addEventListener('click', toggleDropdown);
 
     document.addEventListener('click', (e) => {
         if (!dropdown.classList.contains('hidden') && !e.target.closest('.history-dropdown-container')) {
@@ -1386,7 +1401,7 @@ function renderLibraryDecks(query = '') {
         gridEl.innerHTML = `
             <div class="empty-library-prompt" style="grid-column: span 2; padding: 24px; text-align: center; background: var(--surface-2, #18181b); border: 1.5px dashed var(--border-light, rgba(255, 255, 255, 0.14)); border-radius: 20px;">
                 <div style="display: flex; justify-content: center; margin-bottom: 8px;">
-                    <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="#FF5E7E" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+                    <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="#D86B5A" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
                 </div>
                 <div style="font-weight: 800; font-size: 14px; color: var(--text, #f8fafc);">No Study Decks Created Yet</div>
                 <div style="font-size: 12px; color: var(--text-dim, #94a3b8); margin-top: 4px;">Upload notes or enter a topic above to generate your first deck!</div>
@@ -2199,55 +2214,52 @@ function toggleLeetCodeTask(itemIdx, problemIdx, isChecked) {
 }
 // ─── LOCAL STORAGE & DATABASE LOADER ───
 async function loadSavedState() {
-    purgeStudentHubLocalStorage();
-
+    // 1. Instantly restore state from LocalStorage so data is visible immediately on page refresh
     try {
-        currentUser = await getCurrentUser();
-    } catch (e) {
-        currentUser = null;
-    }
-
-    if (currentUser) {
-        try {
-            const res = await fetch('/api/student-hub');
-            if (res.ok) {
-                const data = await res.json();
-                const rawDecks = Array.isArray(data?.decks) ? data.decks : [];
-                // Filter out any legacy hardcoded sample decks (e.g. Photosynthesis, Intro to Calculus)
-                savedDecks = rawDecks.filter(d => d && d.name && !d.name.toLowerCase().includes('photosynthes') && !d.name.toLowerCase().includes('calculus') && !['deck_calc_1', 'deck_lecture_1', 'deck_syllabus_1', 'deck_cell_div_1'].includes(d.id));
-                activeDeckId = data?.activeDeckId && savedDecks.some(d => d.id === data.activeDeckId) ? data.activeDeckId : (savedDecks.length > 0 ? savedDecks[0].id : null);
-
-                savedSchedules = Array.isArray(data?.schedules) ? data.schedules : [];
-                activeScheduleId = data?.activeScheduleId || (savedSchedules.length > 0 ? savedSchedules[0].id : null);
-                savedFlowcharts = Array.isArray(data?.flowcharts) ? data.flowcharts : [];
-                activeFlowchartId = data?.activeFlowchartId || (savedFlowcharts.length > 0 ? savedFlowcharts[0].id : null);
-
-                // If legacy sample data was present in DB, sync cleaned state back to DB immediately
-                if (savedDecks.length !== rawDecks.length) {
-                    saveState();
-                }
+        const storedDecks = localStorage.getItem(STORAGE_DECKS_KEY);
+        if (storedDecks) {
+            const parsedDecks = JSON.parse(storedDecks);
+            if (Array.isArray(parsedDecks)) {
+                savedDecks = parsedDecks.filter(d => d && d.name && !d.name.toLowerCase().includes('photosynthes') && !d.name.toLowerCase().includes('calculus') && !['deck_calc_1', 'deck_lecture_1', 'deck_syllabus_1', 'deck_cell_div_1'].includes(d.id));
             }
-        } catch (e) {
-            console.error("Failed to load Student Hub data from database:", e);
-            savedDecks = [];
-            activeDeckId = null;
-            savedSchedules = [];
-            activeScheduleId = null;
-            savedFlowcharts = [];
-            activeFlowchartId = null;
         }
-    } else {
-        // Unauthenticated / Guest state: 0 data, no LocalStorage fallback
-        savedDecks = [];
-        activeDeckId = null;
-        savedSchedules = [];
-        activeScheduleId = null;
-        savedFlowcharts = [];
-        activeFlowchartId = null;
+        const storedActiveDeckId = localStorage.getItem(STORAGE_ACTIVE_DECK_ID_KEY);
+        if (storedActiveDeckId && savedDecks.some(d => d.id === storedActiveDeckId)) {
+            activeDeckId = storedActiveDeckId;
+        } else if (savedDecks.length > 0) {
+            activeDeckId = savedDecks[0].id;
+        }
+
+        const storedSchedules = localStorage.getItem(STORAGE_SCHEDULES_KEY);
+        if (storedSchedules) {
+            const parsedSchedules = JSON.parse(storedSchedules);
+            if (Array.isArray(parsedSchedules)) savedSchedules = parsedSchedules;
+        }
+        const storedActiveScheduleId = localStorage.getItem(STORAGE_ACTIVE_SCHEDULE_ID_KEY);
+        if (storedActiveScheduleId && savedSchedules.some(s => s.id === storedActiveScheduleId)) {
+            activeScheduleId = storedActiveScheduleId;
+        } else if (savedSchedules.length > 0) {
+            activeScheduleId = savedSchedules[0].id;
+        }
+
+        const storedFlowcharts = localStorage.getItem(STORAGE_FLOWCHARTS_LIST_KEY);
+        if (storedFlowcharts) {
+            const parsedFlowcharts = JSON.parse(storedFlowcharts);
+            if (Array.isArray(parsedFlowcharts)) savedFlowcharts = parsedFlowcharts;
+        }
+        const storedActiveFlowchartId = localStorage.getItem(STORAGE_ACTIVE_FLOWCHART_ID_KEY);
+        if (storedActiveFlowchartId && savedFlowcharts.some(f => f.id === storedActiveFlowchartId)) {
+            activeFlowchartId = storedActiveFlowchartId;
+        } else if (savedFlowcharts.length > 0) {
+            activeFlowchartId = savedFlowcharts[0].id;
+        }
+    } catch (e) {
+        console.warn("Failed to restore Student Hub state from LocalStorage:", e);
     }
 
-    // Render active views based on database state
+    // Immediately render local data on refresh
     renderLibraryDecks();
+    renderHistoryList();
 
     if (activeDeckId) {
         selectDeck(activeDeckId);
@@ -2256,12 +2268,56 @@ async function loadSavedState() {
     }
 
     if (activeScheduleId) {
-        const activeSched = savedSchedules.find(s => s.id === activeScheduleId);
-        if (activeSched) {
-            renderSchedule(activeSched.items);
+        selectSchedule(activeScheduleId);
+    }
+
+    if (activeFlowchartId) {
+        selectFlowchart(activeFlowchartId);
+    }
+
+    // 2. Fetch remote DB data if authenticated user is logged in
+    try {
+        currentUser = await getCurrentUser();
+    } catch (e) {
+        currentUser = null;
+    }
+
+    const activeUserCheck = localStorage.getItem("activeUser");
+    if (currentUser || (activeUserCheck && activeUserCheck !== "guest")) {
+        try {
+            const res = await fetch('/api/student-hub', { credentials: 'include' });
+            if (res.ok) {
+                const data = await res.json();
+                const rawDecks = Array.isArray(data?.decks) ? data.decks : [];
+                const dbDecks = rawDecks.filter(d => d && d.name);
+                const dbSchedules = Array.isArray(data?.schedules) ? data.schedules : [];
+                const dbFlowcharts = Array.isArray(data?.flowcharts) ? data.flowcharts : [];
+
+                if (dbDecks.length > 0) {
+                    savedDecks = dbDecks;
+                    activeDeckId = data?.activeDeckId && savedDecks.some(d => d.id === data.activeDeckId) ? data.activeDeckId : savedDecks[0].id;
+                }
+                if (dbSchedules.length > 0) {
+                    savedSchedules = dbSchedules;
+                    activeScheduleId = data?.activeScheduleId || savedSchedules[0].id;
+                }
+                if (dbFlowcharts.length > 0) {
+                    savedFlowcharts = dbFlowcharts;
+                    activeFlowchartId = data?.activeFlowchartId || savedFlowcharts[0].id;
+                }
+
+                // Sync back to LocalStorage and update views
+                saveState();
+                renderLibraryDecks();
+                renderHistoryList();
+
+                if (activeDeckId) selectDeck(activeDeckId);
+                if (activeScheduleId) selectSchedule(activeScheduleId);
+                if (activeFlowchartId) selectFlowchart(activeFlowchartId);
+            }
+        } catch (e) {
+            console.error("Failed to load Student Hub data from database:", e);
         }
-    } else {
-        renderSchedule([]);
     }
 
     // Check for new/unsaved visualizations from code workspace
@@ -3365,7 +3421,7 @@ function initStudentTimers() {
     tabPomo?.addEventListener('click', () => {
         tabPomo.classList.add('active');
         tabSW?.classList.remove('active');
-        tabPomo.style.background = '#FF5E7E';
+        tabPomo.style.background = '#D86B5A';
         tabPomo.style.color = '#ffffff';
         if (tabSW) {
             tabSW.style.background = 'transparent';
@@ -3380,7 +3436,7 @@ function initStudentTimers() {
     tabSW?.addEventListener('click', () => {
         tabSW.classList.add('active');
         tabPomo?.classList.remove('active');
-        tabSW.style.background = '#FF5E7E';
+        tabSW.style.background = '#D86B5A';
         tabSW.style.color = '#ffffff';
         if (tabPomo) {
             tabPomo.style.background = 'transparent';
@@ -3433,7 +3489,7 @@ function initStudentTimers() {
                 p.style.border = '1px solid var(--border-light, rgba(255, 255, 255, 0.15))';
             });
             pill.classList.add('active');
-            pill.style.background = '#FF5E7E';
+            pill.style.background = '#D86B5A';
             pill.style.color = '#ffffff';
             pill.style.border = 'none';
             currentPomoMode = pill.dataset.mode || 'work';

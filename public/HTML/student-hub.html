@@ -11,9 +11,10 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
-    <link rel="stylesheet" href="/CSS/index.css">
-    <link rel="stylesheet" href="/CSS/student-hub.css">
+    <link rel="stylesheet" href="/CSS/index.css?v=15.0">
+    <link rel="stylesheet" href="/CSS/student-hub.css?v=15.0">
     <link rel="icon" type="image/png" href="/assets/images/logo_workspace.png" />
+    <script type="module" src="/JS/authGuard.js"></script>
     
     <!-- PDF.js CDN -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
@@ -33,7 +34,7 @@
                 </svg>
             </a>
             <div class="header-brand">
-                <img src="/assets/images/logo_workspace.png" alt="Logo" class="logo-img">
+                <img src="/assets/images/logo_dark.png" alt="Logo" class="logo-img">
                 <h1 class="brand-h1">Student <span class="brand-accent">Hub</span></h1>
             </div>
 
@@ -110,6 +111,15 @@
                 <button class="tab-btn" id="tab-flowcharts">Flowcharts</button>
                 <button class="tab-btn" id="tab-visuals">Diagrams & Images</button>
                 <button class="tab-btn" id="tab-timers">Study Timers</button>
+            </div>
+            <div class="mobile-hub-tool-select-wrapper">
+                <select id="mobile-hub-tool-select" class="mobile-hub-tool-select" aria-label="Select Student Tool">
+                    <option value="flashcards">🎴 Flashcards & Study Decks</option>
+                    <option value="schedule">📅 Exam Prep & Revision Schedule</option>
+                    <option value="flowcharts">📊 Flowcharts & Mindmaps</option>
+                    <option value="visuals">🎨 Diagrams & Whiteboard</option>
+                    <option value="timers">⏱️ Study Timers & Focus</option>
+                </select>
             </div>
         </div>
 
@@ -198,11 +208,11 @@
                         <!-- Dashed Folder Dropzone -->
                         <div class="hub-dropzone mockup-dropzone" id="flashcards-dropzone">
                             <div class="folder-graphic-icon">
-                                <svg viewBox="0 0 24 24" width="40" height="40" fill="none" stroke="#FF5E7E" stroke-width="1.8"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
+                                <svg viewBox="0 0 24 24" width="40" height="40" fill="none" stroke="#D86B5A" stroke-width="1.8"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
                             </div>
                             <div class="dropzone-heading" style="font-weight: 800; font-size: 18px; margin-top: 6px; color: var(--text, #ffffff);">Drop files here</div>
                             <div class="dropzone-subtext" style="font-size: 12px; margin-top: 2px; color: var(--text-dim, #595147);">PDFs, videos, and recordings</div>
-                            <span class="upload-filename" id="flashcards-filename" style="display: block; font-weight: 700; color: #FF5E7E; margin-top: 6px;"></span>
+                            <span class="upload-filename" id="flashcards-filename" style="display: block; font-weight: 700; color: #D86B5A; margin-top: 6px;"></span>
                             <input type="file" id="flashcards-file-input" class="file-input" accept=".txt,.md,.pdf,.docx">
                         </div>
 
@@ -268,7 +278,7 @@
                     </div>
 
                     <div class="workspace-placeholder" id="flashcards-placeholder">
-                        <div class="placeholder-icon-glowing" style="width: 64px; height: 64px; border-radius: 20px; background: rgba(255, 94, 126, 0.16); color: #FF5E7E; border: 1px solid rgba(255, 94, 126, 0.35); display: flex; align-items: center; justify-content: center; margin-bottom: 16px;">
+                        <div class="placeholder-icon-glowing" style="width: 64px; height: 64px; border-radius: 20px; background: rgba(216, 107, 90, 0.16); color: #D86B5A; border: 1px solid rgba(216, 107, 90, 0.35); display: flex; align-items: center; justify-content: center; margin-bottom: 16px;">
                             <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
                                 <rect x="3" y="3" width="18" height="18" rx="3" ry="3"/>
                                 <line x1="8" y1="9" x2="16" y2="9"/>
@@ -307,8 +317,8 @@
                     <div class="form-group">
                         <label>Or Upload Syllabus File (.txt, .md, .pdf)</label>
                         <div class="upload-dropzone mockup-dropzone" id="schedule-dropzone">
-                            <div class="upload-icon-circle" style="width: 56px; height: 56px; margin: 0 auto 10px auto; background: rgba(255, 94, 126, 0.16); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
-                                <svg viewBox="0 0 24 24" width="36" height="36" fill="none" stroke="#FF5E7E" stroke-width="1.8"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                            <div class="upload-icon-circle" style="width: 56px; height: 56px; margin: 0 auto 10px auto; background: rgba(216, 107, 90, 0.16); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                <svg viewBox="0 0 24 24" width="36" height="36" fill="none" stroke="#D86B5A" stroke-width="1.8"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
                             </div>
                             <span class="upload-text dropzone-subtext" style="margin-top: 6px;">Click to browse or drag & drop files</span>
                             <span class="upload-filename" id="schedule-filename"></span>
@@ -334,7 +344,7 @@
                     </button>
 
                     <div style="margin-top: 16px; border-top: 1px solid var(--border, #e2e8f0); padding-top: 16px;">
-                        <button class="btn-hub-primary full-width" id="btn-start-quiz-me" style="background: #FF5E7E; color: #000000; font-weight: 800;">
+                        <button class="btn-hub-primary full-width" id="btn-start-quiz-me" style="background: #D86B5A; color: #ffffff; font-weight: 800;">
                             <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
                             <span>Quiz me on this</span>
                         </button>
@@ -346,7 +356,7 @@
                     <!-- Top Action Bar for Quiz -->
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
                         <div class="modal-title">Exam Prep Workspace</div>
-                        <button class="btn-hub-primary" id="btn-top-quiz-me" style="background: #FF5E7E; color: #000000; font-weight: 800; padding: 8px 18px !important; font-size: 13px !important;">
+                        <button class="btn-hub-primary" id="btn-top-quiz-me" style="background: #D86B5A; color: #ffffff; font-weight: 800; padding: 8px 18px !important; font-size: 13px !important;">
                             <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
                             <span>Quiz me on this</span>
                         </button>
@@ -392,8 +402,8 @@
                             <div class="quiz-question-box">
                                 <div class="quiz-question-subtag">question</div>
                                 <h3 class="quiz-question-text" id="quiz-question-text">What is the derivative of sin(x)?</h3>
-                                <div class="quiz-status-icon-circle" style="width: 48px; height: 48px; background: rgba(255, 94, 126, 0.16); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 12px;">
-                                <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="#FF5E7E" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path><text x="9.5" y="16" font-size="12" font-weight="900" fill="#FF5E7E">?</text></svg>
+                                <div class="quiz-status-icon-circle" style="width: 48px; height: 48px; background: rgba(216, 107, 90, 0.16); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 12px;">
+                                <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="#D86B5A" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path><text x="9.5" y="16" font-size="12" font-weight="900" fill="#D86B5A">?</text></svg>
                             </div>
                             </div>
 
@@ -425,7 +435,7 @@
                                     <h1 class="quiz-score-percentage" id="quiz-score-percentage">90%</h1>
                                     <div class="quiz-burst-badge">
                                         <svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="currentColor" stroke-width="2">
-                                            <circle cx="12" cy="12" r="4" fill="#FF5E7E" stroke="none"></circle>
+                                            <circle cx="12" cy="12" r="4" fill="#D86B5A" stroke="none"></circle>
                                             <line x1="12" y1="1" x2="12" y2="4" stroke="#c084fc" stroke-width="3" stroke-linecap="round"></line>
                                             <line x1="12" y1="20" x2="12" y2="23" stroke="#fca5a5" stroke-width="3" stroke-linecap="round"></line>
                                             <line x1="1" y1="12" x2="4" y2="12" stroke="#86efac" stroke-width="3" stroke-linecap="round"></line>
@@ -446,7 +456,7 @@
                                         <div class="metric-circle-label">to redo</div>
                                     </div>
                                 </div>
-                        <button class="btn-hub-primary" id="btn-retake-quiz" style="background: #FF5E7E; color: #000000; font-weight: 800;">
+                        <button class="btn-hub-primary" id="btn-retake-quiz" style="background: #D86B5A; color: #ffffff; font-weight: 800;">
                                         <span>Retake Quiz</span>
                                     </button>
                                     <button class="btn-hub-primary" id="btn-finish-quiz" style="background: #e2e8f0; color: #0f172a; font-weight: 700;">
@@ -465,7 +475,7 @@
             <div class="split-layout">
                 <!-- Inputs panel -->
                 <aside class="options-panel">
-                    <div class="pastel-badge-pill" style="display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; background: rgba(255, 94, 126, 0.16); color: #FF5E7E; border: 1px solid rgba(255, 94, 126, 0.35); border-radius: 20px; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 12px;">
+                    <div class="pastel-badge-pill" style="display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; background: rgba(216, 107, 90, 0.16); color: #D86B5A; border: 1px solid rgba(216, 107, 90, 0.35); border-radius: 20px; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 12px;">
                         <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
                         <span>AI DIAGRAM STUDIO</span>
                     </div>
@@ -489,16 +499,16 @@
                             <span>OR UPLOAD PROCESS FILE (.TXT, .MD, .JSON)</span>
                         </label>
                         <div class="upload-dropzone mockup-dropzone" id="flowchart-dropzone" style="min-height: 100px; padding: 16px;">
-                            <div class="upload-icon-circle" style="width: 36px; height: 36px; margin: 0 auto 6px auto; background: rgba(255, 94, 126, 0.16); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
-                                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#FF5E7E" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                            <div class="upload-icon-circle" style="width: 36px; height: 36px; margin: 0 auto 6px auto; background: rgba(216, 107, 90, 0.16); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#D86B5A" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
                             </div>
-                            <div class="upload-text" style="font-size: 13px; font-weight: 700;">Drop process file or <span style="color: #FF5E7E; text-decoration: underline;">browse</span></div>
-                            <span class="upload-filename" id="flowchart-filename" style="display: block; font-weight: 700; color: #FF5E7E; margin-top: 4px; font-size: 12px;"></span>
+                            <div class="upload-text" style="font-size: 13px; font-weight: 700;">Drop process file or <span style="color: #D86B5A; text-decoration: underline;">browse</span></div>
+                            <span class="upload-filename" id="flowchart-filename" style="display: block; font-weight: 700; color: #D86B5A; margin-top: 4px; font-size: 12px;"></span>
                             <input type="file" id="flowchart-file-input" class="file-input" accept=".txt,.md,.json">
                         </div>
                     </div>
 
-                    <button class="btn-hub-primary full-width" id="btn-generate-flowchart-ai" style="background: #FF5E7E; color: #000000; font-weight: 800; padding: 14px 20px; font-size: 15px; border-radius: 14px; box-shadow: 0 4px 12px rgba(255, 94, 126, 0.35); border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 10px;">
+                    <button class="btn-hub-primary full-width" id="btn-generate-flowchart-ai" style="background: #D86B5A; color: #ffffff; font-weight: 800; padding: 14px 20px; font-size: 15px; border-radius: 14px; box-shadow: 0 4px 12px rgba(216, 107, 90, 0.35); border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 10px;">
                         <span>AI Generate Flowchart</span>
                     </button>
                 </aside>
@@ -509,7 +519,7 @@
                     <div class="canvas-toolbar" style="display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 8px 16px; background: var(--surface-2, #181818); border: 1px solid var(--border-light, rgba(255, 255, 255, 0.14)); border-radius: 16px; margin-bottom: 12px; box-shadow: 0 2px 6px rgba(0,0,0,0.04);">
                         <div class="toolbar-title-group" style="display: flex; align-items: center; gap: 10px;">
                             <span class="canvas-workspace-title" style="font-weight: 800; font-size: 14px; color: var(--text, #ffffff);">Diagram Studio</span>
-                            <span class="canvas-status-badge" style="padding: 2px 8px; background: rgba(255, 94, 126, 0.16); color: #FF5E7E; font-size: 11px; font-weight: 700; border-radius: 12px; border: 1px solid rgba(255, 94, 126, 0.35);">Interactive Canvas</span>
+                            <span class="canvas-status-badge" style="padding: 2px 8px; background: rgba(216, 107, 90, 0.16); color: #D86B5A; font-size: 11px; font-weight: 700; border-radius: 12px; border: 1px solid rgba(216, 107, 90, 0.35);">Interactive Canvas</span>
                         </div>
 
                         <div class="toolbar-actions-group" style="display: flex; align-items: center; gap: 8px;">
@@ -684,7 +694,7 @@
         <section class="hub-view" id="view-visuals">
             <div class="split-layout">
                 <aside class="options-panel">
-                    <div class="pastel-badge-pill" style="display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; background: rgba(255, 94, 126, 0.16); color: #FF5E7E; border: 1px solid rgba(255, 94, 126, 0.35); border-radius: 20px; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">
+                    <div class="pastel-badge-pill" style="display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; background: rgba(216, 107, 90, 0.16); color: #D86B5A; border: 1px solid rgba(216, 107, 90, 0.35); border-radius: 20px; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">
                         <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
                         <span>AI VISUALS & INFOGRAPHICS</span>
                     </div>
@@ -777,7 +787,7 @@
             <div class="split-layout">
                 <!-- Inputs & Settings Panel (Left Side) -->
                 <aside class="options-panel">
-                    <div class="pastel-badge-pill" style="display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; background: rgba(255, 94, 126, 0.16); color: #FF5E7E; border: 1px solid rgba(255, 94, 126, 0.35); border-radius: 20px; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 12px;">
+                    <div class="pastel-badge-pill" style="display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; background: rgba(216, 107, 90, 0.16); color: #D86B5A; border: 1px solid rgba(216, 107, 90, 0.35); border-radius: 20px; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 12px;">
                         <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
                         <span>FOCUS &amp; STUDY TIMERS</span>
                     </div>
@@ -792,7 +802,7 @@
                             <span>SELECT TIMER MODE</span>
                         </label>
                         <div class="timer-mode-pills-row" style="display: flex; gap: 8px; flex-wrap: wrap; margin-top: 6px;">
-                            <button class="mode-pill active" id="mode-btn-work" data-mode="work" style="flex: 1; min-width: 90px; padding: 8px 12px; border-radius: 12px; font-weight: 800; font-size: 12px; cursor: pointer; border: none; background: #FF5E7E; color: #000000;">Focus (25m)</button>
+                            <button class="mode-pill active" id="mode-btn-work" data-mode="work" style="flex: 1; min-width: 90px; padding: 8px 12px; border-radius: 12px; font-weight: 800; font-size: 12px; cursor: pointer; border: none; background: #D86B5A; color: #ffffff;">Focus (25m)</button>
                             <button class="mode-pill" id="mode-btn-short" data-mode="short" style="flex: 1; min-width: 90px; padding: 8px 12px; border-radius: 12px; font-weight: 800; font-size: 12px; cursor: pointer; border: 1px solid var(--border-light, rgba(255, 255, 255, 0.15)); background: var(--surface-2, #181818); color: var(--text, #ffffff);">Short (5m)</button>
                             <button class="mode-pill" id="mode-btn-long" data-mode="long" style="flex: 1; min-width: 90px; padding: 8px 12px; border-radius: 12px; font-weight: 800; font-size: 12px; cursor: pointer; border: 1px solid var(--border-light, rgba(255, 255, 255, 0.15)); background: var(--surface-2, #181818); color: var(--text, #ffffff);">Long (15m)</button>
                         </div>
@@ -805,14 +815,14 @@
                             <span>TIMER TYPE</span>
                         </label>
                         <div class="timer-type-toggle-bar" style="display: flex; background: var(--surface-2, #181818); padding: 4px; border-radius: 14px; border: 1px solid var(--border-light, rgba(255, 255, 255, 0.14)); gap: 4px;">
-                            <button class="timer-type-btn active" id="timer-tab-pomodoro" style="flex: 1; padding: 8px 14px; border-radius: 10px; font-size: 13px; font-weight: 800; border: none; cursor: pointer; background: #FF5E7E; color: #000000;">Pomodoro</button>
+                            <button class="timer-type-btn active" id="timer-tab-pomodoro" style="flex: 1; padding: 8px 14px; border-radius: 10px; font-size: 13px; font-weight: 800; border: none; cursor: pointer; background: #D86B5A; color: #ffffff;">Pomodoro</button>
                             <button class="timer-type-btn" id="timer-tab-stopwatch" style="flex: 1; padding: 8px 14px; border-radius: 10px; font-size: 13px; font-weight: 800; border: none; cursor: pointer; background: transparent; color: var(--text-dim, #E2D4D8);">Stopwatch</button>
                         </div>
                     </div>
 
                     <!-- Primary Action Controls -->
                     <div class="timer-action-buttons-group" style="display: flex; gap: 10px; margin-top: 14px;">
-                        <button class="btn-hub-primary" id="pomo-start-btn" style="flex: 2; background: #FF5E7E; color: #000000; font-weight: 800; padding: 14px 20px; font-size: 15px; border-radius: 14px; box-shadow: 0 4px 12px rgba(255, 94, 126, 0.35); border: none; cursor: pointer;">
+                        <button class="btn-hub-primary" id="pomo-start-btn" style="flex: 2; background: #D86B5A; color: #ffffff; font-weight: 800; padding: 14px 20px; font-size: 15px; border-radius: 14px; box-shadow: 0 4px 12px rgba(216, 107, 90, 0.35); border: none; cursor: pointer;">
                             <span>▶ Start Session</span>
                         </button>
                         <button class="btn-hub-primary" id="pomo-reset-btn" style="flex: 1; background: var(--surface-2, #181818); color: var(--text, #ffffff); font-weight: 700; padding: 14px 16px; font-size: 14px; border-radius: 14px; border: 1px solid var(--border-light, rgba(255, 255, 255, 0.15)); cursor: pointer;">
@@ -826,7 +836,7 @@
                     <div class="timer-studio-container" style="background: var(--surface, #0d0d0d); border: 1px solid var(--border-light, rgba(255, 255, 255, 0.14)); border-radius: 24px; padding: 32px; box-shadow: var(--shadow); display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 520px; position: relative;">
 
                         <!-- Active Session Header Badge -->
-                        <div class="timer-session-info-badge" style="display: flex; align-items: center; gap: 8px; padding: 6px 16px; background: rgba(255, 94, 126, 0.16); border: 1px solid rgba(255, 94, 126, 0.35); border-radius: 20px; font-size: 13px; font-weight: 800; color: #FF5E7E; margin-bottom: 24px;">
+                        <div class="timer-session-info-badge" style="display: flex; align-items: center; gap: 8px; padding: 6px 16px; background: rgba(216, 107, 90, 0.16); border: 1px solid rgba(216, 107, 90, 0.35); border-radius: 20px; font-size: 13px; font-weight: 800; color: #D86B5A; margin-bottom: 24px;">
                             <span class="pulse-dot" style="width: 8px; height: 8px; background: #10b981; border-radius: 50%;"></span>
                             <span id="pomo-status-label">Time to Focus • Session 1 of 4</span>
                         </div>
@@ -835,7 +845,7 @@
                         <div class="timer-display-ring" id="pomodoro-panel" style="position: relative; width: 280px; height: 280px; display: flex; align-items: center; justify-content: center; margin-bottom: 24px;">
                             <svg class="ring-svg" viewBox="0 0 200 200" style="width: 100%; height: 100%; transform: rotate(-90deg);">
                                 <circle class="ring-bg" cx="100" cy="100" r="85" stroke="rgba(255, 255, 255, 0.1)" stroke-width="12" fill="none"></circle>
-                                <circle class="ring-progress" id="pomo-progress-ring" cx="100" cy="100" r="85" stroke="#FF5E7E" stroke-width="12" fill="none" stroke-dasharray="534" stroke-dashoffset="0" stroke-linecap="round" style="transition: stroke-dashoffset 0.5s ease;"></circle>
+                                <circle class="ring-progress" id="pomo-progress-ring" cx="100" cy="100" r="85" stroke="#D86B5A" stroke-width="12" fill="none" stroke-dasharray="534" stroke-dashoffset="0" stroke-linecap="round" style="transition: stroke-dashoffset 0.5s ease;"></circle>
                             </svg>
                             <div class="timer-text-overlay" style="position: absolute; display: flex; flex-direction: column; align-items: center; justify-content: center;">
                                 <span class="timer-digits" id="pomo-timer-text" style="font-size: 52px; font-weight: 900; letter-spacing: -1.5px; color: var(--text, #ffffff);">25:00</span>
@@ -857,8 +867,8 @@
 
                         <!-- Stopwatch Lap Controls & Laps List (Hidden in Pomodoro mode) -->
                         <div class="sw-controls-extra hidden" id="sw-controls-extra" style="width: 100%; max-width: 440px; margin-bottom: 16px; display: flex; gap: 10px; justify-content: center;">
-                            <button class="btn-hub-primary" id="sw-start-btn" style="flex: 1; background: #FF5E7E; color: #000000; font-weight: 800; padding: 10px 16px; border-radius: 12px;">Start</button>
-                            <button class="btn-hub-primary" id="sw-lap-btn" style="flex: 1; background: #FF5E7E; color: #000000; font-weight: 800; padding: 10px 16px; border-radius: 12px;">Lap</button>
+                            <button class="btn-hub-primary" id="sw-start-btn" style="flex: 1; color: #ffffff; font-weight: 800; padding: 10px 16px; border-radius: 12px;">Start</button>
+                            <button class="btn-hub-primary" id="sw-lap-btn" style="flex: 1; color: #ffffff; font-weight: 800; padding: 10px 16px; border-radius: 12px;">Lap</button>
                             <button class="btn-hub-primary" id="sw-reset-btn" style="flex: 1; background: var(--surface-2, #181818); color: var(--text, #ffffff); font-weight: 700; padding: 10px 16px; border-radius: 12px; border: 1px solid var(--border-light);">Reset</button>
                         </div>
 
@@ -871,8 +881,8 @@
 
                         <!-- Analytics & Stats Metric Cards Row -->
                         <div class="timer-stats-cards-row" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; width: 100%; max-width: 520px; margin-top: 24px;">
-                            <div class="timer-stat-card" style="background: var(--surface-2, #181818); border: 1px solid rgba(255, 94, 126, 0.35); border-radius: 16px; padding: 14px; text-align: center; color: var(--text, #ffffff);">
-                                <div class="stat-card-number" id="pomo-completed-count" style="font-size: 24px; font-weight: 900; color: #FF5E7E;">0</div>
+                            <div class="timer-stat-card" style="background: var(--surface-2, #181818); border: 1px solid var(--border, rgba(0, 82, 255, 0.3)); border-radius: 16px; padding: 14px; text-align: center; color: var(--text, #ffffff);">
+                                <div class="stat-card-number" id="pomo-completed-count" style="font-size: 24px; font-weight: 900; color: var(--primary, #0052FF);">0</div>
                                 <div class="stat-card-label" style="font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-dim, #94a3b8);">Sessions Done</div>
                             </div>
                             <div class="timer-stat-card" style="background: var(--surface-2, #1e293b); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 16px; padding: 14px; text-align: center; color: var(--text, #f8fafc);">

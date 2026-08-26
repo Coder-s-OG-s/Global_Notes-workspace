@@ -8,11 +8,12 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="CSS/index.css?v=5.3" />
+  <link rel="stylesheet" href="CSS/index.css?v=6.0" />
   <link rel="stylesheet" href="CSS/tagManager.css" />
   <link rel="stylesheet" href="CSS/footer.css" />
   <link rel="manifest" href="/manifest.json">
   <link rel="icon" type="image/png" href="assets/images/logo_workspace.png" />
+  <script type="module" src="/JS/authGuard.js"></script>
   <meta name="google-site-verification" content="WbUo_0T0kC4YmSlPrwLvwl-ez09WyeheFaD1YThQZqY" />
   <meta name="description"
     content="Global Notes Workspace - A powerful, offline-capable workspace for organizing your thoughts, notes, and ideas.">
@@ -41,16 +42,16 @@
     <nav class="navbar">
       <!-- Left: Toggle + Brand -->
       <div class="navbar-left">
-        <button class="btn ghost icon-only mobile-toggle" id="sidebar-toggle" aria-label="Toggle Menu">
+        <button class="btn ghost icon-only mobile-toggle" id="sidebar-toggle" title="Toggle Sidebar" aria-label="Toggle Sidebar">
           <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-            stroke-linecap="round">
+            stroke-linecap="round" stroke-linejoin="round">
             <line x1="3" y1="12" x2="21" y2="12"></line>
             <line x1="3" y1="6" x2="21" y2="6"></line>
             <line x1="3" y1="18" x2="21" y2="18"></line>
           </svg>
         </button>
         <div class="brand">
-          <img src="assets/images/logo_workspace.png" alt="Logo" class="logo-img" />
+          <img src="assets/images/logo_dark.png" alt="Logo" class="logo-img" />
           <span class="brand-name">Global Notes <span class="brand-accent">Workspace</span></span>
         </div>
       </div>
@@ -164,28 +165,18 @@
             <div class="dropdown-section">
               <label class="dropdown-label">Theme</label>
               <div class="theme-options-grid">
-                <button class="theme-option active" data-value="amoled-dark" title="AMOLED Dark">
+                <button class="theme-option active" data-value="amoled-dark" title="Dark Mode">
                   <span class="theme-check">&check;</span>
                   <span class="theme-name">Dark</span>
                 </button>
-                <button class="theme-option" data-value="nature-green" title="Purple Nature">
+                <button class="theme-option" data-value="minimal-white" title="Light Mode">
                   <span class="theme-check">&check;</span>
-                  <span class="theme-name">Nature</span>
-                </button>
-                <button class="theme-option" data-value="corporate-gray" title="Midnight Professional">
-                  <span class="theme-check">&check;</span>
-                  <span class="theme-name">Midnight</span>
-                </button>
-                <button class="theme-option" data-value="minimal-white" title="Minimal White">
-                  <span class="theme-check">&check;</span>
-                  <span class="theme-name">White</span>
+                  <span class="theme-name">Light</span>
                 </button>
               </div>
               <select id="theme-selector" class="hidden" aria-label="UI Theme">
-                <option value="amoled-dark">AMOLED Dark</option>
-                <option value="nature-green">Purple Nature</option>
-                <option value="corporate-gray">Midnight Professional</option>
-                <option value="minimal-white">Minimal White</option>
+                <option value="amoled-dark">Dark</option>
+                <option value="minimal-white">Light</option>
               </select>
             </div>
             <div class="dropdown-divider"></div>
@@ -262,7 +253,7 @@
     <aside class="app-sidebar" id="app-sidebar">
       <div class="sidebar-header">
         <div class="sidebar-top-row">
-          <span class="user-workspace-name">My Workspace</span>
+          <span class="user-workspace-name">File History & Library</span>
           <button class="btn ghost icon-only mobile-close" id="sidebar-close" aria-label="Close sidebar">
             <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
               stroke-linecap="round">
@@ -1276,14 +1267,13 @@
         
         <label class="folder-modal-label" style="margin-top: 16px;">Choose Theme Color</label>
         <div class="folder-color-selector" id="folder-color-selector">
-          <button type="button" class="color-swatch-btn selected" data-color="blue" title="Blue" style="--swatch-c: #1d4ed8;"></button>
-          <button type="button" class="color-swatch-btn" data-color="amber" title="Amber" style="--swatch-c: #d97706;"></button>
-          <button type="button" class="color-swatch-btn" data-color="coral" title="Coral" style="--swatch-c: #c2410c;"></button>
-          <button type="button" class="color-swatch-btn" data-color="emerald" title="Emerald" style="--swatch-c: #047857;"></button>
-          <button type="button" class="color-swatch-btn" data-color="purple" title="Purple" style="--swatch-c: #6d28d9;"></button>
-          <button type="button" class="color-swatch-btn" data-color="rose" title="Rose" style="--swatch-c: #be123c;"></button>
-          <button type="button" class="color-swatch-btn" data-color="teal" title="Teal" style="--swatch-c: #0f766e;"></button>
-          <button type="button" class="color-swatch-btn" data-color="slate" title="Slate" style="--swatch-c: #475569;"></button>
+          <button type="button" class="color-swatch-btn" data-color="rose" title="Red" style="--swatch-c: #EF4444; background-color: #EF4444;"></button>
+          <button type="button" class="color-swatch-btn" data-color="coral" title="Orange" style="--swatch-c: #F97316; background-color: #F97316;"></button>
+          <button type="button" class="color-swatch-btn" data-color="amber" title="Yellow" style="--swatch-c: #EAB308; background-color: #EAB308;"></button>
+          <button type="button" class="color-swatch-btn" data-color="emerald" title="Green" style="--swatch-c: #10B981; background-color: #10B981;"></button>
+          <button type="button" class="color-swatch-btn selected" data-color="blue" title="Blue" style="--swatch-c: #0052FF; background-color: #0052FF;"></button>
+          <button type="button" class="color-swatch-btn" data-color="purple" title="Purple" style="--swatch-c: #A855F7; background-color: #A855F7;"></button>
+          <button type="button" class="color-swatch-btn" data-color="slate" title="Gray" style="--swatch-c: #64748B; background-color: #64748B;"></button>
         </div>
 
         <div class="folder-modal-preview-wrapper">

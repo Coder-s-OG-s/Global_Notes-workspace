@@ -2,13 +2,7 @@ const express = require('express');
 const router = express.Router();
 const StudentHub = require('../models/StudentHub');
 
-// Middleware to ensure user is logged in
-const ensureAuth = (req, res, next) => {
-  if (req.isAuthenticated()) {
-    return next();
-  }
-  res.status(401).json({ msg: 'Unauthorized' });
-};
+const { ensureAuth } = require('../middleware/auth');
 
 const mongoose = require('mongoose');
 const inMemoryHubStore = new Map();
@@ -26,19 +20,22 @@ router.get('/', ensureAuth, async (req, res) => {
       activeFlowchartId: ''
     };
 
+    const userId = req.user._id || req.user.id;
+
     if (mongoose.connection.readyState !== 1) {
-      const cached = inMemoryHubStore.get(String(req.user.id)) || defaultData;
+      const cached = inMemoryHubStore.get(String(userId)) || defaultData;
       return res.json(cached);
     }
 
-    let hubData = await StudentHub.findOne({ userId: req.user.id });
+    let hubData = await StudentHub.findOne({ userId });
     if (!hubData) {
       hubData = defaultData;
     }
     res.json(hubData);
   } catch (err) {
     console.warn('Student Hub DB fallback invoked:', err.message);
-    const cached = inMemoryHubStore.get(String(req.user.id)) || {
+    const userId = req.user._id || req.user.id;
+    const cached = inMemoryHubStore.get(String(userId)) || {
       decks: [],
       activeDeckId: '',
       schedules: [],
@@ -55,9 +52,10 @@ router.get('/', ensureAuth, async (req, res) => {
 router.post('/', ensureAuth, async (req, res) => {
   try {
     const { decks, activeDeckId, schedules, activeScheduleId, flowcharts, activeFlowchartId } = req.body;
+    const userId = req.user._id || req.user.id;
     
     const payloadData = {
-      userId: req.user.id,
+      userId,
       decks: decks || [],
       activeDeckId: activeDeckId || '',
       schedules: schedules || [],
@@ -67,13 +65,13 @@ router.post('/', ensureAuth, async (req, res) => {
       updatedAt: Date.now()
     };
 
-    inMemoryHubStore.set(String(req.user.id), payloadData);
+    inMemoryHubStore.set(String(userId), payloadData);
 
     if (mongoose.connection.readyState !== 1) {
       return res.json(payloadData);
     }
 
-    let hubData = await StudentHub.findOne({ userId: req.user.id });
+    let hubData = await StudentHub.findOne({ userId });
     
     if (hubData) {
       // Update
@@ -93,7 +91,8 @@ router.post('/', ensureAuth, async (req, res) => {
     res.json(hubData);
   } catch (err) {
     console.warn('Error saving Student Hub data (using memory fallback):', err.message);
-    const cached = inMemoryHubStore.get(String(req.user.id));
+    const userId = req.user._id || req.user.id;
+    const cached = inMemoryHubStore.get(String(userId));
     res.json(cached || req.body);
   }
 });

@@ -172,6 +172,7 @@ function wireSaveNoteModal() {
                     headers: {
                         "Content-Type": "application/json"
                     },
+                    credentials: "include",
                     body: JSON.stringify({
                         title: title,
                         content: imgContent,
@@ -347,6 +348,29 @@ function wirePDFToolbar() {
         showToast("Annotations cleared for current page", "info");
     });
 
+    const mobileSelect = document.getElementById("mobile-pdf-tool-select");
+    if (mobileSelect) {
+        mobileSelect.addEventListener("change", (e) => {
+            const val = e.target.value;
+            if (val === "clear") {
+                const drawCanvas = document.getElementById("pdf-draw-canvas");
+                if (drawCanvas) {
+                    const ctx = drawCanvas.getContext("2d");
+                    ctx.clearRect(0, 0, drawCanvas.width, drawCanvas.height);
+                    delete pageAnnotations[pageNum];
+                    showToast("Annotations cleared for current page", "info");
+                }
+                mobileSelect.value = currentTool;
+            } else {
+                currentTool = val;
+                [toolDraw, toolHighlight, toolText].forEach(b => b?.classList.remove("active"));
+                if (val === "draw") toolDraw?.classList.add("active");
+                if (val === "highlight") toolHighlight?.classList.add("active");
+                if (val === "text") toolText?.classList.add("active");
+            }
+        });
+    }
+
     exportBtn?.addEventListener("click", exportPDFPagePNG);
     attachBtn?.addEventListener("click", attachPDFToActiveNote);
 }
@@ -485,7 +509,7 @@ async function attachPDFToActiveNote() {
     if (folderSelect) {
         folderSelect.innerHTML = `<option value="">📁 General / No Folder</option>`;
         try {
-            const res = await fetch("/api/folders");
+            const res = await fetch("/api/folders", { credentials: "include" });
             if (res.ok) {
                 const folders = await res.json();
                 folders.forEach(f => {

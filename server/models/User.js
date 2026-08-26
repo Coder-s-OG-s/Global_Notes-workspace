@@ -9,6 +9,7 @@ const UserSchema = new mongoose.Schema({
     sparse: true
   },
   username: String,
+  password: String,
   avatarUrl: String,
   createdAt: {
     type: Date,

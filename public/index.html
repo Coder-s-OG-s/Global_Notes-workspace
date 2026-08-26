@@ -47,12 +47,12 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link
-    href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Inter:wght@400;500;600;700&family=Outfit:wght@400;700;900&family=Space+Grotesk:wght@500;700&display=swap"
+    href="https://fonts.googleapis.com/css2?family=Calistoga&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:ital,wght@0,400;0,500;0,700;1,400&family=Space+Grotesk:wght@500;700&display=swap"
     rel="stylesheet">
 
   <!-- Styles -->
-  <link rel="stylesheet" href="CSS/index.css?v=5.0">
-  <link rel="stylesheet" href="CSS/landing.css?v=5.0">
+  <link rel="stylesheet" href="CSS/index.css?v=5.1">
+  <link rel="stylesheet" href="CSS/landing.css?v=5.1">
   <link rel="icon" type="image/png" href="assets/images/logo_workspace.png" />
 </head>
 
@@ -77,7 +77,7 @@
   <nav id="navbar" class="fixed-nav">
     <div class="container nav-content">
       <a href="#" class="brand">
-        <img src="assets/images/logo_workspace.png" alt="Global Notes Logo" class="nav-logo">
+        <img src="assets/images/logo_light.png" alt="Global Notes Logo" class="nav-logo">
         <span class="brand-name">GLOBAL <span class="brand-accent">NOTES</span></span>
       </a>
       
@@ -87,14 +87,14 @@
         <a href="#spotlights">WORKSPACES</a>
         <a href="#faq">FAQ</a>
         <div class="mobile-nav-ctas">
-          <a href="app.html?guest=true" class="btn-pill-primary sm">OPEN WORKSPACE</a>
+          <a href="HTML/signup.html?redirect=app.html" class="btn-pill-primary sm">OPEN WORKSPACE</a>
           <a href="HTML/signup.html" class="btn-pill-secondary sm">SIGN IN</a>
         </div>
       </div>
 
       <div class="nav-ctas">
         <a href="HTML/signup.html" class="btn-pill-secondary sm">SIGN IN</a>
-        <a href="app.html?guest=true" class="btn-pill-primary sm">OPEN WORKSPACE</a>
+        <a href="HTML/signup.html?redirect=app.html" class="btn-pill-primary sm">OPEN WORKSPACE</a>
       </div>
 
       <button class="menu-toggle" id="menu-toggle" aria-label="Toggle Menu">
@@ -137,7 +137,7 @@
 
           <!-- CTA Buttons -->
           <div class="hero-actions">
-            <a href="app.html?guest=true" class="btn-pill-primary lg">
+            <a href="HTML/signup.html?redirect=app.html" class="btn-pill-primary lg">
               OPEN WORKSPACE
               <svg class="btn-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
             </a>
@@ -181,80 +181,102 @@
     <!-- =====================================================
          BRUTALIST STICKY CARDS FEATURE SECTION
          ===================================================== -->
-    <section id="features" class="section">
+    <section id="features" class="section swipe-deck-section">
       <div class="container">
         <div class="section-header">
           <span class="section-tag">ENGINEERED SPECS</span>
           <h2 class="section-title">BUILT FOR ABSOLUTE PERFORMANCE & SPEED</h2>
+          <p class="section-subtitle">Drag or swipe cards to explore features</p>
         </div>
 
-        <div class="sticky-card-stack">
+        <div class="framer-swipe-container" id="framer-swipe-container">
           
-          <!-- Sticky Card 01 -->
-          <div class="kinetic-card">
-            <div class="kinetic-card-num">01</div>
-            <div class="kinetic-card-body">
-              <h3 class="kinetic-card-title">TACTILE FOLDER ARCHITECTURE</h3>
-              <p class="kinetic-card-desc">
+          <!-- Card 01 -->
+          <div class="framer-card" data-id="1">
+            <div class="framer-card-badge">01 / 04</div>
+            <div class="framer-card-content">
+              <div class="framer-card-num">01</div>
+              <h3 class="framer-card-title">TACTILE FOLDER ARCHITECTURE</h3>
+              <p class="framer-card-desc">
                 Organize documents with deeply nested directory trees. Search across millions of words in 0.0ms through native SQLite indices cached locally in your browser memory.
               </p>
-              <div class="kinetic-card-tags">
-                <span class="kinetic-tag">SQLITE INDEX</span>
-                <span class="kinetic-tag">NESTABLE TREES</span>
-                <span class="kinetic-tag">ZERO LATENCY</span>
+              <div class="framer-card-tags">
+                <span class="framer-tag">SQLITE INDEX</span>
+                <span class="framer-tag">NESTABLE TREES</span>
+                <span class="framer-tag">ZERO LATENCY</span>
               </div>
             </div>
           </div>
 
-          <!-- Sticky Card 02 -->
-          <div class="kinetic-card">
-            <div class="kinetic-card-num">02</div>
-            <div class="kinetic-card-body">
-              <h3 class="kinetic-card-title">TARGETED UI DESIGNER AI ENGINE</h3>
-              <p class="kinetic-card-desc">
+          <!-- Card 02 -->
+          <div class="framer-card" data-id="2">
+            <div class="framer-card-badge">02 / 04</div>
+            <div class="framer-card-content">
+              <div class="framer-card-num">02</div>
+              <h3 class="framer-card-title">TARGETED UI DESIGNER AI ENGINE</h3>
+              <p class="framer-card-desc">
                 Click any HTML element in the visual inspector canvas. Prompts AI directly to transform DOM node subtrees into glassmorphic surfaces, brutalist layouts, or custom responsive widgets.
               </p>
-              <div class="kinetic-card-tags">
-                <span class="kinetic-tag">VISUAL DOM INSPECTOR</span>
-                <span class="kinetic-tag">GEMINI AI</span>
-                <span class="kinetic-tag">REALTIME PREVIEWS</span>
+              <div class="framer-card-tags">
+                <span class="framer-tag">VISUAL INSPECTOR</span>
+                <span class="framer-tag">GEMINI AI</span>
+                <span class="framer-tag">REALTIME PREVIEWS</span>
               </div>
             </div>
           </div>
 
-          <!-- Sticky Card 03 -->
-          <div class="kinetic-card">
-            <div class="kinetic-card-num">03</div>
-            <div class="kinetic-card-body">
-              <h3 class="kinetic-card-title">100% OFFLINE DATABASE ENGINE</h3>
-              <p class="kinetic-card-desc">
+          <!-- Card 03 -->
+          <div class="framer-card" data-id="3">
+            <div class="framer-card-badge">03 / 04</div>
+            <div class="framer-card-content">
+              <div class="framer-card-num">03</div>
+              <h3 class="framer-card-title">100% OFFLINE DATABASE ENGINE</h3>
+              <p class="framer-card-desc">
                 Runs completely offline inside your browser runtime. Your data never leaves your device unless you explicitly trigger cloud synchronization.
               </p>
-              <div class="kinetic-card-tags">
-                <span class="kinetic-tag">SANDBOXED STORAGE</span>
-                <span class="kinetic-tag">PRIVACY FIRST</span>
-                <span class="kinetic-tag">ENCRYPTED CACHE</span>
+              <div class="framer-card-tags">
+                <span class="framer-tag">SANDBOXED STORAGE</span>
+                <span class="framer-tag">PRIVACY FIRST</span>
+                <span class="framer-tag">ENCRYPTED CACHE</span>
               </div>
             </div>
           </div>
 
-          <!-- Sticky Card 04 -->
-          <div class="kinetic-card">
-            <div class="kinetic-card-num">04</div>
-            <div class="kinetic-card-body">
-              <h3 class="kinetic-card-title">SMART RECALL & REVISION SCHEDULER</h3>
-              <p class="kinetic-card-desc">
+          <!-- Card 04 -->
+          <div class="framer-card" data-id="4">
+            <div class="framer-card-badge">04 / 04</div>
+            <div class="framer-card-content">
+              <div class="framer-card-num">04</div>
+              <h3 class="framer-card-title">SMART RECALL & REVISION SCHEDULER</h3>
+              <p class="framer-card-desc">
                 Transform notes into interactive flashcards and day-by-day exam timetables with one click. Master concepts faster with algorithmic spaced repetition.
               </p>
-              <div class="kinetic-card-tags">
-                <span class="kinetic-tag">STUDENT HUB</span>
-                <span class="kinetic-tag">FLASHCARDS</span>
-                <span class="kinetic-tag">TIMETABLE GENERATOR</span>
+              <div class="framer-card-tags">
+                <span class="framer-tag">STUDENT HUB</span>
+                <span class="framer-tag">FLASHCARDS</span>
+                <span class="framer-tag">TIMETABLE GENERATOR</span>
               </div>
             </div>
           </div>
 
         </div>
+
+        <!-- Controls below stage -->
+        <div class="framer-deck-controls">
+          <button class="framer-btn" id="framer-prev-btn" aria-label="Previous card">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+          </button>
+          <div class="framer-dots" id="framer-dots">
+            <span class="framer-dot active" data-index="0"></span>
+            <span class="framer-dot" data-index="1"></span>
+            <span class="framer-dot" data-index="2"></span>
+            <span class="framer-dot" data-index="3"></span>
+          </div>
+          <button class="framer-btn" id="framer-next-btn" aria-label="Next card">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </button>
+        </div>
+
       </div>
     </section>
 
@@ -290,15 +312,16 @@
           <div class="spotlight-card">
             <div>
               <div class="spotlight-icon-box">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 26px; height: 26px;"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 24px; height: 24px;"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>
               </div>
               <h3 class="spotlight-title">DEVELOPER IDE</h3>
               <p class="spotlight-desc">
                 Full code sandbox with syntax highlighting, snippet managers, and integrated AI code explanation.
               </p>
             </div>
-            <a href="HTML/signup.html?redirect=code-workspace.html" class="btn-pill-secondary sm">
-              LAUNCH CODE IDE &rarr;
+            <a href="HTML/signup.html?redirect=code-workspace.html" class="spotlight-btn">
+              <span>LAUNCH CODE IDE</span>
+              <span class="btn-arrow">&rarr;</span>
             </a>
           </div>
 
@@ -306,15 +329,16 @@
           <div class="spotlight-card">
             <div>
               <div class="spotlight-icon-box">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 26px; height: 26px;"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 24px; height: 24px;"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
               </div>
               <h3 class="spotlight-title">UI DESIGNER AI</h3>
               <p class="spotlight-desc">
                 Inspect visual components live, isolate DOM nodes, and prompt AI to refine surfaces and micro-interactions.
               </p>
             </div>
-            <a href="HTML/signup.html?redirect=ui-designer.html" class="btn-pill-secondary sm">
-              LAUNCH UI DESIGNER &rarr;
+            <a href="HTML/signup.html?redirect=ui-designer.html" class="spotlight-btn">
+              <span>LAUNCH UI DESIGNER</span>
+              <span class="btn-arrow">&rarr;</span>
             </a>
           </div>
 
@@ -322,15 +346,16 @@
           <div class="spotlight-card">
             <div>
               <div class="spotlight-icon-box">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 26px; height: 26px;"><path d="M22 10v6M2 10l10-5 10 5-10 5z"></path><path d="M6 12v5c0 2 2 3 6 3s6-1 6-3v-5"></path></svg>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 24px; height: 24px;"><path d="M22 10v6M2 10l10-5 10 5-10 5z"></path><path d="M6 12v5c0 2 2 3 6 3s6-1 6-3v-5"></path></svg>
               </div>
               <h3 class="spotlight-title">STUDENT HUB</h3>
               <p class="spotlight-desc">
                 Generate active recall decks, day-by-day revision timetables, and interactive concept flowcharts.
               </p>
             </div>
-            <a href="HTML/signup.html?redirect=student-hub.html" class="btn-pill-secondary sm">
-              LAUNCH STUDENT HUB &rarr;
+            <a href="HTML/signup.html?redirect=student-hub.html" class="spotlight-btn">
+              <span>LAUNCH STUDENT HUB</span>
+              <span class="btn-arrow">&rarr;</span>
             </a>
           </div>
 
@@ -386,32 +411,6 @@
             </div>
           </div>
 
-        </div>
-      </div>
-    </section>
-
-    <!-- =====================================================
-         ACTION CTA & EXTRA TALL BRUTALIST FORM
-         ===================================================== -->
-    <section class="section" style="border-bottom: none;">
-      <div class="container">
-        <div class="cta-box">
-          <div class="cta-grid">
-            <div>
-              <h2 class="cta-headline">START BUILDING YOUR SECOND BRAIN</h2>
-              <p class="cta-subtext">
-                No credit card required. Experience kinetic productivity in less than 5 seconds.
-              </p>
-            </div>
-            <div class="kinetic-form">
-              <div class="kinetic-input-group">
-                <input type="email" class="kinetic-input" placeholder="ENTER YOUR EMAIL..." aria-label="Enter email">
-              </div>
-              <a href="app.html?guest=true" class="btn-pill-primary lg" style="width: 100%; text-align: center;">
-                LAUNCH WORKSPACE NOW &rarr;
-              </a>
-            </div>
-          </div>
         </div>
       </div>
     </section>
@@ -475,7 +474,7 @@
     <div class="modal-content-wrapper">
       <button class="modal-close" id="modal-close" aria-label="Close Modal">&times;</button>
       <div class="modal-body">
-        <h2 id="modal-title" class="white"></h2>
+        <h2 id="modal-title" class="modal-heading"></h2>
         <div id="modal-text" class="modal-text"></div>
       </div>
     </div>

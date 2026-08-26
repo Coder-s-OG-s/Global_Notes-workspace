@@ -1,5 +1,22 @@
 
 export const THEME_PRESETS = {
+    "terracotta-navy": {
+        name: "Black, Deep Blue & Shaded Blue",
+        icon: "",
+        light: {
+            background: "linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)",
+            border: "#D86B5A",
+            text: "#0f172a",
+            accent: "#D86B5A"
+        },
+        dark: {
+            background: "linear-gradient(135deg, #050914 0%, #0E172C 50%, #162342 100%)",
+            border: "#0052FF",
+            text: "#ffffff",
+            accent: "#0052FF"
+        }
+    },
+
     "classic-blue": {
         name: "Classic Blue",
         icon: "",

@@ -1,7 +1,8 @@
 import { THEME_KEY } from "./constants.js";
+import { showToast } from "./utilities.js";
 
 const DEFAULT_THEME = "amoled-dark";
-const VALID_THEMES = ["amoled-dark", "nature-green", "corporate-gray", "minimal-white"];
+const VALID_THEMES = ["amoled-dark", "minimal-white"];
 
 let currentStorageKey = THEME_KEY; // Default to Notes Workspace theme key
 
@@ -82,6 +83,27 @@ export function applyTheme(theme) {
   }
 
   const isDarkTheme = normalized.includes("dark") || normalized === "corporate-gray";
+
+  // Dynamically update logo images based on theme (Dark vs Light)
+  const logoElements = document.querySelectorAll(".logo-img, .nav-logo, .brand-logo-img, .header-brand img, .brand-logo img");
+  logoElements.forEach(img => {
+    const currentSrc = img.getAttribute("src") || "";
+    const isAbsolute = currentSrc.startsWith("/");
+    if (document.body.classList.contains("code-workspace-page") || img.closest(".code-header")) {
+      img.src = isAbsolute ? "/assets/images/logo_dark.png" : "assets/images/logo_dark.png";
+      return;
+    }
+    if (isDarkTheme) {
+      if (!img.dataset.lightSrc && !currentSrc.includes("logo_dark.png")) {
+        img.dataset.lightSrc = currentSrc;
+      }
+      img.src = isAbsolute ? "/assets/images/logo_dark.png" : "assets/images/logo_dark.png";
+    } else {
+      const restoreSrc = isAbsolute ? "/assets/images/logo_light.png" : "assets/images/logo_light.png";
+      img.src = restoreSrc;
+    }
+  });
+
   const contentEl = document.querySelector("#content");
   if (contentEl) {
     contentEl.style.color = "";
@@ -196,7 +218,9 @@ export function wireThemeToggle() {
       persistTheme(target);
       updateButtonState(target);
       if (selector) selector.value = target;
-      showToast(`Switched to ${target === 'amoled-dark' ? 'Dark' : 'Light'} mode`, 'info');
+      if (typeof showToast === 'function') {
+        showToast(`Switched to ${target === 'amoled-dark' ? 'Dark' : 'Light'} mode`, 'info');
+      }
     });
   }
 

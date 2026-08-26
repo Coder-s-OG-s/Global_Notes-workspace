@@ -167,3 +167,112 @@
     cursor: crosshair;
     touch-action: none;
 }
+
+/* ════════════════════════════════════════
+   RESPONSIVE MOBILE & TABLET STYLES
+   ════════════════════════════════════════ */
+@media (max-width: 1024px) {
+    .pdf-header {
+        padding: 4px 12px;
+        height: 52px;
+        min-height: 52px;
+        flex-wrap: nowrap;
+        gap: 8px;
+    }
+
+    .pdf-app-toolbar {
+        padding: 8px 12px !important;
+        overflow-x: auto !important;
+        -webkit-overflow-scrolling: touch;
+        flex-wrap: nowrap !important;
+        gap: 10px !important;
+        justify-content: flex-start !important;
+        scrollbar-width: none !important;
+        background: rgba(15, 23, 42, 0.95) !important;
+    }
+
+    .pdf-app-toolbar::-webkit-scrollbar {
+        display: none !important;
+    }
+
+    .pdf-app-viewport {
+        padding: 12px;
+    }
+
+    .pdf-tool-btn {
+        display: inline-flex !important;
+        align-items: center;
+        gap: 6px;
+        min-height: 38px;
+        padding: 6px 12px;
+        font-size: 12px;
+        flex-shrink: 0 !important;
+        border-radius: 8px;
+        touch-action: manipulation;
+    }
+
+    #pdf-clear-draw {
+        display: inline-flex !important;
+        flex-shrink: 0 !important;
+    }
+}
+
+@media (max-width: 768px) {
+    .pdf-header {
+        overflow: visible !important;
+        position: relative !important;
+        z-index: 1000 !important;
+    }
+
+    .pdf-header .dropdown-wrapper {
+        position: static !important;
+    }
+
+    .pdf-header #apps-menu,
+    .pdf-header .dropdown-menu {
+        position: fixed !important;
+        top: 58px !important;
+        left: 12px !important;
+        right: 12px !important;
+        width: auto !important;
+        max-width: min(92vw, 360px) !important;
+        margin: 0 auto !important;
+        z-index: 999999 !important;
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.85) !important;
+        background-color: var(--surface, #1e1e24) !important;
+        border: 1px solid var(--border, rgba(255, 255, 255, 0.18)) !important;
+        border-radius: 16px !important;
+        padding: 10px !important;
+        backdrop-filter: blur(24px) !important;
+        -webkit-backdrop-filter: blur(24px) !important;
+    }
+
+    .pdf-header #apps-menu.hidden,
+    .pdf-header .dropdown-menu.hidden {
+        display: none !important;
+        opacity: 0 !important;
+        pointer-events: none !important;
+    }
+
+    .doc-badge {
+        display: none !important;
+    }
+
+    #nav-ui-designer,
+    a[href*="ui-designer.html"],
+    .dropdown-item[href*="ui-designer.html"] {
+        display: none !important;
+    }
+
+    .nav-pill-text {
+        display: none !important;
+    }
+
+    .pdf-header .brand-h1 {
+        font-size: 13px !important;
+    }
+
+    .toolbar-section {
+        flex-shrink: 0 !important;
+    }
+}
