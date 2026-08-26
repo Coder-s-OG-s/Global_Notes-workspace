@@ -681,3 +681,15 @@ if (typeof window !== 'undefined') {
     showAlert("Alert", message);
   };
 }
+
+/**
+ * Maps relative API endpoints to backend port 3000 during local development across non-3000 ports (e.g. port 80 / XAMPP).
+ */
+export function getApiUrl(path) {
+  if (!path) return '';
+  const cleanPath = path.startsWith('/') ? path : `/${path}`;
+  if (typeof window !== 'undefined' && window.location.hostname === 'localhost' && window.location.port !== '3000') {
+    return `http://localhost:3000${cleanPath}`;
+  }
+  return cleanPath;
+}

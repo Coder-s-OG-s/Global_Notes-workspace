@@ -5,21 +5,24 @@ const User = require('../models/User');
 
 module.exports = function(passport) {
   passport.serializeUser((user, done) => {
-    done(null, user.id || user._id);
+    const id = user._id ? String(user._id) : (user.id ? String(user.id) : String(user));
+    done(null, id);
   });
 
   passport.deserializeUser(async (id, done) => {
     try {
+      if (!id) return done(null, false);
       if (typeof id === 'object' && id !== null) {
         return done(null, id);
       }
-      if (typeof id === 'string' && id.startsWith('mock_')) {
-        return done(null, { id, _id: id, displayName: `User_${id}`, emails: [{ value: `${id}@test.com` }] });
+      const strId = String(id);
+      if (strId.startsWith('mock_')) {
+        return done(null, { id: strId, _id: strId, displayName: `User_${strId}`, emails: [{ value: `${strId}@test.com` }] });
       }
-      if (!mongoose.Types.ObjectId.isValid(id)) {
-        return done(null, { id, _id: id, displayName: `User_${id}` });
+      if (!mongoose.Types.ObjectId.isValid(strId)) {
+        return done(null, { id: strId, _id: strId, displayName: `User_${strId}` });
       }
-      const user = await User.findById(id);
+      const user = await User.findById(strId);
       done(null, user);
     } catch (err) {
       done(null, { id, _id: id });

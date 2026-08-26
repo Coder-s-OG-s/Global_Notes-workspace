@@ -3,9 +3,14 @@
  * Refactored to use the local Express backend with MongoDB and Passport.js
  */
 
+import { getAuthHeaders, getApiUrl } from "./storage.js";
+
 export async function getCurrentUser() {
     try {
-        const response = await fetch('/api/auth/user', { credentials: 'include' });
+        const response = await fetch(getApiUrl('/api/auth/user'), { 
+            credentials: 'include',
+            headers: getAuthHeaders()
+        });
         if (response.ok) {
             return await response.json();
         }
@@ -17,7 +22,7 @@ export async function getCurrentUser() {
 
 export async function signOut() {
     try {
-        window.location.href = '/api/auth/logout';
+        window.location.href = getApiUrl('/api/auth/logout');
     } catch (error) {
         console.error("Error signing out:", error);
     }
@@ -29,14 +34,11 @@ export async function signOut() {
  * @param {string} provider - 'google' or 'github'
  */
 export function signInWithProvider(provider) {
-    const redirect = sessionStorage.getItem("postLoginRedirect");
-    const redirectQuery = redirect ? `?redirect=${encodeURIComponent(redirect)}` : '';
     if (provider === 'google') {
-        window.location.href = `/api/auth/google${redirectQuery}`;
+        window.location.href = getApiUrl('/api/auth/google');
     } else if (provider === 'github') {
-        window.location.href = `/api/auth/github${redirectQuery}`;
+        window.location.href = getApiUrl('/api/auth/github');
+    } else {
+        console.error('Unsupported provider:', provider);
     }
 }
-
-// Note: signUp and signIn with email/password would need a local implementation 
-// in the backend if you want them, but the request emphasized Google and GitHub.
