@@ -4,8 +4,7 @@
  * Removes LocalStorage folder persistence.
  */
 
-import { showToast, getApiUrl } from "./utilities.js";
-import { getAuthHeaders } from "./storage.js";
+import { showToast } from "./utilities.js";
 
 // In-memory runtime folder cache per session
 let inMemoryFolders = [];
@@ -35,12 +34,11 @@ export async function saveFolders(activeUser, folders) {
   try {
     const syncPromises = inMemoryFolders.map(async (folder) => {
       const method = folder._id ? "PUT" : "POST";
-      const path = folder._id ? `/api/folders/${folder._id}` : "/api/folders";
+      const url = folder._id ? `/api/folders/${folder._id}` : "/api/folders";
 
-      return fetch(getApiUrl(path), {
+      return fetch(url, {
         method,
-        headers: getAuthHeaders({ "Content-Type": "application/json" }),
-        credentials: "include",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(folder),
       });
     });
@@ -78,10 +76,9 @@ export async function createNewFolder(activeUser, folderName, folderColor = "blu
   };
 
   try {
-    const res = await fetch(getApiUrl("/api/folders"), {
+    const res = await fetch("/api/folders", {
       method: "POST",
-      headers: getAuthHeaders({ "Content-Type": "application/json" }),
-      credentials: "include",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(newFolder),
     });
 
@@ -112,11 +109,7 @@ export async function deleteFolder(activeUser, folderId, notes = []) {
   );
 
   try {
-    await fetch(getApiUrl(`/api/folders/${folderId}`), {
-      method: "DELETE",
-      headers: getAuthHeaders(),
-      credentials: "include"
-    });
+    await fetch(`/api/folders/${folderId}`, { method: "DELETE" });
   } catch (err) {
     showToast("Cloud folder deletion failed", "warning");
   }
@@ -168,10 +161,7 @@ export async function syncFoldersFromCloud(activeUser) {
   }
 
   try {
-    const response = await fetch(getApiUrl("/api/folders"), {
-      credentials: "include",
-      headers: getAuthHeaders()
-    });
+    const response = await fetch("/api/folders");
     if (!response.ok) {
       return inMemoryFolders;
     }

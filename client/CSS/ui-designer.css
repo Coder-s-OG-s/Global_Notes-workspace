@@ -22,19 +22,19 @@
 html[data-theme="light"],
 html[data-theme="minimal-white"],
 html[data-theme="professional-light"] {
-  --gn-bg-dark: #f8fafc;
+  --gn-bg-dark: #ffffff;
   --gn-card-bg: #ffffff;
-  --gn-surface-2: #f1f5f9;
-  --gn-surface-3: #e2e8f0;
-  --gn-border-color: #cbd5e1;
-  --gn-border-light: #94a3b8;
-  --gn-accent-indigo: #0052FF;
-  --gn-accent-purple: #2563EB;
-  --gn-accent-cyan: #3B82F6;
-  --gn-accent-gradient: linear-gradient(135deg, #2563EB 0%, #0052FF 100%);
+  --gn-surface-2: #f8fafc;
+  --gn-surface-3: #f1f5f9;
+  --gn-border-color: #e2e8f0;
+  --gn-border-light: #cbd5e1;
+  --gn-accent-indigo: #D86B5A;
+  --gn-accent-purple: #C75443;
+  --gn-accent-cyan: #D86B5A;
+  --gn-accent-gradient: linear-gradient(135deg, #E28475 0%, #D86B5A 100%);
   --gn-text-main: #0f172a;
   --gn-text-muted: #64748b;
-  --gn-hover-bg: rgba(0, 82, 255, 0.08);
+  --gn-hover-bg: rgba(216, 107, 90, 0.08);
 }
 
 body.ui-designer-page {
@@ -72,29 +72,9 @@ body.ui-designer-page {
   color: var(--gn-text-main);
 }
 
-.designer-brand .logo-img,
-body.ui-designer-page .logo-img {
-  width: 38px;
-  height: 38px;
-  object-fit: contain;
-  background: transparent !important;
-  border: none !important;
-  box-shadow: none !important;
-  content: url('/assets/images/logo_dark.png') !important;
-  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.4));
-}
-
-html[data-theme="light"] .designer-brand .logo-img,
-html[data-theme="light"] body.ui-designer-page .logo-img,
-html[data-theme="minimal-white"] .designer-brand .logo-img,
-html[data-theme="minimal-white"] body.ui-designer-page .logo-img,
-html[data-theme="professional-light"] .designer-brand .logo-img,
-html[data-theme="professional-light"] body.ui-designer-page .logo-img,
-body[data-theme="minimal-white"] .designer-brand .logo-img {
-  content: url('/assets/images/logo_light.png') !important;
-  width: 42px !important;
-  height: 42px !important;
-  filter: drop-shadow(0 2px 6px rgba(0, 82, 255, 0.15));
+.designer-brand .logo-img {
+  width: 26px;
+  height: 26px;
 }
 
 .designer-brand h1 {

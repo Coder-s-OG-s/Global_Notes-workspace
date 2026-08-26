@@ -172,7 +172,6 @@ function wireSaveNoteModal() {
                     headers: {
                         "Content-Type": "application/json"
                     },
-                    credentials: "include",
                     body: JSON.stringify({
                         title: title,
                         content: imgContent,
@@ -509,7 +508,7 @@ async function attachPDFToActiveNote() {
     if (folderSelect) {
         folderSelect.innerHTML = `<option value="">📁 General / No Folder</option>`;
         try {
-            const res = await fetch("/api/folders", { credentials: "include" });
+            const res = await fetch("/api/folders");
             if (res.ok) {
                 const folders = await res.json();
                 folders.forEach(f => {

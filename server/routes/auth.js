@@ -1,73 +1,6 @@
 const express = require('express');
 const passport = require('passport');
 const router = express.Router();
-const User = require('../models/User');
-
-// @desc    Manual User Registration
-// @route   POST /api/auth/register
-router.post('/register', async (req, res, next) => {
-  try {
-    const { email, password, firstName, lastName } = req.body;
-    if (!email || !password) {
-      return res.status(400).json({ success: false, message: 'Email and password are required.' });
-    }
-
-    const cleanEmail = email.toLowerCase().trim();
-    const displayName = firstName ? `${firstName} ${lastName || ''}`.trim() : cleanEmail.split('@')[0];
-
-    let user = await User.findOne({ email: cleanEmail });
-    if (user) {
-      req.login(user, (err) => {
-        if (err) return next(err);
-        return res.json({ success: true, message: 'Signed in successfully', token: String(user._id), user: { id: user._id, username: user.username, email: user.email } });
-      });
-    } else {
-      user = await User.create({
-        email: cleanEmail,
-        username: displayName,
-        password: password,
-      });
-
-      req.login(user, (err) => {
-        if (err) return next(err);
-        return res.json({ success: true, message: 'Account created successfully', token: String(user._id), user: { id: user._id, username: user.username, email: user.email } });
-      });
-    }
-  } catch (err) {
-    console.error('Manual registration error:', err);
-    res.status(500).json({ success: false, message: 'Server error during registration.' });
-  }
-});
-
-// @desc    Manual User Login
-// @route   POST /api/auth/login
-router.post('/login', async (req, res, next) => {
-  try {
-    const { email, password } = req.body;
-    if (!email || !password) {
-      return res.status(400).json({ success: false, message: 'Email and password are required.' });
-    }
-
-    const cleanEmail = email.toLowerCase().trim();
-    let user = await User.findOne({ email: cleanEmail });
-
-    if (!user) {
-      user = await User.create({
-        email: cleanEmail,
-        username: cleanEmail.split('@')[0],
-        password: password,
-      });
-    }
-
-    req.login(user, (err) => {
-      if (err) return next(err);
-      return res.json({ success: true, message: 'Logged in successfully', token: String(user._id), user: { id: user._id, username: user.username, email: user.email } });
-    });
-  } catch (err) {
-    console.error('Manual login error:', err);
-    res.status(500).json({ success: false, message: 'Server error during login.' });
-  }
-});
 
 // @desc    Auth with Google
 // @route   GET /api/auth/google
@@ -106,23 +39,12 @@ router.get('/logout', (req, res, next) => {
 
 // @desc    Get current user
 // @route   GET /api/auth/user
-router.get('/user', async (req, res) => {
+router.get('/user', (req, res) => {
   if (req.isAuthenticated()) {
-    return res.json(req.user);
+    res.json(req.user);
+  } else {
+    res.json(null);
   }
-  const authHeader = req.headers.authorization;
-  if (authHeader && authHeader.startsWith('Bearer ')) {
-    const token = authHeader.split(' ')[1];
-    if (token && token !== 'null' && token !== 'undefined') {
-      try {
-        const user = await User.findById(token);
-        if (user) return res.json(user);
-      } catch (err) {
-        return res.json({ id: token, _id: token });
-      }
-    }
-  }
-  res.json(null);
 });
 
 // @desc    Verify Cloudflare Turnstile token
@@ -151,7 +73,7 @@ router.post('/verify-turnstile', async (req, res) => {
     });
 
     const result = await outcome.json();
-    if (result.success || process.env.NODE_ENV !== 'production' || token.startsWith('0.')) {
+    if (result.success) {
       return res.json({ success: true, message: 'Turnstile verification successful' });
     } else {
       console.warn('Turnstile verification failed:', result['error-codes']);

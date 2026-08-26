@@ -182,24 +182,12 @@ async function initApp() {
   }
 
   // Load user session
-  let activeUser = getActiveUser();
+  const user = await getCurrentUser();
+  if (user) {
+    const username = user.username || user.email || 'User';
+    setActiveUser(username);
+    state.activeUser = username;
 
-  if (!activeUser || activeUser === "guest") {
-    try {
-      const user = await getCurrentUser();
-      if (user) {
-        const username = user.username || user.email || 'User';
-        setActiveUser(username);
-        activeUser = username;
-      }
-    } catch (err) {
-      console.warn("Backend session check warning:", err);
-    }
-  }
-
-  if (activeUser && activeUser !== "guest") {
-    state.activeUser = activeUser;
-    updateUserDisplay(activeUser);
     // Load notes for current user directly from Database
     await callbacks.loadNotesForCurrentUser();
   } else {

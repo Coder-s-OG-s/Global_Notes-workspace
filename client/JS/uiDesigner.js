@@ -1,10 +1,8 @@
 import { generateTextWithGemini } from './geminiAPI.js';
 import { wireAppsDropdown } from './utilities.js';
-import { wireThemeToggle } from './themeManager.js';
 
 document.addEventListener('DOMContentLoaded', () => {
   wireAppsDropdown();
-  try { wireThemeToggle(); } catch (e) { console.warn('Theme toggle error:', e); }
   // DOM Elements
   const setApiKeyBtn = document.getElementById('set-api-key-btn');
   const openPasteModalBtn = document.getElementById('open-paste-modal-btn');
