@@ -4,7 +4,8 @@
  * Removes LocalStorage folder persistence.
  */
 
-import { showToast } from "./utilities.js";
+import { showToast, getApiUrl } from "./utilities.js";
+import { getAuthHeaders } from "./storage.js";
 
 // In-memory runtime folder cache per session
 let inMemoryFolders = [];
@@ -34,11 +35,12 @@ export async function saveFolders(activeUser, folders) {
   try {
     const syncPromises = inMemoryFolders.map(async (folder) => {
       const method = folder._id ? "PUT" : "POST";
-      const url = folder._id ? `/api/folders/${folder._id}` : "/api/folders";
+      const path = folder._id ? `/api/folders/${folder._id}` : "/api/folders";
 
-      return fetch(url, {
+      return fetch(getApiUrl(path), {
         method,
-        headers: { "Content-Type": "application/json" },
+        headers: getAuthHeaders({ "Content-Type": "application/json" }),
+        credentials: "include",
         body: JSON.stringify(folder),
       });
     });
@@ -76,9 +78,10 @@ export async function createNewFolder(activeUser, folderName, folderColor = "blu
   };
 
   try {
-    const res = await fetch("/api/folders", {
+    const res = await fetch(getApiUrl("/api/folders"), {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: getAuthHeaders({ "Content-Type": "application/json" }),
+      credentials: "include",
       body: JSON.stringify(newFolder),
     });
 
@@ -109,7 +112,11 @@ export async function deleteFolder(activeUser, folderId, notes = []) {
   );
 
   try {
-    await fetch(`/api/folders/${folderId}`, { method: "DELETE" });
+    await fetch(getApiUrl(`/api/folders/${folderId}`), {
+      method: "DELETE",
+      headers: getAuthHeaders(),
+      credentials: "include"
+    });
   } catch (err) {
     showToast("Cloud folder deletion failed", "warning");
   }
@@ -161,7 +168,10 @@ export async function syncFoldersFromCloud(activeUser) {
   }
 
   try {
-    const response = await fetch("/api/folders");
+    const response = await fetch(getApiUrl("/api/folders"), {
+      credentials: "include",
+      headers: getAuthHeaders()
+    });
     if (!response.ok) {
       return inMemoryFolders;
     }

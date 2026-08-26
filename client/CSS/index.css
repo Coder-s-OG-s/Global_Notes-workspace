@@ -668,12 +668,60 @@ html,
   width: auto;
   max-width: 170px;
   object-fit: contain;
-  background: transparent;
+  background: transparent !important;
   padding: 0;
   border-radius: 0;
   box-shadow: none;
   display: inline-block;
+  vertical-align: middle;
 }
+
+/* ===== DARK THEME LOGO OVERRIDE ===== */
+html[data-theme="amoled-dark"] .logo-img,
+html[data-theme="amoled-dark"] .nav-logo,
+html[data-theme="amoled-dark"] .brand-logo-img,
+html[data-theme="corporate-gray"] .logo-img,
+html[data-theme="corporate-gray"] .nav-logo,
+html[data-theme="corporate-gray"] .brand-logo-img,
+body.dark-mode .logo-img,
+body.dark-mode .nav-logo,
+body.dark-mode .brand-logo-img,
+[data-theme*="dark"] .logo-img,
+[data-theme*="dark"] .nav-logo,
+[data-theme*="dark"] .brand-logo-img,
+body[data-theme="amoled-dark"] .logo-img,
+body[data-theme="amoled-dark"] .nav-logo,
+body[data-theme="amoled-dark"] .brand-logo-img,
+body.code-workspace-page .logo-img,
+body.code-workspace-page .header-brand img,
+.code-header .logo-img,
+.code-header img {
+  content: url("/assets/images/logo_dark.png") !important;
+  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.3));
+}
+
+html[data-theme="minimal-white"] .logo-img,
+html[data-theme="minimal-white"] .nav-logo,
+html[data-theme="minimal-white"] .brand-logo-img,
+html[data-theme="light"] .logo-img,
+html[data-theme="light"] .nav-logo,
+html[data-theme="light"] .brand-logo-img,
+html[data-theme="professional-light"] .logo-img,
+html[data-theme="professional-light"] .nav-logo,
+html[data-theme="professional-light"] .brand-logo-img,
+body[data-theme="minimal-white"] .logo-img,
+body[data-theme="minimal-white"] .nav-logo,
+body[data-theme="minimal-white"] .brand-logo-img,
+body.light-theme .logo-img,
+body.light-theme .brand-logo-img {
+  content: url("/assets/images/logo_light.png") !important;
+  height: 52px !important;
+  max-height: 58px !important;
+  width: auto !important;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 8px rgba(0, 82, 255, 0.15));
+}
+
 
 .brand-name {
   font-weight: 700;

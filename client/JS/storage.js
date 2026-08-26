@@ -1,5 +1,7 @@
 import { NOTES_STORAGE_PREFIX, ACTIVE_USER_KEY } from "./constants.js";
-import { showToast } from "./utilities.js";
+import { showToast, getApiUrl } from "./utilities.js";
+
+export { getApiUrl };
 
 export function storageKeyForUser(user) {
   return `${NOTES_STORAGE_PREFIX}.${user || "guest"}`;
@@ -17,8 +19,12 @@ export function purgeAllLocalStorageData() {
       const key = localStorage.key(i);
       if (
         key &&
+        key !== ACTIVE_USER_KEY &&
+        key !== "activeUser" &&
+        key !== "notesWorkspace.theme" &&
+        key !== "codeWorkspace.theme" &&
         (key.startsWith(NOTES_STORAGE_PREFIX) ||
-         key.startsWith("notesWorkspace.") ||
+         key.startsWith("notesWorkspace.notes") ||
          key.includes("folders") ||
          key.includes("notes") ||
          key.includes("tags"))
@@ -30,6 +36,14 @@ export function purgeAllLocalStorageData() {
   } catch (e) {
     console.warn("Purge localStorage data error:", e);
   }
+}
+
+export function getAuthHeaders(extraHeaders = {}) {
+  const token = typeof localStorage !== 'undefined' ? localStorage.getItem("authToken") : null;
+  return {
+    ...extraHeaders,
+    ...(token ? { "Authorization": `Bearer ${token}` } : {})
+  };
 }
 
 /**
@@ -47,7 +61,10 @@ export async function getNotes(username) {
 
   try {
     console.log("Fetching notes directly from Database (MongoDB Atlas)...");
-    const response = await fetch("/api/notes");
+    const response = await fetch(getApiUrl("/api/notes"), { 
+      credentials: "include",
+      headers: getAuthHeaders()
+    });
     if (response.ok) {
       const cloudNotes = await response.json();
       const mappedNotes = cloudNotes.map((n) => ({
@@ -86,11 +103,12 @@ export async function saveSingleNote(username, note) {
 
   try {
     const method = note._id ? "PUT" : "POST";
-    const url = note._id ? `/api/notes/${note._id}` : "/api/notes";
+    const path = note._id ? `/api/notes/${note._id}` : "/api/notes";
 
-    const res = await fetch(url, {
+    const res = await fetch(getApiUrl(path), {
       method,
-      headers: { "Content-Type": "application/json" },
+      headers: getAuthHeaders({ "Content-Type": "application/json" }),
+      credentials: "include",
       body: JSON.stringify(note),
     });
 
@@ -109,19 +127,22 @@ export async function saveSingleNote(username, note) {
 
 export function getActiveUser() {
   if (typeof localStorage === 'undefined') return null;
-  return localStorage.getItem(ACTIVE_USER_KEY) || null;
+  return localStorage.getItem(ACTIVE_USER_KEY) || localStorage.getItem("activeUser") || null;
 }
 
 export function setActiveUser(username) {
   if (!username) return;
   if (typeof localStorage !== 'undefined') {
     localStorage.setItem(ACTIVE_USER_KEY, username);
+    localStorage.setItem("activeUser", username);
   }
 }
 
 export function clearActiveUser() {
   if (typeof localStorage !== 'undefined') {
     localStorage.removeItem(ACTIVE_USER_KEY);
+    localStorage.removeItem("activeUser");
+    localStorage.removeItem("authToken");
   }
   purgeAllLocalStorageData();
 }
@@ -133,8 +154,10 @@ export async function deleteNote(username, noteId) {
   try {
     const targetId = String(noteId);
     if (targetId.length > 5) {
-      await fetch(`/api/notes/${targetId}`, {
+      await fetch(getApiUrl(`/api/notes/${targetId}`), {
         method: "DELETE",
+        headers: getAuthHeaders(),
+        credentials: "include",
       });
     }
   } catch (err) {

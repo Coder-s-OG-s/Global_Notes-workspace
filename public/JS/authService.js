@@ -3,9 +3,14 @@
  * Refactored to use the local Express backend with MongoDB and Passport.js
  */
 
+import { getAuthHeaders } from "./storage.js";
+
 export async function getCurrentUser() {
     try {
-        const response = await fetch('/api/auth/user', { credentials: 'include' });
+        const response = await fetch('/api/auth/user', { 
+            credentials: 'include',
+            headers: getAuthHeaders()
+        });
         if (response.ok) {
             return await response.json();
         }

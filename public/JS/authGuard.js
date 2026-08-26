@@ -4,7 +4,7 @@
  * Notes Workspace, Code Workspace, Student Hub, UI Designer, PDF Editor, and AI Assistant tools.
  */
 
-import { getActiveUser } from "./storage.js";
+import { getActiveUser, setActiveUser, clearActiveUser, getAuthHeaders } from "./storage.js";
 
 export async function checkAuthAndEnforce() {
   const currentPath = window.location.pathname;
@@ -13,6 +13,8 @@ export async function checkAuthAndEnforce() {
   const isPublicPage = 
     currentPath.endsWith("/HTML/signup.html") || 
     currentPath.endsWith("/signup.html") ||
+    currentPath.endsWith("/HTML/login.html") || 
+    currentPath.endsWith("/login.html") ||
     currentPath === "/" ||
     currentPath.endsWith("/index.html");
 
@@ -20,42 +22,46 @@ export async function checkAuthAndEnforce() {
     return true;
   }
 
-  // Check Local Active User State
-  let activeUser = getActiveUser();
-
-  // If local active user is missing or set to guest, check backend session
-  if (!activeUser || activeUser === "guest" || activeUser.trim() === "") {
-    try {
-      const response = await fetch("/api/auth/user");
-      if (response.ok) {
-        const userData = await response.json();
-        if (userData && (userData.username || userData.email || userData.displayName || userData._id)) {
-          const resolvedName = userData.username || userData.displayName || userData.email;
-          localStorage.setItem("activeUser", resolvedName);
-          activeUser = resolvedName;
-        }
+  // Always verify backend session directly from MongoDB Atlas server
+  let activeUser = null;
+  try {
+    const response = await fetch("/api/auth/user", { 
+      credentials: "include",
+      headers: getAuthHeaders()
+    });
+    if (response.ok) {
+      const userData = await response.json();
+      if (userData && (userData.username || userData.email || userData.displayName || userData._id)) {
+        const resolvedName = userData.username || userData.displayName || userData.email;
+        setActiveUser(resolvedName);
+        activeUser = resolvedName;
       }
-    } catch (err) {
-      console.warn("Backend auth verification failed:", err);
     }
+  } catch (err) {
+    console.warn("Backend auth verification failed:", err);
   }
 
-  // Strictly enforce restriction: If user is not authenticated or is guest
+  // Fallback to local activeUser if set and valid
+  if (!activeUser) {
+    activeUser = getActiveUser();
+  }
+
+  // Strictly enforce restriction: If user is not authenticated on backend or locally
   if (!activeUser || activeUser === "guest" || activeUser.trim() === "") {
     console.warn("🔒 Security Guard: Access Denied. User is unauthenticated. Redirecting to Sign In...");
     
     // Purge local storage
     try {
-      localStorage.removeItem("activeUser");
+      clearActiveUser();
     } catch (e) {}
 
     // Store intended page for post-login redirect
     const targetRedirect = currentPath + window.location.search;
     sessionStorage.setItem("postLoginRedirect", targetRedirect);
 
-    // Redirect to Sign In page with security banner flag
-    const signupUrl = `/HTML/signup.html?redirect=${encodeURIComponent(targetRedirect)}&required=true`;
-    window.location.replace(signupUrl);
+    // Redirect to Login page with security banner flag
+    const loginUrl = `/HTML/login.html?redirect=${encodeURIComponent(targetRedirect)}&required=true`;
+    window.location.replace(loginUrl);
     return false;
   }
 
