@@ -68,7 +68,7 @@ app.use(helmet({
   noSniff: true,
   xssFilter: true,
 }));
-app.use(cors({ origin: true, credentials: true }));
+app.use(cors());
 app.use(morgan('dev'));
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
@@ -102,7 +102,7 @@ app.use(session({
   saveUninitialized: false,
   store: MongoStore.create({ mongoUrl: process.env.MONGODB_URI }),
   cookie: {
-    secure: process.env.NODE_ENV === 'production',
+    secure: false, // Must be false for localhost (HTTP)
     httpOnly: true,
     sameSite: 'lax',
     maxAge: 1000 * 60 * 60 * 24 // 1 day

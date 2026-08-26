@@ -389,7 +389,7 @@ function printNotes(notes) {
         </div>
 
         <div class="document-header">
-          <div class="brand-logo"><img src="assets/images/logo_workspace.png" alt="Global Notes" style="height:32px;width:auto;object-fit:contain;background:transparent;padding:0;" /> Global Notes <span>Workspace</span></div>
+          <div class="brand-logo"><img src="assets/images/logo_workspace.png" alt="Global Notes" style="height:32px;width:auto;object-fit:contain;background:#fff;padding:2px 6px;border-radius:6px;" /> Global Notes <span>Workspace</span></div>
           <div class="doc-type">Intelligence Report</div>
         </div>
 
