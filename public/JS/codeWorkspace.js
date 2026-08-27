@@ -668,15 +668,30 @@ Provide ONLY the code. Do NOT wrap it in markdown codeblocks (no \`\`\`), do NOT
         }
 
         if (Array.isArray(data) && data.length > 0) {
-            return data.map(n => ({
-                id: n.id || ('shape_ai_' + Math.random().toString(36).substr(2, 5)),
-                type: n.type || 'rectangle',
-                text: n.text || n.label || '',
-                x: Number(n.x) || 100,
-                y: Number(n.y) || 100,
-                width: Number(n.width) || 140,
-                height: Number(n.height) || 70
-            }));
+            return data.map(n => {
+                const rawType = (n.type || 'rectangle').toLowerCase();
+                let type = rawType;
+                if (['arrow-down', 'arrow_down', 'down-arrow', 'down_arrow', 'line-down'].includes(rawType)) type = 'block-down';
+                if (['arrow-right', 'arrow_right', 'right-arrow', 'right_arrow'].includes(rawType)) type = 'block-right';
+                if (['arrow-left', 'arrow_left', 'left-arrow', 'left_arrow'].includes(rawType)) type = 'block-left';
+                if (['arrow-up', 'arrow_up', 'up-arrow', 'up_arrow'].includes(rawType)) type = 'block-up';
+
+                let defaultW = 180;
+                let defaultH = 60;
+                if (type === 'parallelogram') defaultW = 210;
+                if (type === 'diamond') { defaultW = 175; defaultH = 75; }
+                if (['block-down', 'block-right', 'block-left', 'block-up', 'arrow'].includes(type)) { defaultW = 60; defaultH = 40; }
+
+                return {
+                    id: n.id || ('shape_ai_' + Math.random().toString(36).substr(2, 5)),
+                    type,
+                    text: n.text || n.label || '',
+                    x: Number(n.x) || 100,
+                    y: Number(n.y) || 100,
+                    width: Math.max(Number(n.width) || defaultW, defaultW),
+                    height: Math.max(Number(n.height) || defaultH, defaultH)
+                };
+            });
         }
         return null;
     }
@@ -777,8 +792,10 @@ Provide ONLY the code. Do NOT wrap it in markdown codeblocks (no \`\`\`), do NOT
             let shapes = null;
             try {
                 const systemPrompt = `You are an expert systems flow diagram designer. Convert the user's code execution path into a step-by-step flowchart layout.
+IMPORTANT: You MUST include connecting arrow shapes ("block-down") between every process node so the flowchart flows clearly from top to bottom.
 Return ONLY a valid JSON array of shape objects. Each element must be a shape node with: id, type, label, x, y, width, height.
-Types: "rectangle", "rounded-rect", "diamond", "parallelogram", "block-down", "block-right", "block-left", "block-up".`;
+Allowed Types: "rectangle", "rounded-rect", "diamond", "parallelogram", "block-down", "block-right", "block-left", "block-up".
+Use width=210 and height=65 for parallelogram/input nodes. Use width=175 and height=75 for decision diamonds. Use width=60 and height=40 for block-down arrows.`;
 
                 const response = await this.callAI(systemPrompt, `Language: ${lang}\n\nCode:\n${code}`);
                 shapes = this.parseFlowchartAIResponse(response);
