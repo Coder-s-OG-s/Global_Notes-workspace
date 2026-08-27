@@ -2733,7 +2733,7 @@ function getSvgContentForType(type) {
 
 // Determine whether a shape type is a "line" type (rendered without a text container)
 function isLineType(type) {
-    return ['line', 'line-up', 'line-h', 'line-v', 'curve', 'arrow', 'arrow-up', 'double-arrow', 'elbow'].includes(type);
+    return ['line', 'line-up', 'line-h', 'line-v', 'curve', 'arrow', 'arrow-up', 'double-arrow', 'elbow', 'block-down', 'block-right', 'block-left', 'block-up', 'block-left-right', 'block-up-down', 'block-4way', 'bent-arrow', 'u-turn-arrow', 'chevron', 'notched-right', 'striped-right'].includes(type);
 }
 
 function renderFlowchart() {

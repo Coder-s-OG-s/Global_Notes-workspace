@@ -684,7 +684,7 @@ Provide ONLY the code. Do NOT wrap it in markdown codeblocks (no \`\`\`), do NOT
     generateLocalFlowchartFallback(code, lang) {
         const rawLines = code.split('\n').map(l => l.trim()).filter(l => l && !l.startsWith('#') && !l.startsWith('//'));
         const shapes = [];
-        let currY = 50;
+        let currY = 40;
 
         shapes.push({
             id: 'node_start',
@@ -697,7 +697,7 @@ Provide ONLY the code. Do NOT wrap it in markdown codeblocks (no \`\`\`), do NOT
         });
         currY += 70;
 
-        const maxSteps = Math.min(rawLines.length, 6);
+        const maxSteps = Math.min(rawLines.length, 16);
         for (let i = 0; i < maxSteps; i++) {
             const line = rawLines[i];
 
@@ -705,12 +705,12 @@ Provide ONLY the code. Do NOT wrap it in markdown codeblocks (no \`\`\`), do NOT
                 id: `arrow_${i}`,
                 type: 'block-down',
                 text: '',
-                x: 385,
+                x: 395,
                 y: currY,
-                width: 90,
-                height: 45
+                width: 70,
+                height: 40
             });
-            currY += 55;
+            currY += 50;
 
             let type = 'rectangle';
             let label = line;
@@ -731,21 +731,21 @@ Provide ONLY the code. Do NOT wrap it in markdown codeblocks (no \`\`\`), do NOT
                 x: 350,
                 y: currY,
                 width: 160,
-                height: 65
+                height: 60
             });
-            currY += 75;
+            currY += 70;
         }
 
         shapes.push({
             id: 'arrow_end',
             type: 'block-down',
             text: '',
-            x: 385,
+            x: 395,
             y: currY,
-            width: 90,
-            height: 45
+            width: 70,
+            height: 40
         });
-        currY += 55;
+        currY += 50;
 
         shapes.push({
             id: 'node_end',

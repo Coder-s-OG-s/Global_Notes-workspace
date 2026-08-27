@@ -1848,9 +1848,9 @@ html[data-theme="minimal-white"] { --calendar-invert: 0.1; }
 /* Canvas Area Container */
 .flowchart-canvas-container {
   width: 100%;
-  height: 100%;
-  min-height: 550px;
-  overflow: auto;
+  height: clamp(520px, 75vh, 900px);
+  max-height: calc(100vh - 160px);
+  overflow: auto !important;
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   background-color: var(--surface);
@@ -1859,13 +1859,54 @@ html[data-theme="minimal-white"] { --calendar-invert: 0.1; }
 }
 
 .flowchart-canvas {
-  width: 1500px;
-  height: 1200px;
+  width: 1600px;
+  min-height: 2500px;
   background-image: radial-gradient(var(--border) 1px, transparent 1px);
   background-size: 20px 20px;
   position: relative;
-  overflow: hidden;
-  touch-action: none;
+  overflow: visible;
+}
+
+/* Specialized Shapes: Block Arrow Styling */
+.flowchart-shape.shape-block-down,
+.flowchart-shape.shape-block-right,
+.flowchart-shape.shape-block-left,
+.flowchart-shape.shape-block-up,
+.flowchart-shape.shape-block-left-right,
+.flowchart-shape.shape-block-up-down,
+.flowchart-shape.shape-block-4way,
+.flowchart-shape.shape-bent-arrow,
+.flowchart-shape.shape-u-turn-arrow,
+.flowchart-shape.shape-chevron,
+.flowchart-shape.shape-notched-right,
+.flowchart-shape.shape-striped-right {
+  padding: 0 !important;
+}
+
+.flowchart-shape.shape-block-down svg polygon,
+.flowchart-shape.shape-block-right svg polygon,
+.flowchart-shape.shape-block-left svg polygon,
+.flowchart-shape.shape-block-up svg polygon,
+.flowchart-shape.shape-block-left-right svg polygon,
+.flowchart-shape.shape-block-up-down svg polygon,
+.flowchart-shape.shape-block-4way svg path,
+.flowchart-shape.shape-bent-arrow svg path,
+.flowchart-shape.shape-u-turn-arrow svg path,
+.flowchart-shape.shape-chevron svg polygon,
+.flowchart-shape.shape-notched-right svg polygon,
+.flowchart-shape.shape-striped-right svg polygon {
+  fill: #38bdf8 !important;
+  stroke: #0284c7 !important;
+  stroke-width: 1.5px !important;
+  filter: drop-shadow(0 2px 5px rgba(56, 189, 248, 0.4));
+}
+
+.flowchart-shape.shape-block-down:hover svg polygon,
+.flowchart-shape.shape-block-right:hover svg polygon,
+.flowchart-shape.shape-block-left:hover svg polygon,
+.flowchart-shape.shape-block-up:hover svg polygon {
+  fill: #0ea5e9 !important;
+  stroke: #38bdf8 !important;
 }
 
 /* Unified Shape Nodes on Canvas */
