@@ -1018,7 +1018,8 @@ function setupUploadDropzone(dropzoneId, inputId, filenameId, onLoaded) {
         filenameLabel.textContent = file.name;
         if (dropzoneText) dropzoneText.classList.add('hidden');
 
-        if (file.name.toLowerCase().endsWith('.pdf')) {
+        const fileNameLower = file.name.toLowerCase();
+        if (fileNameLower.endsWith('.pdf')) {
             const reader = new FileReader();
             reader.onload = async (e) => {
                 try {
@@ -1031,6 +1032,19 @@ function setupUploadDropzone(dropzoneId, inputId, filenameId, onLoaded) {
                 }
             };
             reader.readAsArrayBuffer(file);
+        } else if (fileNameLower.endsWith('.docx') || fileNameLower.endsWith('.doc')) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    const text = extractTextFromDoc(e.target.result);
+                    onLoaded(text || 'Process content loaded from document.');
+                } catch (err) {
+                    showToast('Failed to parse document file.', 'error');
+                    filenameLabel.textContent = '';
+                    if (dropzoneText) dropzoneText.classList.remove('hidden');
+                }
+            };
+            reader.readAsArrayBuffer(file);
         } else {
             const reader = new FileReader();
             reader.onload = (e) => {
@@ -1038,6 +1052,22 @@ function setupUploadDropzone(dropzoneId, inputId, filenameId, onLoaded) {
             };
             reader.readAsText(file);
         }
+    }
+}
+
+function extractTextFromDoc(arrayBuffer) {
+    try {
+        const decoder = new TextDecoder('utf-8');
+        const text = decoder.decode(arrayBuffer);
+        const xmlTextMatches = text.match(/<w:t[^>]*>([\s\S]*?)<\/w:t>/gi);
+        if (xmlTextMatches && xmlTextMatches.length > 0) {
+            return xmlTextMatches.map(m => m.replace(/<[^>]+>/g, '')).join(' ');
+        }
+        const cleanStr = text.replace(/[^\x20-\x7E\n\r\t]/g, ' ').replace(/\s+/g, ' ').trim();
+        if (cleanStr.length > 20) return cleanStr;
+        return text;
+    } catch (e) {
+        return '';
     }
 }
 
