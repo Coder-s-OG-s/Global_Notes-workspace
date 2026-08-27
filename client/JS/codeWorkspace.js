@@ -668,7 +668,7 @@ Provide ONLY the code. Do NOT wrap it in markdown codeblocks (no \`\`\`), do NOT
         }
 
         if (Array.isArray(data) && data.length > 0) {
-            return data.map(n => {
+            const shapes = data.map(n => {
                 const rawType = (n.type || 'rectangle').toLowerCase();
                 let type = rawType;
                 if (['arrow-down', 'arrow_down', 'down-arrow', 'down_arrow', 'line-down'].includes(rawType)) type = 'block-down';
@@ -692,8 +692,57 @@ Provide ONLY the code. Do NOT wrap it in markdown codeblocks (no \`\`\`), do NOT
                     height: Math.max(Number(n.height) || defaultH, defaultH)
                 };
             });
+            return this.autoLayoutFlowchartShapes(shapes);
         }
         return null;
+    }
+
+    autoLayoutFlowchartShapes(shapes) {
+        if (!Array.isArray(shapes) || shapes.length === 0) return shapes;
+
+        const canvasCenterX = 450;
+        const sorted = [...shapes].sort((a, b) => a.y - b.y);
+
+        const rows = [];
+        sorted.forEach(item => {
+            const row = rows.find(r => Math.abs(r.y - item.y) < 35);
+            if (row) {
+                row.items.push(item);
+            } else {
+                rows.push({ y: item.y, items: [item] });
+            }
+        });
+
+        let currentY = 40;
+
+        rows.forEach(row => {
+            let maxHeight = 0;
+            row.items.forEach(item => {
+                if (item.height > maxHeight) maxHeight = item.height;
+            });
+
+            const count = row.items.length;
+            if (count === 1) {
+                const item = row.items[0];
+                item.x = Math.round(canvasCenterX - (item.width / 2));
+                item.y = currentY;
+            } else {
+                const totalWidth = row.items.reduce((sum, item) => sum + item.width, 0);
+                const spacing = Math.max(30, Math.round((540 - totalWidth) / (count - 1)));
+                const startX = Math.round(canvasCenterX - ((totalWidth + (count - 1) * spacing) / 2));
+
+                let currentX = startX;
+                row.items.forEach(item => {
+                    item.x = currentX;
+                    item.y = currentY;
+                    currentX += item.width + spacing;
+                });
+            }
+
+            currentY += maxHeight + 16;
+        });
+
+        return shapes;
     }
 
     generateLocalFlowchartFallback(code, lang) {

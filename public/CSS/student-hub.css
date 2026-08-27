@@ -4389,7 +4389,7 @@ body.dark-mode .flowchart-canvas-container {
   background-image: radial-gradient(rgba(255, 255, 255, 0.14) 1px, transparent 1px) !important;
   border-color: rgba(255, 255, 255, 0.14) !important;
   border-radius: 20px !important;
-  overflow: hidden !important;
+  overflow: auto !important;
 }
 
 [data-theme="amoled-dark"] .canvas-toolbar,
