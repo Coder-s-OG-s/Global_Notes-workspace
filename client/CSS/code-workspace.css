@@ -1124,20 +1124,37 @@ body:has(#ai-chat-window.open) .ai-chat-trigger {
 
 /* ── Chat Code Blocks ── */
 .code-block-container {
-    background: #0e0e16;
-    border-radius: 8px;
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    overflow: hidden;
-    margin: 8px 0;
+    background: #0d0d15 !important;
+    border-radius: 8px !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    position: relative !important;
+    margin: 14px 0 !important;
+    overflow: hidden !important;
 }
 
-.message pre {
+.code-block-container pre {
     background: transparent !important;
-    padding: 32px 14px 14px 14px !important;
+    padding: 42px 16px 16px 16px !important;
     margin: 0 !important;
-    position: static;
-    overflow-x: auto;
-    max-width: 100%;
+    overflow-x: auto !important;
+    font-family: 'JetBrains Mono', 'Fira Code', monospace !important;
+    font-size: 12.5px !important;
+    line-height: 1.55 !important;
+    color: #e2e8f0 !important;
+    border: none !important;
+}
+
+.code-block-actions {
+    position: absolute !important;
+    top: 6px !important;
+    right: 8px !important;
+    display: flex !important;
+    gap: 6px !important;
+    z-index: 20 !important;
+    background: rgba(13, 13, 21, 0.85) !important;
+    padding: 3px 6px !important;
+    border-radius: 6px !important;
+    backdrop-filter: blur(4px) !important;
 }
 
 .message code {

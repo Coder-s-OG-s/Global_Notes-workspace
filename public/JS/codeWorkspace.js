@@ -1097,17 +1097,25 @@ Use width=210 and height=65 for parallelogram/input nodes. Use width=175 and hei
         let processed = text.replace(/```([\s\S]*?)```/g, (match, code) => {
             let cleanCode = code.trim();
             const lines = cleanCode.split('\n');
-            // Remove language tag if present (e.g., ```python, ```python3, ```c++, ```c#)
-            if (lines.length > 0 && /^[a-z0-9#\+\-]+$/i.test(lines[0].trim())) {
-                lines.shift();
-                cleanCode = lines.join('\n');
+            if (lines.length > 0) {
+                const firstLine = lines[0].trim();
+                const langMatch = firstLine.match(/^(python\d*|py|javascript|js|typescript|ts|html|css|cpp|c\+\+|c#|c|sql|json|bash|sh|php|ruby|java|go|rust|swift|kotlin|dart)\b\s*(.*)$/i);
+                if (langMatch) {
+                    const restOfLine = langMatch[2].trim();
+                    if (restOfLine) {
+                        lines[0] = restOfLine;
+                    } else {
+                        lines.shift();
+                    }
+                    cleanCode = lines.join('\n');
+                }
             }
 
             const escaped = this.escapeHtml(cleanCode);
             codeBlocks.push(`
-                <div class="code-block-container" style="position: relative; margin: 10px 0; page-break-inside: avoid;">
+                <div class="code-block-container" style="position: relative; margin: 12px 0; page-break-inside: avoid;">
                     ${forPDF ? '' : `
-                        <div class="code-block-actions" style="position: absolute; top: 6px; right: 6px; display: flex; gap: 6px; z-index: 10;">
+                        <div class="code-block-actions" style="position: absolute; top: 6px; right: 8px; display: flex; gap: 6px; z-index: 20;">
                             <button class="chat-apply-btn" onclick="window.workspace.applyCodeToEditor(this)"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:3px; vertical-align:-1px;"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg> Apply to Editor</button>
                             <button class="chat-copy-btn" onclick="window.workspace.copyChatCode(this)">Copy</button>
                         </div>
@@ -1454,9 +1462,18 @@ Use width=210 and height=65 for parallelogram/input nodes. Use width=175 and hei
         if (!container) return;
         let code = container.querySelector('code').textContent;
         const lines = code.split('\n');
-        if (lines.length > 1 && /^[a-z0-9#\+\-]+$/i.test(lines[0].trim())) {
-            lines.shift();
-            code = lines.join('\n');
+        if (lines.length > 0) {
+            const firstLine = lines[0].trim();
+            const langMatch = firstLine.match(/^(python\d*|py|javascript|js|typescript|ts|html|css|cpp|c\+\+|c#|c|sql|json|bash|sh|php|ruby|java|go|rust|swift|kotlin|dart)\b\s*(.*)$/i);
+            if (langMatch) {
+                const restOfLine = langMatch[2].trim();
+                if (restOfLine) {
+                    lines[0] = restOfLine;
+                } else {
+                    lines.shift();
+                }
+                code = lines.join('\n');
+            }
         }
         if (this.editor) {
             const selection = this.editor.getSelection ? this.editor.getSelection() : '';
