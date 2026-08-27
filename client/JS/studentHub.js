@@ -2348,7 +2348,8 @@ async function loadSavedState() {
         const activeFlow = savedFlowcharts.find(f => f.id === activeFlowchartId);
         if (activeFlow) {
             shapes = activeFlow.shapes || [];
-            localStorage.setItem(STORAGE_FLOWCHART_SHAPES_KEY, JSON.stringify(shapes));
+            // Removed to prevent wiping newly generated AI flowcharts:
+            // localStorage.setItem(STORAGE_FLOWCHART_SHAPES_KEY, JSON.stringify(shapes));
         }
     } else {
         loadFlowchartState();
@@ -2498,6 +2499,14 @@ function loadFlowchartState() {
 function getSvgContentForType(type) {
     switch (type) {
         // ── Lines & Arrows ──
+        case 'block-right':
+            return `<polygon points="2,25 65,25 65,2 98,50 65,98 65,75 2,75" vector-effect="non-scaling-stroke" />`;
+        case 'block-left':
+            return `<polygon points="98,25 35,25 35,2 2,50 35,98 35,75 98,75" vector-effect="non-scaling-stroke" />`;
+        case 'block-down':
+            return `<polygon points="25,2 75,2 75,65 98,65 50,98 2,65 25,65" vector-effect="non-scaling-stroke" />`;
+        case 'block-up':
+            return `<polygon points="25,98 75,98 75,35 98,35 50,2 2,35 25,35" vector-effect="non-scaling-stroke" />`;
         case 'line':
             return `<line x1="2" y1="2" x2="98" y2="98" vector-effect="non-scaling-stroke" />`;
         case 'line-up':
