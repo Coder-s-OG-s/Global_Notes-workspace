@@ -349,13 +349,22 @@ Provide ONLY the code. Do NOT wrap it in markdown codeblocks (no \`\`\`), do NOT
         });
         const toggleSidebarBtn = document.getElementById('toggle-sidebar-btn');
         if (toggleSidebarBtn) {
-            toggleSidebarBtn.addEventListener('click', () => {
+            toggleSidebarBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
                 const sidebar = document.querySelector('.code-sidebar');
                 const page = document.querySelector('.code-workspace-page');
                 if (sidebar) {
                     if (window.innerWidth <= 1024) {
-                        if (page) page.classList.toggle('sidebar-visible');
-                        sidebar.classList.toggle('open');
+                        const isOpen = sidebar.classList.contains('open') || (page && page.classList.contains('sidebar-visible'));
+                        if (isOpen) {
+                            sidebar.classList.remove('open');
+                            sidebar.classList.add('collapsed');
+                            if (page) page.classList.remove('sidebar-visible');
+                        } else {
+                            sidebar.classList.add('open');
+                            sidebar.classList.remove('collapsed');
+                            if (page) page.classList.add('sidebar-visible');
+                        }
                     } else {
                         sidebar.classList.toggle('collapsed');
                     }
@@ -422,8 +431,11 @@ Provide ONLY the code. Do NOT wrap it in markdown codeblocks (no \`\`\`), do NOT
         if (overlay) {
             overlay.addEventListener('click', () => {
                 const sidebar = document.querySelector('.code-sidebar');
+                const page = document.querySelector('.code-workspace-page');
                 if (sidebar) {
+                    sidebar.classList.remove('open');
                     sidebar.classList.add('collapsed');
+                    if (page) page.classList.remove('sidebar-visible');
                     if (this.editor) {
                         setTimeout(() => {
                             this.editor.refresh();
@@ -1059,7 +1071,7 @@ Use width=210 and height=65 for parallelogram/input nodes. Use width=175 and hei
 
         htmlContent += `
             <div style="margin-top: 60px; border-top: 1px solid #e5e5e8; padding-top: 20px; font-size: 10px; color: #91919a; text-align: center; page-break-inside: avoid;">
-                © 2026 Global Notes Workspace — Expert Coding Documentation
+                © 2025 Global Notes Workspace — Expert Coding Documentation
             </div>
         `;
 

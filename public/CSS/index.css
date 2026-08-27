@@ -663,8 +663,9 @@ html,
   gap: 8px;
 }
 
+/* Logo image base styles */
 .logo-img {
-  height: 42px;
+  height: 38px;
   width: auto;
   max-width: 170px;
   object-fit: contain;
@@ -672,7 +673,34 @@ html,
   padding: 0;
   border-radius: 0;
   box-shadow: none;
-  display: inline-block;
+  vertical-align: middle;
+}
+
+/* Dark theme / Default state: show white logo (logo-dark), hide original logo (logo-light) */
+.logo-light {
+  display: none !important;
+}
+
+.logo-dark {
+  display: inline-block !important;
+}
+
+/* Light Theme (minimal-white): show original logo (logo-light), hide white logo (logo-dark) */
+html[data-theme="minimal-white"] .logo-light,
+body[data-theme="minimal-white"] .logo-light,
+.light-mode .logo-light {
+  display: inline-block !important;
+}
+
+html[data-theme="minimal-white"] .logo-dark,
+body[data-theme="minimal-white"] .logo-dark,
+.light-mode .logo-dark {
+  display: none !important;
+}
+
+/* Always show white logo if logo-white-always is present (e.g. Code Workspace) */
+.logo-white-always {
+  display: inline-block !important;
 }
 
 .brand-name {
@@ -2567,8 +2595,21 @@ body.dark-mode .note-card[data-theme="classic-blue"] {
   display: none;
 }
 
+.layout.fullscreen-editor.sidebar-visible .app-sidebar {
+  display: flex !important;
+  position: fixed;
+  top: var(--header-height, 56px);
+  left: 0;
+  bottom: 0;
+  z-index: 1000;
+  width: var(--sidebar-width, 280px);
+  background: var(--surface, #0f172a);
+  box-shadow: 10px 0 30px rgba(0, 0, 0, 0.5);
+  transform: translateX(0) !important;
+}
+
 .layout.fullscreen-editor .mobile-toggle {
-  display: none !important;
+  display: inline-flex !important;
 }
 
 /* Back to Dashboard Button */
@@ -7461,5 +7502,208 @@ body.dark-mode .folder-pill-container[data-color="slate"] {
   button.icon-only,
   .btn-icon {
     border-radius: 50% !important;
+  }
+}
+
+/* ════════════════════════════════════════════════════════════════
+   PROFESSIONAL UI/UX DESIGNER — MOBILE & TABLET RESPONSIVE ENGINE
+   Target Breakpoints: Mobile (< 640px), Small Tablet (< 768px), Large Tablet (< 1024px)
+   ════════════════════════════════════════════════════════════════ */
+
+/* 1. Split Panel & Side-Card Column Stacking (Fixes 1-char vertical text bug!) */
+@media (max-width: 1024px) {
+  /* Force vertical stacking on all split containers, side cards, and lecture/glossary sidebars */
+  #content > div,
+  .editor-content-area,
+  .note-split-view,
+  .glossary-split-container,
+  .lecture-transcription-view,
+  .split-panel-row {
+    flex-direction: column !important;
+    grid-template-columns: 1fr !important;
+    gap: 16px !important;
+  }
+
+  /* Side panels and cards take full width on mobile/tablet */
+  .editor-side-card,
+  .glossary-sidebar,
+  .lecture-transcription-panel,
+  .note-side-panel,
+  .split-column,
+  [style*="width: 30%"],
+  [style*="width: 35%"],
+  [style*="width: 40%"],
+  [style*="width: 25%"] {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    margin-bottom: 16px !important;
+    box-sizing: border-box !important;
+  }
+
+  /* Prevent text wrapping into single characters */
+  .editor-side-card *,
+  .glossary-sidebar *,
+  .lecture-transcription-panel *,
+  .note-side-panel * {
+    word-break: normal !important;
+    overflow-wrap: break-word !important;
+    hyphens: auto;
+  }
+}
+
+/* 2. Top Header & Navbar Layout (< 640px Mobile) */
+@media (max-width: 640px) {
+  .app-header .navbar {
+    padding: 0 8px !important;
+    gap: 4px !important;
+    height: 52px !important;
+  }
+
+  .navbar-left {
+    gap: 4px !important;
+  }
+
+  /* Logo branding size on mobile */
+  .brand .logo-img {
+    height: 26px !important;
+    max-width: 100px !important;
+  }
+
+  .brand-name {
+    font-size: 12px !important;
+  }
+
+  /* Compact Navbar Search on Mobile */
+  .navbar-center {
+    flex: 1 !important;
+    max-width: 130px !important;
+  }
+
+  .search-container {
+    height: 32px !important;
+  }
+
+  .search-input {
+    font-size: 11px !important;
+    padding-left: 26px !important;
+  }
+
+  .search-icon {
+    width: 13px !important;
+    height: 13px !important;
+    left: 8px !important;
+  }
+
+  /* Navbar Right Actions on Mobile */
+  .navbar-right {
+    gap: 3px !important;
+  }
+
+  .nav-pill-text,
+  .btn-text {
+    display: none !important;
+  }
+
+  .nav-feature-pill,
+  .btn.primary.sm,
+  #header-new-note {
+    padding: 0 6px !important;
+    height: 32px !important;
+    min-width: 32px !important;
+  }
+
+  .header-avatar {
+    width: 28px !important;
+    height: 28px !important;
+  }
+}
+
+/* 3. Editor Header & Title Row (< 768px Tablet & Mobile) */
+@media (max-width: 768px) {
+  /* Remove Study Assistant feature toggle & panel on mobile (< 768px) */
+  #toggle-study-assistant,
+  #study-assistant-sidebar,
+  .study-assistant-sidebar {
+    display: none !important;
+  }
+
+  .editor-header {
+    padding: 10px 12px 0 !important;
+    gap: 6px !important;
+  }
+
+  .title-input {
+    font-size: 17px !important;
+    min-width: 0 !important;
+  }
+
+  .editor-header-actions {
+    gap: 2px !important;
+  }
+
+  .editor-header-actions .btn {
+    width: 30px !important;
+    height: 30px !important;
+    padding: 0 !important;
+  }
+
+  .editor-tags {
+    padding: 4px 12px !important;
+    gap: 4px !important;
+  }
+
+  .ai-smart-tags-badge {
+    height: 26px !important;
+    padding: 0 8px !important;
+    font-size: 11px !important;
+  }
+}
+
+/* 4. Touch Ribbon Formatting Toolbar (< 768px Mobile & Tablet) */
+@media (max-width: 768px) {
+  .editor-toolbar {
+    padding: 4px 8px !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    scrollbar-width: none !important;
+    flex-wrap: nowrap !important;
+    justify-content: flex-start !important;
+  }
+
+  .editor-toolbar::-webkit-scrollbar {
+    display: none !important;
+  }
+
+  .ribbon-toolbar {
+    flex-wrap: nowrap !important;
+    gap: 4px !important;
+  }
+
+  .ribbon-section {
+    flex-shrink: 0 !important;
+  }
+
+  .ribbon-select {
+    max-width: 90px !important;
+  }
+}
+
+/* 5. Mobile Viewport & Modal Overlay Tuning (< 640px) */
+@media (max-width: 640px) {
+  .editor-container,
+  #content {
+    padding: 12px 10px !important;
+  }
+
+  .layout.fullscreen-editor .editor-view {
+    padding: 0 !important;
+  }
+
+  .modal {
+    width: 94vw !important;
+    max-width: 94vw !important;
+    padding: 16px !important;
+    border-radius: 16px !important;
   }
 }

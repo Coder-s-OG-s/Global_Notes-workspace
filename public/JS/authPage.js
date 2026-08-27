@@ -90,6 +90,11 @@ async function initAuthPage() {
         body: JSON.stringify({ token: turnstileToken }),
       });
 
+      if (response.status === 429) {
+        setMessage("Too many verification attempts. Please wait a moment before trying again.", "error");
+        return false;
+      }
+
       const data = await response.json();
       if (data.success) {
         return true;

@@ -73,8 +73,11 @@ body.ui-designer-page {
 }
 
 .designer-brand .logo-img {
-  width: 26px;
-  height: 26px;
+  width: auto;
+  height: 32px;
+  object-fit: contain;
+  background: transparent;
+  vertical-align: middle;
 }
 
 .designer-brand h1 {

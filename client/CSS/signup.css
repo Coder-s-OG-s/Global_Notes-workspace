@@ -70,10 +70,14 @@ body {
   margin-bottom: 20px;
 }
 
+/* Brand logo image (white logo on dark #0b0b0b card) */
 .brand-logo-img {
-  width: 28px;
-  height: 28px;
+  width: auto;
+  height: 32px;
   object-fit: contain;
+  background: transparent;
+  vertical-align: middle;
+  display: inline-block !important;
 }
 
 .brand-title {

@@ -58,6 +58,15 @@ html[data-theme="professional-light"] {
     --primary-glow: rgba(216, 107, 90, 0.25);
     --active-bg: rgba(216, 107, 90, 0.12);
     --shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+
+/* Code Workspace: White logo in BOTH light and dark themes */
+.code-workspace-page .logo-img,
+.code-workspace-page .logo-white-always {
+    display: inline-block !important;
+}
+.code-workspace-page .logo-light {
+    display: none !important;
+}
     --shadow-lg: 0 10px 40px rgba(0, 0, 0, 0.12);
     --header-bg: rgba(255, 255, 255, 0.92);
 }
@@ -1799,8 +1808,15 @@ body:has(#ai-chat-window.open) .ai-chat-trigger {
         display: inline-flex !important;
     }
 
-    .code-sidebar:not(.collapsed) {
+    .code-sidebar.open,
+    .code-workspace-page.sidebar-visible .code-sidebar,
+    .code-sidebar.show {
         transform: translateX(0) !important;
+        box-shadow: 10px 0 30px rgba(0, 0, 0, 0.5) !important;
+    }
+
+    .code-sidebar.collapsed {
+        transform: translateX(-100%) !important;
     }
 
     .sidebar-overlay-code {
@@ -1809,7 +1825,7 @@ body:has(#ai-chat-window.open) .ai-chat-trigger {
         left: 0 !important;
         right: 0 !important;
         bottom: 0 !important;
-        background: rgba(0, 0, 0, 0.5) !important;
+        background: rgba(0, 0, 0, 0.6) !important;
         backdrop-filter: blur(4px) !important;
         -webkit-backdrop-filter: blur(4px) !important;
         z-index: 999 !important;
@@ -1819,7 +1835,8 @@ body:has(#ai-chat-window.open) .ai-chat-trigger {
         display: block !important;
     }
 
-    .code-sidebar:not(.collapsed) ~ .sidebar-overlay-code {
+    .code-sidebar.open ~ .sidebar-overlay-code,
+    .code-workspace-page.sidebar-visible .sidebar-overlay-code {
         opacity: 1 !important;
         pointer-events: auto !important;
     }

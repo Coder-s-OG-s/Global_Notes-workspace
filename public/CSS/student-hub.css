@@ -4981,9 +4981,9 @@ body.dark-mode .output-workspace {
   .mobile-hub-tool-select {
     width: 100% !important;
     height: 38px !important;
-    background: #0f172a !important;
-    color: #f8fafc !important;
-    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    background: var(--surface-bg, var(--surface, #ffffff)) !important;
+    color: var(--text-color, var(--text, #0f172a)) !important;
+    border: 1px solid var(--border-color, var(--border, rgba(0, 0, 0, 0.15))) !important;
     border-radius: 8px !important;
     padding: 0 12px !important;
     font-size: 13px !important;
@@ -4992,7 +4992,30 @@ body.dark-mode .output-workspace {
     outline: none !important;
     cursor: pointer !important;
     appearance: auto !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08) !important;
+  }
+
+  .mobile-hub-tool-select option {
+    background: var(--surface-bg, var(--surface, #ffffff)) !important;
+    color: var(--text-color, var(--text, #0f172a)) !important;
+  }
+
+  [data-theme="dark"] .mobile-hub-tool-select,
+  [data-theme="amoled-dark"] .mobile-hub-tool-select,
+  [data-theme="corporate-gray"] .mobile-hub-tool-select,
+  .dark-mode .mobile-hub-tool-select {
+    background: #0f172a !important;
+    color: #f8fafc !important;
+    border-color: rgba(255, 255, 255, 0.2) !important;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4) !important;
+  }
+
+  [data-theme="dark"] .mobile-hub-tool-select option,
+  [data-theme="amoled-dark"] .mobile-hub-tool-select option,
+  [data-theme="corporate-gray"] .mobile-hub-tool-select option,
+  .dark-mode .mobile-hub-tool-select option {
+    background: #0f172a !important;
+    color: #f8fafc !important;
   }
 }
 

@@ -10,7 +10,7 @@ export function wireSidebarToggle() {
     if (mobileToggleBtn) {
         mobileToggleBtn.addEventListener("click", (e) => {
             e.stopPropagation();
-            if (window.innerWidth <= 1024) {
+            if (window.innerWidth <= 1024 || layout.classList.contains("fullscreen-editor")) {
                 layout.classList.toggle("sidebar-visible");
             } else {
                 layout.classList.toggle("sidebar-collapsed");

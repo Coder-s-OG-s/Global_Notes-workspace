@@ -193,10 +193,29 @@ body {
 }
 
 .nav-logo {
-  width: 36px;
+  width: auto;
   height: 36px;
   object-fit: contain;
+  background: transparent;
+  vertical-align: middle;
   filter: drop-shadow(0 2px 8px var(--accent-glow));
+}
+
+.nav-logo.logo-light {
+  display: inline-block !important;
+}
+.nav-logo.logo-dark {
+  display: none !important;
+}
+
+body.dark-mode .nav-logo.logo-light,
+[data-theme*="dark"] .nav-logo.logo-light {
+  display: none !important;
+}
+
+body.dark-mode .nav-logo.logo-dark,
+[data-theme*="dark"] .nav-logo.logo-dark {
+  display: inline-block !important;
 }
 
 .brand-accent {
