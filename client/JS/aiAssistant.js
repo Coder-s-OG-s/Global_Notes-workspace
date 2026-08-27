@@ -66,7 +66,7 @@ export function parseMarkdownToHtml(text) {
     let processed = text.replace(/```([\s\S]*?)```/g, (match, code) => {
         const lines = code.split('\n');
         let cleanCode = code;
-        if (lines.length > 0 && /^[a-z#]+$/i.test(lines[0].trim())) {
+        if (lines.length > 0 && /^[a-z0-9#\+\-]+$/i.test(lines[0].trim())) {
             lines.shift();
             cleanCode = lines.join('\n');
         }

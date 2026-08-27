@@ -11,34 +11,7 @@ export async function generateTextWithGemini(prompt, customApiKey) {
     const geminiKey = customApiKey || config.GEMINI_API_KEY || window.localStorage.getItem('GN_CUSTOM_GEMINI_KEY');
     const groqKey = config.GROQ_API_KEY || window.localStorage.getItem('GN_CUSTOM_GROQ_KEY');
 
-    // 1. Try Google Gemini API if client-side key is available
-    if (geminiKey && geminiKey !== 'YOUR_GEMINI_API_KEY' && geminiKey.trim() !== '') {
-        try {
-            const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${geminiKey.trim()}`;
-            const response = await fetch(geminiUrl, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    contents: [{ parts: [{ text: prompt }] }],
-                    generationConfig: {
-                        temperature: 0.4,
-                        maxOutputTokens: 8192
-                    }
-                })
-            });
-
-            if (response.ok) {
-                const data = await response.json();
-                if (data.candidates && data.candidates[0]?.content?.parts[0]?.text) {
-                    return data.candidates[0].content.parts[0].text;
-                }
-            }
-        } catch (geminiErr) {
-            console.warn('Client-side Gemini API call failed, trying server proxy:', geminiErr.message);
-        }
-    }
-
-    // 2. Try Groq API if client-side key is available
+    // 1. Try Groq API first if client-side key is available (fastest sub-second response)
     if (groqKey && groqKey !== 'YOUR_GROQ_API_KEY' && groqKey.trim() !== '') {
         try {
             const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
@@ -62,7 +35,37 @@ export async function generateTextWithGemini(prompt, customApiKey) {
                 }
             }
         } catch (groqErr) {
-            console.warn('Client-side Groq API call failed, trying server proxy:', groqErr.message);
+            console.warn('Client-side Groq API call failed, trying Gemini/server proxy:', groqErr.message);
+        }
+    }
+
+    // 2. Try Google Gemini API if client-side key is available
+    if (geminiKey && geminiKey !== 'YOUR_GEMINI_API_KEY' && geminiKey.trim() !== '') {
+        const geminiModels = ['gemini-1.5-flash', 'gemini-2.0-flash-exp'];
+        for (const modelId of geminiModels) {
+            try {
+                const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${modelId}:generateContent?key=${geminiKey.trim()}`;
+                const response = await fetch(geminiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contents: [{ parts: [{ text: prompt }] }],
+                        generationConfig: {
+                            temperature: 0.4,
+                            maxOutputTokens: 8192
+                        }
+                    })
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.candidates && data.candidates[0]?.content?.parts[0]?.text) {
+                        return data.candidates[0].content.parts[0].text;
+                    }
+                }
+            } catch (geminiErr) {
+                console.warn(`Client-side Gemini API (${modelId}) failed:`, geminiErr.message);
+            }
         }
     }
 

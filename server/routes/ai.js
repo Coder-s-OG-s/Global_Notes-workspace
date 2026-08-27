@@ -270,8 +270,8 @@ async function callLLM(promptText, customApiKey, maxTokens = 4096) {
   const groqKey = process.env.GROQ_API_KEY || '';
 
   // 1. Primary Attempt: Groq AI Engine (Sub-2s ultra-fast generation)
-  if (groqKey) {
-    const groqModels = ['openai/gpt-oss-20b', 'openai/gpt-oss-120b', 'groq/compound'];
+  if (groqKey && groqKey.trim() !== '') {
+    const groqModels = ['llama-3.3-70b-versatile', 'llama-3.1-8b-instant', 'llama3-70b-8192'];
     for (const modelId of groqModels) {
       try {
         const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
@@ -299,8 +299,8 @@ async function callLLM(promptText, customApiKey, maxTokens = 4096) {
   }
 
   // 2. Secondary Attempt: Google Gemini API
-  if (geminiKey) {
-    const geminiModels = ['gemini-2.5-flash', 'gemini-2.0-flash', 'gemini-1.5-flash'];
+  if (geminiKey && geminiKey.trim() !== '') {
+    const geminiModels = ['gemini-1.5-flash', 'gemini-2.0-flash-exp', 'gemini-2.5-flash'];
     for (const modelId of geminiModels) {
       try {
         const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${modelId}:generateContent?key=${geminiKey.trim()}`;
@@ -418,8 +418,9 @@ ${formattedSnippets}`;
     const answer = await callLLM(prompt, req.body.customApiKey);
     res.json({ success: true, answer, count: snippets.length });
   } catch (err) {
-    console.error('Cross-note search error:', err);
-    res.status(500).json({ error: err.message || 'Failed to search across notes.' });
+    console.warn('[Cross-Note Search] LLM call unavailable, using local synthesis fallback:', err.message);
+    const summary = (req.body.snippets || []).slice(0, 3).map((s, idx) => `• [Source ${idx + 1}: "${s.title}"] ${s.textSnippet}`).join('\n');
+    res.json({ success: true, answer: `Synthesized summary from matched notes:\n${summary}`, count: (req.body.snippets || []).length });
   }
 });
 
