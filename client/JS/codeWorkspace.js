@@ -687,9 +687,9 @@ Example for a clean vertical process:
                 // Ignore
             }
 
-            // 2. Try parsing after removing outer ```json or ``` wrapper if it matches perfectly
-            if (!data && cleanText.startsWith('```') && cleanText.endsWith('```')) {
-                const matches = cleanText.match(/^```(?:json)?\s*([\s\S]*?)\s*```$/i);
+            // 2. Try parsing after removing ```json or ``` wrapper anywhere in the text
+            if (!data) {
+                const matches = cleanText.match(/```(?:json)?\s*([\s\S]*?)\s*```/i);
                 if (matches && matches[1]) {
                     try {
                         data = JSON.parse(matches[1].trim());
@@ -756,7 +756,7 @@ Example for a clean vertical process:
     }
 
     setAIButtonsLoading(isLoading) {
-        const btnIds = ['ai-explain-btn', 'ai-docs-btn', 'ai-improve-btn', 'ai-analyze-btn', 'ai-debug-btn', 'ai-visualize-flowchart-btn'];
+        const btnIds = ['ai-explain-btn', 'ai-docs-btn', 'ai-improve-btn', 'ai-analyze-btn', 'ai-debug-btn', 'ai-visualize-flowchart-btn', 'ai-suggest-btn'];
         btnIds.forEach(id => {
             const btn = document.getElementById(id);
             if (btn) {
@@ -861,6 +861,19 @@ Example for a clean vertical process:
                     });
                 };
                 contentEl.appendChild(copyBtn);
+
+                const applyBtn = document.createElement('button');
+                applyBtn.className = 'btn primary';
+                applyBtn.style.marginTop = '10px';
+                applyBtn.style.marginLeft = '10px';
+                applyBtn.textContent = 'Apply to Editor';
+                applyBtn.onclick = () => {
+                    if (this.editor) {
+                        this.editor.setValue(improvedCode);
+                        this.showToast('Code Applied to Editor!');
+                    }
+                };
+                contentEl.appendChild(applyBtn);
             }
         }
 
@@ -1065,9 +1078,14 @@ Example for a clean vertical process:
 
     renderAIError(msg) {
         document.getElementById('ai-panel-title').textContent = "Error";
+        let extraHtml = '';
+        if (msg && (msg.toLowerCase().includes('api key') || msg.toLowerCase().includes('fetch') || msg.toLowerCase().includes('proxy') || msg.toLowerCase().includes('failed'))) {
+            extraHtml = `<br><br><div style="font-size:13px; color:#91919a; margin-top:8px;">If you haven't set up a backend, please provide an API key.</div><button class="btn secondary" style="margin-top:10px;" onclick="window.location.href='/HTML/settings.html'">Go to Settings</button>`;
+        }
         document.getElementById('ai-panel-content').innerHTML = `
         <div class="error-msg">
           <strong>AI Request Failed:</strong><br>${msg}
+          ${extraHtml}
         </div>
       `;
     }
