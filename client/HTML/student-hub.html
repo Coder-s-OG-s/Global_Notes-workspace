@@ -691,7 +691,48 @@
         </section>
 
         <!-- 4. DIAGRAMS & IMAGE GENERATOR SECTION -->
-        <section class="hub-view" id="view-visuals">
+        <section class="hub-view" id="view-visuals" style="position: relative;">
+            <!-- UNDER MAINTENANCE / COMING SOON OVERLAY WINDOW -->
+            <div class="maintenance-overlay" id="visuals-maintenance-overlay">
+                <div class="maintenance-modal-card">
+                    <button class="maintenance-dismiss-btn" onclick="document.getElementById('visuals-maintenance-overlay').style.display='none';" title="Dismiss Overlay (Preview Page)">✕</button>
+                    
+                    <div class="maintenance-badge-pill">
+                        <span class="maintenance-pulse-dot"></span>
+                        <span>UNDER MAINTENANCE &amp; AI UPGRADE</span>
+                    </div>
+
+                    <div class="maintenance-icon-wrapper">
+                        <svg viewBox="0 0 24 24" width="34" height="34" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="3"/>
+                            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+                        </svg>
+                    </div>
+
+                    <h2 class="maintenance-title">AI Visuals &amp; Diagram Studio</h2>
+                    <p class="maintenance-subtitle">We are currently integrating next-gen 4K AI graphic synthesis models for high-definition educational diagrams, 3D anatomy renders, and mindmaps. This feature will be live soon!</p>
+
+                    <div class="maintenance-progress-container">
+                        <div class="maintenance-progress-label">
+                            <span>AI Model Integration</span>
+                            <span>78% Complete</span>
+                        </div>
+                        <div class="maintenance-progress-bar">
+                            <div class="maintenance-progress-fill"></div>
+                        </div>
+                    </div>
+
+                    <div class="maintenance-actions">
+                        <button class="btn-hub-primary" onclick="window.location.hash='#flowcharts'; location.reload();">
+                            <span>🚀 Explore Interactive Flowcharts</span>
+                        </button>
+                        <button class="btn-secondary-notify" id="btn-notify-maintenance" onclick="this.innerHTML='✓ Notification Enabled!'; this.disabled=true; this.style.borderColor='#10b981'; this.style.color='#10b981';">
+                            <span>🔔 Get Notified On Launch</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
             <div class="split-layout">
                 <aside class="options-panel">
                     <div class="pastel-badge-pill" style="display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; background: rgba(216, 107, 90, 0.16); color: #D86B5A; border: 1px solid rgba(216, 107, 90, 0.35); border-radius: 20px; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">
